@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard1.4</TargetFramework>
+    <AssemblyName>Microsoft.Azure.IoTSolutions.Template.Services</AssemblyName>
+    <RootNamespace>Microsoft.Azure.IoTSolutions.Template.Services</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove=".DS_Store" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\" />
+  </ItemGroup>
+</Project>

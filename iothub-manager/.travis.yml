@@ -1,0 +1,26 @@
+language: csharp
+mono: none
+dotnet: 1.0.1
+dist: trusty
+# 'false' => container-based => faster
+sudo: false
+env:
+  matrix:
+  - CODEBASE=dotnet
+  - CODEBASE=java
+before_cache:
+- rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+- rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+cache:
+  directories:
+  - "$HOME/.gradle/caches/"
+  - "$HOME/.gradle/wrapper/"
+  - "$HOME/.nuget/"
+before_install: 
+- set -e
+script:
+- "./$CODEBASE/scripts/build"
+notifications:
+  slack:
+    rooms:
+    - secure: bMeGfUG9+1JZ4sqvP5u8UY4jAyStU8muJCN708T4/0K5+AVmc343anZ7KyaCtb+k4hQzvbefeGV9T2loHUUnmdnPsXEAvQVWUfeGWethZ5Sy94VOR3G7TVe9a9Vdg6DLfE8Ap3r2hxHUIPB5Yir//QM3KQycxb98JibGG/+4bZyyrV/C760DfNkRcijgqKqLKcNnVxS+0IX0MyN+tlKCZ1UVDj5DwbiSDlfGaRQyKDU4DUdoacYyZ50DZK+Tc4x9H5UMsqrr891jeDDMJWDeeZrDINZSGoj2bcmezr7E98xBJ3UTNv5jtbDaY9bVko84HvadRMOUsbn3OASdSKcZssE9oy3clLo6Mwy1mSvu/oOcjG4a0TjMT45dDkF6oX1LMCBC4hAV/yedm0fcSasRsiySRXpy8ZMEtJVakDc4WV2CTG8HqLbepSrP1RaNf6l00KrSY+DCubbuCgz8gK8El+VLhiSqiPi/tWWMqybAWsmSGda6UjHbN0HzcgOkE7quH3PzMhe1ix7hVmfm4B/QdRzMfiBSTXfwrZvVag2BzVZi26/rJJ6tA+Du+rbSGaEsWxxirfpF8jkoUJFuQjj3glWGvZ1ZxATu8aF19rDCnw7kWo3LG0KVAiUTkPuOv+beQb2bGgbJEiddTrdPDPj6v23NV2Cvpd/RcDPzlbRIj8E=

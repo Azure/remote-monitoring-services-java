@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+DOCKER_IMAGE="azureiotpcs/microservice-template-dotnet-ws:0.1-SNAPSHOT"
+
+echo "Starting web service at: http://localhost:8080/api/values"
+
+set -e
+docker run -it -p 8080:80 "$DOCKER_IMAGE"
