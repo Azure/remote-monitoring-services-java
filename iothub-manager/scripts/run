@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+set -e
+APP_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )/"
+source "$APP_HOME/scripts/.functions.sh"
+
+gradle_run() {
+    check_dependency_java
+
+    cd $APP_HOME
+    ./gradlew -q run
+}
+
+sbt_run() {
+    check_dependency_java
+
+    cd $APP_HOME
+    ./sbt "run 8080"
+}
+
+run_in_sandbox() {
+    cd $APP_HOME
+    ./scripts/run-in-sandbox
+}
+
+if [[ "$1" == "--in-sandbox" || "$1" == "-s" ]]; then
+    run_in_sandbox
+else
+    sbt_run
+fi
+
+set +e

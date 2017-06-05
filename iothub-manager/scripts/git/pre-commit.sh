@@ -15,7 +15,6 @@ else
 fi
 
 check_filenames() {
-    set +e
     header "Checking filenames..."
 
     # Redirect output to stderr.
@@ -27,109 +26,94 @@ check_filenames() {
     # Note that the use of brackets around a tr range is ok here, (it's
     # even required, for portability to Solaris 10's /usr/bin/tr), since
     # the square bracket bytes happen to fall in the designated range.
+    set +e
     if test $(git diff --cached --name-only --diff-filter=A -z $against | LC_ALL=C tr -d '[ -~]\0' | wc -c) != 0 ; then
         error "Attempt to add a non-ASCII file name. This can cause problems on other platforms."
         exit 1
     fi
+    set -e
+}
 
-    # If there are whitespace errors, print the offending file names and fail.
+check_whitespaces() {
+    header "Checking white spaces and line separators..."
     git diff-index --check --cached $against --
-    set -e
 }
 
-check_donotcommit() {
-    header "Checking diff for 'DONOTCOMMIT' comments..."
+check_do_not_commit() {
+    PATTERN1="DONOT"
+    PATTERN1="${PATTERN1}COMMIT"
+    PATTERN2="DO NOT"
+    PATTERN2="${PATTERN2} COMMIT"
+    PATTERN3="DONT"
+    PATTERN3="${PATTERN3}COMMIT"
+    PATTERN4="DONT"
+    PATTERN4="${PATTERN4} COMMIT"
+    PATTERN5="DON'T"
+    PATTERN5="${PATTERN5} COMMIT"
+
+    header "Checking diff for comments containing '${PATTERN1}'..."
 
     set +e
-    diffstr=`git diff --cached $against | grep -ie '^\+.*DONOTCOMMIT.*$'`
+
+    PATT="^\+.*${PATTERN1}.*$"
+    diffstr=`git diff --cached $against | grep -ie "$PATT"`
     if [[ -n "$diffstr" ]]; then
-        error "You have left DONOCOMMIT in your changes, you can't commit until it has been removed."
+        error "You have left '${PATTERN1}' in your changes, you can't commit until it has been removed."
         exit 1
     fi
+
+    PATT="^\+.*${PATTERN2}.*$"
+    diffstr=`git diff --cached $against | grep -ie "$PATT"`
+    if [[ -n "$diffstr" ]]; then
+        error "You have left '${PATTERN2}' in your changes, you can't commit until it has been removed."
+        exit 1
+    fi
+
+    PATT="^\+.*${PATTERN3}.*$"
+    diffstr=`git diff --cached $against | grep -ie "$PATT"`
+    if [[ -n "$diffstr" ]]; then
+        error "You have left '${PATTERN3}' in your changes, you can't commit until it has been removed."
+        exit 1
+    fi
+
+    PATT="^\+.*${PATTERN4}.*$"
+    diffstr=`git diff --cached $against | grep -ie "$PATT"`
+    if [[ -n "$diffstr" ]]; then
+        error "You have left '${PATTERN4}' in your changes, you can't commit until it has been removed."
+        exit 1
+    fi
+
+    PATT="^\+.*${PATTERN5}.*$"
+    diffstr=`git diff --cached $against | grep -ie "$PATT"`
+    if [[ -n "$diffstr" ]]; then
+        error "You have left '${PATTERN5}' in your changes, you can't commit until it has been removed."
+        exit 1
+    fi
+
     set -e
 }
 
-verify_dotnet() {
-    header "Checking .NET Core code..."
+verify_build_gradle() {
+    header "Verifying build..."
 
-    cd $APP_HOME/dotnet
-    ./scripts/build
-    if [ $? -ne 0 ]; then
-        error "Some .NET Core unit tests failed."
+    cd $APP_HOME/scripts
+    if test $(./build | grep "BUILD SUCCESSFUL" | wc -l) != 1 ; then
+        error "Some tests failed."
         exit 1
     fi
 }
 
-verify_dotnet4x() {
-    header "Checking .NET Framework code..."
+verify_build_sbt() {
+    header "Verifying build..."
 
-    cd $APP_HOME/dotnet4x
-    ./scripts/build
-    if [ $? -ne 0 ]; then
-        error "Some .NET Framework unit tests failed."
-        exit 1
-    fi
-}
-
-verify_java() {
-    header "Checking Java code..."
-
-    cd $APP_HOME/java
-    if test $(./gradlew check | grep "BUILD SUCCESSFUL" | wc -l) != 1 ; then
-        error "Some Java unit tests failed."
-        ./gradlew check --info
-        exit 1
-    fi
-}
-
-verify_in_parallel() {
-    header "Checking code... [running tests in the background]"
-
-    set +e
-
-    verify_dotnet 1>/dev/null 2>&1 &
-    pid1=$!
-
-    verify_dotnet4x 1>/dev/null 2>&1 &
-    pid2=$!
-
-    verify_java 1>/dev/null 2>&1 &
-    pid3=$!
-
-    wait $pid1
-    err1=$?
-    wait $pid2
-    err2=$?
-    wait $pid3
-    err3=$?
-    set -e
-
-    if [ $err1 -eq 0 ]; then 
-        echo ".NET Core: PASSED"
-    else
-        error ".NET Core: FAILED"
-    fi
-
-    if [ $err2 -eq 0 ]; then 
-        echo ".NET Framework: PASSED"
-    else
-        error ".NET Framework: FAILED"
-    fi
-
-    if [ $err3 -eq 0 ]; then 
-        echo "Java: PASSED"
-    else
-        error "Java: FAILED"
-    fi
-
-    if [ $err1 -ne 0 -o $err2 -ne 0 ]; then
+    cd $APP_HOME/scripts
+    if test $(./build | grep 'Total time' | grep 'success' | wc -l) != 1 ; then
+        error "Some tests failed."
         exit 1
     fi
 }
 
 check_filenames
-check_donotcommit
-#verify_in_parallel
-verify_dotnet
-verify_dotnet4x
-verify_java
+check_whitespaces
+check_do_not_commit
+verify_build_sbt

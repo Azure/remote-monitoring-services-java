@@ -1,6 +1,0 @@
-version: "3"
-services:
-  webservice:
-    image: azureiotpcs/java-microservice-webservice:0.1-SNAPSHOT
-    ports:
-      - "8080:8080"

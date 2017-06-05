@@ -1,26 +1,23 @@
-language: csharp
-mono: none
-dotnet: 1.0.1
-dist: trusty
-# 'false' => container-based => faster
-sudo: false
-env:
-  matrix:
-  - CODEBASE=dotnet
-  - CODEBASE=java
-before_cache:
-- rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-- rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+language: java
+jdk:
+  - oraclejdk8
+#language: scala
+#scala:
+#- 2.11.8
+#jdk:
+#- oraclejdk8
 cache:
   directories:
-  - "$HOME/.gradle/caches/"
-  - "$HOME/.gradle/wrapper/"
-  - "$HOME/.nuget/"
-before_install: 
+  - "$HOME/.ivy2/cache"
+before_cache:
+- rm -rf $HOME/.ivy2/cache/com.typesafe.play/*
+- rm -rf $HOME/.ivy2/cache/scala_*/sbt_*/com.typesafe.play/*
+- find $HOME/.ivy2/cache -name "ivydata-*.properties" -print0 | xargs -n10 -0 rm
+before_install:
 - set -e
 script:
-- "./$CODEBASE/scripts/build"
+- "bash ./$CODEBASE/scripts/build"
 notifications:
   slack:
     rooms:
-    - secure: bMeGfUG9+1JZ4sqvP5u8UY4jAyStU8muJCN708T4/0K5+AVmc343anZ7KyaCtb+k4hQzvbefeGV9T2loHUUnmdnPsXEAvQVWUfeGWethZ5Sy94VOR3G7TVe9a9Vdg6DLfE8Ap3r2hxHUIPB5Yir//QM3KQycxb98JibGG/+4bZyyrV/C760DfNkRcijgqKqLKcNnVxS+0IX0MyN+tlKCZ1UVDj5DwbiSDlfGaRQyKDU4DUdoacYyZ50DZK+Tc4x9H5UMsqrr891jeDDMJWDeeZrDINZSGoj2bcmezr7E98xBJ3UTNv5jtbDaY9bVko84HvadRMOUsbn3OASdSKcZssE9oy3clLo6Mwy1mSvu/oOcjG4a0TjMT45dDkF6oX1LMCBC4hAV/yedm0fcSasRsiySRXpy8ZMEtJVakDc4WV2CTG8HqLbepSrP1RaNf6l00KrSY+DCubbuCgz8gK8El+VLhiSqiPi/tWWMqybAWsmSGda6UjHbN0HzcgOkE7quH3PzMhe1ix7hVmfm4B/QdRzMfiBSTXfwrZvVag2BzVZi26/rJJ6tA+Du+rbSGaEsWxxirfpF8jkoUJFuQjj3glWGvZ1ZxATu8aF19rDCnw7kWo3LG0KVAiUTkPuOv+beQb2bGgbJEiddTrdPDPj6v23NV2Cvpd/RcDPzlbRIj8E=
+    - secure: kWVnUDNT3y0APWpo9+oJk0iBn6/kcWKNeMyM4E7QSrJqvGBmsDrmch/pau8tbBzjVlvFGSqHC6pfgdEaTshYeBDDBb02GQJIXGr5Qo31sb+iwq6uOD9HN+aqj2Db8w+sDZUXwwa8T273lF+CArCNmrJriUitPhPHIyiismI86Qehns+3mhyWxp27zFbB6TG59TqUsmMQoezXNjh9gHpPcKt7SK2RPMQS+lEQ3gAnKkZCX2Eq73LOWd4mJY4Gpn0+MINROtQvragwiHg0DWzudx7T33dbEegEyH5a60+KesosDcfsOY8ZvEsmtNq+9biUCfyEgh1TrP0+3n6A/K7LPUiphP+jGxX4/D5lERnBSD4Al9TCmUoqiCVV8gcd2gDclziIL1OK7VZC3NeIdmW6Fou2oZRQ3cX5xHfKtRchZzD5Xiq2rewc0qtC24s24Y/UPP98VjOUp6RF2kMyScPkFZyXD3RG3iNLTxuv5iZZ5OB0dCF06lI59nom1vyLG4XjGs+ocbiFlkafH4wcXoNHFjPZPXK4kPX+1KIcAWjHZWBSWcN0TRm7lu+VJJk1QwK3NSk++bYRS21nPz96zPKj1KPbG/c1vvNy/MZt5s9kymQIo0Ko7i/mPi3FF1ea8sglb/+NyzTWYyEq0vuvRo2xJI22H5RjaHCgkkchePa2H90=

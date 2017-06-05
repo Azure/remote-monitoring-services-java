@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-
-APP_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )/"
-
-cd $APP_HOME
-
-./gradlew distZip && echo -n "Package available at: " && echo $(find build/distributions -name *.zip)
-
