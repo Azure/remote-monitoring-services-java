@@ -1,0 +1,5 @@
+#  Prepare the environment variables used by the application.
+#
+
+# see: Shared access policies => key name => Connection string
+# export PCS_DEVICETELEMETRY_WEBSERVICE_PORT="..."
