@@ -2,3 +2,6 @@
 
 GET    /v1/status           com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.StatusController.index
 GET    /v1/status/          com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.StatusController.index
+
+GET    /v1/messages         com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.MessagesController.list
+GET    /v1/messages/        com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.MessagesController.list

@@ -2,10 +2,10 @@
 [![Issues][issues-badge]][issues-url]
 [![Gitter][gitter-badge]][gitter-url]
 
-PROJECT NAME HERE
+Device Telemetry
 =================
 
-... project description ...
+Retrieves telemetry from storage and provides telemetry messages to client.
 
 Overview
 ========
@@ -15,8 +15,7 @@ Overview
 How to use it
 =============
 
-... steps to use this project ...
-... deployment notes ...
+GET /v1/messages?from={time}&to={time}&order={order}&skip={count}&limit={count}&devices={list of IDs}
 
 Configuration
 =============

@@ -2,8 +2,6 @@
 
 package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime;
 
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.ServicesConfig;
 import com.typesafe.config.ConfigFactory;
 
 // TODO: documentation
@@ -15,14 +13,12 @@ public class Config implements IConfig {
     private final String Application = "devicetelemetry.";
 
     private com.typesafe.config.Config data;
-    private IServicesConfig servicesConfig;
 
     public Config() {
         // Load `application.conf` and replace placeholders with
         // environment variables
         data = ConfigFactory.load();
 
-        this.servicesConfig = new ServicesConfig();
     }
 
     /**
@@ -42,12 +38,5 @@ public class Config implements IConfig {
      */
     public String getHostname() {
         return data.getString(Namespace + Application + "webservice-hostname");
-    }
-
-    /**
-     * Service layer configuration
-     */
-    public IServicesConfig getServicesConfig() {
-        return this.servicesConfig;
     }
 }

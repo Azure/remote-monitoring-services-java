@@ -3,7 +3,6 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime;
 
 import com.google.inject.ImplementedBy;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 
 @ImplementedBy(Config.class)
 public interface IConfig {
@@ -21,9 +20,4 @@ public interface IConfig {
      * @return Hostname or IP address
      */
     String getHostname();
-
-    /**
-     * Service layer configuration
-     */
-    IServicesConfig getServicesConfig();
 }
