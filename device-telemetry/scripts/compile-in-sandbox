@@ -10,7 +10,7 @@ setup_cache() {
     mkdir -p .cache/sandbox/.sbt
 }
 
-run_in_sandbox() {
+compile_in_sandbox() {
     cd $APP_HOME
 
     # On Windows this script should use docker.exe, in which case
@@ -22,19 +22,17 @@ run_in_sandbox() {
     set -e
     if [[ -z "$IS_WINDOWS" ]]; then
         check_dependency_docker
-        docker run -it \
-            -p 9004:8080 \
+        docker run \
             -v "$APP_HOME/.cache/sandbox/.ivy2:/root/.ivy2" \
             -v "$APP_HOME/.cache/sandbox/.sbt:/root/.sbt" \
             -v "$APP_HOME:/opt/code" \
-            azureiotpcs/code-builder-java:1.0 /opt/scripts/run
+            azureiotpcs/code-builder-java:1.0 /opt/scripts/compile
     else
-        # Note 'winpty' is required to provide a TTY to Docker
-        cmd.exe /c "winpty .\scripts\run-in-sandbox.cmd"
+        cmd.exe /c ".\scripts\compile-in-sandbox.cmd"
     fi
 }
 
 setup_cache
-run_in_sandbox
+compile_in_sandbox
 
 set +e

@@ -10,8 +10,8 @@ cd %APP_HOME%
 java -version > NUL 2>&1
 IF %ERRORLEVEL% NEQ 0 GOTO MISSING_JAVA
 
-:: Run the application
-call sbt "run 9004"
+:: Run tests
+call sbt compile
 IF %ERRORLEVEL% NEQ 0 GOTO FAIL
 
 :: - - - - - - - - - - - - - -

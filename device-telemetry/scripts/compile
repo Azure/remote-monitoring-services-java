@@ -4,22 +4,22 @@ set -e
 APP_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )/"
 source "$APP_HOME/scripts/.functions.sh"
 
-sbt_run() {
+sbt_compile() {
     check_dependency_java
 
     cd $APP_HOME
-    ./sbt "run 9004"
+    ./sbt compile
 }
 
-run_in_sandbox() {
+compile_in_sandbox() {
     cd $APP_HOME
-    ./scripts/run-in-sandbox
+    ./scripts/compile-in-sandbox
 }
 
 if [[ "$1" == "--in-sandbox" || "$1" == "-s" ]]; then
-    run_in_sandbox
+    compile_in_sandbox
 else
-    sbt_run
+    sbt_compile
 fi
 
 set +e

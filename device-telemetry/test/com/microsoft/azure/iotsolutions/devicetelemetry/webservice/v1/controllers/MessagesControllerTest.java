@@ -24,7 +24,7 @@ public class MessagesControllerTest {
         // something after every test
     }
 
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     @Category({UnitTest.class})
     public void provideMessageListResult() {
         // TODO Mock the MessagesController dependency

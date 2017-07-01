@@ -14,13 +14,12 @@ IF %ERRORLEVEL% NEQ 0 GOTO MISSING_DOCKER
 mkdir .cache\sandbox\.ivy2 > NUL 2>&1
 mkdir .cache\sandbox\.sbt > NUL 2>&1
 
-:: Start the sandbox and run the application
-docker run -it ^
-    -p 9004:8080 ^
+:: Start the sandbox and execute the compile script
+docker run ^
     -v %APP_HOME%\.cache\sandbox\.config:/root/.ivy2 ^
     -v %APP_HOME%\.cache\sandbox\.dotnet:/root/.sbt ^
     -v %APP_HOME%:/opt/code ^
-    azureiotpcs/code-builder-java:1.0 /opt/scripts/run
+    azureiotpcs/code-builder-java:1.0 /opt/scripts/compile
 
 :: Error 125 typically triggers on Windows if the drive is not shared
 IF %ERRORLEVEL% EQU 125 GOTO DOCKER_SHARE

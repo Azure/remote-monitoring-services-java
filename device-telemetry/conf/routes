@@ -1,7 +1,30 @@
 # Note: temporarily duplicate every rule with and without trailing slash
 
-GET    /v1/status           com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.StatusController.index
-GET    /v1/status/          com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.StatusController.index
+# Service health check
 
-GET    /v1/messages         com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.MessagesController.list
-GET    /v1/messages/        com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.MessagesController.list
+GET    /v1/status                    com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.StatusController.index
+GET    /v1/status/                   com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.StatusController.index
+
+# Telemetry messages
+
+GET    /v1/messages                  com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.MessagesController.list
+GET    /v1/messages/                 com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.MessagesController.list
+
+# Alerts list and management
+
+GET    /v1/alerts                    com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlertsController.list
+GET    /v1/alerts/                   com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlertsController.list
+
+GET    /v1/alerts/:alert_id          com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlertsController.get(alert_id)
+GET    /v1/alerts/:alert_id/         com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlertsController.get(alert_id)
+
+PATCH  /v1/alerts/:alert_id          com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlertsController.patch(alert_id)
+PATCH  /v1/alerts/:alert_id/         com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlertsController.patch(alert_id)
+
+# Alerts aggregation by rule
+
+GET    /v1/alertsbyrule              com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlertsByRuleController.list
+GET    /v1/alertsbyrule/             com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlertsByRuleController.list
+
+GET    /v1/alertsbyrule/:rule_id     com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlertsByRuleController.get(rule_id)
+GET    /v1/alertsbyrule/:rule_id/    com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlertsByRuleController.get(rule_id)

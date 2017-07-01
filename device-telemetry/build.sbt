@@ -68,6 +68,6 @@ maintainer in Docker := "Jill Bender (https://github.com/jillcary)"
 dockerBaseImage := "toketi/openjdk-8-jre-alpine-bash"
 dockerExposedPorts := Seq(8080)
 dockerUpdateLatest := false
-dockerBuildOptions ++= Seq("--squash", "--compress", "--label", "Tags=toketi,dluc")
+dockerBuildOptions ++= Seq("--squash", "--compress", "--label", "Tags=azure,iot,pcs,telemetry,Java")
 // Example params: -Dconfig.file=/opt/conf/prod.conf -Dhttp.port=1234 -Dhttp.address=127.0.0.1
 dockerEntrypoint := Seq("bin/devicetelemetry","-Dhttp.port=8080")

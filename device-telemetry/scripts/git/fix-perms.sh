@@ -10,6 +10,8 @@ cd $APP_HOME
 
 chmod ugo+x ./scripts/build
 chmod ugo+x ./scripts/build-in-sandbox
+chmod ugo+x ./scripts/compile
+chmod ugo+x ./scripts/compile-in-sandbox
 chmod ugo+x ./scripts/run
 chmod ugo+x ./scripts/run-in-sandbox
 chmod ugo+x ./scripts/package
@@ -19,6 +21,7 @@ chmod ugo+x ./scripts/travis
 chmod ugo+x ./scripts/docker/build
 chmod ugo+x ./scripts/docker/run
 chmod ugo+x ./scripts/docker/content/*.sh 2> /dev/null
+chmod ugo+x ./scripts/git/setup
 chmod ugo+x ./scripts/git/*.sh
 chmod ugo+x ./scripts/iothub/*.sh
 chmod ugo+X ./sbt
@@ -27,6 +30,8 @@ chmod ugo+X ./scripts/sbt-dist/bin/sbt-launch-lib.bash
 
 git update-index --chmod=+x ./scripts/build
 git update-index --chmod=+x ./scripts/build-in-sandbox
+git update-index --chmod=+x ./scripts/compile
+git update-index --chmod=+x ./scripts/compile-in-sandbox
 git update-index --chmod=+x ./scripts/run
 git update-index --chmod=+x ./scripts/run-in-sandbox
 git update-index --chmod=+x ./scripts/package
@@ -36,6 +41,7 @@ git update-index --chmod=+x ./scripts/travis
 git update-index --chmod=+x ./scripts/docker/build
 git update-index --chmod=+x ./scripts/docker/run
 git update-index --chmod=+x ./scripts/docker/content/*.sh
+git update-index --chmod=+x ./scripts/git/setup
 git update-index --chmod=+x ./scripts/git/*.sh
 git update-index --chmod=+x ./scripts/iothub/*.sh
 git update-index --chmod=+x ./sbt
