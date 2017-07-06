@@ -68,7 +68,7 @@ the application inside of a sandbox. For instance `build-in-sandbox` will
 execute the build script inside a Docker container pre-packages with all the
 required dependencies.
 
-If you are familiar with [SBT](http://www.scala-sbt.org/, you can also use SBT
+If you are familiar with [SBT](http://www.scala-sbt.org), you can also use SBT
 directly. A copy of SBT is included in the root of the project.
 
 Package the application to a Docker image
