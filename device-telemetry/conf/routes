@@ -28,3 +28,20 @@ GET    /v1/alertsbyrule/             com.microsoft.azure.iotsolutions.devicetele
 
 GET    /v1/alertsbyrule/:rule_id     com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlertsByRuleController.get(rule_id)
 GET    /v1/alertsbyrule/:rule_id/    com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlertsByRuleController.get(rule_id)
+
+# Rules list and management
+
+GET    /v1/rules                     com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.RulesController.list
+GET    /v1/rules/                    com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.RulesController.list
+
+GET    /v1/rules/:rule_id            com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.RulesController.get(rule_id)
+GET    /v1/rules/:rule_id/           com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.RulesController.get(rule_id)
+
+POST   /v1/rules                     com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.RulesController.post()
+POST   /v1/rules/                    com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.RulesController.post()
+
+PUT  /v1/rules/:rule_id             com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.RulesController.put(rule_id)
+PUT  /v1/rules/:rule_id/            com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.RulesController.put(rule_id)
+
+DELETE /v1/rules/:rule_id            com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.RulesController.delete(rule_id)
+DELETE /v1/rules/:rule_id/           com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.RulesController.delete(rule_id)
