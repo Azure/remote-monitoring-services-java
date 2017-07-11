@@ -1,0 +1,4 @@
+# Note: temporarily duplicate every rule with and without trailing slash
+
+GET    /v1/status           com.microsoft.azure.iotsolutions.storageadapter.webservice.v1.controllers.StatusController.index
+GET    /v1/status/          com.microsoft.azure.iotsolutions.storageadapter.webservice.v1.controllers.StatusController.index

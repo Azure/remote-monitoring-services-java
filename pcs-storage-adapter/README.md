@@ -1,14 +1,48 @@
+[![Build][build-badge]][build-url]
+[![Issues][issues-badge]][issues-url]
+[![Gitter][gitter-badge]][gitter-url]
 
-# Contributing
+Storage Adapter
+=================
 
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
-Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
-the rights to use your contribution. For details, visit https://cla.microsoft.com.
+... project description ...
 
-When you submit a pull request, a CLA-bot will automatically determine whether you need to provide
-a CLA and decorate the PR appropriately (e.g., label, comment). Simply follow the instructions
-provided by the bot. You will only need to do this once across all repos using our CLA.
+Overview
+========
 
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
-contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+... quick demonstrative examples ...
+
+How to use it
+=============
+
+... steps to use this project ...
+... deployment notes ...
+
+Configuration
+=============
+
+... how to customize the service, settings, etc. ...
+
+Special notes
+=============
+
+... technical details ...
+
+Edge cases
+==========
+
+... things to take into consideration ...
+... known limitations ...
+
+Other documents
+===============
+
+* [Contributing and Development setup](CONTRIBUTING.md)
+* [Development setup, scripts and tools](DEVELOPMENT.md)
+
+[build-badge]: https://img.shields.io/travis/Azure/pcs-storage-adapter-java.svg
+[build-url]: https://travis-ci.org/Azure/pcs-storage-adapter-java
+[issues-badge]: https://img.shields.io/github/issues/azure/pcs-storage-adapter-java.svg
+[issues-url]: https://github.com/azure/pcs-storage-adapter-java/issues
+[gitter-badge]: https://img.shields.io/gitter/room/azure/iot-pcs.js.svg
+[gitter-url]: https://gitter.im/azure/iot-pcs

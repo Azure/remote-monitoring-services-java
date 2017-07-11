@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+# Note: use lowercase names for the Docker images
+DOCKER_IMAGE="azureiotpcs/pcs-storage-adapter-java:0.1-SNAPSHOT"
+EXT_PORT=8080
+
+set -e
+APP_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && cd .. && pwd )/"
+source "$APP_HOME/scripts/.functions.sh"
+
+run_container() {
+    check_dependency_docker
+    echo "Web service listening on port $EXT_PORT"
+    docker run -it -p $EXT_PORT:8080 "$DOCKER_IMAGE"
+}
+
+run_container
+
+set +e
