@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+set -e
+APP_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && cd .. && pwd )/"
+source "$APP_HOME/scripts/.functions.sh"
+
+sbt_build_docker_image() {
+    check_dependency_docker
+
+    cd $APP_HOME
+    ./sbt docker:publishLocal
+}
+
+sbt_build_docker_image
+
+set +e
