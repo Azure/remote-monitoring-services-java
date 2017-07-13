@@ -4,7 +4,6 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions;
 
 /**
  * Checked exception for request errors.
- *
  * This exception is thrown when a client sends a request badly formatted
  * or containing invalid values. The client should fix the request before
  * retrying.

@@ -17,8 +17,7 @@ public class Config implements IConfig {
     public Config() {
         // Load `application.conf` and replace placeholders with
         // environment variables
-        data = ConfigFactory.load();
-
+        this.data = ConfigFactory.load();
     }
 
     /**
@@ -27,7 +26,7 @@ public class Config implements IConfig {
      * @return TCP port number
      */
     public int getPort() {
-        return data.getInt(Namespace + Application + "webservice-port");
+        return this.data.getInt(Namespace + Application + "webservice-port");
     }
 
     /**
@@ -37,6 +36,6 @@ public class Config implements IConfig {
      * @return Hostname or IP address
      */
     public String getHostname() {
-        return data.getString(Namespace + Application + "webservice-hostname");
+        return this.data.getString(Namespace + Application + "webservice-hostname");
     }
 }

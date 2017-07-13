@@ -40,8 +40,8 @@ GET    /v1/rules/:rule_id/           com.microsoft.azure.iotsolutions.devicetele
 POST   /v1/rules                     com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.RulesController.post()
 POST   /v1/rules/                    com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.RulesController.post()
 
-PUT  /v1/rules/:rule_id             com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.RulesController.put(rule_id)
-PUT  /v1/rules/:rule_id/            com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.RulesController.put(rule_id)
+PUT    /v1/rules/:rule_id             com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.RulesController.put(rule_id)
+PUT    /v1/rules/:rule_id/            com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.RulesController.put(rule_id)
 
 DELETE /v1/rules/:rule_id            com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.RulesController.delete(rule_id)
 DELETE /v1/rules/:rule_id/           com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.RulesController.delete(rule_id)

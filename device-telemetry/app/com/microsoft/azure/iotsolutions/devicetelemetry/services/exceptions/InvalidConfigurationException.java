@@ -4,7 +4,6 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions;
 
 /**
  * Checked exception for internal errors.
- *
  * This exception is thrown when the service is configured incorrectly.
  * In order to recover, the service owner should fix the configuration
  * and re-deploy the service.

@@ -6,7 +6,7 @@ Web service models
 * Do not reference classes from Azure IoT SDK (or other SDKs), but reference them
   in the service layer preferably.
 * Maintain the API contract with the corresponding .NET project.
-* Ensure datetime values are transfered using UTC timezone.
+* Ensure datetime values are transferred using UTC timezone.
 
 ## Conventions
 

@@ -10,8 +10,6 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import java.util.Date;
-
 /**
  * Public model used by the web service.
  */
@@ -32,9 +30,10 @@ public final class MessageApiModel {
      * @param body
      */
     public MessageApiModel(
-            final String deviceId,
-            final DateTime time,
-            final String body) {
+        final String deviceId,
+        final DateTime time,
+        final String body) {
+
         this.deviceId = deviceId;
         this.time = time;
         this.body = body;
@@ -58,7 +57,7 @@ public final class MessageApiModel {
 
     @JsonProperty("Time")
     public String getTime() {
-        return dateFormat.print(this.time.toDateTime(DateTimeZone.UTC));
+        return this.dateFormat.print(this.time.toDateTime(DateTimeZone.UTC));
     }
 
     @JsonProperty("Body")

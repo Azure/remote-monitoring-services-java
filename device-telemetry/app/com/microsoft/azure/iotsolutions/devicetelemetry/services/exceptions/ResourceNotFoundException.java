@@ -4,7 +4,6 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions;
 
 /**
  * Checked exception for request errors.
- *
  * This exception is thrown when a client is requesting a resource that
  * doesn't exist yet.
  */

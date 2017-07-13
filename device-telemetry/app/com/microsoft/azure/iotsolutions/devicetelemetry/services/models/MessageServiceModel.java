@@ -10,7 +10,7 @@ public final class MessageServiceModel {
     private final DateTime time;
     private final String body;
 
-    public MessageServiceModel (
+    public MessageServiceModel(
         final String deviceId,
         final String time,
         final String body) {
@@ -20,9 +20,15 @@ public final class MessageServiceModel {
         this.body = body;
     }
 
-    public String getDeviceId() { return deviceId; }
+    public String getDeviceId() {
+        return this.deviceId;
+    }
 
-    public String getBody() { return body; }
+    public String getBody() {
+        return this.body;
+    }
 
-    public DateTime getTime() { return time; }
+    public DateTime getTime() {
+        return this.time;
+    }
 }

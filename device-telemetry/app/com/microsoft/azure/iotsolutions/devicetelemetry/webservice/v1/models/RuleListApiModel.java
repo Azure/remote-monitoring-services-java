@@ -3,35 +3,35 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.MessageServiceModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.RuleServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.Version;
 
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
-public class MessageListApiModel {
-    private final ArrayList<MessageApiModel> items;
+public class RuleListApiModel {
+    private final ArrayList<RuleApiModel> items;
 
-    public MessageListApiModel(final ArrayList<MessageServiceModel> messages) {
+    public RuleListApiModel(final ArrayList<RuleServiceModel> rules) {
         this.items = new ArrayList<>();
-        if (!messages.isEmpty()) {
-            for (MessageServiceModel message : messages) {
-                this.items.add(new MessageApiModel(message));
+        if (rules != null) {
+            for (RuleServiceModel rule : rules) {
+                this.items.add(new RuleApiModel(rule));
             }
         }
     }
 
     @JsonProperty("Items")
-    public ArrayList<MessageApiModel> getItems() {
+    public ArrayList<RuleApiModel> getItems() {
         return this.items;
     }
 
     @JsonProperty("$metadata")
     public Dictionary<String, String> getMetadata() {
         return new Hashtable<String, String>() {{
-            put("$type", "MessageList;" + Version.NAME);
-            put("$uri", "/" + Version.NAME + "/messages");
+            put("$type", "RuleList;" + Version.NAME);
+            put("$uri", "/" + Version.NAME + "/rules");
         }};
     }
 }

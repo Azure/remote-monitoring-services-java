@@ -23,6 +23,6 @@ public final class MessagesController extends Controller {
     }
 
     public Result list() {
-        return ok(toJson(new MessageListApiModel(messages.getList())));
+        return ok(toJson(new MessageListApiModel(this.messages.getList())));
     }
 }

@@ -10,10 +10,11 @@ import java.util.ArrayList;
 public final class Messages implements IMessages {
 
     @Inject
-    public Messages() {}
+    public Messages() {
+    }
 
     public ArrayList<MessageServiceModel> getList() {
-            return this.getSampleMessages();
+        return this.getSampleMessages();
     }
 
     /**

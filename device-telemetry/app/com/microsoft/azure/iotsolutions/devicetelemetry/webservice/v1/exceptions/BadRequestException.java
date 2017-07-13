@@ -4,7 +4,6 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.exception
 
 /**
  * Checked exception for request errors.
- *
  * This exception is thrown by a controller when the input validation
  * fails. The client should fix the request before retrying.
  */
