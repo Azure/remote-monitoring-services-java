@@ -2,6 +2,9 @@
 
 package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime;
 
+
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.ServicesConfig;
 import com.typesafe.config.ConfigFactory;
 
 // TODO: documentation
@@ -9,15 +12,27 @@ import com.typesafe.config.ConfigFactory;
 
 public class Config implements IConfig {
 
+    // Namespace applied to all the custom configuration settings
     private final String Namespace = "com.microsoft.azure.iotsolutions.";
-    private final String Application = "devicetelemetry.";
+
+    // Settings about this application
+    private final String ApplicationKey = Namespace + "devicetelemetry.";
+    private final String PortKey = ApplicationKey + "webservice-port";
+
+    // Storage dependency settings
+    private final String StorageKey = Namespace + "documentdb.";
+    private final String StorageConnStringKey = StorageKey + "connstring";
 
     private com.typesafe.config.Config data;
+    private IServicesConfig servicesConfig;
 
     public Config() {
         // Load `application.conf` and replace placeholders with
         // environment variables
         this.data = ConfigFactory.load();
+
+        String cs = this.data.getString(StorageConnStringKey);
+        this.servicesConfig = new ServicesConfig(cs);
     }
 
     /**
@@ -26,16 +41,13 @@ public class Config implements IConfig {
      * @return TCP port number
      */
     public int getPort() {
-        return this.data.getInt(Namespace + Application + "webservice-port");
+        return this.data.getInt(PortKey);
     }
 
     /**
-     * Get the hostname where the service listen for requests, e.g. 0.0.0.0 when
-     * listening to all the network adapters.
-     *
-     * @return Hostname or IP address
+     * Service layer configuration
      */
-    public String getHostname() {
-        return this.data.getString(Namespace + Application + "webservice-hostname");
+    public IServicesConfig getServicesConfig() {
+        return this.servicesConfig;
     }
 }

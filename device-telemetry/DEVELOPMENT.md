@@ -1,4 +1,7 @@
-* [Build, Run locally and with Docker](#build-run-locally-and-with-docker)
+* [Run and Debug with IntelliJ](#run-and-debug-with-intellij)
+* [Run and Debug with Eclipse](#run-and-debug-with-eclipse)
+* [Build & Run from the command line](#build--run-from-the-command-line)
+* [Package the application to a Docker image](#package-the-application-to-a-docker-image)
 * [Service configuration](#configuration)
 * [Azure IoT Hub setup](#azure-iot-hub-setup)
 * [Development setup](#development-setup)
@@ -10,7 +13,7 @@ Intellij IDEA lets you quickly open the application without using a command
 prompt, without configuring anything outside of the IDE. The SBT build tool
 takes care of downloading appropriate libraries, resolving dependencies and
 building the project (more info
-[here](https://www.playframework.com/documentation/2.5.x/IDE)).
+[here](https://www.playframework.com/documentation/2.6.x/IDE)).
 
 Steps using IntelliJ IDEA Community 2017, with SBT plugin enabled:
 
@@ -35,7 +38,7 @@ Run and Debug with Eclipse
 The integration with Eclipse requires the
 [sbteclipse plugin](https://github.com/typesafehub/sbteclipse), already
 included, and an initial setup via command line (more info
-[here](https://www.playframework.com/documentation/2.5.x/IDE)).
+[here](https://www.playframework.com/documentation/2.6.x/IDE)).
 
 Steps using Eclipse Oxygen ("Eclipse for Java Developers" package):
 
@@ -62,14 +65,29 @@ might want to run from the command line:
 * `build`: compile the project and run the tests.
 * `run`: compile the project and run the service.
 
-
-The `compile`, `build` and `run` commands also have a second version to execute
-the application inside of a sandbox. For instance `build-in-sandbox` will
-execute the build script inside a Docker container pre-packages with all the
-required dependencies.
+The scripts check for the environment variables setup. You can set the
+environment variables globally in your OS, or use the "env-vars-setup"
+script in the scripts folder.
 
 If you are familiar with [SBT](http://www.scala-sbt.org), you can also use SBT
 directly. A copy of SBT is included in the root of the project.
+
+### Sandbox
+
+The scripts assume that you configured your development environment,
+with tools like .NET Core and Docker. You can avoid installing .NET Core,
+and install only Docker, and use the command line parameter `--in-sandbox`
+(or the short form `-s`), for example:
+
+* `build --in-sandbox`: executes the build task inside of a Docker
+    container (short form `build -s`).
+* `compile --in-sandbox`: executes the compilation task inside of a Docker
+    container (short form `compile -s`).
+* `run --in-sandbox`: starts the service inside of a Docker container
+    (short form `run -s`).
+
+The Docker images used for the sandbox is hosted on Docker Hub
+[here](https://hub.docker.com/r/azureiotpcs/code-builder-java).
 
 Package the application to a Docker image
 =========================================
@@ -87,10 +105,9 @@ defined in [build.sbt](build.sbt).
 dockerRepository := Some("azureiotpcs")
 dockerAlias := DockerAlias(dockerRepository.value, None, packageName.value + "-java", Some((version in Docker).value))
 dockerBaseImage := "toketi/openjdk-8-jre-alpine-bash"
-dockerExposedPorts := Seq(8080)
 dockerUpdateLatest := false
 dockerBuildOptions ++= Seq("--squash", "--compress", "--label", "Tags=azure,iot,pcs,telemetry,Java")
-dockerEntrypoint := Seq("bin/devicetelemetry","-Dhttp.port=8080")
+dockerEntrypoint := Seq("bin/devicetelemetry")
 ```
 
 The package logic is executed via
@@ -111,6 +128,7 @@ useful features:
 * Support for substitutions, e.g. referencing environment variables
 * Supports JSON notation
 
+
 Development setup
 =================
 
@@ -122,7 +140,7 @@ Development setup
    [Eclipse](https://www.eclipse.org) are the most popular,
    however anything should be just fine.
 
-We provide also a
+We also provide a
 [.NET version](https://github.com/Azure/device-telemetry-dotnet)
 of this project and other Azure IoT PCS components.
 
@@ -133,17 +151,39 @@ code change. You can run the tests manually, or let the CI platform to run
 the tests. We use the following Git hook to automatically run all the tests
 before sending code changes to GitHub and speed up the development workflow.
 
+If at any point you want to remove the hook, simply delete the file installed
+under `.git/hooks`. You can also bypass the pre-commit hook using the
+`--no-verify` option.
+
+#### Pre-commit hook with sandbox
+
 To setup the included hooks, open a Windows/Linux/MacOS console and execute:
 
 ```
 cd PROJECT-FOLDER
 cd scripts/git
-setup
+setup --with-sandbox
 ```
 
-If at any point you want to remove the hook, simply delete the file installed
-under `.git/hooks`. You can also bypass the pre-commit hook using the
-`--no-verify` option.
+With this configuration, when checking in files, git will verify that the
+application passes all the tests, running the build and the tests inside
+a Docker container configured with all the development requirements.
+
+#### Pre-commit hook without sandbox
+
+Note: the hook without sandbox requires Java JDK utilities in the system PATH.
+
+To setup the included hooks, open a Windows/Linux/MacOS console and execute:
+
+```
+cd PROJECT-FOLDER
+cd scripts/git
+setup --no-sandbox
+```
+
+With this configuration, when checking in files, git will verify that the
+application passes all the tests, running the build and the tests in your
+workstation, using the tools installed in your OS.
 
 ## Code style
 

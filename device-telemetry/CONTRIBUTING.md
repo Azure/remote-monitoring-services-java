@@ -37,7 +37,16 @@ commit message serves at least these purposes:
 * Help future developers to understand the purpose of your code
 * Help the maintainer write release notes
 
-Finally, push the commits to your fork, submit a pull request and follow the
-code review progress. The team might ask for some
+One-line messages are fine for small changes, but bigger changes should look
+like this:
+```
+$ git commit -m "A brief summary of the commit
+>
+> A paragraph describing what changed and its impact."
+```
+
+Finally, push the commits to your fork, submit a pull request, wait for the
+automated feedback from Travis CI, and follow the code review progress. The
+team might ask for some
 [changes](https://help.github.com/articles/committing-changes-to-a-pull-request-branch-created-from-a-fork)
 before merging the pull request.

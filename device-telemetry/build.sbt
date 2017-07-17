@@ -3,14 +3,12 @@
 name := "devicetelemetry"
 organization := "com.microsoft.azure.iotsolutions"
 
-scalaVersion := "2.11.11"
+scalaVersion := "2.12.2"
 
 libraryDependencies ++= {
   Seq(
     filters,
-
-    // https://github.com/Azure/azure-iot-sdk-java/releases
-    "com.microsoft.azure.sdk.iot" % "iot-service-client" % "1.4.20"
+    guice
   )
 }
 
@@ -66,8 +64,7 @@ dockerRepository := Some("azureiotpcs")
 dockerAlias := DockerAlias(dockerRepository.value, None, packageName.value + "-java", Some((version in Docker).value))
 maintainer in Docker := "Jill Bender (https://github.com/jillcary)"
 dockerBaseImage := "toketi/openjdk-8-jre-alpine-bash"
-dockerExposedPorts := Seq(8080)
 dockerUpdateLatest := false
 dockerBuildOptions ++= Seq("--squash", "--compress", "--label", "Tags=azure,iot,pcs,telemetry,Java")
 // Example params: -Dconfig.file=/opt/conf/prod.conf -Dhttp.port=1234 -Dhttp.address=127.0.0.1
-dockerEntrypoint := Seq("bin/devicetelemetry","-Dhttp.port=8080")
+dockerEntrypoint := Seq("bin/devicetelemetry")

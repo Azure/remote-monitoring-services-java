@@ -4,14 +4,14 @@ set -e
 APP_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && cd .. && pwd )/"
 source "$APP_HOME/scripts/.functions.sh"
 
-sbt_build_docker_image() {
+sbt_publish_docker_image() {
     check_dependency_docker
 
     cd $APP_HOME
     chmod +x sbt
-    ./sbt docker:publishLocal
+    ./sbt docker:publish
 }
 
-sbt_build_docker_image
+sbt_publish_docker_image
 
 set +e

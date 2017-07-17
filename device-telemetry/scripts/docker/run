@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
 # Note: use lowercase names for the Docker images
-DOCKER_IMAGE="azureiotpcs/device-telemetry-java:0.1-SNAPSHOT"
-EXT_PORT=8080
+DOCKER_IMAGE="azureiotpcs/device-telemetry-java"
 
 set -e
 APP_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && cd .. && pwd )/"
@@ -10,8 +9,16 @@ source "$APP_HOME/scripts/.functions.sh"
 
 run_container() {
     check_dependency_docker
-    echo "Web service listening on port $EXT_PORT"
-    docker run -it -p $EXT_PORT:8080 -e "$DOCKER_IMAGE"
+
+    $APP_HOME/scripts/env-vars-check
+
+    # Some settings are used to connect to an external dependency, e.g. Azure IoT Hub and IoT Hub Manager API
+    # Depending on which settings and which dependencies are needed, edit the list of variables
+    echo "Starting device telemetry ..."
+    docker run -it -p $PCS_DEVICE_TELEMETRY_WEBSERVICE_PORT:$PCS_DEVICE_TELEMETRY_WEBSERVICE_PORT \
+        -e "PCS_DEVICE_TELEMETRY_WEBSERVICE_PORT=$PCS_DEVICE_TELEMETRY_WEBSERVICE_PORT" \
+        -e "PCS_DEVICE_TELEMETRY_DOCDB_CONN_STRING=$PCS_DEVICE_TELEMETRY_DOCDB_CONN_STRING" \
+        "$DOCKER_IMAGE"
 }
 
 run_container

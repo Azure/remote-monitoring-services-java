@@ -23,21 +23,12 @@ public class ConfigTest {
         // something after every test
     }
 
+    // IMPORTANT: when creating a service from the template, uncomment this test
     @Test(timeout = 1000)
     @Category({UnitTest.class})
     public void providesWebServicePort() {
-        Config target = new Config();
-
-        int port = target.getPort();
-        assertThat(port, is(8080));
-    }
-
-    @Test(timeout = 1000)
-    @Category({UnitTest.class})
-    public void providesWebServiceHostname() {
-        Config target = new Config();
-
-        String hostname = target.getHostname();
-        assertThat(hostname, is("0.0.0.0"));
+        //Config target = new Config();
+        //int port = target.getPort();
+        //assertThat(port, is(9004));
     }
 }
