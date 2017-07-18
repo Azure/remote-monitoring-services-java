@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft. All rights reserved.
 
-name := "devicetelemetry"
+name := "device-telemetry"
 organization := "com.microsoft.azure.iotsolutions"
 
 scalaVersion := "2.12.2"
@@ -64,7 +64,7 @@ dockerRepository := Some("azureiotpcs")
 dockerAlias := DockerAlias(dockerRepository.value, None, packageName.value + "-java", Some((version in Docker).value))
 maintainer in Docker := "Jill Bender (https://github.com/jillcary)"
 dockerBaseImage := "toketi/openjdk-8-jre-alpine-bash"
-dockerUpdateLatest := false
+dockerUpdateLatest := true
 dockerBuildOptions ++= Seq("--squash", "--compress", "--label", "Tags=azure,iot,pcs,telemetry,Java")
 // Example params: -Dconfig.file=/opt/conf/prod.conf -Dhttp.port=1234 -Dhttp.address=127.0.0.1
-dockerEntrypoint := Seq("bin/devicetelemetry")
+dockerEntrypoint := Seq("bin/device-telemetry")
