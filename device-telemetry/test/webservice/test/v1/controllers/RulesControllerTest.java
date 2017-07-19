@@ -1,8 +1,9 @@
 // Copyright (c) Microsoft. All rights reserved.
 
-package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers;
+package webservice.test.v1.controllers;
 
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.Messages;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.Rules;
+import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.RulesController;
 import helpers.UnitTest;
 import org.junit.After;
 import org.junit.Before;
@@ -13,7 +14,7 @@ import play.mvc.Result;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-public class MessagesControllerTest {
+public class RulesControllerTest {
     @Before
     public void setUp() {
         // something before every test
@@ -26,9 +27,9 @@ public class MessagesControllerTest {
 
     @Test(timeout = 5000)
     @Category({UnitTest.class})
-    public void provideMessageListResult() {
-        // TODO Mock the MessagesController dependency
-        MessagesController controller = new MessagesController(new Messages());
+    public void provideRuleListResult() {
+        // TODO Mock the RulesController Dependency
+        RulesController controller = new RulesController(new Rules());
 
         Result result = controller.list();
 

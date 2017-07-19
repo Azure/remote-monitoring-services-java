@@ -1,8 +1,11 @@
 // Copyright (c) Microsoft. All rights reserved.
 
-package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models;
+package webservice.test.v1.models;
 
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.ConditionServiceModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.ActionApiModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.ConditionListApiModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.RuleApiModel;
 import helpers.UnitTest;
 import org.joda.time.DateTime;
 import org.junit.After;

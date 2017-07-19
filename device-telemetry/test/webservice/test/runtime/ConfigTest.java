@@ -1,7 +1,8 @@
 // Copyright (c) Microsoft. All rights reserved.
 
-package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime;
+package webservice.test.runtime;
 
+import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime.Config;
 import helpers.UnitTest;
 import org.junit.After;
 import org.junit.Before;

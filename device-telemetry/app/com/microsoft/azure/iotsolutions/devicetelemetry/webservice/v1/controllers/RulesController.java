@@ -24,7 +24,7 @@ public class RulesController {
     /**
      * Return a list of rules. The list of rules can be paginated, and
      * filtered by device and status. The list is sorted
-     * chronologically, by default starting from the oldest alert, and
+     * chronologically, by default starting from the oldest alarm, and
      * optionally from the most recent.
      *
      * @return List of rules

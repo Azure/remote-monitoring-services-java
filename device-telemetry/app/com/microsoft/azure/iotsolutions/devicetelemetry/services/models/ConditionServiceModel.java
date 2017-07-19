@@ -3,7 +3,7 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.services.models;
 
 /*
- * Specifies a condition that must be met for a rule to trigger an alert.
+ * Specifies a condition that must be met for a rule to trigger an alarm.
  */
 public final class ConditionServiceModel {
 

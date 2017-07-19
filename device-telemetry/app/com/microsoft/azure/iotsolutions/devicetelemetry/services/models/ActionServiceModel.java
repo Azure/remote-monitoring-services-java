@@ -5,7 +5,7 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.services.models;
 import java.util.ArrayList;
 
 /*
- * Specifies what action to take when a rule triggers an alert.
+ * Specifies what action to take when a rule triggers an alarm.
  */
 public final class ActionServiceModel {
 

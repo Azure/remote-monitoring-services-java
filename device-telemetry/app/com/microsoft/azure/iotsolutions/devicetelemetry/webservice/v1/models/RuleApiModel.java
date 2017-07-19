@@ -5,10 +5,14 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.RuleServiceModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.Version;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+
+import java.util.Dictionary;
+import java.util.Hashtable;
 
 /**
  * Public model used by the web service.
@@ -125,5 +129,13 @@ public final class RuleApiModel {
     @JsonProperty("Action")
     public ActionApiModel getAction() {
         return this.action;
+    }
+
+    @JsonProperty("$metadata")
+    public Dictionary<String, String> getMetadata() {
+        return new Hashtable<String, String>() {{
+            put("$type", "Rule;" + Version.NAME);
+            put("$uri", "/" + Version.NAME + "/rules/" + id);
+        }};
     }
 }

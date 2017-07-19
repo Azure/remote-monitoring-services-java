@@ -10,24 +10,23 @@ GET    /v1/status/                   com.microsoft.azure.iotsolutions.devicetele
 GET    /v1/messages                  com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.MessagesController.list
 GET    /v1/messages/                 com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.MessagesController.list
 
-# Alerts list and management
+# Alarms list and management
 
-GET    /v1/alerts                    com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlertsController.list
-GET    /v1/alerts/                   com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlertsController.list
+GET    /v1/alarms                    com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsController.list
+GET    /v1/alarms/                   com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsController.list
 
-GET    /v1/alerts/:alert_id          com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlertsController.get(alert_id)
-GET    /v1/alerts/:alert_id/         com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlertsController.get(alert_id)
+GET    /v1/alarms/:alarm_id          com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsController.get(alarm_id)
+GET    /v1/alarms/:alarm_id/         com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsController.get(alarm_id)
 
-PATCH  /v1/alerts/:alert_id          com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlertsController.patch(alert_id)
-PATCH  /v1/alerts/:alert_id/         com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlertsController.patch(alert_id)
+PATCH  /v1/alarms/:alarm_id          com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsController.patch(alarm_id)
+PATCH  /v1/alarms/:alarm_id/         com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsController.patch(alarm_id)
 
-# Alerts aggregation by rule
+# Alarms aggregation by rule
 
-GET    /v1/alertsbyrule              com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlertsByRuleController.list
-GET    /v1/alertsbyrule/             com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlertsByRuleController.list
-
-GET    /v1/alertsbyrule/:rule_id     com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlertsByRuleController.get(rule_id)
-GET    /v1/alertsbyrule/:rule_id/    com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlertsByRuleController.get(rule_id)
+GET    /v1/alarmsbyrule              com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsByRuleController.list(from ?= null, to ?= null, order: String ?= "asc", skip: Int ?= 0, limit: Int ?=1000, devices: java.util.List[String]  ?= null)
+GET    /v1/alarmsbyrule/             com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsByRuleController.list(from ?= null, to ?= null, order: String ?= "asc", skip: Int ?= 0, limit: Int ?=1000, devices: java.util.List[String]  ?= null)
+GET    /v1/alarmsbyrule/:rule_id     com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsByRuleController.get(rule_id, from ?= null, to ?= null, order: String ?= "asc", skip: Int ?= 0, limit: Int ?=1000, devices: java.util.List[String]  ?= null)
+GET    /v1/alarmsbyrule/:rule_id/    com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsByRuleController.get(rule_id, from ?= null, to ?= null, order: String ?= "asc", skip: Int ?= 0, limit: Int ?=1000, devices: java.util.List[String]  ?= null)
 
 # Rules list and management
 
