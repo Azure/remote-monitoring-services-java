@@ -8,12 +8,12 @@ import org.joda.time.format.ISODateTimeFormat;
 public final class MessageServiceModel {
     private final String deviceId;
     private final DateTime time;
-    private final String body;
+    private final Object body;
 
     public MessageServiceModel(
         final String deviceId,
         final String time,
-        final String body) {
+        final Object body) {
 
         this.deviceId = deviceId;
         this.time = DateTime.parse(time, ISODateTimeFormat.dateTimeParser().withZoneUTC());
@@ -24,7 +24,7 @@ public final class MessageServiceModel {
         return this.deviceId;
     }
 
-    public String getBody() {
+    public Object getBody() {
         return this.body;
     }
 

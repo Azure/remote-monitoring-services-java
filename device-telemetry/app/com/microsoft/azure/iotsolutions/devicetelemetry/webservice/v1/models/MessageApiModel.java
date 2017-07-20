@@ -18,7 +18,7 @@ public final class MessageApiModel {
 
     private String deviceId = null;
     private DateTime time = null;
-    private String body = null;
+    private Object body = null;
 
     private DateTimeFormatter dateFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
 
@@ -32,7 +32,7 @@ public final class MessageApiModel {
     public MessageApiModel(
         final String deviceId,
         final DateTime time,
-        final String body) {
+        final Object body) {
 
         this.deviceId = deviceId;
         this.time = time;
@@ -61,7 +61,7 @@ public final class MessageApiModel {
     }
 
     @JsonProperty("Body")
-    public String getBody() {
+    public Object getBody() {
         return this.body;
     }
 }
