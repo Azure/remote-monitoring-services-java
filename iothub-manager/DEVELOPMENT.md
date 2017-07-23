@@ -32,8 +32,8 @@ useful features:
 Azure IoT Hub setup
 ===================
 
-At some point you will probably want to setup your Azure IoT Hub, for
-development and integration tests.
+To use IoT Hub Manager you will need to setup your Azure IoT Hub,
+for development and integration tests.
 
 The project includes some Bash scripts to help you with this setup:
 
