@@ -2,7 +2,6 @@
 
 package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime;
 
-
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.ServicesConfig;
 import com.typesafe.config.ConfigFactory;
@@ -20,7 +19,7 @@ public class Config implements IConfig {
     private final String PortKey = ApplicationKey + "webservice-port";
 
     // Storage dependency settings
-    private final String StorageKey = Namespace + "documentdb.";
+    private final String StorageKey = ApplicationKey + "documentdb.";
     private final String StorageConnStringKey = StorageKey + "connstring";
 
     private com.typesafe.config.Config data;
@@ -31,8 +30,9 @@ public class Config implements IConfig {
         // environment variables
         this.data = ConfigFactory.load();
 
-        String cs = this.data.getString(StorageConnStringKey);
-        this.servicesConfig = new ServicesConfig(cs);
+        String storageConnectionString = data.getString(StorageConnStringKey);
+
+        this.servicesConfig = new ServicesConfig(storageConnectionString);
     }
 
     /**

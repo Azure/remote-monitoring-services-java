@@ -107,7 +107,7 @@ dockerAlias := DockerAlias(dockerRepository.value, None, packageName.value + "-j
 dockerBaseImage := "toketi/openjdk-8-jre-alpine-bash"
 dockerUpdateLatest := false
 dockerBuildOptions ++= Seq("--squash", "--compress", "--label", "Tags=azure,iot,pcs,telemetry,Java")
-dockerEntrypoint := Seq("bin/devicetelemetry")
+dockerEntrypoint := Seq("bin/device-telemetry")
 ```
 
 The package logic is executed via

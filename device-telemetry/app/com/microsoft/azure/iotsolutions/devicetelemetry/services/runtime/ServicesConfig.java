@@ -7,18 +7,18 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime;
  */
 public class ServicesConfig implements IServicesConfig {
 
-    private String storageConnString;
+    private String storageConnectionString;
 
-    public ServicesConfig(final String storageConnString) {
-        this.storageConnString = storageConnString;
+    public ServicesConfig(final String storageConnectionString) {
+        this.storageConnectionString = storageConnectionString;
     }
 
     /**
      * Get storage dependency connection string
      *
-     * @return Connection string
+     * @return storage connection string
      */
-    public String getStorageConnString() {
-        return this.storageConnString;
+    public String getStorageConnectionString() {
+        return this.storageConnectionString;
     }
 }

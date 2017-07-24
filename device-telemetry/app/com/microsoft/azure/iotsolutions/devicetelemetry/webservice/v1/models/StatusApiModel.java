@@ -4,6 +4,7 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.StatusTuple;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime.Uptime;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.Version;
 import org.joda.time.DateTime;
@@ -20,10 +21,10 @@ public final class StatusApiModel {
     private String status;
     private DateTimeFormatter dateFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
 
-    public StatusApiModel(final Boolean isOk, final String msg) {
-        this.status = isOk ? "OK" : "ERROR";
-        if (!msg.isEmpty()) {
-            this.status += ":" + msg;
+    public StatusApiModel(StatusTuple statusInfo) {
+        this.status = statusInfo.isHealthy() ? "OK" : "ERROR";
+        if (!statusInfo.getStatusMessage().isEmpty()) {
+            this.status += ":" + statusInfo.getStatusMessage();
         }
     }
 
@@ -60,7 +61,6 @@ public final class StatusApiModel {
     @JsonProperty("Properties")
     public Dictionary<String, String> getProperties() {
         return new Hashtable<String, String>() {{
-            put("Foo", "Bar");
             put("Simulation", "on");
             put("Region", "US");
             put("DebugMode", "off");
@@ -70,8 +70,7 @@ public final class StatusApiModel {
     @JsonProperty("Dependencies")
     public Dictionary<String, String> getDependencies() {
         return new Hashtable<String, String>() {{
-            put("Storage", "ERROR:timeout after 3 secs");
-            put("Auth", "ERROR:certificate expired");
+            put("Storage", status);
         }};
     }
 

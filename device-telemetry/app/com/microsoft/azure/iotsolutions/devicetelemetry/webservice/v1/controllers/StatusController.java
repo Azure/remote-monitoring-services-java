@@ -2,20 +2,33 @@
 
 package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers;
 
+import com.google.inject.Inject;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.IStorageClient;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.StatusTuple;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.StatusApiModel;
+import play.mvc.Controller;
 import play.mvc.Result;
 
 import static play.libs.Json.toJson;
-import static play.mvc.Results.ok;
 
 /**
  * Service health check endpoint.
  */
-public final class StatusController {
+public final class StatusController extends Controller {
+
+    private final IStorageClient storageClient;
+
+    @Inject
+    public StatusController(IStorageClient storageClient) {
+        this.storageClient = storageClient;
+    }
+
     /**
      * @return Service health details.
      */
     public Result index() {
-        return ok(toJson(new StatusApiModel(true, "Alive and well!")));
+        StatusTuple storageClientStatusTuple = this.storageClient.Ping();
+
+        return ok(toJson(new StatusApiModel(storageClientStatusTuple)));
     }
 }

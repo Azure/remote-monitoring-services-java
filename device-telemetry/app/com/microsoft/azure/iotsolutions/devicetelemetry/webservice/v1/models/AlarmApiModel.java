@@ -99,7 +99,7 @@ public final class AlarmApiModel {
     public String getId() {
         return this.id;
     }
-    
+
     @JsonProperty("DateCreated")
     public String getDateCreated() {
         return dateFormat.print(this.dateCreated.toDateTime(DateTimeZone.UTC));

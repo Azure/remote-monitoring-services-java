@@ -7,12 +7,12 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.IRules;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.RuleServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.RuleApiModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.RuleListApiModel;
+import play.mvc.Controller;
 import play.mvc.Result;
 
 import static play.libs.Json.toJson;
-import static play.mvc.Results.ok;
 
-public class RulesController {
+public class RulesController extends Controller {
 
     private final IRules rules;
 

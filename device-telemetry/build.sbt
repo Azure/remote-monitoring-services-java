@@ -8,7 +8,9 @@ scalaVersion := "2.12.2"
 libraryDependencies ++= {
   Seq(
     filters,
-    guice
+    guice,
+    // https://github.com/Azure/azure-documentdb-java
+    "com.microsoft.azure" % "azure-documentdb" % "1.12.0"
   )
 }
 
