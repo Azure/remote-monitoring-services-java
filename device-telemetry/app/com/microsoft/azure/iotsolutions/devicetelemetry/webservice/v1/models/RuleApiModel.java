@@ -27,6 +27,7 @@ public final class RuleApiModel {
     private DateTime dateModified;
     private boolean enabled;
     private String description;
+    private String groupId = null;
     private ConditionListApiModel conditions;
     private ActionApiModel action;
 
@@ -53,6 +54,7 @@ public final class RuleApiModel {
         final DateTime dateModified,
         final boolean enabled,
         final String description,
+        final String groupId,
         final ConditionListApiModel conditions,
         final ActionApiModel action
     ) {
@@ -63,6 +65,7 @@ public final class RuleApiModel {
         this.dateModified = dateModified;
         this.enabled = enabled;
         this.description = description;
+        this.groupId = groupId;
         this.conditions = conditions;
         this.action = action;
     }
@@ -81,6 +84,7 @@ public final class RuleApiModel {
             this.dateModified = rule.getDateModified();
             this.enabled = rule.getEnabled();
             this.description = rule.getDescription();
+            this.groupId = rule.getGroupId();
             this.conditions = new ConditionListApiModel(rule.getConditions());
             this.action = new ActionApiModel(rule.getAction());
         }
@@ -119,6 +123,11 @@ public final class RuleApiModel {
     @JsonProperty("Description")
     public String getDescription() {
         return this.description;
+    }
+
+    @JsonProperty("GroupId")
+    public String getGroupId() {
+        return this.groupId;
     }
 
     @JsonProperty("Conditions")

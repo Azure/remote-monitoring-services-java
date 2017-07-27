@@ -65,7 +65,6 @@ public class RulesController extends Controller {
      * @return OK
      */
     public Result delete(String id) {
-
         return ok();
     }
 }

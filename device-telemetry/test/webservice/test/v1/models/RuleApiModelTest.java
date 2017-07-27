@@ -27,7 +27,7 @@ public class RuleApiModelTest {
         ConditionServiceModel sampleCondition = null;
         conditionArrayList.add(sampleCondition);
 
-        conditionArrayList.set(0, new ConditionServiceModel("test-value", "test-group-id", "GreaterThan", "7"));
+        conditionArrayList.set(0, new ConditionServiceModel("test-value", "GreaterThan", "7"));
 
         ConditionListApiModel condtionList = new ConditionListApiModel(conditionArrayList);
 
@@ -45,6 +45,7 @@ public class RuleApiModelTest {
             new DateTime("2017-04-11T01:14:26-08:00"),
             false,
             "test description",
+            "test-group-id",
             condtionList,
             sampleAction);
     }

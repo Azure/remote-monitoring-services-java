@@ -16,6 +16,7 @@ public final class RuleServiceModel {
     private final DateTime dateModified;
     private final Boolean enabled;
     private final String description;
+    private final String groupId;
 
     private final ArrayList<ConditionServiceModel> conditions;
     private final ActionServiceModel action;
@@ -28,6 +29,7 @@ public final class RuleServiceModel {
         this.dateModified = null;
         this.enabled = null;
         this.description = null;
+        this.groupId = null;
 
         this.conditions = null;
         this.action = null;
@@ -41,6 +43,7 @@ public final class RuleServiceModel {
         final String dateModified,
         final Boolean enabled,
         final String description,
+        final String groupId,
         final ArrayList<ConditionServiceModel> conditions,
         final ActionServiceModel action) {
 
@@ -51,6 +54,7 @@ public final class RuleServiceModel {
         this.dateModified = DateTime.parse(dateModified, ISODateTimeFormat.dateTimeParser().withZoneUTC());
         this.enabled = enabled;
         this.description = description;
+        this.groupId = groupId;
 
         this.conditions = conditions;
         this.action = action;
@@ -82,6 +86,10 @@ public final class RuleServiceModel {
 
     public String getDescription() {
         return this.description;
+    }
+
+    public String getGroupId() {
+        return this.groupId;
     }
 
     public ArrayList<ConditionServiceModel> getConditions() {

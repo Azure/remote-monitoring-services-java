@@ -6,9 +6,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.ConditionServiceModel;
 
-import javax.print.DocFlavor;
-import java.util.ArrayList;
-
 /**
  * Public model used by the web service.
  */
@@ -16,7 +13,6 @@ import java.util.ArrayList;
 public final class ConditionApiModel {
 
     private String field = null;
-    private String groupId = null;
     private String operator = null;
     private String value = null;
 
@@ -24,17 +20,14 @@ public final class ConditionApiModel {
      * Create an instance given the property values.
      *
      * @param field
-     * @param groupId
      * @param operator
      * @param value
      */
     public ConditionApiModel(
-            final String field,
-            final String groupId,
-            final String operator,
-            final String value) {
+        final String field,
+        final String operator,
+        final String value) {
         this.field = field;
-        this.groupId = groupId;
         this.operator = operator;
         this.value = value;
     }
@@ -48,20 +41,22 @@ public final class ConditionApiModel {
         if (condition != null) {
             this.field = condition.getField();
             this.operator = condition.getOperator();
-            this.groupId = condition.getGroupId();
             this.value = condition.getValue();
         }
     }
 
     @JsonProperty("Field")
-    public String getField() { return this.field; }
+    public String getField() {
+        return this.field;
+    }
 
     @JsonProperty("Operator")
-    public  String getOperator() { return this.operator; }
-
-    @JsonProperty("GroupId")
-    public String getGroupId() { return this.groupId; }
+    public String getOperator() {
+        return this.operator;
+    }
 
     @JsonProperty("Value")
-    public String getValue() { return this.value; }
+    public String getValue() {
+        return this.value;
+    }
 }

@@ -63,7 +63,6 @@ public final class Rules implements IRules {
         // Sample elevator-floor-error
         sampleConditionList.set(0, new ConditionServiceModel(
             "floor",
-            "building502-elevators",
             "GreaterThan",
             "7"));
         return new RuleServiceModel(
@@ -74,6 +73,7 @@ public final class Rules implements IRules {
             "2017-03-12T22:03:00-08:00",
             true,
             "floor value is higher than 7",
+            "building502-elevators",
             sampleConditionList,
             sampleAction);
     }
@@ -108,7 +108,6 @@ public final class Rules implements IRules {
         // Sample elevator-floor-error
         sampleConditionList.set(0, new ConditionServiceModel(
             "floor",
-            "building502-elevators",
             "GreaterThan",
             "7"));
 
@@ -120,13 +119,13 @@ public final class Rules implements IRules {
             "2017-03-12T22:03:00-08:00",
             true,
             "floor value is higher than 7",
+            "building502-elevators",
             sampleConditionList,
             sampleAction));
 
         // Sample elevator-speed-error
         sampleConditionList.set(0, new ConditionServiceModel(
             "speed",
-            "building502-elevators",
             "GreaterThan",
             "20"));
 
@@ -138,13 +137,13 @@ public final class Rules implements IRules {
             "2017-04-11T01:14:26-08:00",
             false,
             "speed is > 20mph",
+            "building502-elevators",
             sampleConditionList,
             sampleAction));
 
         // Sample cable-temp-error
         sampleConditionList.set(0, new ConditionServiceModel(
             "temperature",
-            "building502-elevators",
             "GreaterThan",
             "110"));
 
@@ -156,6 +155,7 @@ public final class Rules implements IRules {
             "2017-04-11T01:20:04-08:00",
             true,
             "temperature of cables is above 110 deg F",
+            "building502-elevators",
             sampleConditionList,
             sampleAction));
 
