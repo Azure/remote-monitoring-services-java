@@ -3,6 +3,7 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.services;
 
 import com.google.inject.Inject;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.ActionServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.ConditionServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.RuleServiceModel;
 
@@ -42,6 +43,8 @@ public final class Rules implements IRules {
      */
     private RuleServiceModel getSampleRule() {
         // Init sample rule
+        ActionServiceModel sampleAction = null;
+
         ArrayList<ConditionServiceModel> sampleConditionList = new ArrayList<>();
         ConditionServiceModel sampleCondition = null;
         sampleConditionList.add(sampleCondition);
@@ -50,17 +53,19 @@ public final class Rules implements IRules {
         sampleEmails.add("janedoe@contoso.com");
         sampleEmails.add("johndoe@contoso.com");
 
+        sampleAction = new ActionServiceModel(
+            "email",
+            "critical",
+            sampleEmails,
+            true,
+            false);
+
         // Sample elevator-floor-error
         sampleConditionList.set(0, new ConditionServiceModel(
             "floor",
             "building502-elevators",
             "GreaterThan",
             "7"));
-        sampleConditionList.add(new ConditionServiceModel(
-            "floor",
-            "building502-elevators",
-            "LessThan",
-            "0"));
         return new RuleServiceModel(
             "6l1log0f7h2yt6p",
             "sample-id",
@@ -69,7 +74,8 @@ public final class Rules implements IRules {
             "2017-03-12T22:03:00-08:00",
             true,
             "floor value is higher than 7",
-            sampleConditionList);
+            sampleConditionList,
+            sampleAction);
     }
 
     /**
@@ -82,6 +88,8 @@ public final class Rules implements IRules {
         ArrayList<RuleServiceModel> sampleRules = new ArrayList<>();
 
         // Init default sample data
+        ActionServiceModel sampleAction = null;
+
         ArrayList<ConditionServiceModel> sampleConditionList = new ArrayList<>();
         ConditionServiceModel sampleCondition = null;
         sampleConditionList.add(sampleCondition);
@@ -90,17 +98,19 @@ public final class Rules implements IRules {
         sampleEmails.add("janedoe@contoso.com");
         sampleEmails.add("johndoe@contoso.com");
 
+        sampleAction = new ActionServiceModel(
+            "email",
+            "critical",
+            sampleEmails,
+            true,
+            false);
+
         // Sample elevator-floor-error
         sampleConditionList.set(0, new ConditionServiceModel(
             "floor",
             "building502-elevators",
             "GreaterThan",
             "7"));
-        sampleConditionList.add(new ConditionServiceModel(
-            "floor",
-            "building502-elevators",
-            "LessThan",
-            "0"));
 
         sampleRules.add(new RuleServiceModel(
             "6l1log0f7h2yt6p",
@@ -110,7 +120,8 @@ public final class Rules implements IRules {
             "2017-03-12T22:03:00-08:00",
             true,
             "floor value is higher than 7",
-            sampleConditionList));
+            sampleConditionList,
+            sampleAction));
 
         // Sample elevator-speed-error
         sampleConditionList.set(0, new ConditionServiceModel(
@@ -127,7 +138,8 @@ public final class Rules implements IRules {
             "2017-04-11T01:14:26-08:00",
             false,
             "speed is > 20mph",
-            sampleConditionList));
+            sampleConditionList,
+            sampleAction));
 
         // Sample cable-temp-error
         sampleConditionList.set(0, new ConditionServiceModel(
@@ -144,7 +156,8 @@ public final class Rules implements IRules {
             "2017-04-11T01:20:04-08:00",
             true,
             "temperature of cables is above 110 deg F",
-            sampleConditionList));
+            sampleConditionList,
+            sampleAction));
 
         return sampleRules;
     }

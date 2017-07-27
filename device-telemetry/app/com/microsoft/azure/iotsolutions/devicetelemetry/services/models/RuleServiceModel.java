@@ -18,6 +18,7 @@ public final class RuleServiceModel {
     private final String description;
 
     private final ArrayList<ConditionServiceModel> conditions;
+    private final ActionServiceModel action;
 
     public RuleServiceModel() {
         this.eTag = null;
@@ -29,6 +30,7 @@ public final class RuleServiceModel {
         this.description = null;
 
         this.conditions = null;
+        this.action = null;
     }
 
     public RuleServiceModel(
@@ -39,7 +41,8 @@ public final class RuleServiceModel {
         final String dateModified,
         final Boolean enabled,
         final String description,
-        final ArrayList<ConditionServiceModel> conditions) {
+        final ArrayList<ConditionServiceModel> conditions,
+        final ActionServiceModel action) {
 
         this.eTag = eTag;
         this.id = id;
@@ -50,6 +53,7 @@ public final class RuleServiceModel {
         this.description = description;
 
         this.conditions = conditions;
+        this.action = action;
     }
 
     public String getETag() {
@@ -82,5 +86,9 @@ public final class RuleServiceModel {
 
     public ArrayList<ConditionServiceModel> getConditions() {
         return this.conditions;
+    }
+
+    public ActionServiceModel getAction() {
+        return this.action;
     }
 }
