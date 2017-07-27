@@ -6,9 +6,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.ConditionServiceModel;
 
-import javax.print.DocFlavor;
-import java.util.ArrayList;
-
 /**
  * Public model used by the web service.
  */
@@ -54,14 +51,22 @@ public final class ConditionApiModel {
     }
 
     @JsonProperty("Field")
-    public String getField() { return this.field; }
+    public String getField() {
+        return this.field;
+    }
 
     @JsonProperty("Operator")
-    public  String getOperator() { return this.operator; }
+    public String getOperator() {
+        return this.operator;
+    }
 
     @JsonProperty("GroupId")
-    public String getGroupId() { return this.groupId; }
+    public String getGroupId() {
+        return this.groupId;
+    }
 
     @JsonProperty("Value")
-    public String getValue() { return this.value; }
+    public String getValue() {
+        return this.value;
+    }
 }

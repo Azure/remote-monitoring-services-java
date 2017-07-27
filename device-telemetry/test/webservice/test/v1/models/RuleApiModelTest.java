@@ -2,9 +2,7 @@
 
 package webservice.test.v1.models;
 
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.ConditionServiceModel;
-import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.ActionApiModel;
-import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.ConditionListApiModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.ConditionApiModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.RuleApiModel;
 import helpers.UnitTest;
 import org.joda.time.DateTime;
@@ -23,19 +21,11 @@ public class RuleApiModelTest {
 
     @Before
     public void setUp() {
-        ArrayList<ConditionServiceModel> conditionArrayList = new ArrayList<>();
-        ConditionServiceModel sampleCondition = null;
-        conditionArrayList.add(sampleCondition);
+        ArrayList<ConditionApiModel> conditionList = new ArrayList<>();
+        ConditionApiModel sampleCondition = null;
+        conditionList.add(sampleCondition);
 
-        conditionArrayList.set(0, new ConditionServiceModel("test-value", "test-group-id", "GreaterThan", "7"));
-
-        ConditionListApiModel condtionList = new ConditionListApiModel(conditionArrayList);
-
-        ArrayList<String> sampleEmails = new ArrayList<String>();
-        sampleEmails.add("janedoe@contoso.com");
-        sampleEmails.add("johndoe@contoso.com");
-
-        ActionApiModel sampleAction = new ActionApiModel("email", "critical", sampleEmails, true, false);
+        conditionList.set(0, new ConditionApiModel("test-value", "test-group-id", "GreaterThan", "7"));
 
         ruleApiModel = new RuleApiModel(
             "kkru1d1ouqahpmg",
@@ -45,8 +35,7 @@ public class RuleApiModelTest {
             new DateTime("2017-04-11T01:14:26-08:00"),
             false,
             "test description",
-            condtionList,
-            sampleAction);
+            conditionList);
     }
 
     @After
