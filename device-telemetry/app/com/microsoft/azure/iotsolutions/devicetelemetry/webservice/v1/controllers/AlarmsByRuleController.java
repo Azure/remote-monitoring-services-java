@@ -27,7 +27,7 @@ public class AlarmsByRuleController {
      * created. The list can be paginated, and filtered by device, period of
      * time, status. The list is sorted chronologically, by default starting
      * from the oldest alarm, and optionally from the most recent.
-     * <p>
+     *
      * The list can also contain zero alarms and only a count of occurrences,
      * for instance to know how many alarms are generated for each rule.
      *

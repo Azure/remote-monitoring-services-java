@@ -47,16 +47,16 @@ public final class AlarmApiModel {
      * @param status;
      */
     public AlarmApiModel(
-            final String eTag,
-            final String id,
-            final DateTime dateCreated,
-            final DateTime dateModified,
-            final String description,
-            final String groupId,
-            final String deviceId,
-            final String severity,
-            final String status,
-            final AlarmRuleApiModel rule
+        final String eTag,
+        final String id,
+        final DateTime dateCreated,
+        final DateTime dateModified,
+        final String description,
+        final String groupId,
+        final String deviceId,
+        final String severity,
+        final String status,
+        final AlarmRuleApiModel rule
     ) {
         this.eTag = eTag;
         this.id = id;

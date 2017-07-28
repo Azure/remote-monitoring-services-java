@@ -3,9 +3,7 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.services;
 
 import com.google.inject.Inject;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.ActionServiceModel;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.ConditionServiceModel;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.RuleServiceModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.*;
 
 import java.util.ArrayList;
 
@@ -161,5 +159,4 @@ public final class Rules implements IRules {
 
         return sampleRules;
     }
-
 }

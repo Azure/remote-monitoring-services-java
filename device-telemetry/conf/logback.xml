@@ -8,7 +8,8 @@
   <appender name="FILE" class="ch.qos.logback.core.FileAppender">
     <file>${application.home:-.}/logs/application.log</file>
     <encoder>
-      <pattern>%date [%level] from %logger in %thread - %message%n%xException</pattern>
+      <!-- Output 20 lines of exception stack traces -->
+      <pattern>%date [%level] from %logger in %thread - %message%n%xException{20}</pattern>
     </encoder>
   </appender>
 
@@ -18,23 +19,22 @@
     </encoder>
   </appender>
 
-  <appender name="ASYNCFILE" class="ch.qos.logback.classic.AsyncAppender">
-    <appender-ref ref="FILE" />
-  </appender>
-
   <appender name="ASYNCSTDOUT" class="ch.qos.logback.classic.AsyncAppender">
+    <queueSize>500</queueSize>
+    <discardingThreshold>0</discardingThreshold>
     <appender-ref ref="STDOUT" />
   </appender>
 
+  <!-- Production: INFO, Development: DEBUG -->
   <logger name="play" level="INFO" />
-  <logger name="application" level="DEBUG" />
-
   <logger name="akka" level="INFO" />
-  <logger name="akka" level="INFO" />
+  <logger name="application" level="INFO" />
 
-
-  <root level="WARN">
-    <appender-ref ref="ASYNCFILE" />
+  <root level="INFO">
+    <!--
+    Use async for better performance
+    see http://blog.takipi.com/how-to-instantly-improve-your-java-logging-with-7-logback-tweaks
+    -->
     <appender-ref ref="ASYNCSTDOUT" />
   </root>
 

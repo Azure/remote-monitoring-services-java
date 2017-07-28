@@ -18,7 +18,7 @@ public final class MessageApiModel {
 
     private String deviceId = null;
     private DateTime time = null;
-    private Object body = null;
+    private Object data = null;
 
     private DateTimeFormatter dateFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
 
@@ -27,16 +27,16 @@ public final class MessageApiModel {
      *
      * @param deviceId
      * @param time
-     * @param body
+     * @param data
      */
     public MessageApiModel(
         final String deviceId,
         final DateTime time,
-        final Object body) {
+        final Object data) {
 
         this.deviceId = deviceId;
         this.time = time;
-        this.body = body;
+        this.data = data;
     }
 
     /**
@@ -47,7 +47,7 @@ public final class MessageApiModel {
     public MessageApiModel(final MessageServiceModel message) {
         this.deviceId = message.getDeviceId();
         this.time = message.getTime();
-        this.body = message.getBody();
+        this.data = message.getData();
     }
 
     @JsonProperty("DeviceId")
@@ -60,8 +60,8 @@ public final class MessageApiModel {
         return this.dateFormat.print(this.time.toDateTime(DateTimeZone.UTC));
     }
 
-    @JsonProperty("Body")
-    public Object getBody() {
-        return this.body;
+    @JsonProperty("Data")
+    public Object getData() {
+        return this.data;
     }
 }

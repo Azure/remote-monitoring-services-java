@@ -2,8 +2,7 @@
 
 package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime;
 
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.ServicesConfig;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.*;
 import com.typesafe.config.ConfigFactory;
 
 // TODO: documentation
@@ -22,17 +21,21 @@ public class Config implements IConfig {
     private final String StorageKey = ApplicationKey + "documentdb.";
     private final String StorageConnStringKey = StorageKey + "connstring";
 
+    private final String messagesStorageTypeKey = ApplicationKey + "messages.storageType";
+    private final String messagesDocDbConnStringKey = ApplicationKey + "messages.documentDb.connString";
+    private final String messagesDocDbDatabaseKey = ApplicationKey + "messages.documentDb.database";
+    private final String messagesDocDbCollectionKey = ApplicationKey + "messages.documentDb.collection";
+
+    private final String alarmsStorageTypeKey = ApplicationKey + "alarms.storageType";
+    private final String alarmsDocDbConnStringKey = ApplicationKey + "alarms.documentDb.connString";
+    private final String alarmsDocDbDatabaseKey = ApplicationKey + "alarms.documentDb.database";
+    private final String alarmsDocDbCollectionKey = ApplicationKey + "alarms.documentDb.collection";
+
     private com.typesafe.config.Config data;
     private IServicesConfig servicesConfig;
 
     public Config() {
-        // Load `application.conf` and replace placeholders with
-        // environment variables
         this.data = ConfigFactory.load();
-
-        String storageConnectionString = data.getString(StorageConnStringKey);
-
-        this.servicesConfig = new ServicesConfig(storageConnectionString);
     }
 
     /**
@@ -48,6 +51,28 @@ public class Config implements IConfig {
      * Service layer configuration
      */
     public IServicesConfig getServicesConfig() {
+
+        if (this.servicesConfig != null) return this.servicesConfig;
+
+        String storageConnectionString = this.data.getString(StorageConnStringKey);
+
+        StorageConfig messagesConfig = new StorageConfig(
+            data.getString(messagesStorageTypeKey).toLowerCase(),
+            data.getString(messagesDocDbConnStringKey),
+            data.getString(messagesDocDbDatabaseKey),
+            data.getString(messagesDocDbCollectionKey));
+
+        StorageConfig alarmsConfig = new StorageConfig(
+            data.getString(alarmsStorageTypeKey).toLowerCase(),
+            data.getString(alarmsDocDbConnStringKey),
+            data.getString(alarmsDocDbDatabaseKey),
+            data.getString(alarmsDocDbCollectionKey));
+
+        this.servicesConfig = new ServicesConfig(
+            storageConnectionString,
+            messagesConfig,
+            alarmsConfig);
+
         return this.servicesConfig;
     }
 }

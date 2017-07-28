@@ -5,14 +5,18 @@ organization := "com.microsoft.azure.iotsolutions"
 
 scalaVersion := "2.12.2"
 
-libraryDependencies ++= {
-  Seq(
-    filters,
-    guice,
-    // https://github.com/Azure/azure-documentdb-java
-    "com.microsoft.azure" % "azure-documentdb" % "1.12.0"
-  )
-}
+libraryDependencies ++= Seq(
+  filters,
+  guice,
+  // https://github.com/Azure/azure-documentdb-java
+  "com.microsoft.azure" % "azure-documentdb" % "1.12.0"
+)
+
+// Test dependencies
+libraryDependencies ++= Seq(
+  // http://search.maven.org/#search%7Cga%7C1%7Cmockito-core
+  "org.mockito" % "mockito-core" % "2.8.47" % "test"
+)
 
 lazy val commonSettings = Seq(
   version := "0.1-SNAPSHOT",

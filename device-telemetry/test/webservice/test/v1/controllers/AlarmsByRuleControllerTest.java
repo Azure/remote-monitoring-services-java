@@ -5,9 +5,7 @@ package webservice.test.v1.controllers;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.AlarmsByRule;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsByRuleController;
 import helpers.UnitTest;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.experimental.categories.Category;
 import play.mvc.Result;
 
@@ -42,7 +40,7 @@ public class AlarmsByRuleControllerTest {
         // TODO Mock the MessagesController dependency
         AlarmsByRuleController controller = new AlarmsByRuleController(new AlarmsByRule());
 
-        Result result = controller.list(null,null, "asc", 0, 0, null);
+        Result result = controller.list(null, null, "asc", 0, 0, null);
 
         assertThat(result.body().isKnownEmpty(), is(false));
     }

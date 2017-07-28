@@ -3,137 +3,144 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.services;
 
 import com.google.inject.Inject;
+import com.microsoft.azure.documentdb.*;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.MessageListServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.MessageServiceModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
+import org.joda.time.DateTime;
+import play.Logger;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.*;
 
+// TODO: use StorageClient
 public final class Messages implements IMessages {
 
+    private static final Logger.ALogger log = Logger.of(Messages.class);
+
+    private final String dataPrefix = "data.";
+
+    private final DocumentClient docDbConnection;
+    private final String docDbCollectionLink;
+
     @Inject
-    public Messages() {
+    public Messages(
+        IServicesConfig servicesConfig) {
+
+        this.docDbCollectionLink = String.format(
+            "/dbs/%s/colls/%s",
+            servicesConfig.getMessagesStorageConfig().getDocumentDbDatabase(),
+            servicesConfig.getMessagesStorageConfig().getDocumentDbCollection());
+
+        this.docDbConnection = new DocumentClient(
+            servicesConfig.getMessagesStorageConfig().getDocumentDbUri(),
+            servicesConfig.getMessagesStorageConfig().getDocumentDbKey(),
+            ConnectionPolicy.GetDefault(),
+            ConsistencyLevel.Eventual);
     }
 
-    public ArrayList<MessageServiceModel> getList() {
-        return this.getSampleMessages();
+    public MessageListServiceModel getList(
+        DateTime from,
+        DateTime to,
+        String order,
+        int skip,
+        int limit,
+        String[] devices) {
+
+        int dataPrefixLen = dataPrefix.length();
+
+        String sql = buildSQL(from, to, order, skip, limit, devices);
+        ArrayList<Document> docs = query(sql, skip);
+
+        // Messages to return
+        ArrayList<MessageServiceModel> messages = new ArrayList<>();
+
+        // Auto discovered telemetry types
+        HashSet<String> properties = new HashSet<>();
+
+        for (Document doc : docs) {
+
+            // Document fields to expose
+            Map<String, Object> data = new HashMap<>();
+
+            // Extract all the telemetry data and types
+            doc.getHashMap().entrySet().stream()
+                // Ignore fields that don't start with "data."
+                .filter(x -> x.getKey().startsWith(dataPrefix))
+                .forEach(x -> {
+                    // Remove the "data." prefix
+                    String key = x.getKey().substring(dataPrefixLen);
+                    data.put(key, x.getValue());
+
+                    // Telemetry types auto-discovery magic
+                    properties.add(key);
+                });
+
+            messages.add(new MessageServiceModel(
+                doc.getString("device.id"),
+                doc.getLong("device.msg.received"),
+                data));
+        }
+
+        return new MessageListServiceModel(messages, new ArrayList<>(properties));
     }
 
-    /**
-     * Get sample messages to return to client.
-     * TODO: remove after storage dependency is added
-     *
-     * @return sample messages array
-     */
-    private ArrayList<MessageServiceModel> getSampleMessages() {
-        ArrayList<MessageServiceModel> sampleMessages = new ArrayList<>();
-        Object sampleMessage = null;
+    private ArrayList<Document> query(String sql, int skip) {
 
-        // sample message 1
-        sampleMessage = new Hashtable<String, String>() {{
-            put("temperature", "74");
-            put("t_unit", "F");
-            put("humidity", "41");
-            put("latitude", "47.642272");
-            put("longitude", "-122.103374");
-        }};
+        FeedOptions queryOptions = new FeedOptions();
+        queryOptions.setEnableCrossPartitionQuery(true);
+        queryOptions.setEnableScanInQuery(true);
 
-        sampleMessages.add(new MessageServiceModel(
-            "Weather1",
-            "2017-01-13T21:39:45-08:00",
-            sampleMessage));
+        ArrayList<Document> docs = new ArrayList<>();
+        String continuationToken = null;
+        do {
+            FeedResponse<Document> queryResults = this.docDbConnection.queryDocuments(
+                this.docDbCollectionLink,
+                sql,
+                queryOptions);
 
-        // sample message 2
-        sampleMessage = new Hashtable<String, String>() {{
-            put("temperature", "53");
-            put("t_unit", "F");
-            put("humidity", "51");
-            put("latitude", "47.633281");
-            put("longitude", "-122.112881");
-        }};
+            for (Document doc : queryResults.getQueryIterable()) {
+                if (skip == 0) {
+                    docs.add(doc);
+                } else {
+                    skip--;
+                }
+            }
 
-        sampleMessages.add(new MessageServiceModel(
-            "Weather2",
-            "2017-01-14T03:13:04-08:00",
-            sampleMessage));
+            continuationToken = queryResults.getResponseContinuation();
+            queryOptions.setRequestContinuation(continuationToken);
+        } while (continuationToken != null);
 
-        // sample message 3
-        sampleMessage = new Hashtable<String, String>() {{
-            put("temperature", "82");
-            put("t_unit", "F");
-            put("humidity", "76");
-            put("latitude", "47.601010");
-            put("longitude", "-122.164454");
-        }};
+        return docs;
+    }
 
-        sampleMessages.add(new MessageServiceModel(
-            "Weather3",
-            "2017-01-15T11:04:25-08:00",
-            sampleMessage));
+    private String buildSQL(
+        DateTime from,
+        DateTime to,
+        String order,
+        int skip,
+        int limit,
+        String[] devices) {
 
-        // sample message 4
-        sampleMessage = new Hashtable<String, String>() {{
-            put("temperature", "82");
-            put("t_unit", "F");
-            put("ph", "7.2");
-            put("uv", "60");
-            put("orp", "650");
-            put("latitude", "47.728617");
-            put("longitude", "-122.121120");
-        }};
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append("SELECT TOP " + (skip + limit) + " * FROM c WHERE (c[`doc.schema`] = `d2cmessage`");
+        if (devices.length > 0) {
+            String ids = String.join("`,`", devices);
+            queryBuilder.append(" AND c[`device.id`] IN (`" + ids + "`)");
+        }
+        if (from != null) {
+            queryBuilder.append(" AND c[`device.msg.received`] >= " + from.toDateTime().getMillis());
+        }
+        if (to != null) {
+            queryBuilder.append(" AND c[`device.msg.received`] <= " + to.toDateTime().getMillis());
+        }
+        queryBuilder.append(")");
 
-        sampleMessages.add(new MessageServiceModel(
-            "Pool1",
-            "2017-01-15T11:04:30-08:00",
-            sampleMessage));
+        if (order.equalsIgnoreCase("desc")) {
+            queryBuilder.append(" ORDER BY c[`device.msg.received`] DESC");
+        } else {
+            queryBuilder.append(" ORDER BY c[`device.msg.received`] ASC");
+        }
 
-        // sample message 5
-        sampleMessage = new Hashtable<String, String>() {{
-            put("temperature", "81");
-            put("t_unit", "F");
-            put("ph", "7.1");
-            put("uv", "54");
-            put("orp", "652");
-            put("latitude", "47.728617");
-            put("longitude", "-122.121120");
-        }};
-
-        sampleMessages.add(new MessageServiceModel(
-            "Pool1",
-            "2017-01-15T11:05:32-08:00",
-            sampleMessage));
-
-        // sample message 6
-        sampleMessage = new Hashtable<String, String>() {{
-            put("temperature", "83");
-            put("t_unit", "F");
-            put("ph", "7.4");
-            put("uv", "54");
-            put("orp", "642");
-            put("latitude", "47.728617");
-            put("longitude", "-122.121120");
-        }};
-
-        sampleMessages.add(new MessageServiceModel(
-            "Pool1",
-            "2017-01-15T11:06:34-08:00",
-            sampleMessage));
-
-        // sample message 7
-        sampleMessage = new Hashtable<String, String>() {{
-            put("temperature", "80");
-            put("t_unit", "F");
-            put("ph", "7.0");
-            put("uv", "52");
-            put("orp", "646");
-            put("latitude", "47.728617");
-            put("longitude", "-122.121120");
-        }};
-
-        sampleMessages.add(new MessageServiceModel(
-            "Pool1",
-            "2017-01-15T11:07:35-08:00",
-            sampleMessage));
-
-        return sampleMessages;
+        return queryBuilder.toString().replace('`', '"');
     }
 }

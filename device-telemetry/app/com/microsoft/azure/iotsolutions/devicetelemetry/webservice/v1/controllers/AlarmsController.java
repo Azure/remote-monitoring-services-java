@@ -2,10 +2,7 @@
 
 package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers;
 
-import org.joda.time.DateTime;
 import play.mvc.Result;
-
-import java.util.Date;
 
 import static play.libs.Json.toJson;
 import static play.mvc.Results.ok;

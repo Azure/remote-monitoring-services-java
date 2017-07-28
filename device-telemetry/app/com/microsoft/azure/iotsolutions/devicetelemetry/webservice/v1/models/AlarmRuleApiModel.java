@@ -13,16 +13,16 @@ public class AlarmRuleApiModel {
     private final String id;
     private final String description;
 
-    public  AlarmRuleApiModel(
-            final String id,
-            final String description
+    public AlarmRuleApiModel(
+        final String id,
+        final String description
     ) {
         this.id = id;
         this.description = description;
     }
 
     public AlarmRuleApiModel(final AlarmRuleServiceModel rule) {
-        if(rule != null) {
+        if (rule != null) {
             this.id = rule.getId();
             this.description = rule.getDescription();
         } else {
@@ -32,10 +32,10 @@ public class AlarmRuleApiModel {
     }
 
     @JsonProperty("Id")
-    public String getId() { return  this.id; }
+    public String getId() { return this.id; }
 
     @JsonProperty("Description")
-    public String getDescription() { return  this.description; }
+    public String getDescription() { return this.description; }
 
     @JsonProperty("$metadata")
     public Dictionary<String, String> getMetadata() {

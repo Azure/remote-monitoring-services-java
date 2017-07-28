@@ -4,9 +4,7 @@ package webservice.test.runtime;
 
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime.Config;
 import helpers.UnitTest;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.experimental.categories.Category;
 
 import static org.hamcrest.core.Is.is;

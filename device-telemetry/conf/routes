@@ -7,8 +7,8 @@ GET    /v1/status/                   com.microsoft.azure.iotsolutions.devicetele
 
 # Telemetry messages
 
-GET    /v1/messages                  com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.MessagesController.list
-GET    /v1/messages/                 com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.MessagesController.list
+GET    /v1/messages                  com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.MessagesController.list(from ?= null, to ?= null, order: String ?= "asc", skip: Int ?= 0, limit: Int ?=1000, devices ?= null)
+GET    /v1/messages/                 com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.MessagesController.list(from ?= null, to ?= null, order: String ?= "asc", skip: Int ?= 0, limit: Int ?=1000, devices ?= null)
 
 # Alarms list and management
 
