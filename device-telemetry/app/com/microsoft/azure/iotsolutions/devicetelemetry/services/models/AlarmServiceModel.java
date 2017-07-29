@@ -2,8 +2,9 @@
 
 package com.microsoft.azure.iotsolutions.devicetelemetry.services.models;
 
+import com.microsoft.azure.documentdb.Document;
 import org.joda.time.DateTime;
-import org.joda.time.format.ISODateTimeFormat;
+import org.joda.time.DateTimeZone;
 
 public final class AlarmServiceModel {
     private final String eTag;
@@ -13,9 +14,10 @@ public final class AlarmServiceModel {
     private final String description;
     private final String groupId;
     private final String deviceId;
-    private final String severity;
     private final String status;
-    private final AlarmRuleServiceModel rule;
+    private final String ruleId;
+    private final String ruleSeverity;
+    private final String ruleDescription;
 
     public AlarmServiceModel() {
         this.eTag = null;
@@ -25,33 +27,49 @@ public final class AlarmServiceModel {
         this.description = null;
         this.groupId = null;
         this.deviceId = null;
-        this.severity = null;
         this.status = null;
-        this.rule = null;
+        this.ruleId = null;
+        this.ruleSeverity = null;
+        this.ruleDescription = null;
     }
 
     public AlarmServiceModel(
         final String eTag,
         final String id,
-        final String dateCreated,
-        final String dateModified,
+        final long dateCreated,
+        final long dateModified,
         final String description,
         final String groupId,
         final String deviceId,
-        final String severity,
         final String status,
-        final AlarmRuleServiceModel rule
-    ) {
+        final String ruleId,
+        final String ruleSeverity,
+        final String ruleDescription) {
         this.eTag = eTag;
         this.id = id;
-        this.dateCreated = DateTime.parse(dateCreated, ISODateTimeFormat.dateTimeParser().withZoneUTC());
-        this.dateModified = DateTime.parse(dateModified, ISODateTimeFormat.dateTimeParser().withZoneUTC());
+        this.dateCreated = new DateTime(dateCreated, DateTimeZone.UTC);
+        this.dateModified = new DateTime(dateModified, DateTimeZone.UTC);
         this.description = description;
         this.groupId = groupId;
         this.deviceId = deviceId;
-        this.severity = severity;
         this.status = status;
-        this.rule = rule;
+        this.ruleId = ruleId;
+        this.ruleSeverity = ruleSeverity;
+        this.ruleDescription = ruleDescription;
+    }
+
+    public AlarmServiceModel(Document doc) {
+        this.eTag = doc.getETag();
+        this.id = doc.getId();
+        this.dateCreated = new DateTime(doc.getLong("dateCreated"), DateTimeZone.UTC);
+        this.dateModified = new DateTime(doc.getLong("dateModified"), DateTimeZone.UTC);
+        this.description = doc.getString("description");
+        this.groupId = doc.getString("groupId");
+        this.deviceId = doc.getString("deviceId");
+        this.status = doc.getString("status");
+        this.ruleId = doc.getString("rule.id");
+        this.ruleSeverity = doc.getString("rule.severity");
+        this.ruleDescription = doc.getString("rule.description");
     }
 
     public String getETag() {
@@ -82,15 +100,15 @@ public final class AlarmServiceModel {
         return this.deviceId;
     }
 
-    public String getSeverity() {
-        return this.severity;
-    }
-
     public String getStatus() {
         return this.status;
     }
 
-    public AlarmRuleServiceModel getRule() {
-        return this.rule;
+    public String getRuleId() {
+        return this.ruleId;
     }
+
+    public String getRuleSeverity() { return this.ruleSeverity; }
+
+    public String getRuleDescription() { return this.ruleDescription; }
 }

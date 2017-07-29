@@ -4,6 +4,7 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.services;
 
 import com.google.inject.Inject;
 import com.microsoft.azure.documentdb.*;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.helpers.QueryBuilder;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.MessageListServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.MessageServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
@@ -48,7 +49,15 @@ public final class Messages implements IMessages {
 
         int dataPrefixLen = dataPrefix.length();
 
-        String sql = buildSQL(from, to, order, skip, limit, devices);
+        String sql = QueryBuilder.buildSQL(
+            "d2cmessage",
+            null, null,
+            from, "device.msg.received",
+            to, "device.msg.received",
+            order, "device.msg.received",
+            skip,
+            limit,
+            devices, "device.id");
         ArrayList<Document> docs = query(sql, skip);
 
         // Messages to return
@@ -111,36 +120,5 @@ public final class Messages implements IMessages {
         } while (continuationToken != null);
 
         return docs;
-    }
-
-    private String buildSQL(
-        DateTime from,
-        DateTime to,
-        String order,
-        int skip,
-        int limit,
-        String[] devices) {
-
-        StringBuilder queryBuilder = new StringBuilder();
-        queryBuilder.append("SELECT TOP " + (skip + limit) + " * FROM c WHERE (c[`doc.schema`] = `d2cmessage`");
-        if (devices.length > 0) {
-            String ids = String.join("`,`", devices);
-            queryBuilder.append(" AND c[`device.id`] IN (`" + ids + "`)");
-        }
-        if (from != null) {
-            queryBuilder.append(" AND c[`device.msg.received`] >= " + from.toDateTime().getMillis());
-        }
-        if (to != null) {
-            queryBuilder.append(" AND c[`device.msg.received`] <= " + to.toDateTime().getMillis());
-        }
-        queryBuilder.append(")");
-
-        if (order.equalsIgnoreCase("desc")) {
-            queryBuilder.append(" ORDER BY c[`device.msg.received`] DESC");
-        } else {
-            queryBuilder.append(" ORDER BY c[`device.msg.received`] ASC");
-        }
-
-        return queryBuilder.toString().replace('`', '"');
     }
 }

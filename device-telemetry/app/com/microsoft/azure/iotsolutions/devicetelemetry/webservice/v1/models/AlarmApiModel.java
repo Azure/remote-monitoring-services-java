@@ -27,7 +27,6 @@ public final class AlarmApiModel {
     private String description;
     private String groupId;
     private String deviceId;
-    private String severity;
     private String status;
     private AlarmRuleApiModel rule;
 
@@ -65,7 +64,6 @@ public final class AlarmApiModel {
         this.description = description;
         this.groupId = groupId;
         this.deviceId = deviceId;
-        this.severity = severity;
         this.status = status;
         this.rule = rule;
     }
@@ -84,9 +82,8 @@ public final class AlarmApiModel {
             this.description = alarm.getDescription();
             this.groupId = alarm.getGroupId();
             this.deviceId = alarm.getDeviceId();
-            this.severity = alarm.getSeverity();
             this.status = alarm.getStatus();
-            this.rule = new AlarmRuleApiModel(alarm.getRule());
+            this.rule = new AlarmRuleApiModel(alarm.getRuleId(), alarm.getRuleSeverity(), alarm.getRuleDescription());
         }
     }
 
@@ -102,11 +99,18 @@ public final class AlarmApiModel {
 
     @JsonProperty("DateCreated")
     public String getDateCreated() {
+        if(this.dateCreated == null) {
+            return null;
+        }
+
         return dateFormat.print(this.dateCreated.toDateTime(DateTimeZone.UTC));
     }
 
     @JsonProperty("DateModified")
     public String getDateModified() {
+        if(this.dateModified == null) {
+            return null;
+        }
         return dateFormat.print(this.dateModified.toDateTime(DateTimeZone.UTC));
     }
 
@@ -123,11 +127,6 @@ public final class AlarmApiModel {
     @JsonProperty("DeviceId")
     public String getDeviceId() {
         return this.deviceId;
-    }
-
-    @JsonProperty("Severity")
-    public String getSeverity() {
-        return this.severity;
     }
 
     @JsonProperty("Status")

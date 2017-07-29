@@ -3,7 +3,6 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.AlarmRuleServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.Version;
 
 import java.util.Dictionary;
@@ -11,28 +10,24 @@ import java.util.Hashtable;
 
 public class AlarmRuleApiModel {
     private final String id;
+    private final String severity;
     private final String description;
 
     public AlarmRuleApiModel(
         final String id,
+        final String severity,
         final String description
     ) {
         this.id = id;
+        this.severity = severity;
         this.description = description;
-    }
-
-    public AlarmRuleApiModel(final AlarmRuleServiceModel rule) {
-        if (rule != null) {
-            this.id = rule.getId();
-            this.description = rule.getDescription();
-        } else {
-            this.id = null;
-            this.description = null;
-        }
     }
 
     @JsonProperty("Id")
     public String getId() { return this.id; }
+
+    @JsonProperty("Severity")
+    public String getSeverity() { return this.severity; }
 
     @JsonProperty("Description")
     public String getDescription() { return this.description; }

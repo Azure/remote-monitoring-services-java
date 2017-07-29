@@ -3,108 +3,77 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.services;
 
 import com.google.inject.Inject;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.AlarmRuleServiceModel;
+import com.microsoft.azure.documentdb.Document;
+import com.microsoft.azure.documentdb.FeedResponse;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.helpers.QueryBuilder;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.AlarmServiceModel;
+import org.joda.time.DateTime;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class AlarmsByRule implements IAlarmsByRule {
+    private final IStorageClient storageClient;
+    private String collectionId = "alarms";
+
     @Inject
-    public AlarmsByRule() {
+    public AlarmsByRule(IStorageClient storageClient, String collectionId) throws Exception {
+        this.storageClient = storageClient;
+        if(collectionId != null && !collectionId.isEmpty()) {
+            this.collectionId = collectionId;
+        }
+        this.storageClient.createCollectionIfNotExists(this.collectionId);
     }
 
     @Override
-    public AlarmServiceModel get(String id) {
-        return this.getSampleAlarm();
+    public AlarmServiceModel get(String id, DateTime from, DateTime to, String order, int skip,
+                                 int limit, String[] devices) throws Exception {
+        String sqlQuery = QueryBuilder.buildSQL(
+            "alarm",
+            id,"rule.id",
+            from,"created",
+            to,"created",
+            order,"created",
+            skip,
+            limit,
+            devices,"deviceId");
+        FeedResponse<Document> response = this.storageClient.queryDocuments(
+            this.collectionId,
+            null,
+            sqlQuery);
+
+        Iterator<Document> iterator = response.getQueryIterator();
+        while(iterator.hasNext()) {
+            Document doc = iterator.next();
+            return new AlarmServiceModel(doc);
+        }
+
+        return null;
     }
 
     @Override
-    public ArrayList<AlarmServiceModel> getList() {
-        return this.getSampleAlarms();
-    }
+    public ArrayList<AlarmServiceModel> getList(DateTime from, DateTime to, String order, int skip,
+                                                int limit, String[] devices) throws Exception {
+        String sqlQuery = QueryBuilder.buildSQL(
+            "alarm",
+            null,null,
+            from,"created",
+            to,"created",
+            order,"created",
+            skip,
+            limit,
+            devices,"deviceId");
+        FeedResponse<Document> response = this.storageClient.queryDocuments
+            (this.collectionId,
+                null,
+                sqlQuery);
+        Iterator<Document> iterator = response.getQueryIterator();
+        ArrayList<AlarmServiceModel> alarms = new ArrayList<AlarmServiceModel>();
+        while(iterator.hasNext()) {
+            Document doc = iterator.next();
+            alarms.add(new AlarmServiceModel(doc));
+        }
 
-    /**
-     * Get sample alarm to return to client.
-     * TODO: remove after storage dependency is added
-     *
-     * @return sample alarm
-     */
-    private AlarmServiceModel getSampleAlarm() {
-        return new AlarmServiceModel(
-                "6l1log0f7h2yt6p",
-                "1234",
-                "2017-02-22T22:22:22-08:00",
-                "2017-02-22T22:22:22-08:00",
-                "Temperature on device x > 75 deg F",
-                "group-Id",
-                "device-id",
-                "critical",
-                "open",
-                new AlarmRuleServiceModel("1234", "HVAC temp > 75" )
-        );
-    }
-
-    /**
-     * Get sample alarms to return to client.
-     * TODO: remove after storage dependency is added
-     *
-     * @return sample alarm list
-     */
-    private ArrayList<AlarmServiceModel> getSampleAlarms() {
-        ArrayList<AlarmServiceModel> list = new ArrayList<AlarmServiceModel>();
-        AlarmRuleServiceModel rule = new AlarmRuleServiceModel("1234", "HVAC temp > 75" );
-        AlarmServiceModel alarm1 = new AlarmServiceModel(
-                "6l1log0f7h2yt6p",
-                "1234",
-                "2017-02-22T22:22:22-08:00",
-                "2017-02-22T22:22:22-08:00",
-                "Temperature on device x > 75 deg F",
-                "group-Id",
-                "device-id",
-                "critical",
-                "open",
-                rule
-        );
-        AlarmServiceModel alarm2 = new AlarmServiceModel(
-                "2h2yt6p",
-                "1234",
-                "2017-02-22T22:22:22-08:00",
-                "2017-02-22T22:22:22-08:00",
-                "Temperature on device x > 75 deg F",
-                "group-Id",
-                "device-id",
-                "critical",
-                "acknowledged",
-                rule
-        );
-        AlarmServiceModel alarm3 = new AlarmServiceModel(
-                "6l1log0f7h2yt6p",
-                "1234",
-                "2017-02-22T22:22:22-08:00",
-                "2017-02-22T22:22:22-08:00",
-                "Temperature on device x > 75 deg F",
-                "group-Id",
-                "device-id",
-                "info",
-                "open",
-                rule
-        );
-        AlarmServiceModel alarm4 = new AlarmServiceModel(
-                "6l1log0f7h2yt6p",
-                "1234",
-                "2017-02-22T22:22:22-08:00",
-                "2017-02-22T22:22:22-08:00",
-                "Temperature on device x > 75 deg F",
-                "group-Id",
-                "device-id",
-                "warning",
-                "closed",
-                rule
-        );
-        list.add(alarm1);
-        list.add(alarm2);
-        list.add(alarm3);
-        list.add(alarm4);
-        return list;
+        return alarms;
     }
 }

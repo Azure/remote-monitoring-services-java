@@ -23,10 +23,10 @@ PATCH  /v1/alarms/:alarm_id/         com.microsoft.azure.iotsolutions.devicetele
 
 # Alarms aggregation by rule
 
-GET    /v1/alarmsbyrule              com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsByRuleController.list(from ?= null, to ?= null, order: String ?= "asc", skip: Int ?= 0, limit: Int ?=1000, devices: java.util.List[String]  ?= null)
-GET    /v1/alarmsbyrule/             com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsByRuleController.list(from ?= null, to ?= null, order: String ?= "asc", skip: Int ?= 0, limit: Int ?=1000, devices: java.util.List[String]  ?= null)
-GET    /v1/alarmsbyrule/:rule_id     com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsByRuleController.get(rule_id, from ?= null, to ?= null, order: String ?= "asc", skip: Int ?= 0, limit: Int ?=1000, devices: java.util.List[String]  ?= null)
-GET    /v1/alarmsbyrule/:rule_id/    com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsByRuleController.get(rule_id, from ?= null, to ?= null, order: String ?= "asc", skip: Int ?= 0, limit: Int ?=1000, devices: java.util.List[String]  ?= null)
+GET    /v1/alarmsbyrule              com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsByRuleController.list(from ?= null, to ?= null, order: String ?= "asc", skip: Int ?= 0, limit: Int ?= 1000, devices ?= null)
+GET    /v1/alarmsbyrule/             com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsByRuleController.list(from ?= null, to ?= null, order: String ?= "asc", skip: Int ?= 0, limit: Int ?= 1000, devices ?= null)
+GET    /v1/alarmsbyrule/:rule_id     com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsByRuleController.get(rule_id, from ?= null, to ?= null, order: String ?= "asc", skip: Int ?= 0, limit: Int ?=1000, devices ?= null)
+GET    /v1/alarmsbyrule/:rule_id/    com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsByRuleController.get(rule_id, from ?= null, to ?= null, order: String ?= "asc", skip: Int ?= 0, limit: Int ?=1000, devices ?= null)
 
 # Rules list and management
 
