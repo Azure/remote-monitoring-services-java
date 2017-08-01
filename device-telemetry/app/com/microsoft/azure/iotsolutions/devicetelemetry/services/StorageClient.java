@@ -21,15 +21,12 @@ public class StorageClient implements IStorageClient {
     private String storagePrimaryKey;
 
     private DocumentClient client;
-    private Database telemetryDb;
 
     @Inject
     public StorageClient(final IServicesConfig config) throws Exception {
         this.servicesConfig = config;
         parseConnectionString();
         this.client = getDocumentClient();
-
-        CreateDatabaseIfNotExists();
     }
 
     // returns existing document client, creates document client if null
@@ -52,7 +49,7 @@ public class StorageClient implements IStorageClient {
     }
 
     @Override
-    public ResourceResponse<DocumentCollection> createCollectionIfNotExists(String id) throws Exception {
+    public ResourceResponse<DocumentCollection> createCollectionIfNotExists(String databaseName, String id) throws Exception {
         DocumentCollection collectionInfo = new DocumentCollection();
         RangeIndex index = Index.Range(DataType.String, -1);
         collectionInfo.setIndexingPolicy(new IndexingPolicy(new Index[]{index}));
@@ -62,7 +59,7 @@ public class StorageClient implements IStorageClient {
         // Here we create a collection with 400 RU/s.
         RequestOptions requestOptions = new RequestOptions();
         requestOptions.setOfferThroughput(400);
-        String dbUrl = "/dbs/" + this.telemetryDb.getId();
+        String dbUrl = "/dbs/" + databaseName;
         String colUrl = dbUrl + "/colls/" + id;
         boolean create = false;
         ResourceResponse<DocumentCollection> response = null;
@@ -90,8 +87,8 @@ public class StorageClient implements IStorageClient {
     }
 
     @Override
-    public ResourceResponse<Document> upsertDocument(String colId, final Object document) throws Exception {
-        String colUrl = String.format("/dbs/%s/colls/%s", this.telemetryDb.getId(), colId);
+    public ResourceResponse<Document> upsertDocument(String databaseName, String colId, final Object document) throws Exception {
+        String colUrl = String.format("/dbs/%s/colls/%s", databaseName, colId);
         try {
             return this.client.upsertDocument(colUrl, document, new RequestOptions(), false);
         } catch (Exception ex) {
@@ -101,8 +98,8 @@ public class StorageClient implements IStorageClient {
     }
 
     @Override
-    public ResourceResponse<Document> deleteDocument(String colId, String docId) throws Exception {
-        String docUrl = String.format("/dbs/%s/colls/%s/docs/%s", this.telemetryDb.getId(), colId, docId);
+    public ResourceResponse<Document> deleteDocument(String databaseName, String colId, String docId) throws Exception {
+        String docUrl = String.format("/dbs/%s/colls/%s/docs/%s", databaseName, colId, docId);
         try {
             return this.client.deleteDocument(docUrl, new RequestOptions());
         } catch (Exception ex) {
@@ -112,14 +109,14 @@ public class StorageClient implements IStorageClient {
     }
 
     @Override
-    public FeedResponse<Document> queryDocuments(String colId, FeedOptions queryOptions, String queryString) throws Exception {
+    public FeedResponse<Document> queryDocuments(String databaseName, String colId, FeedOptions queryOptions, String queryString) throws Exception {
         if (queryOptions == null) {
             queryOptions = new FeedOptions();
             queryOptions.setPageSize(-1);
             queryOptions.setEnableCrossPartitionQuery(true);
         }
 
-        String collectionLink = String.format("/dbs/%s/colls/%s", this.telemetryDb.getId(), colId);
+        String collectionLink = String.format("/dbs/%s/colls/%s", databaseName, colId);
         FeedResponse<Document> queryResults = this.client.queryDocuments(
             collectionLink,
             queryString, queryOptions);
@@ -173,35 +170,5 @@ public class StorageClient implements IStorageClient {
             // TODO add logging for connection string error (don't log conn string)
             throw new InvalidConfigurationException("Connection string format error");
         }
-    }
-
-    private ResourceResponse<Database> CreateDatabaseIfNotExists() throws Exception {
-        this.telemetryDb = new Database();
-        this.telemetryDb.setId("telemetry");
-
-        String dbUrl = "/dbs/" + this.telemetryDb.getId();
-        boolean create = false;
-        ResourceResponse<Database> response = null;
-
-        try {
-            response = this.client.readDatabase(dbUrl, null);
-        } catch (DocumentClientException dcx) {
-            if (dcx.getStatusCode() == Http.Status.NOT_FOUND) {
-                create = true;
-            } else {
-                log.error("Error reading database: " + this.telemetryDb.getId(), dcx);
-            }
-        }
-
-        if (create) {
-            try {
-                response = this.client.createDatabase(this.telemetryDb, null);
-            } catch (Exception ex) {
-                log.error("Error creating database: " + this.telemetryDb.getId(), ex);
-                throw ex;
-            }
-        }
-
-        return response;
     }
 }

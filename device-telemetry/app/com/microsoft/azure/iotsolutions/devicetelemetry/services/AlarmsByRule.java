@@ -7,6 +7,7 @@ import com.microsoft.azure.documentdb.Document;
 import com.microsoft.azure.documentdb.FeedResponse;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.helpers.QueryBuilder;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.AlarmServiceModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
@@ -14,15 +15,14 @@ import java.util.Iterator;
 
 public class AlarmsByRule implements IAlarmsByRule {
     private final IStorageClient storageClient;
-    private String collectionId = "alarms";
+    private String databaseName;
+    private String collectionId;
 
     @Inject
-    public AlarmsByRule(IStorageClient storageClient, String collectionId) throws Exception {
+    public AlarmsByRule(IServicesConfig servicesConfig, IStorageClient storageClient) throws Exception {
         this.storageClient = storageClient;
-        if(collectionId != null && !collectionId.isEmpty()) {
-            this.collectionId = collectionId;
-        }
-        this.storageClient.createCollectionIfNotExists(this.collectionId);
+        this.databaseName = servicesConfig.getAlarmsStorageConfig().getDocumentDbDatabase();
+        this.collectionId = servicesConfig.getAlarmsStorageConfig().getDocumentDbCollection();
     }
 
     @Override
@@ -38,6 +38,7 @@ public class AlarmsByRule implements IAlarmsByRule {
             limit,
             devices,"deviceId");
         FeedResponse<Document> response = this.storageClient.queryDocuments(
+            this.databaseName,
             this.collectionId,
             null,
             sqlQuery);
@@ -63,8 +64,9 @@ public class AlarmsByRule implements IAlarmsByRule {
             skip,
             limit,
             devices,"deviceId");
-        FeedResponse<Document> response = this.storageClient.queryDocuments
-            (this.collectionId,
+        FeedResponse<Document> response = this.storageClient.queryDocuments(
+                this.databaseName,
+                this.collectionId,
                 null,
                 sqlQuery);
         Iterator<Document> iterator = response.getQueryIterator();

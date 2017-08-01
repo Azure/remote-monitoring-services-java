@@ -23,7 +23,7 @@ public class ConfigTest {
         // something after every test
     }
 
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     @Category({UnitTest.class})
     public void providesWebServicePort() {
         Config target = new Config();
@@ -31,7 +31,7 @@ public class ConfigTest {
         assertThat(port, is(9004));
     }
 
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     @Category({UnitTest.class})
     public void providesDocDbConnectionString() {
         Config target = new Config();

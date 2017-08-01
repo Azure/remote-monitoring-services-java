@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.AlarmsByRule;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.StorageClient;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.AlarmServiceModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime.Config;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsByRuleController;
 import helpers.UnitTest;
@@ -30,7 +31,6 @@ import static org.junit.Assert.assertTrue;
 public class AlarmsByRuleControllerTest {
     private static final Logger.ALogger log = Logger.of(AlarmsByRuleControllerTest.class);
     private AlarmsByRuleController controller;
-    private String testAlarms = "alarms";
 
     private final String docSchemaKey = "doc.schema";
     private final String docSchemaValue = "alarm";
@@ -52,14 +52,21 @@ public class AlarmsByRuleControllerTest {
     public void setUp() {
         // setup before every test
         try {
-            StorageClient client = new StorageClient(new Config().getServicesConfig());
-            client.createCollectionIfNotExists(testAlarms);
+            IServicesConfig servicesConfig = new Config().getServicesConfig();
+            StorageClient client = new StorageClient(servicesConfig);
+            String dbName = servicesConfig.getAlarmsStorageConfig().getDocumentDbDatabase();
+            String collName = servicesConfig.getAlarmsStorageConfig().getDocumentDbCollection();
+            client.createCollectionIfNotExists(dbName, collName);
             ArrayList<AlarmServiceModel> sampleAlarms = getSampleAlarms();
             ObjectMapper mapper = new ObjectMapper();
             for (AlarmServiceModel sampleAlarm : sampleAlarms) {
-                client.upsertDocument(testAlarms, alarmToDocument(sampleAlarm));
+                client.upsertDocument(
+                    dbName,
+                    collName,
+                    alarmToDocument(sampleAlarm)
+                );
             }
-            AlarmsByRule rule = new AlarmsByRule(client, testAlarms);
+            AlarmsByRule rule = new AlarmsByRule(servicesConfig, client);
             controller = new AlarmsByRuleController(rule);
         } catch (Exception ex) {
             log.error("Exception setting up test", ex);
@@ -201,7 +208,6 @@ public class AlarmsByRuleControllerTest {
         // TODO Mock the MessagesController dependency
         try {
             Result result = controller.list(new DateTime("0").toString(), DateTime.now().toString(), "asc", 0, 0, null);
-
             assertThat(result.body().isKnownEmpty(), is(false));
         } catch (Exception ex) {
             assertThat(ex.getStackTrace().toString(), is(false));
