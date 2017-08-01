@@ -12,6 +12,7 @@ _dev/
 *_.sh
 .cache/**
 .travis
+*.dll
 
 
 ### Java

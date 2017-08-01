@@ -4,7 +4,7 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.StatusTuple;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.Status;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime.Uptime;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.Version;
 import org.joda.time.DateTime;
@@ -20,12 +20,16 @@ public final class StatusApiModel {
 
     private String status;
     private DateTimeFormatter dateFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
+    private Status storageClientStatus;
+    private Status keyValueStorageStatus;
 
-    public StatusApiModel(StatusTuple statusInfo) {
-        this.status = statusInfo.isHealthy() ? "OK" : "ERROR";
-        if (!statusInfo.getStatusMessage().isEmpty()) {
-            this.status += ":" + statusInfo.getStatusMessage();
-        }
+    public StatusApiModel(
+        Status storageClientStatus,
+        Status keyValueStorageStatus) {
+        this.storageClientStatus = storageClientStatus;
+        this.keyValueStorageStatus = keyValueStorageStatus;
+
+        setStatusMessage();
     }
 
     @JsonProperty("Name")
@@ -70,7 +74,14 @@ public final class StatusApiModel {
     @JsonProperty("Dependencies")
     public Dictionary<String, String> getDependencies() {
         return new Hashtable<String, String>() {{
-            put("Storage", status);
+            put("Storage",
+                (storageClientStatus.isHealthy() ? "OK" : "ERROR") + ": " +
+                    storageClientStatus.getStatusMessage());
+
+            put("KeyValueStorage",
+                (keyValueStorageStatus.isHealthy() ? "OK" : "ERROR") + ": " +
+                    keyValueStorageStatus.getStatusMessage());
+
         }};
     }
 
@@ -80,5 +91,27 @@ public final class StatusApiModel {
             put("$type", "Status;" + Version.NAME);
             put("$uri", "/" + Version.NAME + "/status");
         }};
+    }
+
+    private void setStatusMessage() {
+        // check dependency health
+        if (!this.storageClientStatus.isHealthy() ||
+            !this.keyValueStorageStatus.isHealthy()) {
+            this.status = "ERROR";
+
+            // print error messages from failing dependencies
+            if (!this.storageClientStatus.isHealthy()) {
+                this.status += ":" + this.storageClientStatus.getStatusMessage();
+            }
+            if (!this.keyValueStorageStatus.isHealthy()) {
+                // add separator if both dependencies fail.
+                if (!this.storageClientStatus.isHealthy()) {
+                    this.status += "; ";
+                }
+                this.status += ":" + this.keyValueStorageStatus.getStatusMessage();
+            }
+        } else {
+            this.status = "OK:Alive and well";
+        }
     }
 }

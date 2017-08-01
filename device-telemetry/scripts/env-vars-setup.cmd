@@ -6,3 +6,6 @@ SETX PCS_DEVICE_TELEMETRY_WEBSERVICE_PORT "9004"
 
 :: Connection information for Azure DocumentDb
 SETX PCS_DEVICE_TELEMETRY_DOCDB_CONN_STRING "..."
+
+:: Url for the PCS Storage Adapter Webservice
+SETX PCS_STORAGEADAPTER_WEBSERVICE_URL="..."

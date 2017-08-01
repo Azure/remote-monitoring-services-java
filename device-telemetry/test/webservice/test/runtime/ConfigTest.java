@@ -38,4 +38,11 @@ public class ConfigTest {
         String connectionString = target.getServicesConfig().getStorageConnectionString();
         assertNotNull(connectionString);
     }
+
+    @Test(timeout = 1000)
+    @Category({UnitTest.class})
+    public void provideKeyValueWebserviceUrl() {
+        Config target = new Config();
+        String url = target.getServicesConfig().getKeyValueStorageUrl();
+    }
 }

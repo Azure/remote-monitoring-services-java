@@ -2,7 +2,9 @@
 
 package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime;
 
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.*;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.ServicesConfig;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.StorageConfig;
 import com.typesafe.config.ConfigFactory;
 
 // TODO: documentation
@@ -20,6 +22,10 @@ public class Config implements IConfig {
     // Storage dependency settings
     private final String StorageKey = ApplicationKey + "documentdb.";
     private final String StorageConnStringKey = StorageKey + "connstring";
+
+    // Storage adapter webservice settings
+    private final String KeyValueStorageKey = ApplicationKey + "storageadapter.";
+    private final String KeyValueStorageUrlKey = KeyValueStorageKey + "url";
 
     private final String messagesStorageTypeKey = ApplicationKey + "messages.storageType";
     private final String messagesDocDbConnStringKey = ApplicationKey + "messages.documentDb.connString";
@@ -55,6 +61,7 @@ public class Config implements IConfig {
         if (this.servicesConfig != null) return this.servicesConfig;
 
         String storageConnectionString = this.data.getString(StorageConnStringKey);
+        String keyValueStorageUrl = this.data.getString(KeyValueStorageUrlKey);
 
         StorageConfig messagesConfig = new StorageConfig(
             data.getString(messagesStorageTypeKey).toLowerCase(),
@@ -70,6 +77,7 @@ public class Config implements IConfig {
 
         this.servicesConfig = new ServicesConfig(
             storageConnectionString,
+            keyValueStorageUrl,
             messagesConfig,
             alarmsConfig);
 

@@ -9,15 +9,19 @@ public class ServicesConfig implements IServicesConfig {
 
     private final String storageConnectionString;
 
+    private final String keyValueStorageUrl;
+
     private final StorageConfig messagesConfig;
 
     private final StorageConfig alarmsConfig;
 
     public ServicesConfig(
         final String storageConnectionString,
+        final String keyValueStorageUrl,
         StorageConfig messagesConfig,
         StorageConfig alarmsConfig) {
         this.storageConnectionString = storageConnectionString;
+        this.keyValueStorageUrl = keyValueStorageUrl;
         this.messagesConfig = messagesConfig;
         this.alarmsConfig = alarmsConfig;
     }
@@ -29,6 +33,15 @@ public class ServicesConfig implements IServicesConfig {
      */
     public String getStorageConnectionString() {
         return this.storageConnectionString;
+    }
+
+    /**
+     * Get key value storage dependency url
+     *
+     * @return url for key value storage endpoint
+     */
+    public String getKeyValueStorageUrl() {
+        return this.keyValueStorageUrl;
     }
 
     public StorageConfig getMessagesStorageConfig() {

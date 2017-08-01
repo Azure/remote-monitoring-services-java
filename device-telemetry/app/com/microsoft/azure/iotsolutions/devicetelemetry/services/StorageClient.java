@@ -5,7 +5,6 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.services;
 import com.google.inject.Inject;
 import com.microsoft.azure.documentdb.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidConfigurationException;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.AlarmServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import play.Logger;
 import play.mvc.Http;
@@ -129,7 +128,7 @@ public class StorageClient implements IStorageClient {
     }
 
     @Override
-    public StatusTuple Ping() {
+    public Status Ping() {
         URI response = null;
 
         if (this.client != null) {
@@ -137,13 +136,13 @@ public class StorageClient implements IStorageClient {
         }
 
         if (response != null) {
-            return new StatusTuple(
+            return new Status(
                 true,
                 "Alive and Well!");
         } else {
-            return new StatusTuple(
+            return new Status(
                 false,
-                "Could not connect to DocumentDb. " +
+                "Could not reach storage service" +
                     "Check connection string");
         }
     }

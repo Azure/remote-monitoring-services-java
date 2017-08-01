@@ -55,6 +55,7 @@ IF "%1"=="--in-sandbox" GOTO :RunInSandbox
     docker run -it ^
         -e "PCS_DEVICE_TELEMETRY_WEBSERVICE_PORT=%PCS_DEVICE_TELEMETRY_WEBSERVICE_PORT%" ^
         -e "PCS_DEVICE_TELEMETRY_DOCDB_CONN_STRING=%PCS_DEVICE_TELEMETRY_DOCDB_CONN_STRING%" ^
+        -e "PCS_STORAGEADAPTER_WEBSERVICE_URL=%PCS_STORAGEADAPTER_WEBSERVICE_URL%" ^
         -v %PCS_CACHE%\sandbox\.ivy2:/root/.ivy2 ^
         -v %PCS_CACHE%\sandbox\.sbt:/root/.sbt ^
         -v %APP_HOME%:/opt/code ^

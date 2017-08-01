@@ -18,5 +18,5 @@ public interface IStorageClient {
 
     FeedResponse<Document> queryDocuments(String colId, FeedOptions queryOptions, String queryString) throws Exception;
 
-    StatusTuple Ping();
+    Status Ping();
 }

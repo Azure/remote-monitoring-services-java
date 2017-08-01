@@ -8,10 +8,13 @@ import com.google.inject.ImplementedBy;
 public interface IServicesConfig {
     /**
      * Get storage dependency connection string
-     *
-     * @return storage connection string
      */
     String getStorageConnectionString();
+
+    /**
+     * Get key value storage dependency url
+     */
+    String getKeyValueStorageUrl();
 
     StorageConfig getMessagesStorageConfig();
 

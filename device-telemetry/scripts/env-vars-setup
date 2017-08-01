@@ -15,3 +15,6 @@ export PCS_DEVICE_TELEMETRY_WEBSERVICE_PORT="9004"
 
 # Connection information for Azure DocumentDb
 export PCS_DEVICE_TELEMETRY_DOCDB_CONN_STRING="..."
+
+# Url for the PCS Storage Adapter Webservice
+export PCS_STORAGEADAPTER_WEBSERVICE_URL="..."
