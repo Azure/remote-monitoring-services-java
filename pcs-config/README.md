@@ -40,9 +40,9 @@ Other documents
 * [Contributing and Development setup](CONTRIBUTING.md)
 * [Development setup, scripts and tools](DEVELOPMENT.md)
 
-[build-badge]: https://img.shields.io/travis/Azure/pcs-uiconfig-java.svg
-[build-url]: https://travis-ci.org/Azure/pcs-uiconfig-java
-[issues-badge]: https://img.shields.io/github/issues/azure/pcs-uiconfig-java.svg
-[issues-url]: https://github.com/azure/pcs-uiconfig-java/issues
+[build-badge]: https://img.shields.io/travis/Azure/pcs-ui-config-java.svg
+[build-url]: https://travis-ci.org/Azure/pcs-ui-config-java
+[issues-badge]: https://img.shields.io/github/issues/azure/pcs-ui-config-java.svg
+[issues-url]: https://github.com/azure/pcs-ui-config-java/issues
 [gitter-badge]: https://img.shields.io/gitter/room/azure/iot-pcs.js.svg
 [gitter-url]: https://gitter.im/azure/iot-pcs

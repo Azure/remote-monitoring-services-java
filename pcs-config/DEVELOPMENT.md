@@ -123,7 +123,7 @@ Development setup
    however anything should be just fine.
 
 We provide also a
-[.NET version](https://github.com/Azure/pcs-uiconfig-dotnet)
+[.NET version](https://github.com/Azure/pcs-ui-config-dotnet)
 of this project and other Azure IoT PCS components.
 
 ## Git setup
