@@ -10,7 +10,7 @@ IF %ERRORLEVEL% NEQ 0 GOTO MISSING_DOCKER
 
 :: Start the application
 echo Web service listening on port %EXT_PORT%
-docker run -it -p %EXT_PORT%:8080 -e PCS_IOTHUB_CONN_STRING=%PCS_IOTHUB_CONN_STRING% %DOCKER_IMAGE%
+docker run -it -p %EXT_PORT%:8080 -e PCS_IOTHUB_CONNSTRING=%PCS_IOTHUB_CONNSTRING% %DOCKER_IMAGE%
 
 :: - - - - - - - - - - - - - -
 goto :END

@@ -30,7 +30,7 @@ For Running tests in Intellij:
 2. Click the play button next to the test you want to execute.
 
 For Debugging in Intellij:
-1. Set up your PCS_IOTHUB_CONN_STRING system environment variable for your IoT Hub connection.
+1. Set up your PCS_IOTHUB_CONNSTRING system environment variable for your IoT Hub connection.
 2. Setup a run debug SBT configuration for Intellij: Tasks - "run 8080", Single Instance only checked,
 working directory: /source/PCS2/iothub-manager-java.
 3. Hit the REST api for the web service using:
@@ -54,7 +54,7 @@ Configuration
 =============
 
 1. * application.conf - contains configuration for the web service (port, hostname, and IoT hub connection string environment variable name)
-2. PCS_IOTHUB_CONN_STRING is a system environment variable and should contain your IoT Hub connection string. Create this environment variable before running the microservice.
+2. PCS_IOTHUB_CONNSTRING is a system environment variable and should contain your IoT Hub connection string. Create this environment variable before running the microservice.
 3. <todo - logging/monitoring>
 
 
