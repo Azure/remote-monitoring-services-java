@@ -78,7 +78,7 @@ public class StorageClient implements IStorageClient {
             try {
                 response = this.client.createCollection(dbUrl, collectionInfo, requestOptions);
             } catch (Exception ex) {
-                log.error("Error creating collection: " + id, ex);
+                log.error("Error creating collection. Id: {}, dbUrl: {}, collection: {}. Exception: {}" + id, dbUrl, collectionInfo, ex);
                 throw ex;
             }
         }

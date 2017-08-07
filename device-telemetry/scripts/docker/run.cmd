@@ -20,9 +20,9 @@ IF %ERRORLEVEL% NEQ 0 GOTO FAIL
 :: Some settings are used to connect to an external dependency, e.g. Azure IoT Hub and IoT Hub Manager API
 :: Depending on which settings and which dependencies are needed, edit the list of variables
 echo Starting device telemetry ...
-docker run -it -p %PCS_DEVICE_TELEMETRY_WEBSERVICE_PORT%:%PCS_DEVICE_TELEMETRY_WEBSERVICE_PORT% ^
-    -e PCS_DEVICE_TELEMETRY_WEBSERVICE_PORT=%PCS_DEVICE_TELEMETRY_WEBSERVICE_PORT% ^
-    -e PCS_DEVICE_TELEMETRY_DOCDB_CONN_STRING=%PCS_DEVICE_TELEMETRY_DOCDB_CONN_STRING% ^
+docker run -it -p 9004:9004 ^
+    -e PCS_DEVICETELEMETRY_DOCUMENTDB_CONNSTRING=%PCS_DEVICETELEMETRY_DOCUMENTDB_CONNSTRING% ^
+    -e PCS_STORAGEADAPTER_WEBSERVICE_URL=%PCS_STORAGEADAPTER_WEBSERVICE_URL% ^
     %DOCKER_IMAGE%
 
 :: - - - - - - - - - - - - - -
