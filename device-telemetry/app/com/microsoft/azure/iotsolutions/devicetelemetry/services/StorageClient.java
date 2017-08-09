@@ -10,6 +10,7 @@ import play.Logger;
 import play.mvc.Http;
 
 import java.net.URI;
+import java.util.ArrayList;
 
 public class StorageClient implements IStorageClient {
 
@@ -70,7 +71,7 @@ public class StorageClient implements IStorageClient {
             if (dcx.getStatusCode() == Http.Status.NOT_FOUND) {
                 create = true;
             } else {
-                log.error("Error reading collection: " + id, dcx);
+                log.error("Error reading collection: {}. Exception: {}", id, dcx);
             }
         }
 
@@ -78,7 +79,7 @@ public class StorageClient implements IStorageClient {
             try {
                 response = this.client.createCollection(dbUrl, collectionInfo, requestOptions);
             } catch (Exception ex) {
-                log.error("Error creating collection. Id: {}, dbUrl: {}, collection: {}. Exception: {}" + id, dbUrl, collectionInfo, ex);
+                log.error("Error creating collection. Id: {}, dbUrl: {}, collection: {}. Exception: {}", id, dbUrl, collectionInfo, ex);
                 throw ex;
             }
         }
@@ -87,41 +88,57 @@ public class StorageClient implements IStorageClient {
     }
 
     @Override
-    public ResourceResponse<Document> upsertDocument(String databaseName, String colId, final Object document) throws Exception {
+    public Document upsertDocument(String databaseName, String colId, final Object document) throws Exception {
         String colUrl = String.format("/dbs/%s/colls/%s", databaseName, colId);
         try {
-            return this.client.upsertDocument(colUrl, document, new RequestOptions(), false);
+            return this.client.upsertDocument(colUrl, document, new RequestOptions(), false).getResource();
         } catch (Exception ex) {
-            log.error("Error upserting document collection: " + colId, ex);
+            log.error("Error upserting document collection: {}. Exception: {}", colId, ex);
             throw ex;
         }
     }
 
     @Override
-    public ResourceResponse<Document> deleteDocument(String databaseName, String colId, String docId) throws Exception {
+    public Document deleteDocument(String databaseName, String colId, String docId) throws Exception {
         String docUrl = String.format("/dbs/%s/colls/%s/docs/%s", databaseName, colId, docId);
         try {
-            return this.client.deleteDocument(docUrl, new RequestOptions());
+            return this.client.deleteDocument(docUrl, new RequestOptions()).getResource();
         } catch (Exception ex) {
-            log.error("Error deleting document in collection: " + colId, ex);
+            log.error("Error deleting document in collection: {}. Exception: {}", colId, ex);
             throw ex;
         }
     }
 
     @Override
-    public FeedResponse<Document> queryDocuments(String databaseName, String colId, FeedOptions queryOptions, String queryString) throws Exception {
+    public ArrayList<Document> queryDocuments(String databaseName, String colId, FeedOptions queryOptions, String queryString, int skip) throws Exception {
         if (queryOptions == null) {
             queryOptions = new FeedOptions();
-            queryOptions.setPageSize(-1);
             queryOptions.setEnableCrossPartitionQuery(true);
+            queryOptions.setEnableScanInQuery(true);
         }
 
+        ArrayList<Document> docs = new ArrayList<>();
+        String continuationToken = null;
         String collectionLink = String.format("/dbs/%s/colls/%s", databaseName, colId);
-        FeedResponse<Document> queryResults = this.client.queryDocuments(
-            collectionLink,
-            queryString, queryOptions);
+        do {
+            FeedResponse<Document> queryResults = this.client.queryDocuments(
+                collectionLink,
+                queryString,
+                queryOptions);
 
-        return queryResults;
+            for (Document doc : queryResults.getQueryIterable()) {
+                if (skip == 0) {
+                    docs.add(doc);
+                } else {
+                    skip--;
+                }
+            }
+
+            continuationToken = queryResults.getResponseContinuation();
+            queryOptions.setRequestContinuation(continuationToken);
+        } while (continuationToken != null);
+
+        return docs;
     }
 
     @Override

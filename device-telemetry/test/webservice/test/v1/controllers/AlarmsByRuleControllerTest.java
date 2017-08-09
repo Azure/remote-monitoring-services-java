@@ -3,7 +3,8 @@
 package webservice.test.v1.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.AlarmsByRule;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.Alarms;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.IAlarms;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.StorageClient;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.AlarmServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
@@ -11,8 +12,6 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime.Confi
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsByRuleController;
 import helpers.UnitTest;
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,6 +26,8 @@ import java.util.UUID;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class AlarmsByRuleControllerTest {
     private static final Logger.ALogger log = Logger.of(AlarmsByRuleControllerTest.class);
@@ -66,7 +67,7 @@ public class AlarmsByRuleControllerTest {
                     alarmToDocument(sampleAlarm)
                 );
             }
-            AlarmsByRule rule = new AlarmsByRule(servicesConfig, client);
+            Alarms rule = new Alarms(servicesConfig, client);
             controller = new AlarmsByRuleController(rule);
         } catch (Exception ex) {
             log.error("Exception setting up test", ex);
@@ -188,29 +189,43 @@ public class AlarmsByRuleControllerTest {
 
     @Test(timeout = 5000)
     @Category({UnitTest.class})
-    public void provideAlarmsByRuleByIdResult() {
-        // TODO Mock the MessagesController dependency
+    public void provideAlarmsByRuleByIdResult() throws Exception {
+        ArrayList<AlarmServiceModel> alarmResult = new ArrayList<AlarmServiceModel>() {{
+            add(new AlarmServiceModel());
+            add(new AlarmServiceModel());
+        }};
 
-        DateTimeFormatter isoDateFormat = ISODateTimeFormat.dateTime();
-        try {
-            Result result = controller.get("1234", new DateTime("0").toString(isoDateFormat), DateTime.now().toString(isoDateFormat), "asc", 0, 0, null);
-            assertThat(result.body().isKnownEmpty(), is(false));
-        } catch (Exception ex) {
-            assertTrue(ex.getStackTrace().toString(), false);
-        }
+        IAlarms alarms = mock(IAlarms.class);
+        AlarmsByRuleController controller = new AlarmsByRuleController(alarms);
+        when(alarms.getListByRule(
+            "1", DateTime.now(), DateTime.now(), "asc", 0, 100, new String[0]))
+            .thenReturn(alarmResult);
 
+        // Act
+        Result response = controller.get("", null, null, null, 0, 0, null);
 
+        // Assert
+        assertThat(response.body().isKnownEmpty(), is(false));
     }
 
     @Test(timeout = 5000)
     @Category({UnitTest.class})
-    public void provideAlarmsByRuleListResult() {
-        // TODO Mock the MessagesController dependency
-        try {
-            Result result = controller.list(new DateTime("0").toString(), DateTime.now().toString(), "asc", 0, 0, null);
-            assertThat(result.body().isKnownEmpty(), is(false));
-        } catch (Exception ex) {
-            assertThat(ex.getStackTrace().toString(), is(false));
-        }
+    public void provideAlarmsByRuleListResult() throws Exception {
+        ArrayList<AlarmServiceModel> alarmResult = new ArrayList<AlarmServiceModel>() {{
+            add(new AlarmServiceModel());
+            add(new AlarmServiceModel());
+        }};
+
+        IAlarms alarms = mock(IAlarms.class);
+        AlarmsByRuleController controller = new AlarmsByRuleController(alarms);
+        when(alarms.getList(
+            DateTime.now(), DateTime.now(), "asc", 0, 100, new String[0]))
+            .thenReturn(alarmResult);
+
+        // Act
+        Result response = controller.list(null, null, null, 0, 0, null);
+
+        // Assert
+        assertThat(response.body().isKnownEmpty(), is(false));
     }
 }

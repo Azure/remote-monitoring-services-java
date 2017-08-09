@@ -32,17 +32,21 @@ public class QueryBuilder {
         }
 
         if (from != null) {
-            queryBuilder.append(" AND c[`" + fromProperty + "`] >= `" + from.toDateTime().getMillis() + "`");
+            queryBuilder.append(" AND c[`" + fromProperty + "`] >= " + from.toDateTime().getMillis());
         }
         if (to != null) {
-            queryBuilder.append(" AND c[`" + toProperty + "`] <= `" + to.toDateTime().getMillis() + "`");
+            queryBuilder.append(" AND c[`" + toProperty + "`] <= " + to.toDateTime().getMillis());
         }
         queryBuilder.append(")");
 
-        if (order.equalsIgnoreCase("desc")) {
+        if(order == null) {
             queryBuilder.append(" ORDER BY c[`" + orderProperty + "`] DESC");
         } else {
-            queryBuilder.append(" ORDER BY c[`" + orderProperty + "`] ASC");
+            if (order.equalsIgnoreCase("desc")) {
+                queryBuilder.append(" ORDER BY c[`" + orderProperty + "`] DESC");
+            } else {
+                queryBuilder.append(" ORDER BY c[`" + orderProperty + "`] ASC");
+            }
         }
 
         return queryBuilder.toString().replace('`', '"');

@@ -3,15 +3,12 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers;
 
 import com.google.inject.Inject;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.IAlarmsByRule;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.IAlarms;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.helpers.DateHelper;
-import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.AlarmApiModel;
-import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.AlarmListApiModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.AlarmByRuleListApiModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.AlarmListByRuleApiModel;
 import play.Logger;
 import play.mvc.Result;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static play.libs.Json.toJson;
 import static play.mvc.Results.badRequest;
@@ -21,10 +18,10 @@ import static play.mvc.Results.ok;
 public class AlarmsByRuleController {
     private static final Logger.ALogger log = Logger.of(AlarmsByRuleController.class);
 
-    private final IAlarmsByRule alarmsByRule;
+    private final IAlarms alarmsByRule;
 
     @Inject
-    public AlarmsByRuleController(IAlarmsByRule alarmsByRule) {
+    public AlarmsByRuleController(IAlarms alarmsByRule) {
         this.alarmsByRule = alarmsByRule;
     }
 
@@ -53,7 +50,14 @@ public class AlarmsByRuleController {
             return badRequest("The number of devices cannot exceed 200");
         }
 
-        return ok(toJson(new AlarmListApiModel(this.alarmsByRule.getList(DateHelper.parseDate(from), DateHelper.parseDate(to), order, skip, limit, deviceIds))));
+        return ok(toJson(new AlarmByRuleListApiModel(
+            this.alarmsByRule.getList(
+                DateHelper.parseDate(from),
+                DateHelper.parseDate(to),
+                order,
+                skip,
+                limit,
+                deviceIds))));
     }
 
     /**
@@ -73,6 +77,14 @@ public class AlarmsByRuleController {
             return badRequest("The number of devices cannot exceed 200");
         }
 
-        return ok(toJson(new AlarmApiModel(this.alarmsByRule.get(id, DateHelper.parseDate(from), DateHelper.parseDate(to), order, skip, limit, deviceIds))));
+        return ok(toJson(new AlarmListByRuleApiModel(
+            this.alarmsByRule.getListByRule(
+                id,
+                DateHelper.parseDate(from),
+                DateHelper.parseDate(to),
+                order,
+                skip,
+                limit,
+                deviceIds))));
     }
 }

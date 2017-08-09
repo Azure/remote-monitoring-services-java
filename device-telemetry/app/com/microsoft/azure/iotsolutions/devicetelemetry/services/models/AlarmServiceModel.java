@@ -3,6 +3,7 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.services.models;
 
 import com.microsoft.azure.documentdb.Document;
+import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.AlarmByRuleApiModel;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -59,17 +60,31 @@ public final class AlarmServiceModel {
     }
 
     public AlarmServiceModel(Document doc) {
-        this.eTag = doc.getETag();
-        this.id = doc.getId();
-        this.dateCreated = new DateTime(doc.getLong("dateCreated"), DateTimeZone.UTC);
-        this.dateModified = new DateTime(doc.getLong("dateModified"), DateTimeZone.UTC);
-        this.description = doc.getString("description");
-        this.groupId = doc.getString("groupId");
-        this.deviceId = doc.getString("deviceId");
-        this.status = doc.getString("status");
-        this.ruleId = doc.getString("rule.id");
-        this.ruleSeverity = doc.getString("rule.severity");
-        this.ruleDescription = doc.getString("rule.description");
+        if (doc != null) {
+            this.eTag = doc.getETag();
+            this.id = doc.getId();
+            this.dateCreated = new DateTime(doc.getLong("dateCreated"), DateTimeZone.UTC);
+            this.dateModified = new DateTime(doc.getLong("dateModified"), DateTimeZone.UTC);
+            this.description = doc.getString("description");
+            this.groupId = doc.getString("group.id");
+            this.deviceId = doc.getString("device.id");
+            this.status = doc.getString("status");
+            this.ruleId = doc.getString("rule.id");
+            this.ruleSeverity = doc.getString("rule.severity");
+            this.ruleDescription = doc.getString("rule.description");
+        } else {
+            this.eTag = null;
+            this.id = null;
+            this.dateCreated = null;
+            this.dateModified = null;
+            this.description = null;
+            this.groupId = null;
+            this.deviceId = null;
+            this.status = null;
+            this.ruleId = null;
+            this.ruleSeverity = null;
+            this.ruleDescription = null;
+        }
     }
 
     public String getETag() {
@@ -108,7 +123,11 @@ public final class AlarmServiceModel {
         return this.ruleId;
     }
 
-    public String getRuleSeverity() { return this.ruleSeverity; }
+    public String getRuleSeverity() {
+        return this.ruleSeverity;
+    }
 
-    public String getRuleDescription() { return this.ruleDescription; }
+    public String getRuleDescription() {
+        return this.ruleDescription;
+    }
 }

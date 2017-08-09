@@ -12,8 +12,8 @@ GET    /v1/messages/                 com.microsoft.azure.iotsolutions.devicetele
 
 # Alarms list and management
 
-GET    /v1/alarms                    com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsController.list
-GET    /v1/alarms/                   com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsController.list
+GET    /v1/alarms                    com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsController.list(from ?= null, to ?= null, order: String ?= "asc", skip: Int ?= 0, limit: Int ?= 1000, devices ?= null)
+GET    /v1/alarms/                   com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsController.list(from ?= null, to ?= null, order: String ?= "asc", skip: Int ?= 0, limit: Int ?= 1000, devices ?= null)
 
 GET    /v1/alarms/:alarm_id          com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsController.get(alarm_id)
 GET    /v1/alarms/:alarm_id/         com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsController.get(alarm_id)

@@ -28,8 +28,8 @@ public class AlarmListApiModel {
     @JsonProperty("$metadata")
     public Dictionary<String, String> getMetadata() {
         return new Hashtable<String, String>() {{
-            put("$type", "AlarmsByRule;" + Version.NAME);
-            put("$uri", "/" + Version.NAME + "/alarmsbyrule");
+            put("$type", "Alarms;" + Version.NAME);
+            put("$uri", "/" + Version.NAME + "/alarms");
         }};
     }
 }
