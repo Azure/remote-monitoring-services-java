@@ -39,7 +39,7 @@ public class Alarms implements IAlarms {
                 order, "created",
                 skip,
                 limit,
-                devices, "deviceId");
+                devices, "device.id");
         ArrayList<Document> docs = this.storageClient.queryDocuments(
                 this.databaseName,
                 this.collectionId,
@@ -66,7 +66,7 @@ public class Alarms implements IAlarms {
                 order, "created",
                 skip,
                 limit,
-                devices, "deviceId");
+                devices, "device.id");
         ArrayList<Document> docs = this.storageClient.queryDocuments(
                 this.databaseName,
                 this.collectionId,
