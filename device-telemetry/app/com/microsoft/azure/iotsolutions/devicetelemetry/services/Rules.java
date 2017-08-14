@@ -2,161 +2,300 @@
 
 package com.microsoft.azure.iotsolutions.devicetelemetry.services;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.*;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ExternalDependencyException;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidInputException;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ResourceOutOfDateException;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.ConditionServiceModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.RuleServiceModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
+import play.Logger;
+import play.libs.Json;
+import play.libs.ws.WSClient;
+import play.libs.ws.WSRequest;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.CompletionStage;
 
 public final class Rules implements IRules {
 
+    private static final int CONFLICT = 409;
+    private static final int NOT_FOUND = 404;
+    private static final Logger.ALogger log = Logger.of(Rules.class);
+
+    private final String storageUrl;
+    private final WSClient wsClient;
+
     @Inject
-    public Rules() {
+    public Rules(
+        final IServicesConfig servicesConfig,
+        final WSClient wsClient) {
+
+        this.storageUrl = servicesConfig.getKeyValueStorageUrl() + "/collections/rules/values";
+        this.wsClient = wsClient;
     }
 
-    public RuleServiceModel get(String id) {
-        return this.getSampleRule();
+    public CompletionStage<RuleServiceModel> getAsync(String id) {
+
+        return this.prepareRequest(id)
+            .get()
+            .handle((result, error) -> {
+
+                if (error != null) {
+                    log.error("Key value storage request error: {}",
+                        error.getMessage());
+                    throw new CompletionException(
+                        new ExternalDependencyException(error.getMessage()));
+                }
+
+                if (result.getStatus() == NOT_FOUND) {
+                    return null;
+                }
+
+                try {
+                    return getRuleServiceModelFromJson(Json.parse(result.getBody()));
+                } catch (Exception e) {
+                    log.error("Could not parse result from Key Value Storage: {}",
+                        e.getMessage());
+                    throw new CompletionException(
+                        new ExternalDependencyException(
+                            "Could not parse result from Key Value Storage"));
+                }
+            });
     }
 
-    public ArrayList<RuleServiceModel> getList() {
-        return this.getSampleRules();
+    public CompletionStage<List<RuleServiceModel>> getListAsync(
+        String order,
+        int skip,
+        int limit,
+        String groupId) {
+
+        if (skip < 0 || limit <= 0) {
+            log.error("Key value storage parameter bounds error");
+            throw new CompletionException(
+                new InvalidInputException("Parameter bounds error"));
+        }
+
+        return this.prepareRequest(null)
+            .get()
+            .handle((result, error) -> {
+
+                if (error != null) {
+                    log.error("Key value storage request error: {}",
+                        error.getMessage());
+                    throw new CompletionException(
+                        new ExternalDependencyException(error.getMessage()));
+                }
+
+                try {
+                    ObjectMapper mapper = new ObjectMapper();
+                    JsonNode jsonResult = mapper.readTree(result.getBody());
+
+                    ArrayList<JsonNode> jsonList =
+                        getResultListFromJson(jsonResult);
+
+                    ArrayList<RuleServiceModel> ruleList = new ArrayList<>();
+
+                    for (JsonNode resultItem : jsonList) {
+                        RuleServiceModel rule =
+                            getRuleServiceModelFromJson(resultItem);
+
+                        if (groupId == null || rule.getGroupId() == groupId) {
+                            ruleList.add(rule);
+                        }
+                    }
+
+                    if (ruleList.isEmpty()) {
+                        return ruleList;
+                    }
+
+                    if (order.equalsIgnoreCase("asc")) {
+                        Collections.sort(ruleList);
+                    } else {
+                        Collections.sort(ruleList, Collections.reverseOrder());
+                    }
+
+                    if (skip >= ruleList.size()) {
+                        log.debug("Skip value greater than size of listAsync");
+                        return new ArrayList<>();
+                    } else if ((limit + skip) > ruleList.size()) {
+                        return ruleList.subList(skip, ruleList.size());
+                    }
+
+                    return ruleList.subList(skip, limit + skip);
+
+                } catch (Exception e) {
+                    log.error("Could not parse result from Key Value Storage: {}",
+                        e.getMessage());
+                    throw new CompletionException(
+                        new ExternalDependencyException(
+                            "Could not parse result from Key Value Storage"));
+                }
+            });
     }
 
-    public RuleServiceModel post(RuleServiceModel ruleServiceModel) {
-        return this.getSampleRule();
+    public CompletionStage<RuleServiceModel> postAsync(
+        RuleServiceModel ruleServiceModel) {
+
+        JsonNode jsonRule = Json.toJson(ruleServiceModel);
+
+        ObjectNode jsonData = new ObjectMapper().createObjectNode();
+        jsonData.put("Data", jsonRule.toString());
+
+        return this.prepareRequest(null)
+            .post(jsonData.toString())
+            .handle((result, error) -> {
+
+                if (error != null) {
+                    log.error("Key value storage request error: {}",
+                        error.getMessage());
+                    throw new CompletionException(
+                        new ExternalDependencyException(error.getMessage()));
+                }
+
+                try {
+                    return getRuleServiceModelFromJson(
+                        Json.parse(result.getBody()));
+                } catch (Exception e) {
+                    log.error("Could not parse result from Key Value Storage: {}",
+                        e.getMessage());
+                    throw new CompletionException(
+                        new ExternalDependencyException(
+                            "Could not parse result from Key Value Storage"));
+                }
+            });
     }
 
-    public RuleServiceModel put(RuleServiceModel ruleServiceModel) {
-        return this.getSampleRule();
+    public CompletionStage<RuleServiceModel> putAsync(RuleServiceModel ruleServiceModel) {
+
+        JsonNode jsonRule = Json.toJson(ruleServiceModel);
+
+        ObjectNode jsonData = new ObjectMapper().createObjectNode();
+        jsonData.put("Data", jsonRule.toString());
+        jsonData.put("ETag", ruleServiceModel.getETag());
+
+        return this.prepareRequest(ruleServiceModel.getId())
+            .put(jsonData.toString())
+            .handle((result, error) -> {
+
+                if (error != null) {
+                    log.error("Key value storage request error: {}",
+                        error.getMessage());
+                    throw new CompletionException(
+                        new ExternalDependencyException(error.getMessage()));
+                }
+
+                if (result.getStatus() == CONFLICT) {
+                    log.error("Key value storage ETag mismatch");
+                    throw new CompletionException(
+                        new ResourceOutOfDateException());
+                }
+
+                try {
+                    return getRuleServiceModelFromJson(
+                        Json.parse(result.getBody()));
+                } catch (Exception e) {
+                    log.error("Could not parse result from Key Value Storage: {}",
+                        e.getMessage());
+                    throw new CompletionException(
+                        new ExternalDependencyException(
+                            "Could not parse result from Key Value Storage"));
+                }
+            });
     }
 
-    public void delete(String id) {
-        return;
+    public CompletionStage deleteAsync(String id) {
+
+        return this.prepareRequest(id)
+            .delete()
+            .handle((result, error) -> {
+                if (error != null) {
+                    log.error("Key value storage request error: {}",
+                        error.getMessage());
+                    throw new CompletionException(
+                        new ExternalDependencyException(error.getMessage()));
+                }
+
+                return true;
+            });
     }
 
-    /**
-     * Get sample rules to return to client.
-     * TODO: remove after storage dependency is added
-     *
-     * @return sample rules array
-     */
-    private RuleServiceModel getSampleRule() {
-        // Init sample rule
-        ActionServiceModel sampleAction = null;
+    private WSRequest prepareRequest(String id) {
 
-        ArrayList<ConditionServiceModel> sampleConditionList = new ArrayList<>();
-        ConditionServiceModel sampleCondition = null;
-        sampleConditionList.add(sampleCondition);
+        String url = this.storageUrl;
+        if (id != null) {
+            url = url + "/" + id;
+        }
 
-        ArrayList<String> sampleEmails = new ArrayList<String>();
-        sampleEmails.add("janedoe@contoso.com");
-        sampleEmails.add("johndoe@contoso.com");
+        WSRequest wsRequest = this.wsClient
+            .url(url)
+            .addHeader("Content-Type", "application/json");
 
-        sampleAction = new ActionServiceModel(
-            "email",
-            "critical",
-            sampleEmails,
-            true,
-            false);
-
-        // Sample elevator-floor-error
-        sampleConditionList.set(0, new ConditionServiceModel(
-            "floor",
-            "GreaterThan",
-            "7"));
-        return new RuleServiceModel(
-            "6l1log0f7h2yt6p",
-            "sample-id",
-            "Elevator Floor Too High",
-            "2017-02-22T22:22:22-08:00",
-            "2017-03-12T22:03:00-08:00",
-            true,
-            "floor value is higher than 7",
-            "building502-elevators",
-            sampleConditionList,
-            sampleAction);
+        return wsRequest;
     }
 
-    /**
-     * Get sample rules to return to client.
-     * TODO: remove after storage dependency is added
-     *
-     * @return sample rules array
-     */
-    private ArrayList<RuleServiceModel> getSampleRules() {
-        ArrayList<RuleServiceModel> sampleRules = new ArrayList<>();
+    private ArrayList<JsonNode> getResultListFromJson(JsonNode response) {
 
-        // Init default sample data
-        ActionServiceModel sampleAction = null;
+        ArrayList<JsonNode> resultList = new ArrayList<>();
 
-        ArrayList<ConditionServiceModel> sampleConditionList = new ArrayList<>();
-        ConditionServiceModel sampleCondition = null;
-        sampleConditionList.add(sampleCondition);
+        for (JsonNode item : response.withArray("items")) {
+            try {
+                resultList.add(item);
+            } catch (Exception e) {
+                log.error("Could not parse data from Key Value Storage");
+                throw new CompletionException(
+                    new ExternalDependencyException(
+                        "Could not parse data from Key Value Storage"));
+            }
+        }
 
-        ArrayList<String> sampleEmails = new ArrayList<String>();
-        sampleEmails.add("janedoe@contoso.com");
-        sampleEmails.add("johndoe@contoso.com");
+        return resultList;
+    }
 
-        sampleAction = new ActionServiceModel(
-            "email",
-            "critical",
-            sampleEmails,
-            true,
-            false);
+    private RuleServiceModel getRuleServiceModelFromJson(JsonNode response) {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jsonResultRule = null;
 
-        // Sample elevator-floor-error
-        sampleConditionList.set(0, new ConditionServiceModel(
-            "floor",
-            "GreaterThan",
-            "7"));
+        try {
+            jsonResultRule = mapper.readTree(response.findValue("Data").asText());
+        } catch (Exception e) {
+            log.error("Could not parse data from Key Value Storage. " +
+                "Json result: {}", jsonResultRule.asText());
+            throw new CompletionException(
+                new ExternalDependencyException(
+                    "Could not parse data from Key Value Storage"));
+        }
 
-        sampleRules.add(new RuleServiceModel(
-            "6l1log0f7h2yt6p",
-            "5e503de7-0c57-4902-8654-dc82357360d1",
-            "Elevator Floor Too High",
-            "2017-02-22T22:22:22-08:00",
-            "2017-03-12T22:03:00-08:00",
-            true,
-            "floor value is higher than 7",
-            "building502-elevators",
-            sampleConditionList,
-            sampleAction));
+        if (jsonResultRule != null) {
+            ArrayList<ConditionServiceModel> conditions = new ArrayList<>();
+            for (JsonNode condition : jsonResultRule.withArray("conditions")) {
+                conditions.add(
+                    new ConditionServiceModel(
+                        condition.findValue("field").asText(),
+                        condition.findValue("operator").asText(),
+                        condition.findValue("value").asText())
+                );
+            }
 
-        // Sample elevator-speed-error
-        sampleConditionList.set(0, new ConditionServiceModel(
-            "speed",
-            "GreaterThan",
-            "20"));
-
-        sampleRules.add(new RuleServiceModel(
-            "kkru1d1ouqahpmg",
-            "92aaadb3-1f89-4bde-aace-5691f0b0e337",
-            "Elevator Speed Error",
-            "2017-01-11T11:11:11-08:00",
-            "2017-04-11T01:14:26-08:00",
-            false,
-            "speed is > 20mph",
-            "building502-elevators",
-            sampleConditionList,
-            sampleAction));
-
-        // Sample cable-temp-error
-        sampleConditionList.set(0, new ConditionServiceModel(
-            "temperature",
-            "GreaterThan",
-            "110"));
-
-        sampleRules.add(new RuleServiceModel(
-            "yoyzac6ovqq43w4",
-            "d1b8c389-ef50-4988-87ef-446dbb48ce4d",
-            "Elevator Cable Temp Error",
-            "2017-03-13T13:31:13-08:00",
-            "2017-04-11T01:20:04-08:00",
-            true,
-            "temperature of cables is above 110 deg F",
-            "building502-elevators",
-            sampleConditionList,
-            sampleAction));
-
-        return sampleRules;
+            return new RuleServiceModel(
+                response.findValue("ETag").asText(),
+                response.findValue("Key").asText(),
+                jsonResultRule.findValue("name").asText(),
+                jsonResultRule.findValue("dateCreated").asText(),
+                jsonResultRule.findValue("dateModified").asText(),
+                jsonResultRule.findValue("enabled").asBoolean(),
+                jsonResultRule.findValue("description").asText(),
+                jsonResultRule.findValue("groupId").asText(),
+                jsonResultRule.findValue("severity").asText(),
+                conditions
+            );
+        }
+        return null;
     }
 }

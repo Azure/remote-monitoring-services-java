@@ -16,6 +16,9 @@ public final class ConditionApiModel {
     private String operator = null;
     private String value = null;
 
+    public ConditionApiModel() {
+    }
+
     /**
      * Create an instance given the property values.
      *
@@ -58,5 +61,13 @@ public final class ConditionApiModel {
     @JsonProperty("Value")
     public String getValue() {
         return this.value;
+    }
+
+    public ConditionServiceModel toServiceModel() {
+        return new ConditionServiceModel(
+            this.getField(),
+            this.getOperator(),
+            this.getValue()
+        );
     }
 }

@@ -4,13 +4,11 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.ConditionServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.RuleServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.Version;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
+import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
@@ -23,15 +21,13 @@ public final class RuleApiModel {
     private String eTag;
     private String id;
     private String name;
-    private DateTime dateCreated;
-    private DateTime dateModified;
+    private String dateCreated;
+    private String dateModified;
     private boolean enabled;
     private String description;
-    private String groupId = null;
-    private ConditionListApiModel conditions;
-    private ActionApiModel action;
-
-    private DateTimeFormatter dateFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
+    private String groupId;
+    private String severity;
+    private ArrayList<ConditionApiModel> conditions;
 
     /**
      * Create an instance given the property values.
@@ -43,20 +39,21 @@ public final class RuleApiModel {
      * @param dateModified
      * @param enabled
      * @param description
+     * @param groupId
+     * @param severity
      * @param conditions
-     * @param action
      */
     public RuleApiModel(
         final String eTag,
         final String id,
         final String name,
-        final DateTime dateCreated,
-        final DateTime dateModified,
+        final String dateCreated,
+        final String dateModified,
         final boolean enabled,
         final String description,
         final String groupId,
-        final ConditionListApiModel conditions,
-        final ActionApiModel action
+        final String severity,
+        final ArrayList<ConditionApiModel> conditions
     ) {
         this.eTag = eTag;
         this.id = id;
@@ -66,8 +63,8 @@ public final class RuleApiModel {
         this.enabled = enabled;
         this.description = description;
         this.groupId = groupId;
+        this.severity = severity;
         this.conditions = conditions;
-        this.action = action;
     }
 
     /**
@@ -80,13 +77,18 @@ public final class RuleApiModel {
             this.eTag = rule.getETag();
             this.id = rule.getId();
             this.name = rule.getName();
-            this.dateCreated = rule.getDateCreated();
-            this.dateModified = rule.getDateModified();
+            this.dateCreated = rule.getDateCreated().toString();
+            this.dateModified = rule.getDateModified().toString();
             this.enabled = rule.getEnabled();
             this.description = rule.getDescription();
             this.groupId = rule.getGroupId();
-            this.conditions = new ConditionListApiModel(rule.getConditions());
-            this.action = new ActionApiModel(rule.getAction());
+            this.severity = rule.getSeverity();
+
+            // create listAsync of ConditionApiModel from ConditionServiceModel listAsync
+            this.conditions = new ArrayList<>();
+            for (ConditionServiceModel condition : rule.getConditions()) {
+                this.conditions.add(new ConditionApiModel(condition));
+            }
         }
     }
 
@@ -107,12 +109,12 @@ public final class RuleApiModel {
 
     @JsonProperty("DateCreated")
     public String getDateCreated() {
-        return dateFormat.print(this.dateCreated.toDateTime(DateTimeZone.UTC));
+        return dateCreated;
     }
 
     @JsonProperty("DateModified")
     public String getDateModified() {
-        return dateFormat.print(this.dateModified.toDateTime(DateTimeZone.UTC));
+        return dateModified;
     }
 
     @JsonProperty("Enabled")
@@ -130,14 +132,14 @@ public final class RuleApiModel {
         return this.groupId;
     }
 
-    @JsonProperty("Conditions")
-    public ConditionListApiModel getConditions() {
-        return this.conditions;
+    @JsonProperty("Severity")
+    public String getSeverity() {
+        return this.severity;
     }
 
-    @JsonProperty("Action")
-    public ActionApiModel getAction() {
-        return this.action;
+    @JsonProperty("Conditions")
+    public ArrayList<ConditionApiModel> getConditions() {
+        return this.conditions;
     }
 
     @JsonProperty("$metadata")
@@ -146,5 +148,26 @@ public final class RuleApiModel {
             put("$type", "Rule;" + Version.NAME);
             put("$uri", "/" + Version.NAME + "/rules/" + id);
         }};
+    }
+
+    public RuleServiceModel toServiceModel() {
+        ArrayList<ConditionServiceModel> conditionServiceModelArrayList =
+            new ArrayList<>();
+
+        for (ConditionApiModel condition : this.getConditions()) {
+            conditionServiceModelArrayList.add(condition.toServiceModel());
+        }
+
+        return new RuleServiceModel(
+            this.getETag(),
+            this.getId(),
+            this.getName(),
+            this.getDateCreated(),
+            this.getDateModified(),
+            this.getEnabled(),
+            this.getDescription(),
+            this.getGroupId(),
+            this.getSeverity(),
+            conditionServiceModelArrayList);
     }
 }

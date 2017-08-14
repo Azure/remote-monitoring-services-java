@@ -3,23 +3,22 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.services.models;
 
 import org.joda.time.DateTime;
-import org.joda.time.format.ISODateTimeFormat;
 
 import java.util.ArrayList;
 
-public final class RuleServiceModel {
+public final class RuleServiceModel implements Comparable<RuleServiceModel> {
 
     private final String eTag;
     private final String id;
     private final String name;
-    private final DateTime dateCreated;
-    private final DateTime dateModified;
+    private final String dateCreated;
+    private final String dateModified;
     private final Boolean enabled;
     private final String description;
     private final String groupId;
+    private final String severity;
 
     private final ArrayList<ConditionServiceModel> conditions;
-    private final ActionServiceModel action;
 
     public RuleServiceModel() {
         this.eTag = null;
@@ -30,9 +29,30 @@ public final class RuleServiceModel {
         this.enabled = null;
         this.description = null;
         this.groupId = null;
+        this.severity = null;
 
         this.conditions = null;
-        this.action = null;
+    }
+
+    public RuleServiceModel(
+        final String name,
+        final Boolean enabled,
+        final String description,
+        final String groupId,
+        final String severity,
+        final ArrayList<ConditionServiceModel> conditions) {
+
+        this.name = name;
+        this.enabled = enabled;
+        this.description = description;
+        this.groupId = groupId;
+        this.severity = severity;
+        this.conditions = conditions;
+
+        this.eTag = "";
+        this.id = "";
+        this.dateCreated = DateTime.now().toString();
+        this.dateModified = DateTime.now().toString();
     }
 
     public RuleServiceModel(
@@ -44,20 +64,20 @@ public final class RuleServiceModel {
         final Boolean enabled,
         final String description,
         final String groupId,
-        final ArrayList<ConditionServiceModel> conditions,
-        final ActionServiceModel action) {
+        final String severity,
+        final ArrayList<ConditionServiceModel> conditions) {
 
         this.eTag = eTag;
         this.id = id;
         this.name = name;
-        this.dateCreated = DateTime.parse(dateCreated, ISODateTimeFormat.dateTimeParser().withZoneUTC());
-        this.dateModified = DateTime.parse(dateModified, ISODateTimeFormat.dateTimeParser().withZoneUTC());
+        this.dateCreated = dateCreated;
+        this.dateModified = dateModified;
         this.enabled = enabled;
         this.description = description;
         this.groupId = groupId;
+        this.severity = severity;
 
         this.conditions = conditions;
-        this.action = action;
     }
 
     public String getETag() {
@@ -72,11 +92,11 @@ public final class RuleServiceModel {
         return this.name;
     }
 
-    public DateTime getDateCreated() {
+    public String getDateCreated() {
         return this.dateCreated;
     }
 
-    public DateTime getDateModified() {
+    public String getDateModified() {
         return this.dateModified;
     }
 
@@ -92,11 +112,16 @@ public final class RuleServiceModel {
         return this.groupId;
     }
 
+    public String getSeverity() {
+        return this.severity;
+    }
+
     public ArrayList<ConditionServiceModel> getConditions() {
         return this.conditions;
     }
 
-    public ActionServiceModel getAction() {
-        return this.action;
+    @Override
+    public int compareTo(RuleServiceModel rule) {
+        return getDateCreated().compareTo(rule.getDateCreated());
     }
 }
