@@ -1,9 +1,8 @@
-@ECHO off
-setlocal
+@ECHO off & setlocal enableextensions enabledelayedexpansion
 
-:: strlen("\scripts\") => 9
+:: strlen("\scripts\docker\") => 16
 SET APP_HOME=%~dp0
-SET APP_HOME=%APP_HOME:~0,-9%
+SET APP_HOME=%APP_HOME:~0,-16%
 cd %APP_HOME%
 
 :: Check dependencies

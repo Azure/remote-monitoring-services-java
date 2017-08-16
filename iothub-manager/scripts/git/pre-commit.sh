@@ -4,6 +4,8 @@ set -e
 APP_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && cd .. && pwd )/"
 source "$APP_HOME/scripts/git/.functions.sh"
 
+SANDBOX_MODE="$1"
+
 cd $APP_HOME
 echo "Current folder: `pwd`"
 
@@ -93,22 +95,18 @@ check_do_not_commit() {
     set -e
 }
 
-verify_build_gradle() {
+verify_build() {
     header "Verifying build..."
 
-    cd $APP_HOME/scripts
-    if test $(./build | grep "BUILD SUCCESSFUL" | wc -l) != 1 ; then
-        error "Some tests failed."
-        exit 1
+    if [[ "$SANDBOX_MODE" == "--with-sandbox" ]]; then
+        BUILDCMD="./build --in-sandbox"
+    else
+        BUILDCMD="./build"
     fi
-}
-
-verify_build_sbt() {
-    header "Verifying build..."
 
     cd $APP_HOME/scripts
-    if test $(./build | grep 'Total time' | grep 'success' | wc -l) != 1 ; then
-        error "Some tests failed."
+    if test $($BUILDCMD | grep 'Total time' | grep 'success' | wc -l) != 1 ; then
+        error "Some tests failed. Run the build script for more details."
         exit 1
     fi
 }
@@ -116,4 +114,6 @@ verify_build_sbt() {
 check_filenames
 check_whitespaces
 check_do_not_commit
-verify_build_sbt
+verify_build
+
+set +e

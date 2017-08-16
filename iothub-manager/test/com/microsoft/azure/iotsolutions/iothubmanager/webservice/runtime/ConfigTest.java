@@ -27,7 +27,7 @@ public class ConfigTest {
         Config target = new Config();
 
         int port = target.getPort();
-        assertThat(port, is(8080));
+        assertThat(port, is(9002));
     }
 
     @Test(timeout = 1000)

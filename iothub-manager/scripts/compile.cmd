@@ -20,12 +20,8 @@ IF "%1"=="--in-sandbox" GOTO :RunInSandbox
     java -version > NUL 2>&1
     IF %ERRORLEVEL% NEQ 0 GOTO MISSING_JAVA
 
-    :: Check settings
-    call .\scripts\env-vars-check.cmd
-    IF %ERRORLEVEL% NEQ 0 GOTO FAIL
-
     :: Run tests
-    call sbt test
+    call sbt compile
     IF %ERRORLEVEL% NEQ 0 GOTO FAIL
 
     goto :END
@@ -42,10 +38,6 @@ IF "%1"=="--in-sandbox" GOTO :RunInSandbox
     docker version > NUL 2>&1
     IF %ERRORLEVEL% NEQ 0 GOTO MISSING_DOCKER
 
-    :: Check settings
-    call .\scripts\env-vars-check.cmd
-    IF %ERRORLEVEL% NEQ 0 GOTO FAIL
-
     :: Create cache folders to speed up future executions
     mkdir %PCS_CACHE%\sandbox\.ivy2 > NUL 2>&1
     mkdir %PCS_CACHE%\sandbox\.sbt > NUL 2>&1
@@ -53,12 +45,10 @@ IF "%1"=="--in-sandbox" GOTO :RunInSandbox
 
     :: Start the sandbox and execute the build script
     docker run -it ^
-        -e "PCS_IOTHUBMANAGER_WEBSERVICE_URL=%PCS_IOTHUBMANAGER_WEBSERVICE_URL%" ^
-        -e "PCS_IOTHUB_CONNSTRING=%PCS_IOTHUB_CONNSTRING%" ^
         -v %PCS_CACHE%\sandbox\.ivy2:/root/.ivy2 ^
         -v %PCS_CACHE%\sandbox\.sbt:/root/.sbt ^
         -v %APP_HOME%:/opt/code ^
-        azureiotpcs/code-builder-java:1.0 /opt/code/scripts/build
+        azureiotpcs/code-builder-java:1.0 /opt/code/scripts/compile
 
     :: Error 125 typically triggers in Windows if the drive is not shared
     IF %ERRORLEVEL% EQU 125 GOTO DOCKER_SHARE

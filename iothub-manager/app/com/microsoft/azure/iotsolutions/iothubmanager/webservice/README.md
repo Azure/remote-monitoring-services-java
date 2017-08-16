@@ -3,7 +3,7 @@ Web service
 
 # Play framework
 
-The web service is built on Play Framework 2.5. Play is heavily inspired by
+The web service is built on Play Framework 2.6. Play is heavily inspired by
 ASP.NET MVC, Ruby on Rails and Django and is similar to this family of
 frameworks. Rich documentation can be found here:
 
@@ -41,4 +41,4 @@ You can find more information about Play Framework in
 * The microservice configuration is defined in the `application.conf` file
   stored in the `conf` folder.
 * The service is structured following the default
-  [anatomy of a Play application](https://www.playframework.com/documentation/2.5.x/Anatomy)
+  [anatomy of a Play application](https://www.playframework.com/documentation/2.6.x/Anatomy)

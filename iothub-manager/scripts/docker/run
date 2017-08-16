@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
 # Note: use lowercase names for the Docker images
-DOCKER_IMAGE="azureiotpcs/iothub-manager-java:0.1-SNAPSHOT"
-EXT_PORT=8080
+DOCKER_IMAGE="azureiotpcs/iothub-manager-java"
 
 set -e
 APP_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && cd .. && pwd )/"
@@ -10,8 +9,15 @@ source "$APP_HOME/scripts/.functions.sh"
 
 run_container() {
     check_dependency_docker
-    echo "Starting web service at: http://localhost:$EXT_PORT"
-    docker run -it -p $EXT_PORT:8080 -e "PCS_IOTHUB_CONNSTRING=$PCS_IOTHUB_CONNSTRING" "$DOCKER_IMAGE"
+
+    $APP_HOME/scripts/env-vars-check
+
+    # Some settings are used to connect to an external dependency, e.g. Azure IoT Hub and IoT Hub Manager API
+    # Depending on which settings and which dependencies are needed, edit the list of variables
+    echo "Starting IoT Hub Manager ..."
+    docker run -it -p 9002:9002 \
+        -e "PCS_IOTHUB_CONNSTRING=\"$PCS_IOTHUB_CONNSTRING\"" \
+        "$DOCKER_IMAGE"
 }
 
 run_container

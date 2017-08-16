@@ -4,18 +4,12 @@ set -e
 APP_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )/"
 source "$APP_HOME/scripts/.functions.sh"
 
-gradle_package() {
-    check_dependency_java
-
-    cd $APP_HOME
-    ./gradlew distZip && echo -n "Package available at: " && echo $(find build/distributions -name *.zip)
-}
-
 sbt_package() {
     check_dependency_java
 
     cd $APP_HOME
-    ./sbt assembly && echo -n "Package available at: " && echo $(find target/scala-2.11 -name *.jar |grep assembly)
+    chmod +x sbt
+    ./sbt assembly && echo -n "Package available at: " && echo $(find target/scala-2.12 -name *.jar |grep assembly)
 }
 
 sbt_package
