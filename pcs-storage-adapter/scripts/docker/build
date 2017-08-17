@@ -8,6 +8,7 @@ sbt_build_docker_image() {
     check_dependency_docker
 
     cd $APP_HOME
+    chmod +x sbt
     ./sbt docker:publishLocal
 }
 

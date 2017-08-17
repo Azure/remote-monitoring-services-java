@@ -8,7 +8,8 @@ sbt_package() {
     check_dependency_java
 
     cd $APP_HOME
-    ./sbt assembly && echo -n "Package available at: " && echo $(find target/scala-2.11 -name *.jar |grep assembly)
+    chmod +x sbt
+    ./sbt assembly && echo -n "Package available at: " && echo $(find target/scala-2.12 -name *.jar |grep assembly)
 }
 
 sbt_package

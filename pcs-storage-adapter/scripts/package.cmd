@@ -1,5 +1,4 @@
-@ECHO off
-setlocal
+@ECHO off & setlocal enableextensions enabledelayedexpansion
 
 :: strlen("\scripts\") => 9
 SET APP_HOME=%~dp0
@@ -15,7 +14,7 @@ call ./sbt assembly
 IF %ERRORLEVEL% NEQ 0 GOTO FAIL
 
 echo Package available at:
-dir target/scala-2.11\*assembly*.jar
+dir target/scala-2.12\*assembly*.jar
 
 :: - - - - - - - - - - - - - -
 goto :END

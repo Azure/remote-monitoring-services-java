@@ -45,7 +45,8 @@ $ git commit -m "A brief summary of the commit
 > A paragraph describing what changed and its impact."
 ```
 
-Finally, push the commits to your fork, submit a pull request and follow the
-code review progress. The team might ask for some
+Finally, push the commits to your fork, submit a pull request, wait for the
+automated feedback from Travis CI, and follow the code review progress. The
+team might ask for some
 [changes](https://help.github.com/articles/committing-changes-to-a-pull-request-branch-created-from-a-fork)
 before merging the pull request.

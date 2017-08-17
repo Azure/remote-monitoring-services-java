@@ -11,7 +11,7 @@ before_cache:
 before_install:
 - set -e
 script:
-- bash ./$CODEBASE/scripts/build
+- "bash ./$CODEBASE/scripts/build"
 notifications:
   slack:
     secure: bO3B9Gknwep7hFUxZmE1JUoHKK3nzu+HIYcTwkMR1ub339d2pzeJtHhbmeFAJt98SNFzhufO/+nREe9cXWS+G71bNAjipZBleVMXcZV19CMjS+hZsF9dpGEQYDeZ7ToTNTyw254DBmpIfIKGhuVSSjfweNxLEg/czmVFuemDtDUA+EdUgVEvtiJNzP6by+tgd4eNh7eCzjs2uQ1ylmSpuGXbrQjP7XNQ6uAy1+ELUMv/Zsrq2K/2xaGDK64+FGAVTCk19ekfYeANVBcbOqboWtccKeTW0T596yStG6hH/dcWSh7x94U3O9lUjd2wbiFmd+/Qph1MkH+57FavgOUJn7GW0Bidi2fZa+EwQFTW1MV/BQWRFan1CsLnM+72okpy+czigaBbCnaTgCStOyd15O9m76P+CxeHxsYlHuMARo/Zul1+a9lZ8/HIwuVx4FKVzqBbz7JLEZo3NMRUldxqoumlElrx+2vTmoKQhXGSL6V7YoV7tX4+JqjmR4ic+9V/y64g3NlkQWYV14jmpk1utBmM67p7PyS37vHZMABvBTmx2pe7Fil4WzgyGZ80gNA3oKGgOkd6behR3N4GnIOc3Wh7My5yCAKb30/AH4N/5EkGTesudDvxDJpzC7aSlaGdiX0aqhZ+hyM0Kv4Y2BFlCg00ZaR1FIGipqEFW2jints=

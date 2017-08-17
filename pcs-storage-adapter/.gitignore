@@ -9,9 +9,10 @@ _dev/
 *.bck
 .classpath
 .project
-envvars.sh
+*_.sh
 .cache/**
 .travis
+*.dll
 
 
 ### Java

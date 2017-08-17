@@ -18,6 +18,8 @@ How to use it
 ... steps to use this project ...
 ... deployment notes ...
 
+[Development, debugging, configuration, etc.](DEVELOPMENT.md)
+
 Configuration
 =============
 
