@@ -13,7 +13,7 @@ libraryDependencies ++= {
     "com.microsoft.azure.sdk.iot" % "iot-service-client" % "1.4.20"
   )
 }
-
+libraryDependencies += "org.apache.httpcomponents" % "httpclient" % "4.5.3"
 lazy val commonSettings = Seq(
   version := "0.1-SNAPSHOT",
 
