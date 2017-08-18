@@ -4,6 +4,7 @@ package com.microsoft.azure.iotsolutions.storageadapter.webservice.v1.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.microsoft.azure.iotsolutions.storageadapter.services.Status;
 import com.microsoft.azure.iotsolutions.storageadapter.webservice.runtime.Uptime;
 import com.microsoft.azure.iotsolutions.storageadapter.webservice.v1.Version;
 import org.joda.time.DateTime;
@@ -16,15 +17,14 @@ import java.util.Hashtable;
 
 @JsonPropertyOrder({"Status", "CurrentTime", "StartTime", "UpTime", "Properties", "Dependencies", "$metadata"})
 public final class StatusApiModel {
-
+    private Status documentDBStatus;
     private String status;
     private DateTimeFormatter dateFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
 
-    public StatusApiModel(final Boolean isOk, final String msg) {
-        this.status = isOk ? "OK" : "ERROR";
-        if (!msg.isEmpty()) {
-            this.status += ":" + msg;
-        }
+    public StatusApiModel(final Status documentDBStatus) {
+        this.documentDBStatus = documentDBStatus;
+        this.status = documentDBStatus.isHealthy() ? "OK" : "ERROR";
+        status += documentDBStatus.getStatusMessage();
     }
 
     @JsonProperty("Name")
@@ -66,6 +66,7 @@ public final class StatusApiModel {
     @JsonProperty("Dependencies")
     public Dictionary<String, String> getDependencies() {
         return new Hashtable<String, String>() {{
+            put("Storage", documentDBStatus.getStatusMessage());
         }};
     }
 

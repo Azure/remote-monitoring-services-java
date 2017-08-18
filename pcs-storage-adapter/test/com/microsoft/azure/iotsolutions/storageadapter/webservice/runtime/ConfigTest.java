@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import static org.hamcrest.core.IsNot.not;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public class ConfigTest {
@@ -23,20 +24,13 @@ public class ConfigTest {
         // something after every test
     }
 
+    // IMPORTANT: when creating a service from the template, uncomment this test
     @Test(timeout = 1000)
     @Category({UnitTest.class})
     public void providesWebServicePort() {
-        Config target = new Config();
-        int port = target.getPort();
-        assertThat(port, not(0));
-    }
-
-    @Test(timeout = 1000)
-    @Category({UnitTest.class})
-    public void providesWebServiceHostname() {
-        Config target = new Config();
-
-        //String hostname = target.getHostname();
-        //assertThat(hostname, is("0.0.0.0"));
+        Config config = new Config();
+        assertThat(config.getPort(), not(0));
+        assertNotNull(config.getServicesConfig().getContainerName());
+        assertNotNull(config.getServicesConfig().getDocumentDBConnectionString());
     }
 }

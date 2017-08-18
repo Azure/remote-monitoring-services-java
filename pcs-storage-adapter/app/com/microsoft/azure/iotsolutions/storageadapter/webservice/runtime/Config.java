@@ -2,6 +2,7 @@
 
 package com.microsoft.azure.iotsolutions.storageadapter.webservice.runtime;
 
+import com.google.inject.Singleton;
 import com.microsoft.azure.iotsolutions.storageadapter.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.storageadapter.services.runtime.ServicesConfig;
 import com.typesafe.config.ConfigFactory;
@@ -9,10 +10,21 @@ import com.typesafe.config.ConfigFactory;
 // TODO: documentation
 // TODO: handle exceptions
 
+@Singleton
 public class Config implements IConfig {
 
+    // Namespace applied to all the custom configuration settings
     private final String Namespace = "com.microsoft.azure.iotsolutions.";
-    private final String Application = "StorageAdapter.";
+
+    // Settings about this application
+    private final String ApplicationKey = Namespace + "StorageAdapter.";
+    private final String PortKey = ApplicationKey + "webservice-port";
+    private final String ContainerNameKey = ApplicationKey + "container_name";
+
+    // Settings about an external dependency, e.g. DocumentDB
+    private final String StorageKey = Namespace + "storage.";
+    private final String StorageConnectionStringKey = StorageKey + "connection_string";
+
 
     private com.typesafe.config.Config data;
     private IServicesConfig servicesConfig;
@@ -22,7 +34,9 @@ public class Config implements IConfig {
         // environment variables
         data = ConfigFactory.load();
 
-        this.servicesConfig = new ServicesConfig();
+        String connectionString = data.getString(StorageConnectionStringKey);
+        String containerName = data.getString(ContainerNameKey);
+        this.servicesConfig = new ServicesConfig(connectionString, containerName);
     }
 
     /**
@@ -31,17 +45,7 @@ public class Config implements IConfig {
      * @return TCP port number
      */
     public int getPort() {
-        return data.getInt(Namespace + Application + "webservice-port");
-    }
-
-    /**
-     * Get the hostname where the service listen for requests, e.g. 0.0.0.0 when
-     * listening to all the network adapters.
-     *
-     * @return Hostname or IP address
-     */
-    public String getHostname() {
-        return data.getString(Namespace + Application + "webservice-hostname");
+        return data.getInt(PortKey);
     }
 
     /**
