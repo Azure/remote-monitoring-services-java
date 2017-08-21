@@ -42,16 +42,6 @@ public class DocumentClientFactory implements IFactory<DocumentClient> {
         }
     }
 
-    private static String getDocumentDbUri(String DocumentDbConnString) {
-        Pattern pattern = Pattern.compile(".*AccountEndpoint=(.*);.*");
-        Matcher matcher = pattern.matcher(DocumentDbConnString);
-        if (matcher.find()) {
-            return matcher.group(1);
-        } else {
-            return "";
-        }
-    }
-
     private void createDatabase(DocumentClient client, String databaseName) throws DocumentClientException {
         RequestOptions requestOptions = new RequestOptions();
         requestOptions.setOfferThroughput(400);
@@ -122,6 +112,16 @@ public class DocumentClientFactory implements IFactory<DocumentClient> {
         if (matcher.find()) {
             this.databaseName = matcher.group(1);
             this.collectionId = matcher.group(2);
+        }
+    }
+
+    private static String getDocumentDbUri(String DocumentDbConnString) {
+        Pattern pattern = Pattern.compile(".*AccountEndpoint=(.*);.*");
+        Matcher matcher = pattern.matcher(DocumentDbConnString);
+        if (matcher.find()) {
+            return matcher.group(1);
+        } else {
+            return "";
         }
     }
 

@@ -3,8 +3,8 @@
 # Some settings are used to connect to an external dependency, e.g. Azure IoT Hub and IoT Hub Manager API
 # Depending on which settings and which dependencies are needed, edit the list of variables checked
 
-if [[ -z "$PCS_STORAGE_CONNSTRING" ]]; then
-    echo "Error: the PCS_STORAGE_CONNSTRING environment variable is not defined."
+if [[ -z "$PCS_STORAGEADAPTER_DOCUMENTDB_CONNSTRING" ]]; then
+    echo "Error: the PCS_STORAGEADAPTER_DOCUMENTDB_CONNSTRING environment variable is not defined."
     exit -1
 fi
 

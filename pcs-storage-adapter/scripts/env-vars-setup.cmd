@@ -7,4 +7,4 @@
 SETX PCS_STORAGEADAPTER_CONTAINER_NAME "/dbs/.../colls/...
 
 :: The DocumentDb connection string
-SETX PCS_STORAGE_CONNSTRING "AccountEndpoint=https://....documents.azure.com:443/;AccountKey=...;"
+SETX PCS_STORAGEADAPTER_DOCUMENTDB_CONNSTRING "AccountEndpoint=https://....documents.azure.com:443/;AccountKey=...;"

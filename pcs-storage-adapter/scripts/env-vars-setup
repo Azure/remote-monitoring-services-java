@@ -16,4 +16,4 @@
 export PCS_STORAGEADAPTER_CONTAINER_NAME="/dbs/.../colls/..."
 
 # The DocumentDb connection string
-export PCS_STORAGE_CONNSTRING="AccountEndpoint=https://....documents.azure.com:443/;AccountKey=...;"
+export PCS_STORAGEADAPTER_DOCUMENTDB_CONNSTRING="AccountEndpoint=https://....documents.azure.com:443/;AccountKey=...;"
