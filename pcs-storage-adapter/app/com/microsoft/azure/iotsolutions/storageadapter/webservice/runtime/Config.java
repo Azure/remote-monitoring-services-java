@@ -17,12 +17,12 @@ public class Config implements IConfig {
     private final String Namespace = "com.microsoft.azure.iotsolutions.";
 
     // Settings about this application
-    private final String ApplicationKey = Namespace + "StorageAdapter.";
+    private final String ApplicationKey = Namespace + "pcs-storage-adapter-java.";
     private final String PortKey = ApplicationKey + "webservice-port";
     private final String ContainerNameKey = ApplicationKey + "container_name";
 
     // Settings about an external dependency, e.g. DocumentDB
-    private final String StorageKey = Namespace + "storage.";
+    private final String StorageKey = ApplicationKey + "storage.";
     private final String StorageConnectionStringKey = StorageKey + "connection_string";
 
 
