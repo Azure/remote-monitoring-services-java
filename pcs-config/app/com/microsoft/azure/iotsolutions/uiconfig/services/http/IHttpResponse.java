@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft. All rights reserved.
 
-package com.microsoft.azure.iotsolutions.uiconfig.services.Http;
+package com.microsoft.azure.iotsolutions.uiconfig.services.http;
 
 import org.apache.http.Header;
 

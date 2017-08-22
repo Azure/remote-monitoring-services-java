@@ -14,6 +14,7 @@ libraryDependencies ++= {
   )
 }
 libraryDependencies += "org.apache.httpcomponents" % "httpclient" % "4.5.3"
+libraryDependencies += "org.mockito" % "mockito-core" % "2.8.47"
 lazy val commonSettings = Seq(
   version := "0.1-SNAPSHOT",
 

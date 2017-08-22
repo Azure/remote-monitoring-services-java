@@ -3,4 +3,5 @@
 package com.microsoft.azure.iotsolutions.uiconfig.services.runtime;
 
 public interface IServicesConfig {
+    String getStorageAdapterApiUrl();
 }
