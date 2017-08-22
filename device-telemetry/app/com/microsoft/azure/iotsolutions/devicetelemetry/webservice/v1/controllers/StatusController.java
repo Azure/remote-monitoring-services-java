@@ -34,19 +34,11 @@ public final class StatusController extends Controller {
      * @return Service health details.
      */
     public CompletionStage<Result> index() {
-        Status storageClientStatus = this.storageClient.Ping();
+        Status storageClientStatus = this.storageClient.ping();
         CompletionStage<Status> keyValueStorageStatusResult = this.keyValueClient.pingAsync();
 
         return keyValueStorageStatusResult
-            .thenApply(keyValueStatus -> {
-                if (keyValueStatus.isHealthy()) {
-                    return ok(toJson(
-                        new StatusApiModel(storageClientStatus, keyValueStatus)));
-                }
-                else {
-                    return ok(toJson(
-                        new StatusApiModel(storageClientStatus, keyValueStatus)));
-                }
-            });
+            .thenApply(keyValueStatus -> ok(toJson(
+                new StatusApiModel(storageClientStatus, keyValueStatus))));
     }
 }

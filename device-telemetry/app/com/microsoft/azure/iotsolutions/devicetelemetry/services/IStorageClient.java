@@ -20,5 +20,5 @@ public interface IStorageClient {
 
     ArrayList<Document> queryDocuments(String databaseName, String colId, FeedOptions queryOptions, String queryString, int skip) throws Exception;
 
-    Status Ping();
+    Status ping();
 }

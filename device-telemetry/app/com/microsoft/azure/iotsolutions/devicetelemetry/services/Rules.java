@@ -27,6 +27,7 @@ public final class Rules implements IRules {
 
     private static final int CONFLICT = 409;
     private static final int NOT_FOUND = 404;
+    private static final int OK = 200;
     private static final Logger.ALogger log = Logger.of(Rules.class);
 
     private final String storageUrl;
@@ -106,7 +107,8 @@ public final class Rules implements IRules {
                         RuleServiceModel rule =
                             getRuleServiceModelFromJson(resultItem);
 
-                        if (groupId == null || rule.getGroupId() == groupId) {
+                        if (groupId == null ||
+                            groupId.equalsIgnoreCase(rule.getGroupId())) {
                             ruleList.add(rule);
                         }
                     }
@@ -152,6 +154,13 @@ public final class Rules implements IRules {
             .post(jsonData.toString())
             .handle((result, error) -> {
 
+                if (result.getStatus() != OK) {
+                    log.error("Key value storage error code {}",
+                        result.getStatusText());
+                    throw new CompletionException(
+                        new ExternalDependencyException(result.getStatusText()));
+                }
+
                 if (error != null) {
                     log.error("Key value storage request error: {}",
                         error.getMessage());
@@ -195,6 +204,11 @@ public final class Rules implements IRules {
                     log.error("Key value storage ETag mismatch");
                     throw new CompletionException(
                         new ResourceOutOfDateException());
+                } else if (result.getStatus() != OK) {
+                    log.error("Key value storage error code {}",
+                        result.getStatusText());
+                    throw new CompletionException(
+                        new ExternalDependencyException(result.getStatusText()));
                 }
 
                 try {

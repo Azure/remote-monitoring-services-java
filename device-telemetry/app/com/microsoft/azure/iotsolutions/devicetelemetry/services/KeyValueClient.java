@@ -8,6 +8,7 @@ import play.libs.ws.WSClient;
 import play.libs.ws.WSRequest;
 import play.libs.ws.WSResponse;
 
+import java.time.Duration;
 import java.util.concurrent.CompletionStage;
 
 public class KeyValueClient implements IKeyValueClient {
@@ -27,14 +28,19 @@ public class KeyValueClient implements IKeyValueClient {
     }
 
     public CompletionStage<Status> pingAsync() {
-        WSRequest request = wsClient.url(storageAdapterWebserviceUrl + "/v1/status");
+        WSRequest request = wsClient.url(storageAdapterWebserviceUrl + "/status");
+        request.setRequestTimeout(Duration.ofSeconds(10));
         CompletionStage<WSResponse> responsePromise = request.get();
 
         return responsePromise.handle((result, error) -> {
             if (error != null) {
                 return new Status(false, error.getMessage());
             } else {
-                return new Status(true, "Alive and well");
+                if (result.getStatus() == 200) {
+                    return new Status(true, "Alive and well");
+                } else {
+                    return new Status(false, result.getStatusText());
+                }
             }
         });
     }

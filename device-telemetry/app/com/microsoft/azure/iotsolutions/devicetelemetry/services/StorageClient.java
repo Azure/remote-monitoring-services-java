@@ -142,7 +142,7 @@ public class StorageClient implements IStorageClient {
     }
 
     @Override
-    public Status Ping() {
+    public Status ping() {
         URI response = null;
 
         if (this.client != null) {
