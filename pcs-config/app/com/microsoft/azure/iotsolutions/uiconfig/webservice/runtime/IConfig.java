@@ -15,15 +15,12 @@ public interface IConfig {
     int getPort();
 
     /**
-     * Get the hostname where the service listen for requests, e.g. 0.0.0.0 when
-     * listening to all the network adapters.
-     *
-     * @return Hostname or IP address
-     */
-    String getHostname();
-
-    /**
      * Service layer configuration
      */
     IServicesConfig getServicesConfig();
+
+    /**
+     * CORS whitelist, in form { "origins": [], "methods": [], "headers": [] }
+     */
+    String getCorsWhitelist();
 }

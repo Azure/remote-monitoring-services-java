@@ -136,7 +136,7 @@ public class Storage implements IStorage {
     private static DeviceGroupServiceModel createGroupServiceModel(ValueApiModel input) {
         DeviceGroupServiceModel output = fromJson(input.getData(), DeviceGroupServiceModel.class);
         output.setId(input.getKey());
-        output.seteTag(input.geteTag());
+        output.setETag(input.getETag());
         return output;
     }
 }

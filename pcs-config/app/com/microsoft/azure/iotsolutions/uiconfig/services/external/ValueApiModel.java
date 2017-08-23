@@ -2,22 +2,15 @@
 
 package com.microsoft.azure.iotsolutions.uiconfig.services.external;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Hashtable;
 
 public class ValueApiModel {
 
-    @SerializedName("Key")
     private String key;
-
-    @SerializedName("Data")
     private String data;
-
-    @SerializedName("ETag")
     private String eTag;
-
-    @SerializedName("$metadata")
     private Hashtable<String, String> metadata;
 
     public ValueApiModel() {
@@ -30,6 +23,7 @@ public class ValueApiModel {
         this.metadata = metadata;
     }
 
+    @JsonProperty("Key")
     public String getKey() {
         return key;
     }
@@ -38,6 +32,7 @@ public class ValueApiModel {
         this.key = key;
     }
 
+    @JsonProperty("Data")
     public String getData() {
         return data;
     }
@@ -46,14 +41,16 @@ public class ValueApiModel {
         this.data = data;
     }
 
-    public String geteTag() {
+    @JsonProperty("ETag")
+    public String getETag() {
         return eTag;
     }
 
-    public void seteTag(String eTag) {
+    public void setETag(String eTag) {
         this.eTag = eTag;
     }
 
+    @JsonProperty("$metadata")
     public Hashtable<String, String> getMetadata() {
         return metadata;
     }

@@ -2,6 +2,8 @@
 
 package com.microsoft.azure.iotsolutions.uiconfig.services.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -39,10 +41,12 @@ public class LogoServiceModel {
         this.type = type;
     }
 
+    @JsonProperty("Default")
     public static LogoServiceModel getDefault() {
         return Default;
     }
 
+    @JsonProperty("Image")
     public String getImage() {
         return image;
     }
@@ -51,6 +55,7 @@ public class LogoServiceModel {
         this.image = image;
     }
 
+    @JsonProperty("Type")
     public String getType() {
         return type;
     }

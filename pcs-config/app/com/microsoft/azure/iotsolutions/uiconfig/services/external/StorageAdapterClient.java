@@ -114,7 +114,7 @@ public class StorageAdapterClient implements IStorageAdapterClient {
     public CompletionStage<ValueApiModel> updateAsync(String collectionId, String key, String value, String etag) throws UnsupportedEncodingException, URISyntaxException {
         ValueApiModel model = new ValueApiModel();
         model.setData(value);
-        model.seteTag(etag);
+        model.setETag(etag);
         HttpRequest request = CreateRequest(String.format("collections/%s/values/%s", collectionId, key), model);
         return httpClient.putAsync(request).thenApplyAsync(m -> {
             try {

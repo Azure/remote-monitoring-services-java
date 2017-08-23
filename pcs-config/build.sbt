@@ -16,7 +16,7 @@ libraryDependencies ++= {
 libraryDependencies += "org.apache.httpcomponents" % "httpclient" % "4.5.3"
 libraryDependencies += "org.mockito" % "mockito-core" % "2.8.47"
 lazy val commonSettings = Seq(
-  version := "0.1-SNAPSHOT",
+  version := "0.1.1",
 
   organizationName := "Microsoft Azure",
   organizationHomepage := Some(new URL("https://www.microsoft.com/internet-of-things/azure-iot-suite")),

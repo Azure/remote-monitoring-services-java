@@ -47,14 +47,14 @@ public class StorageTest {
         String name = rand.NextString();
         String description = rand.NextString();
         ValueApiModel model = new ValueApiModel();
-        model.setData(String.format("{\"name\":\"%s\",\"description\":\"%s\"}", name, description));
+        model.setData(String.format("{\"Name\":\"%s\",\"Description\":\"%s\"}", name, description));
         Mockito.when(mockClient.getAsync(Mockito.anyString(), Mockito.anyString()))
                 .thenReturn(CompletableFuture.supplyAsync(() -> model));
         storage = new Storage(mockClient);
         Object result = storage.getThemeAsync().toCompletableFuture().get();
         JsonNode node = Json.toJson(result);
-        assertEquals(node.get("name").asText(), name);
-        assertEquals(node.get("description").asText(), description);
+        assertEquals(node.get("Name").asText(), name);
+        assertEquals(node.get("Description").asText(), description);
     }
 
     @Test(timeout = 100000)
@@ -65,8 +65,8 @@ public class StorageTest {
         storage = new Storage(mockClient);
         Object result = storage.getThemeAsync().toCompletableFuture().get();
         JsonNode node = Json.toJson(result);
-        assertEquals(node.get("name").asText(), ThemeServiceModel.Default.getName());
-        assertEquals(node.get("description").asText(), ThemeServiceModel.Default.getDescription());
+        assertEquals(node.get("Name").asText(), ThemeServiceModel.Default.getName());
+        assertEquals(node.get("Description").asText(), ThemeServiceModel.Default.getDescription());
     }
 
     @Test(timeout = 100000)
@@ -74,7 +74,7 @@ public class StorageTest {
     public void setThemeAsyncTest() throws UnsupportedEncodingException, URISyntaxException, ExecutionException, InterruptedException {
         String name = rand.NextString();
         String description = rand.NextString();
-        String jsonData = String.format("{\"name\":\"%s\",\"description\":\"%s\"}", name, description);
+        String jsonData = String.format("{\"Name\":\"%s\",\"Description\":\"%s\"}", name, description);
         Object theme = Json.fromJson(Json.parse(jsonData), Object.class);
         ValueApiModel model = new ValueApiModel();
         model.setData(jsonData);
@@ -83,8 +83,8 @@ public class StorageTest {
         storage = new Storage(mockClient);
         Object result = storage.setThemeAsync(theme).toCompletableFuture().get();
         JsonNode node = Json.toJson(result);
-        assertEquals(node.get("name").asText(), name);
-        assertEquals(node.get("description").asText(), description);
+        assertEquals(node.get("Name").asText(), name);
+        assertEquals(node.get("Description").asText(), description);
     }
 
     @Test(timeout = 100000)
@@ -93,7 +93,7 @@ public class StorageTest {
         String id = this.rand.NextString();
         String name = rand.NextString();
         String description = rand.NextString();
-        String jsonData = String.format("{\"name\":\"%s\",\"description\":\"%s\"}", name, description);
+        String jsonData = String.format("{\"Name\":\"%s\",\"Description\":\"%s\"}", name, description);
         Object data = Json.fromJson(Json.parse(jsonData), Object.class);
         ValueApiModel model = new ValueApiModel();
         model.setData(jsonData);
@@ -102,8 +102,8 @@ public class StorageTest {
         storage = new Storage(mockClient);
         Object result = storage.getUserSetting(id).toCompletableFuture().get();
         JsonNode node = Json.toJson(result);
-        assertEquals(node.get("name").asText(), name);
-        assertEquals(node.get("description").asText(), description);
+        assertEquals(node.get("Name").asText(), name);
+        assertEquals(node.get("Description").asText(), description);
     }
 
     @Test(timeout = 100000)
@@ -112,7 +112,7 @@ public class StorageTest {
         String id = this.rand.NextString();
         String name = rand.NextString();
         String description = rand.NextString();
-        String jsonData = String.format("{\"name\":\"%s\",\"description\":\"%s\"}", name, description);
+        String jsonData = String.format("{\"Name\":\"%s\",\"Description\":\"%s\"}", name, description);
         Object setting = Json.fromJson(Json.parse(jsonData), Object.class);
         ValueApiModel model = new ValueApiModel();
         model.setData(jsonData);
@@ -121,8 +121,8 @@ public class StorageTest {
         storage = new Storage(mockClient);
         Object result = storage.setUserSetting(id, setting).toCompletableFuture().get();
         JsonNode node = Json.toJson(result);
-        assertEquals(node.get("name").asText(), name);
-        assertEquals(node.get("description").asText(), description);
+        assertEquals(node.get("Name").asText(), name);
+        assertEquals(node.get("Description").asText(), description);
     }
 
     @Test(timeout = 100000)
@@ -130,7 +130,7 @@ public class StorageTest {
     public void getLogoAsyncTest() throws UnsupportedEncodingException, URISyntaxException, ExecutionException, InterruptedException {
         String image = rand.NextString();
         String type = rand.NextString();
-        String jsonData = String.format("{\"image\":\"%s\",\"type\":\"%s\"}", image, type);
+        String jsonData = String.format("{\"Image\":\"%s\",\"Type\":\"%s\"}", image, type);
         ValueApiModel model = new ValueApiModel();
         model.setData(jsonData);
         Mockito.when(mockClient.getAsync(Mockito.any(String.class), Mockito.any(String.class)))
@@ -138,8 +138,8 @@ public class StorageTest {
         storage = new Storage(mockClient);
         Object result = storage.getLogoAsync().toCompletableFuture().get();
         JsonNode node = Json.toJson(result);
-        assertEquals(node.get("image").asText(), image);
-        assertEquals(node.get("type").asText(), type);
+        assertEquals(node.get("Image").asText(), image);
+        assertEquals(node.get("Type").asText(), type);
     }
 
     @Test(timeout = 100000)
@@ -157,8 +157,8 @@ public class StorageTest {
         storage = new Storage(mockClient);
         Object result = storage.setLogoAsync(logo).toCompletableFuture().get();
         JsonNode node = Json.toJson(result);
-        assertEquals(node.get("image").asText(), image);
-        assertEquals(node.get("type").asText(), type);
+        assertEquals(node.get("Image").asText(), image);
+        assertEquals(node.get("Type").asText(), type);
     }
 
     @Test(timeout = 100000)
@@ -229,7 +229,7 @@ public class StorageTest {
         assertEquals(result.getId(), groupId);
         assertEquals(result.getDisplayName(), displayName);
         assertEquals(result.getConditions(), conditions);
-        assertEquals(result.geteTag(), etag);
+        assertEquals(result.getETag(), etag);
     }
 
     @Test(timeout = 100000)
@@ -254,6 +254,6 @@ public class StorageTest {
         assertEquals(result.getId(), groupId);
         assertEquals(result.getDisplayName(), displayName);
         assertEquals(result.getConditions(), conditions);
-        assertEquals(result.geteTag(), etagNew);
+        assertEquals(result.getETag(), etagNew);
     }
 }

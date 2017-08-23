@@ -2,6 +2,8 @@
 
 package com.microsoft.azure.iotsolutions.uiconfig.webservice.runtime;
 
+import com.google.inject.Singleton;
+import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.InvalidConfigurationException;
 import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.ServicesConfig;
 import com.typesafe.config.ConfigFactory;
@@ -9,45 +11,35 @@ import com.typesafe.config.ConfigFactory;
 // TODO: documentation
 // TODO: handle exceptions
 
+@Singleton
 public class Config implements IConfig {
 
     private final String Namespace = "com.microsoft.azure.iotsolutions.";
-    private final String Application = "UIConfig.";
-
-    private com.typesafe.config.Config data;
+    private final String ApplicationKey = Namespace + "UIConfig.";
+    private final String PortKey = ApplicationKey + "webservice_port";
+    private final String CorsWhitelistKey = ApplicationKey + "cors_whitelist";
+    private final String StorageAdapterUrlKey = ApplicationKey + "StorageAdapter.webservice_url";
     private IServicesConfig servicesConfig;
+    private com.typesafe.config.Config data;
 
-    public Config() {
-        // Load `application.conf` and replace placeholders with
-        // environment variables
-        data = ConfigFactory.load();
-
-        this.servicesConfig = new ServicesConfig();
-    }
-
-    /**
-     * Get the TCP port number where the service listen for requests.
-     *
-     * @return TCP port number
-     */
+    /// Web service listening port</summary>
     public int getPort() {
-        return data.getInt(Namespace + Application + "webservice-port");
+        return this.data.getInt(PortKey);
     }
 
-    /**
-     * Get the hostname where the service listen for requests, e.g. 0.0.0.0 when
-     * listening to all the network adapters.
-     *
-     * @return Hostname or IP address
-     */
-    public String getHostname() {
-        return data.getString(Namespace + Application + "webservice-hostname");
+    /// <summary>CORS whitelist, in form { "origins": [], "methods": [], "headers": [] }</summary>
+    public String getCorsWhitelist() {
+        return this.data.getString(CorsWhitelistKey);
     }
 
-    /**
-     * Service layer configuration
-     */
+    /// <summary>Service layer configuration</summary>
     public IServicesConfig getServicesConfig() {
-        return this.servicesConfig;
+        if (this.servicesConfig != null) return this.servicesConfig;
+        this.servicesConfig = new ServicesConfig(this.data.getString(StorageAdapterUrlKey));
+        return servicesConfig;
+    }
+
+    public Config() throws InvalidConfigurationException {
+        this.data = ConfigFactory.load();
     }
 }

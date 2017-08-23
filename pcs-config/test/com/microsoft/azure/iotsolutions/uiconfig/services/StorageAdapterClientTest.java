@@ -63,7 +63,7 @@ public class StorageAdapterClientTest {
                 .toCompletableFuture().get();
         assertEquals(result.getData(), data);
         assertEquals(result.getKey(), key);
-        assertEquals(result.geteTag(), etag);
+        assertEquals(result.getETag(), etag);
     }
 
     @Test(timeout = 100000)
@@ -109,7 +109,7 @@ public class StorageAdapterClientTest {
         for (ValueApiModel item : result.Items) {
             ValueApiModel model = models.stream().filter(m -> m.getKey().equals(item.getKey())).findFirst().get();
             assertEquals(model.getData(), item.getData());
-            assertEquals(model.geteTag(), item.geteTag());
+            assertEquals(model.getETag(), item.getETag());
         }
     }
 
@@ -132,7 +132,7 @@ public class StorageAdapterClientTest {
         ValueApiModel result = client.createAsync(collectionId, data).toCompletableFuture().get();
         assertEquals(result.getKey(), key);
         assertEquals(result.getData(), data);
-        assertEquals(result.geteTag(), etag);
+        assertEquals(result.getETag(), etag);
     }
 
     @Test(timeout = 100000)
@@ -155,7 +155,7 @@ public class StorageAdapterClientTest {
         ValueApiModel result = client.updateAsync(collectionId, key, data, etagOld).toCompletableFuture().get();
         assertEquals(result.getKey(), key);
         assertEquals(result.getData(), data);
-        assertEquals(result.geteTag(), etagNew);
+        assertEquals(result.getETag(), etagNew);
     }
 
     @Test(timeout = 100000)

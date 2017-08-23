@@ -2,6 +2,7 @@
 
 package com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers;
 
+import com.google.inject.Singleton;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models.StatusApiModel;
 import play.mvc.Result;
 
@@ -11,6 +12,7 @@ import static play.mvc.Results.ok;
 /**
  * Service health check endpoint.
  */
+@Singleton
 public final class StatusController {
     /**
      * @return Service health details.
