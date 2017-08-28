@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft. All rights reserved.
 
-name := "storage-adapter"
+name := "pcs-storage-adapter"
 organization := "com.microsoft.azure.iotsolutions"
 
 scalaVersion := "2.12.2"
@@ -71,4 +71,4 @@ dockerBaseImage := "toketi/openjdk-8-jre-alpine-bash"
 dockerUpdateLatest := true
 dockerBuildOptions ++= Seq("--squash", "--compress", "--label", "Tags=Azure,IoT,PCS,Java")
 // Example params: -Dconfig.file=/opt/conf/prod.conf -Dhttp.port=1234 -Dhttp.address=127.0.0.1
-dockerEntrypoint := Seq("bin/storage-adapter")
+dockerEntrypoint := Seq("bin/pcs-storage-adapter")
