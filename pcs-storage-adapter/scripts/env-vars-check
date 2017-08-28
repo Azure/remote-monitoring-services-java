@@ -7,8 +7,3 @@ if [[ -z "$PCS_STORAGEADAPTER_DOCUMENTDB_CONNSTRING" ]]; then
     echo "Error: the PCS_STORAGEADAPTER_DOCUMENTDB_CONNSTRING environment variable is not defined."
     exit -1
 fi
-
-if [[ -z "$PCS_STORAGEADAPTER_CONTAINER_NAME" ]]; then
-    echo "Error: the PCS_STORAGEADAPTER_CONTAINER_NAME environment variable is not defined."
-    exit -1
-fi

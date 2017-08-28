@@ -26,7 +26,7 @@ import static org.junit.Assert.assertThat;
 
 public class KeyValueControllerTest {
 
-    private ValueServiceModel model;
+    private ValueServiceModel inModel;
     private IKeyValueContainer container;
     private String collectionId = "Test-CollectionId";
     private String key = "Test-Key";
@@ -39,8 +39,8 @@ public class KeyValueControllerTest {
         IServicesConfig servicesConfig = config.getServicesConfig();
         DocumentClientFactory factory = new DocumentClientFactory(config);
         container = new DocDBKeyValueContainer(factory, servicesConfig);
-        model = new ValueServiceModel(collectionId, key, value);
-        container.upsert(collectionId, key, model);
+        inModel = new ValueServiceModel(value);
+        container.upsert(collectionId, key, inModel);
     }
 
     @After
@@ -67,7 +67,7 @@ public class KeyValueControllerTest {
     @Category({UnitTest.class})
     public void putTest() throws DocumentClientException {
         String inputKey = key + UUID.randomUUID().toString();
-        ValueServiceModel value = container.create(collectionId, inputKey, model);
+        ValueServiceModel value = container.create(collectionId, inputKey, inModel);
         assertThat(value.Key, is(inputKey));
         container.delete(collectionId, inputKey);
     }
@@ -76,7 +76,7 @@ public class KeyValueControllerTest {
     @Category({UnitTest.class})
     public void postTest() throws DocumentClientException {
         String inputKey = key + UUID.randomUUID().toString();
-        ValueServiceModel value = container.upsert(collectionId, inputKey, model);
+        ValueServiceModel value = container.upsert(collectionId, inputKey, inModel);
         assertThat(value.Key, is(inputKey));
         container.delete(collectionId, inputKey);
     }

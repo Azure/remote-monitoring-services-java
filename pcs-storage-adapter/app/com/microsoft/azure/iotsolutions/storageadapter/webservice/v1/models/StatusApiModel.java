@@ -23,7 +23,7 @@ public final class StatusApiModel {
 
     public StatusApiModel(final Status documentDBStatus) {
         this.documentDBStatus = documentDBStatus;
-        this.status = documentDBStatus.isHealthy() ? "OK" : "ERROR";
+        this.status = documentDBStatus.isHealthy() ? "OK:" : "ERROR:";
         status += documentDBStatus.getStatusMessage();
     }
 

@@ -17,14 +17,14 @@ public class Config implements IConfig {
     private final String Namespace = "com.microsoft.azure.iotsolutions.";
 
     // Settings about this application
-    private final String ApplicationKey = Namespace + "pcs-storage-adapter-java.";
-    private final String PortKey = ApplicationKey + "webservice-port";
-    private final String ContainerNameKey = ApplicationKey + "container_name";
+    private final String applicationKey = Namespace + "pcs-storage-adapter.";
+    private final String portKey = applicationKey + "webservice_port";
 
     // Settings about an external dependency, e.g. DocumentDB
-    private final String StorageKey = ApplicationKey + "storage.";
-    private final String StorageConnectionStringKey = StorageKey + "connection_string";
-
+    private final String documentdbConnectionStringKey = applicationKey + "documentdb_connstring";
+    private final String documentdbDatabaseKey = applicationKey + "documentdb_database";
+    private final String documentdbCollectionKey = applicationKey + "documentdb_collection";
+    private final String documentdbRUsKey = applicationKey + "documentdb_RUs";
 
     private com.typesafe.config.Config data;
     private IServicesConfig servicesConfig;
@@ -34,9 +34,11 @@ public class Config implements IConfig {
         // environment variables
         data = ConfigFactory.load();
 
-        String connectionString = data.getString(StorageConnectionStringKey);
-        String containerName = data.getString(ContainerNameKey);
-        this.servicesConfig = new ServicesConfig(connectionString, containerName);
+        String connectionString = data.getString(documentdbConnectionStringKey);
+        String database = data.getString(documentdbDatabaseKey);
+        String collection = data.getString(documentdbCollectionKey);
+        int dbRUs = data.getInt(documentdbRUsKey);
+        this.servicesConfig = new ServicesConfig(connectionString, database, collection, dbRUs);
     }
 
     /**
@@ -45,7 +47,7 @@ public class Config implements IConfig {
      * @return TCP port number
      */
     public int getPort() {
-        return data.getInt(PortKey);
+        return data.getInt(portKey);
     }
 
     /**

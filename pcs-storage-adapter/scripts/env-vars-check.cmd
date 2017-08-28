@@ -8,9 +8,5 @@ IF "%PCS_STORAGEADAPTER_DOCUMENTDB_CONNSTRING%" == "" (
     exit /B 1
 )
 
-IF "%PCS_STORAGEADAPTER_CONTAINER_NAME%" == "" (
-    echo Error: the PCS_STORAGEADAPTER_CONTAINER_NAME environment variable is not defined.
-    exit /B 1
-)
 
 endlocal

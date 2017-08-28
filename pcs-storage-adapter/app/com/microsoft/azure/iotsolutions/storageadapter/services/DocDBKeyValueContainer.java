@@ -72,7 +72,12 @@ public class DocDBKeyValueContainer implements IKeyValueContainer {
     public ValueServiceModel upsert(String collectionId, String key, ValueServiceModel input) throws DocumentClientException {
         try {
             KeyValueDocument document = new KeyValueDocument(collectionId, key, input.Data);
-            Document response = this.client.upsertDocument(colUrl, document, new RequestOptions(), false).getResource();
+            RequestOptions option = new RequestOptions();
+            AccessCondition condition = new AccessCondition();
+            condition.setType(AccessConditionType.IfMatch);
+            condition.setCondition(input.ETag);
+            option.setAccessCondition(condition);
+            Document response = this.client.upsertDocument(colUrl, document, option, false).getResource();
             return new ValueServiceModel(response);
         } catch (DocumentClientException ex) {
             log.error("Error upsert document: " + colUrl + ", Key=" + key);
