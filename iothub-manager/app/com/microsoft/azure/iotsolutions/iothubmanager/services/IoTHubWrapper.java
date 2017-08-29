@@ -3,13 +3,14 @@
 package com.microsoft.azure.iotsolutions.iothubmanager.services;
 
 import com.google.inject.Inject;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.ExternalDependencyException;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidConfigurationException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.runtime.IServicesConfig;
+import com.microsoft.azure.sdk.iot.service.IotHubConnectionStringBuilder;
 import com.microsoft.azure.sdk.iot.service.RegistryManager;
 import com.microsoft.azure.sdk.iot.service.devicetwin.DeviceTwin;
 
-// TODO: documentation
-// TODO: handle exceptions
-// TODO: logging
+import java.io.IOException;
 
 /**
  * A wrapper for static methods in Azure IoT SDK.
@@ -25,25 +26,27 @@ public final class IoTHubWrapper implements IIoTHubWrapper {
         this.config = config;
     }
 
-    public DeviceTwin getDeviceTwinClient() {
-
+    public DeviceTwin getDeviceTwinClient() throws ExternalDependencyException {
         try {
-
-            String conn = this.config.getHubConnString();
             return DeviceTwin.createFromConnectionString(this.config.getHubConnString());
         } catch (Exception e) {
-            // TODO: better exception handling for when connection string isn't set.
-            return null;
+            throw new ExternalDependencyException("Can not create IoTHub connection for DeviceTwinClient", e);
         }
     }
 
-    public RegistryManager getRegistryManagerClient() {
-
+    public RegistryManager getRegistryManagerClient() throws ExternalDependencyException {
         try {
             return RegistryManager.createFromConnectionString(this.config.getHubConnString());
         } catch (Exception e) {
-            // TODO: better exception handling for when connection string isn't set.
-            return null;
+            throw new ExternalDependencyException("Can not create IoTHub connection for RegistryManager", e);
+        }
+    }
+
+    public String getIotHubHostName() throws InvalidConfigurationException {
+        try {
+            return IotHubConnectionStringBuilder.createConnectionString(this.config.getHubConnString()).getHostName();
+        } catch (IOException e) {
+            throw new InvalidConfigurationException("Can not parse IoTHubHostName", e);
         }
     }
 }

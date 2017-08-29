@@ -3,72 +3,124 @@
 package com.microsoft.azure.iotsolutions.iothubmanager.services;
 
 import com.google.inject.Inject;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.*;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeviceServiceModel;
-import com.microsoft.azure.sdk.iot.service.Device;
-import com.microsoft.azure.sdk.iot.service.RegistryManager;
-import com.microsoft.azure.sdk.iot.service.exceptions.IotHubException;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeviceTwinServiceModel;
+import com.microsoft.azure.sdk.iot.service.*;
+import com.microsoft.azure.sdk.iot.service.devicetwin.DeviceTwin;
+import com.microsoft.azure.sdk.iot.service.devicetwin.DeviceTwinDevice;
+import com.microsoft.azure.sdk.iot.service.devicetwin.Query;
+import com.microsoft.azure.sdk.iot.service.exceptions.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.concurrent.CompletableFuture;
+import java.util.Hashtable;
+import java.util.concurrent.*;
 
-// TODO: handle exceptions
-// TODO: logging
-// TODO: documentation
+import play.Logger;
 
 public final class Devices implements IDevices {
 
+    private static final Logger.ALogger log = Logger.of(Devices.class);
+
     private static final int MAX_GET_LIST = 1000;
+    private static final String QueryPrefix = "SELECT * FROM devices";
 
     private final RegistryManager registry;
-    private final IDeviceTwins deviceTwins;
+    private final DeviceTwin deviceTwinClient;
+    private final String iotHubHostName;
     IIoTHubWrapper _ioTHubService;
 
     @Inject
-    public Devices(
-        final IIoTHubWrapper ioTHubService,
-        final IDeviceTwins deviceTwins)
-        throws Exception {
+    public Devices(final IIoTHubWrapper ioTHubService) throws Exception {
         _ioTHubService = ioTHubService;
         this.registry = ioTHubService.getRegistryManagerClient();
-        this.deviceTwins = deviceTwins;
+        this.deviceTwinClient = ioTHubService.getDeviceTwinClient();
+        this.iotHubHostName = ioTHubService.getIotHubHostName();
     }
 
-    public CompletableFuture<ArrayList<DeviceServiceModel>> getListAsync() {
-        try {
+    public CompletionStage<ArrayList<DeviceServiceModel>> getListAsync() throws IOException, IotHubException {
+        return this.registry.getDevicesAsync(MAX_GET_LIST)
+            .handle((devices, error) -> {
+                if (error != null) {
+                    if (error instanceof IotHubNotFoundException) {
+                        throw new CompletionException(new ResourceNotFoundException("Unable to list device: ", error));
+                    } else {
+                        throw new CompletionException(error);
+                    }
+                }
 
-            return this.registry.getDevicesAsync(MAX_GET_LIST)
-                .thenApply(devices -> {
+                try {
+                    Hashtable<String, DeviceTwinServiceModel> twinHashtable = new Hashtable();
+                    Query query = this.deviceTwinClient.queryTwin(QueryPrefix);
+                    while (this.deviceTwinClient.hasNextDeviceTwin(query)) {
+                        DeviceTwinDevice twin = this.deviceTwinClient.getNextDeviceTwin(query);
+                        twinHashtable.put(twin.getDeviceId(), new DeviceTwinServiceModel(twin));
+                    }
                     ArrayList<DeviceServiceModel> result = new ArrayList<>();
-                    for (Device device : devices) {
-                        result.add(new DeviceServiceModel(device, null));
+                    for (Device azureDevice : devices) {
+                        result.add(new DeviceServiceModel(azureDevice,
+                            twinHashtable.get(azureDevice.getDeviceId()),
+                            this.iotHubHostName));
                     }
                     return result;
-                });
-        } catch (IOException e) {
-            // TODO
-            return null;
-        } catch (IotHubException e) {
-            // TODO
-            return null;
-        }
+                } catch (IOException | IotHubException e) {
+                    throw new CompletionException("Unable to retrieve twin of devices", e);
+                }
+            });
     }
 
-    public CompletableFuture<DeviceServiceModel> getAsync(final String id) {
-        try {
-            return this.registry.getDeviceAsync(id)
-                .thenApply(device -> new DeviceServiceModel(device, this.deviceTwins.get(id)));
-        } catch (IOException e) {
-            // TODO
-            return null;
-        } catch (IotHubException e) {
-            // TODO
-            return null;
-        }
+    public CompletionStage<DeviceServiceModel> getAsync(final String id) throws IOException, IotHubException {
+        return this.registry.getDeviceAsync(id)
+            .handle((device, error) -> {
+                if (error != null) {
+                    if (error instanceof IotHubNotFoundException) {
+                        throw new CompletionException(new ResourceNotFoundException("Unable to get device: " + id, error));
+                    } else {
+                        throw new CompletionException(error);
+                    }
+                }
+
+                try {
+                    DeviceTwinDevice twin = new DeviceTwinDevice(id);
+                    this.deviceTwinClient.getTwin(twin);
+                    return new DeviceServiceModel(device, new DeviceTwinServiceModel(twin), this.iotHubHostName);
+                } catch (IOException | IotHubException e) {
+                    throw new CompletionException("Unable to retrieve twin of device: " + id, e);
+                }
+            });
     }
 
-    public CompletableFuture<DeviceServiceModel> createAsync(final DeviceServiceModel device) {
-        // TODO
-        return null;
+    public CompletionStage<DeviceServiceModel> createAsync(final DeviceServiceModel device) throws InvalidInputException, IOException, IotHubException {
+        return this.registry.addDeviceAsync(device.toAzureModel())
+            .handle((azureDevice, error) -> {
+                if (error != null) {
+                    throw new CompletionException(error);
+                }
+
+                try {
+                    DeviceTwinDevice twin = new DeviceTwinDevice(device.getId());
+                    if (device.getTwin() == null) {
+                        this.deviceTwinClient.getTwin(twin);
+                        return new DeviceServiceModel(azureDevice, new DeviceTwinServiceModel(twin), this.iotHubHostName);
+                    } else {
+                        this.deviceTwinClient.updateTwin(device.getTwin().toDeviceTwinDevice());
+                        return new DeviceServiceModel(azureDevice, device.getTwin(), this.iotHubHostName);
+                    }
+                } catch (IOException | IotHubException e) {
+                    throw new CompletionException("Unable to create new device", e);
+                }
+            });
+    }
+
+    public CompletionStage<Boolean> deleteAsync(final String id) throws IOException, IotHubException {
+        return this.registry.removeDeviceAsync(id)
+            .exceptionally(error -> {
+                if (error instanceof IotHubNotFoundException) {
+                    throw new CompletionException(new ResourceNotFoundException("Unable to delete device: " + id, error));
+                } else {
+                    throw new CompletionException(error);
+                }
+            });
     }
 }

@@ -1,7 +1,7 @@
 # Note: temporarily duplicate every rule with and without trailing slash
 
-GET    /v1/status           com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.StatusController.index
-GET    /v1/status/          com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.StatusController.index
+GET    /v1/status           com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.StatusController.get
+GET    /v1/status/          com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.StatusController.get
 
 GET    /v1/devices          com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.list
 GET    /v1/devices/         com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.list
@@ -11,3 +11,6 @@ GET    /v1/devices/:id/     com.microsoft.azure.iotsolutions.iothubmanager.webse
 
 POST   /v1/devices          com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.post
 POST   /v1/devices/         com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.post
+
+DELETE    /v1/devices/:id   com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.delete(id)
+DELETE    /v1/devices/:id/  com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.delete(id)

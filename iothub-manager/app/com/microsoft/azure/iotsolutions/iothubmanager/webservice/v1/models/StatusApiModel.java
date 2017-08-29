@@ -19,12 +19,16 @@ public final class StatusApiModel {
 
     private String status;
     private DateTimeFormatter dateFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
+    private Dictionary<String, String> dependencies;
 
     public StatusApiModel(final Boolean isOk, final String msg) {
         this.status = isOk ? "OK" : "ERROR";
         if (!msg.isEmpty()) {
             this.status += ":" + msg;
         }
+        this.dependencies = new Hashtable<String, String>() {{
+            put("IoTHub", "OK:...msg...");
+        }};
     }
 
     @JsonProperty("Status")
@@ -51,26 +55,19 @@ public final class StatusApiModel {
     public Dictionary<String, String> getProperties() {
         return new Hashtable<String, String>() {{
             put("Foo", "Bar");
-            put("Simulation", "on");
-            put("Region", "US");
-            put("DebugMode", "off");
         }};
     }
 
     @JsonProperty("Dependencies")
     public Dictionary<String, String> getDependencies() {
-        return new Hashtable<String, String>() {{
-            put("IoTHub", "OK:...msg...");
-            put("Storage", "ERROR:timeout after 3 secs");
-            put("Auth", "ERROR:certificate expired");
-        }};
+        return this.dependencies;
     }
 
     @JsonProperty("$metadata")
     public Dictionary<String, String> getMetadata() {
         return new Hashtable<String, String>() {{
-            put("$type", "Status;" + Version.NAME);
-            put("$uri", "/" + Version.NAME + "/status");
+            put("$type", "Status;" + Version.NUMBER);
+            put("$uri", "/" + Version.PATH + "/status");
         }};
     }
 }

@@ -7,12 +7,17 @@ import com.microsoft.azure.iotsolutions.iothubmanager.services.runtime.ServicesC
 import com.typesafe.config.ConfigFactory;
 
 // TODO: documentation
-// TODO: handle exceptions
 
 public class Config implements IConfig {
 
-    private final String Namespace = "com.microsoft.azure.iotsolutions.";
-    private final String Application = "iothub-manager-java.";
+    // Namespace applied to all the custom configuration settings
+    private final String NAMESPACE = "com.microsoft.azure.iotsolutions.";
+
+    // Settings about this application
+    private final String APPLICATION_KEY = NAMESPACE + "iothub-manager-java.";
+    private final String PORT_KEY = APPLICATION_KEY + "webservice-port";
+    private final String HOST_NAME_KEY = APPLICATION_KEY + "webservice-hostname";
+    private final String IOTHUB_CONNSTRING_KEY = APPLICATION_KEY + "iothub.connstring";
 
     private com.typesafe.config.Config data;
     private IServicesConfig servicesConfig;
@@ -21,9 +26,6 @@ public class Config implements IConfig {
         // Load `application.conf` and replace placeholders with
         // environment variables
         data = ConfigFactory.load();
-
-        String cs = data.getString(Namespace + Application + "iothub.connstring");
-        this.servicesConfig = new ServicesConfig(cs);
     }
 
     /**
@@ -32,7 +34,7 @@ public class Config implements IConfig {
      * @return TCP port number
      */
     public int getPort() {
-        return data.getInt(Namespace + Application + "webservice-port");
+        return data.getInt(PORT_KEY);
     }
 
     /**
@@ -42,13 +44,17 @@ public class Config implements IConfig {
      * @return Hostname or IP address
      */
     public String getHostname() {
-        return data.getString(Namespace + Application + "webservice-hostname");
+        return data.getString(HOST_NAME_KEY);
     }
 
     /**
      * Service layer configuration
      */
     public IServicesConfig getServicesConfig() {
+        if (this.servicesConfig != null) return this.servicesConfig;
+
+        String cs = data.getString(IOTHUB_CONNSTRING_KEY);
+        this.servicesConfig = new ServicesConfig(cs);
         return this.servicesConfig;
     }
 }

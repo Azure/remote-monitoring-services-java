@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft. All rights reserved.
 
-name := "iothub-manager-java"
+name := "iothub-manager"
 organization := "com.microsoft.azure.iotsolutions"
 
 scalaVersion := "2.12.2"
@@ -16,7 +16,7 @@ libraryDependencies ++= {
 }
 
 lazy val commonSettings = Seq(
-  version := "0.1.0",
+  version := "0.1.1",
 
   organizationName := "Microsoft Azure",
   organizationHomepage := Some(new URL("https://www.microsoft.com/internet-of-things/azure-iot-suite")),

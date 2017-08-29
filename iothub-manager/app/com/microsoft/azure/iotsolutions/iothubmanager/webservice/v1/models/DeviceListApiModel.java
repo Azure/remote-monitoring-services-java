@@ -10,26 +10,26 @@ import java.util.*;
 
 public final class DeviceListApiModel {
 
-    private final ArrayList<DeviceApiModel> items;
+    private final ArrayList<DeviceRegistryApiModel> items;
 
     public DeviceListApiModel(final ArrayList<DeviceServiceModel> devices) {
 
         this.items = new ArrayList<>();
         for (DeviceServiceModel device : devices) {
-            this.items.add(new DeviceApiModel(device));
+            this.items.add(new DeviceRegistryApiModel(device));
         }
     }
 
     @JsonProperty("Items")
-    public ArrayList<DeviceApiModel> getItems() {
+    public ArrayList<DeviceRegistryApiModel> getItems() {
         return items;
     }
 
     @JsonProperty("$metadata")
     public Dictionary<String, String> getMetadata() {
         return new Hashtable<String, String>() {{
-            put("$type", "DeviceList;" + Version.NAME);
-            put("$uri", "/" + Version.NAME + "/devices");
+            put("$type", "DeviceList;" + Version.NUMBER);
+            put("$uri", "/" + Version.PATH + "/devices");
         }};
     }
 }

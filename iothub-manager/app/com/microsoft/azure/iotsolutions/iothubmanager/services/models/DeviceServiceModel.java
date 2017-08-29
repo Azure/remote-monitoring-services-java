@@ -2,9 +2,12 @@
 
 package com.microsoft.azure.iotsolutions.iothubmanager.services.models;
 
+import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidInputException;
 import com.microsoft.azure.sdk.iot.service.*;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
+
+import java.security.NoSuchAlgorithmException;
 
 // TODO: documentation
 // TODO: datetime parsing
@@ -19,6 +22,8 @@ public final class DeviceServiceModel {
     private final Boolean enabled;
     private final DateTime lastStatusUpdated;
     private final DeviceTwinServiceModel twin;
+    private final String ioTHubHostName;
+    private final String authPrimaryKey;
 
     public DeviceServiceModel(
         final String eTag,
@@ -28,19 +33,23 @@ public final class DeviceServiceModel {
         final Boolean connected,
         final Boolean enabled,
         final String lastStatusUpdated,
-        final DeviceTwinServiceModel twin) {
+        final DeviceTwinServiceModel twin,
+        final String authPrimaryKey,
+        final String iotHubHostName) {
 
         this.eTag = eTag;
         this.id = id;
         this.c2DMessageCount = c2DMessageCount;
-        this.lastActivity = DateTime.parse(lastActivity, ISODateTimeFormat.dateTimeParser().withZoneUTC());
+        this.lastActivity = lastActivity == null ? null : DateTime.parse(lastActivity, ISODateTimeFormat.dateTimeParser().withZoneUTC());
         this.connected = connected;
         this.enabled = enabled;
-        this.lastStatusUpdated = DateTime.parse(lastStatusUpdated, ISODateTimeFormat.dateTimeParser().withZoneUTC());
+        this.lastStatusUpdated = lastStatusUpdated == null ? null : DateTime.parse(lastStatusUpdated, ISODateTimeFormat.dateTimeParser().withZoneUTC());
         this.twin = twin;
+        this.authPrimaryKey = authPrimaryKey;
+        this.ioTHubHostName = iotHubHostName;
     }
 
-    public DeviceServiceModel(final Device device, final DeviceTwinServiceModel twin) {
+    public DeviceServiceModel(final Device device, final DeviceTwinServiceModel twin, String iotHubHostName) {
         this(
             device.geteTag(),
             device.getDeviceId(),
@@ -49,7 +58,9 @@ public final class DeviceServiceModel {
             device.getConnectionState() == DeviceConnectionState.Connected,
             device.getStatus() == DeviceStatus.Enabled,
             device.getStatusUpdatedTime(),
-            twin);
+            twin,
+            device.getPrimaryKey(),
+            iotHubHostName);
     }
 
     public String getETag() {
@@ -82,5 +93,24 @@ public final class DeviceServiceModel {
 
     public DeviceTwinServiceModel getTwin() {
         return twin;
+    }
+
+    public String getIoTHubHostName() {
+        return this.ioTHubHostName;
+    }
+
+    public String getAuthPrimaryKey() {
+        return this.authPrimaryKey;
+    }
+
+    public Device toAzureModel() throws InvalidInputException {
+        try{
+            return Device.createFromId(
+                this.getId(),
+                this.getEnabled() ? DeviceStatus.Enabled : DeviceStatus.Disabled,
+                null);
+        } catch(Exception e){
+            throw new InvalidInputException("Unable to create device", e);
+        }
     }
 }
