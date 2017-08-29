@@ -25,7 +25,7 @@ IF "%1"=="--in-sandbox" GOTO :RunInSandbox
     IF %ERRORLEVEL% NEQ 0 GOTO FAIL
 
     :: Run the application
-    call sbt run
+    call sbt "run 9002"
     IF %ERRORLEVEL% NEQ 0 GOTO FAIL
 
     goto :END
