@@ -1,5 +1,4 @@
-@ECHO off
-setlocal
+@ECHO off & setlocal enableextensions enabledelayedexpansion
 
 :: strlen("\scripts\") => 9
 SET APP_HOME=%~dp0
@@ -18,9 +17,6 @@ rmdir /s /q .\target\
 rmdir /s /q .\logs\
 rmdir /s /q .\project\target\
 rmdir /s /q .\project\project\
-
-:: Clean up .cache
-rmdir /s /q .\.cache
 
 echo Done.
 

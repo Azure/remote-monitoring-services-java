@@ -1,0 +1,19 @@
+# You can use this file to setup the service locally, and start all the
+# containers at once.
+#
+# Usage:
+# - setup all the environment variables referenced below
+# - install Docker Compose, see https://docs.docker.com/compose/install
+# - open a console and `cd` into the folder that contains this file
+# - run `docker-compose up`
+
+version: "3"
+
+services:
+
+  storageadapter:
+    image: azureiotpcs/pcs-storage-adapter-java
+    ports:
+      - "9022:9022"
+    environment:
+      - PCS_STORAGEADAPTER_WEBSERVICE_URL

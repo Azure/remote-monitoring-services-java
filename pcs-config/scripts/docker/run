@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
 # Note: use lowercase names for the Docker images
-DOCKER_IMAGE="azureiotpcs/pcs-uiconfig-java:0.1-SNAPSHOT"
-EXT_PORT=8080
+DOCKER_IMAGE="azureiotpcs/pcs-ui-config-java"
 
 set -e
 APP_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && cd .. && pwd )/"
@@ -10,8 +9,13 @@ source "$APP_HOME/scripts/.functions.sh"
 
 run_container() {
     check_dependency_docker
-    echo "Web service listening on port $EXT_PORT"
-    docker run -it -p $EXT_PORT:8080 "$DOCKER_IMAGE"
+
+    $APP_HOME/scripts/env-vars-check
+
+    echo "Starting UI Config Here ..."
+    docker run -it -p 9005:9005 \
+        -e "PCS_STORAGEADAPTER_WEBSERVICE_URL=PCS_STORAGEADAPTER_WEBSERVICE_URL" \
+        "$DOCKER_IMAGE"
 }
 
 run_container

@@ -1,19 +1,34 @@
-@ECHO off
+@ECHO off & setlocal enableextensions enabledelayedexpansion
 
 :: Note: use lowercase names for the Docker images
-SET DOCKER_IMAGE="azureiotpcs/pcs-uiconfig-java:0.1-SNAPSHOT"
-SET EXT_PORT=8080
+SET DOCKER_IMAGE="azureiotpcs/pcs-ui-config-java"
+
+:: strlen("\scripts\docker\") => 16
+SET APP_HOME=%~dp0
+SET APP_HOME=%APP_HOME:~0,-16%
+cd %APP_HOME%
 
 :: Check dependencies
 docker version > NUL 2>&1
 IF %ERRORLEVEL% NEQ 0 GOTO MISSING_DOCKER
 
+:: Check settings
+call .\scripts\env-vars-check.cmd
+IF %ERRORLEVEL% NEQ 0 GOTO FAIL
+
 :: Start the application
-echo Web service listening on port %EXT_PORT%
-docker run -it -p %EXT_PORT%:8080 %DOCKER_IMAGE%
+echo Starting UI Config...
+docker run -it -p 9005:9005 ^
+    -e PCS_STORAGEADAPTER_WEBSERVICE_URL=%PCS_STORAGEADAPTER_WEBSERVICE_URL% ^
+    %DOCKER_IMAGE%
 
 :: - - - - - - - - - - - - - -
 goto :END
+
+:FAIL
+    echo Command failed
+    endlocal
+    exit /B 1
 
 :MISSING_DOCKER
     echo ERROR: 'docker' command not found.

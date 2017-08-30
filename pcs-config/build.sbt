@@ -1,22 +1,23 @@
 // Copyright (c) Microsoft. All rights reserved.
 
-name := "uiconfig"
+name := "pcs-ui-config"
 organization := "com.microsoft.azure.iotsolutions"
 
-scalaVersion := "2.11.11"
+scalaVersion := "2.12.2"
 
 libraryDependencies ++= {
   Seq(
     filters,
-
+    guice,
     // https://github.com/Azure/azure-iot-sdk-java/releases
     "com.microsoft.azure.sdk.iot" % "iot-service-client" % "1.4.20"
   )
 }
 libraryDependencies += "org.apache.httpcomponents" % "httpclient" % "4.5.3"
 libraryDependencies += "org.mockito" % "mockito-core" % "2.8.47"
+libraryDependencies += "io.netty" % "netty-all" % "4.1.0.Final"
 lazy val commonSettings = Seq(
-  version := "0.1.1",
+  version := "0.1.2",
 
   organizationName := "Microsoft Azure",
   organizationHomepage := Some(new URL("https://www.microsoft.com/internet-of-things/azure-iot-suite")),
@@ -67,8 +68,7 @@ dockerRepository := Some("azureiotpcs")
 dockerAlias := DockerAlias(dockerRepository.value, None, packageName.value + "-java", Some((version in Docker).value))
 maintainer in Docker := "Devis Lucato (https://github.com/dluc)"
 dockerBaseImage := "toketi/openjdk-8-jre-alpine-bash"
-dockerExposedPorts := Seq(8080)
-dockerUpdateLatest := false
+dockerUpdateLatest := true
 dockerBuildOptions ++= Seq("--squash", "--compress", "--label", "Tags=Azure,IoT,PCS,Java")
 // Example params: -Dconfig.file=/opt/conf/prod.conf -Dhttp.port=1234 -Dhttp.address=127.0.0.1
-dockerEntrypoint := Seq("bin/uiconfig","-Dhttp.port=8080")
+dockerEntrypoint := Seq("bin/pcs-ui-config")
