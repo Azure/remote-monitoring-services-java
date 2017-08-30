@@ -6,17 +6,21 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ExternalDependencyException;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidInputException;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ResourceOutOfDateException;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.ConditionServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.RuleServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
+import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.ConditionApiModel;
 import play.Logger;
+import play.api.Play;
 import play.libs.Json;
 import play.libs.ws.WSClient;
 import play.libs.ws.WSRequest;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -153,7 +157,6 @@ public final class Rules implements IRules {
         return this.prepareRequest(null)
             .post(jsonData.toString())
             .handle((result, error) -> {
-
                 if (result.getStatus() != OK) {
                     log.error("Key value storage error code {}",
                         result.getStatusText());
@@ -179,6 +182,35 @@ public final class Rules implements IRules {
                             "Could not parse result from Key Value Storage"));
                 }
             });
+    }
+
+    public void createFromTemplate(String template)
+        throws InvalidConfigurationException, ResourceNotFoundException {
+
+        String rulesTemplatePath = Play.current().path() + File.separator +
+            "conf" + File.separator + template + ".json";
+        File rulesTemplate = new File(rulesTemplatePath);
+
+        if (rulesTemplate.exists()) {
+            try {
+                JsonNode jsonTemplate = Json.parse(
+                    Files.readAllBytes(Paths.get(rulesTemplatePath)));
+
+                for (JsonNode item : jsonTemplate.withArray("Rules")) {
+                    RuleServiceModel rule = getRuleServiceModelFromTemplate(item);
+                    postAsync(rule);
+                }
+
+            } catch (IOException e) {
+                log.error("Could not read rules from given template file "
+                    + template + ".json." );
+                throw new InvalidConfigurationException(
+                    "Could not read rules from given template file");
+            }
+        } else {
+            throw new ResourceNotFoundException(
+                "Could not find template file " + template + ".json");
+        }
     }
 
     public CompletionStage<RuleServiceModel> putAsync(RuleServiceModel ruleServiceModel) {
@@ -311,5 +343,40 @@ public final class Rules implements IRules {
             );
         }
         return null;
+    }
+
+    private RuleServiceModel getRuleServiceModelFromTemplate(JsonNode rule) {
+        ArrayList<ConditionServiceModel> conditions = new ArrayList<>();
+
+        Boolean matchesSchema =
+            rule.has("Name") &&
+            rule.has("Enabled") &&
+            rule.has("Description") &&
+            rule.has("GroupId") &&
+            rule.has("Severity") &&
+            rule.has("Conditions");
+
+        if (!matchesSchema) {
+            log.error("Rule template does not match rule schema. "
+                + rule.asText());
+            throw new CompletionException(
+                new InvalidConfigurationException(
+                    "Rule template does not match rule schema. "
+                        + rule.asText()));
+        }
+
+        for (JsonNode condition : rule.withArray("Conditions")) {
+            conditions.add(Json.fromJson(
+                condition,
+                ConditionApiModel.class).toServiceModel());
+        }
+
+        return new RuleServiceModel(
+            rule.findValue("Name").asText(),
+            rule.findValue("Enabled").asBoolean(),
+            rule.findValue("Description").asText(),
+            rule.findValue("GroupId").asText(),
+            rule.findValue("Severity").asText(),
+            conditions);
     }
 }

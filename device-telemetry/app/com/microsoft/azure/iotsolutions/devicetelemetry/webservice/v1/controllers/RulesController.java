@@ -5,6 +5,8 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controlle
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.IRules;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidConfigurationException;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ResourceNotFoundException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ResourceOutOfDateException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.ConditionServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.RuleServiceModel;
@@ -87,40 +89,55 @@ public class RulesController extends Controller {
      *
      * @return newly created rule
      */
-    public CompletionStage<Result> postAsync() {
+    public CompletionStage<Result> postAsync(String template) {
 
-        JsonNode jsonBody = request().body().asJson();
+        if (template != null) { // create rules with template
 
-        if (jsonBody == null) {
-            log.warn("The request is empty");
-            return CompletableFuture.completedFuture(
-                badRequest("The request is empty"));
+            return CompletableFuture.supplyAsync(() -> {
+                try {
+                    rules.createFromTemplate(template);
+                    return ok();
+                } catch (InvalidConfigurationException e) {
+                    return internalServerError();
+                } catch (ResourceNotFoundException e) {
+                    return notFound(e.getMessage());
+                }
+            });
+        } else { // create rule with request body
+
+            JsonNode jsonBody = request().body().asJson();
+
+            if (jsonBody == null) {
+                log.warn("The request is empty");
+                return CompletableFuture.completedFuture(
+                    badRequest("The request is empty"));
+            }
+
+            ArrayList<ConditionServiceModel> conditions = new ArrayList<>();
+            for (JsonNode condition : jsonBody.withArray("Conditions")) {
+                conditions.add(Json.fromJson(
+                    condition,
+                    ConditionApiModel.class).toServiceModel());
+            }
+
+            RuleServiceModel ruleServiceModel = null;
+
+            try {
+                ruleServiceModel = new RuleServiceModel(
+                    jsonBody.findValue("Name").asText(),
+                    jsonBody.findValue("Enabled").asBoolean(),
+                    jsonBody.findValue("Description").asText(),
+                    jsonBody.findValue("GroupId").asText(),
+                    jsonBody.findValue("Severity").asText(),
+                    conditions);
+            } catch (Exception e) {
+                return CompletableFuture.completedFuture(
+                    badRequest("Invalid input"));
+            }
+
+            return rules.postAsync(ruleServiceModel)
+                .thenApply(newRule -> ok(toJson(new RuleApiModel(newRule))));
         }
-
-        ArrayList<ConditionServiceModel> conditions = new ArrayList<>();
-        for (JsonNode condition : jsonBody.withArray("Conditions")) {
-            conditions.add(Json.fromJson(
-                condition,
-                ConditionApiModel.class).toServiceModel());
-        }
-
-        RuleServiceModel ruleServiceModel = null;
-
-        try {
-            ruleServiceModel = new RuleServiceModel(
-                jsonBody.findValue("Name").asText(),
-                jsonBody.findValue("Enabled").asBoolean(),
-                jsonBody.findValue("Description").asText(),
-                jsonBody.findValue("GroupId").asText(),
-                jsonBody.findValue("Severity").asText(),
-                conditions);
-        } catch (Exception e) {
-            return CompletableFuture.completedFuture(
-                badRequest("Invalid input"));
-        }
-
-        return rules.postAsync(ruleServiceModel)
-            .thenApply(newRule -> ok(toJson(new RuleApiModel(newRule))));
     }
 
     /**

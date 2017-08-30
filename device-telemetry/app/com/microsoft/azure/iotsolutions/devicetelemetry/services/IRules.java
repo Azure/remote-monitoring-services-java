@@ -3,6 +3,8 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.services;
 
 import com.google.inject.ImplementedBy;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidConfigurationException;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ResourceNotFoundException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.RuleServiceModel;
 
 import java.util.List;
@@ -20,6 +22,10 @@ public interface IRules {
 
     CompletionStage<RuleServiceModel> postAsync(
         RuleServiceModel ruleServiceModel);
+
+    void createFromTemplate(String template) throws
+        InvalidConfigurationException,
+        ResourceNotFoundException;
 
     CompletionStage<RuleServiceModel> putAsync(
         RuleServiceModel ruleServiceModel);
