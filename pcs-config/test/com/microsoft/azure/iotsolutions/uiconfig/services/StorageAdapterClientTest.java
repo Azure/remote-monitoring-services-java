@@ -3,8 +3,7 @@
 package com.microsoft.azure.iotsolutions.uiconfig.services;
 
 import com.google.common.collect.Lists;
-import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.ConflictingResourceException;
-import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.ResourceNotFoundException;
+import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.*;
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.IStorageAdapterClient;
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.StorageAdapterClient;
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.ValueApiModel;
@@ -45,7 +44,7 @@ public class StorageAdapterClientTest {
 
     @Test(timeout = 100000)
     @Category({UnitTest.class})
-    public void getAsyncTest() throws UnsupportedEncodingException, URISyntaxException, ExecutionException, InterruptedException {
+    public void getAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         String collectionId = rand.NextString();
         String key = rand.NextString();
         String data = rand.NextString();
@@ -55,12 +54,12 @@ public class StorageAdapterClientTest {
         response.setContent(Json.stringify(Json.toJson(model)));
         response.setStatusCode(200);
         Mockito.when(mockHttpClient.getAsync(Mockito.any(HttpRequest.class)))
-                .thenReturn(CompletableFuture.supplyAsync(() -> response));
+            .thenReturn(CompletableFuture.supplyAsync(() -> response));
         client = new StorageAdapterClient(
-                mockHttpClient,
-                new ServicesConfig(MockServiceUri));
+            mockHttpClient,
+            new ServicesConfig(MockServiceUri));
         ValueApiModel result = client.getAsync(collectionId, key)
-                .toCompletableFuture().get();
+            .toCompletableFuture().get();
         assertEquals(result.getData(), data);
         assertEquals(result.getKey(), key);
         assertEquals(result.getETag(), etag);
@@ -74,10 +73,10 @@ public class StorageAdapterClientTest {
         HttpResponse response = new HttpResponse();
         response.setStatusCode(404);
         Mockito.when(mockHttpClient.getAsync(Mockito.any(HttpRequest.class)))
-                .thenReturn(CompletableFuture.supplyAsync(() -> response));
+            .thenReturn(CompletableFuture.supplyAsync(() -> response));
         client = new StorageAdapterClient(
-                mockHttpClient,
-                new ServicesConfig(MockServiceUri));
+            mockHttpClient,
+            new ServicesConfig(MockServiceUri));
         try {
             client.getAsync(collectionId, key).toCompletableFuture().get();
         } catch (Exception e) {
@@ -87,7 +86,7 @@ public class StorageAdapterClientTest {
 
     @Test(timeout = 100000)
     @Category({UnitTest.class})
-    public void getAllAsyncTest() throws UnsupportedEncodingException, URISyntaxException, ExecutionException, InterruptedException {
+    public void getAllAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         String collectionId = rand.NextString();
         List<ValueApiModel> models = new ArrayList<ValueApiModel>();
         for (int i = 0; i < 5; i++) {
@@ -100,10 +99,10 @@ public class StorageAdapterClientTest {
         response.setStatusCode(200);
         response.setContent(Json.stringify(Json.toJson(listApiModel)));
         Mockito.when(mockHttpClient.getAsync(Mockito.any(HttpRequest.class)))
-                .thenReturn(CompletableFuture.supplyAsync(() -> response));
+            .thenReturn(CompletableFuture.supplyAsync(() -> response));
         client = new StorageAdapterClient(
-                mockHttpClient,
-                new ServicesConfig(MockServiceUri));
+            mockHttpClient,
+            new ServicesConfig(MockServiceUri));
         ValueListApiModel result = client.getAllAsync(collectionId).toCompletableFuture().get();
         assertEquals(Lists.newArrayList(result.Items).size(), models.size());
         for (ValueApiModel item : result.Items) {
@@ -115,7 +114,7 @@ public class StorageAdapterClientTest {
 
     @Test(timeout = 100000)
     @Category({UnitTest.class})
-    public void createAsyncTest() throws UnsupportedEncodingException, URISyntaxException, ExecutionException, InterruptedException {
+    public void createAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         String collectionId = rand.NextString();
         String key = rand.NextString();
         String data = rand.NextString();
@@ -125,10 +124,10 @@ public class StorageAdapterClientTest {
         ValueApiModel model = new ValueApiModel(key, data, etag, null);
         response.setContent(Json.stringify(Json.toJson(model)));
         Mockito.when(mockHttpClient.postAsync(Mockito.any(HttpRequest.class)))
-                .thenReturn(CompletableFuture.supplyAsync(() -> response));
+            .thenReturn(CompletableFuture.supplyAsync(() -> response));
         client = new StorageAdapterClient(
-                mockHttpClient,
-                new ServicesConfig(MockServiceUri));
+            mockHttpClient,
+            new ServicesConfig(MockServiceUri));
         ValueApiModel result = client.createAsync(collectionId, data).toCompletableFuture().get();
         assertEquals(result.getKey(), key);
         assertEquals(result.getData(), data);
@@ -137,7 +136,7 @@ public class StorageAdapterClientTest {
 
     @Test(timeout = 100000)
     @Category({UnitTest.class})
-    public void updateAsyncTest() throws UnsupportedEncodingException, URISyntaxException, ExecutionException, InterruptedException {
+    public void updateAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         String collectionId = rand.NextString();
         String key = rand.NextString();
         String data = rand.NextString();
@@ -148,10 +147,10 @@ public class StorageAdapterClientTest {
         ValueApiModel model = new ValueApiModel(key, data, etagNew, null);
         response.setContent(Json.stringify(Json.toJson(model)));
         Mockito.when(mockHttpClient.putAsync(Mockito.any(HttpRequest.class)))
-                .thenReturn(CompletableFuture.supplyAsync(() -> response));
+            .thenReturn(CompletableFuture.supplyAsync(() -> response));
         client = new StorageAdapterClient(
-                mockHttpClient,
-                new ServicesConfig(MockServiceUri));
+            mockHttpClient,
+            new ServicesConfig(MockServiceUri));
         ValueApiModel result = client.updateAsync(collectionId, key, data, etagOld).toCompletableFuture().get();
         assertEquals(result.getKey(), key);
         assertEquals(result.getData(), data);
@@ -160,7 +159,7 @@ public class StorageAdapterClientTest {
 
     @Test(timeout = 100000)
     @Category({UnitTest.class})
-    public void updateAsyncConflictTest() throws UnsupportedEncodingException, URISyntaxException, ExecutionException, InterruptedException {
+    public void updateAsyncConflictTest() throws BaseException, ExecutionException, InterruptedException {
         String collectionId = rand.NextString();
         String key = rand.NextString();
         String data = rand.NextString();
@@ -168,10 +167,10 @@ public class StorageAdapterClientTest {
         HttpResponse response = new HttpResponse();
         response.setStatusCode(409);
         Mockito.when(mockHttpClient.putAsync(Mockito.any(HttpRequest.class)))
-                .thenReturn(CompletableFuture.supplyAsync(() -> response));
+            .thenReturn(CompletableFuture.supplyAsync(() -> response));
         client = new StorageAdapterClient(
-                mockHttpClient,
-                new ServicesConfig(MockServiceUri));
+            mockHttpClient,
+            new ServicesConfig(MockServiceUri));
         try {
             client.updateAsync(collectionId, key, data, etag).toCompletableFuture().get();
         } catch (Exception e) {

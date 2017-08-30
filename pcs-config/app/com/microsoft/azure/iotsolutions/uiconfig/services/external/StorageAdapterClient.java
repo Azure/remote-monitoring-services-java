@@ -3,12 +3,11 @@
 package com.microsoft.azure.iotsolutions.uiconfig.services.external;
 
 import com.google.inject.Inject;
+import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.*;
 import com.microsoft.azure.iotsolutions.uiconfig.services.http.HttpRequest;
 import com.microsoft.azure.iotsolutions.uiconfig.services.http.IHttpClient;
 import com.microsoft.azure.iotsolutions.uiconfig.services.http.IHttpRequest;
 import com.microsoft.azure.iotsolutions.uiconfig.services.http.IHttpResponse;
-import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.ConflictingResourceException;
-import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.ResourceNotFoundException;
 import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.IServicesConfig;
 import org.apache.http.HttpStatus;
 import play.Logger;
@@ -38,80 +37,50 @@ public class StorageAdapterClient implements IStorageAdapterClient {
         this.serviceUri = config.getStorageAdapterApiUrl();
     }
 
-    private HttpRequest CreateRequest(String path, ValueApiModel content) throws UnsupportedEncodingException, URISyntaxException {
-        HttpRequest request = new HttpRequest();
-        request.setUriFromString(serviceUri + "/" + path);
-        request.getOptions().setAllowInsecureSSLServer(true);
-        if (content != null) {
-            request.setContent(content);
-        }
-        return request;
-    }
-
-    private HttpRequest CreateRequest(String path) throws UnsupportedEncodingException, URISyntaxException {
-        return CreateRequest(path, null);
-    }
-
-    private void CheckStatusCode(IHttpResponse response, IHttpRequest request) throws Exception {
-        if (response.isSuccessStatusCode()) {
-            return;
-        }
-        log.info(String.format("StorageAdapter returns %s for request %s", response.getStatusCode(), request.getUri().toString()));
-        switch (response.getStatusCode()) {
-            case HttpStatus.SC_NOT_FOUND:
-                throw new ResourceNotFoundException(response.getContent() + ", request URL = " + request.getUri().toString());
-
-            case HttpStatus.SC_CONFLICT:
-                throw new ConflictingResourceException(response.getContent() + ", request URL = " + request.getUri().toString());
-
-            default:
-                throw new Exception(String.format("Http request failed, status code = %s, content = %s, request URL = %s", response.getStatusCode(), response.getContent(), request.getUri().toString()));
-        }
-    }
-
     @Override
-    public CompletionStage<ValueApiModel> getAsync(String collectionId, String key) throws UnsupportedEncodingException, URISyntaxException {
+    public CompletionStage<ValueApiModel> getAsync(String collectionId, String key) throws BaseException {
         HttpRequest request = CreateRequest(String.format("collections/%s/values/%s", collectionId, key));
-        return httpClient.getAsync(request).thenApplyAsync(m -> {
-            try {
-                CheckStatusCode(m, request);
-            } catch (Exception e) {
-                throw new CompletionException(e);
-            }
-            return fromJson(m.getContent(), ValueApiModel.class);
-        });
+        return httpClient.getAsync(request)
+            .thenApplyAsync(m -> {
+                try {
+                    CheckStatusCode(m, request);
+                    return fromJson(m.getContent(), ValueApiModel.class);
+                } catch (Exception e) {
+                    throw new CompletionException("Unable to retrieve " + request.getUri(), e);
+                }
+            });
     }
 
     @Override
-    public CompletionStage<ValueListApiModel> getAllAsync(String collectionId) throws UnsupportedEncodingException, URISyntaxException {
+    public CompletionStage<ValueListApiModel> getAllAsync(String collectionId) throws BaseException {
         HttpRequest request = CreateRequest(String.format("collections/%s/values", collectionId));
         return httpClient.getAsync(request).thenApplyAsync(m -> {
             try {
                 CheckStatusCode(m, request);
+                return fromJson(m.getContent(), ValueListApiModel.class);
             } catch (Exception e) {
-                throw new CompletionException(e);
+                throw new CompletionException("Unable to retrieve " + request.getUri(), e);
             }
-            return fromJson(m.getContent(), ValueListApiModel.class);
         });
     }
 
     @Override
-    public CompletionStage<ValueApiModel> createAsync(String collectionId, String value) throws UnsupportedEncodingException, URISyntaxException {
+    public CompletionStage<ValueApiModel> createAsync(String collectionId, String value) throws BaseException {
         ValueApiModel model = new ValueApiModel();
         model.setData(value);
         HttpRequest request = CreateRequest(String.format("collections/%s/values", collectionId), model);
         return httpClient.postAsync(request).thenApplyAsync(m -> {
             try {
                 CheckStatusCode(m, request);
+                return fromJson(m.getContent(), ValueApiModel.class);
             } catch (Exception e) {
-                throw new CompletionException(e);
+                throw new CompletionException("Unable to create resource " + request.getUri(), e);
             }
-            return fromJson(m.getContent(), ValueApiModel.class);
         });
     }
 
     @Override
-    public CompletionStage<ValueApiModel> updateAsync(String collectionId, String key, String value, String etag) throws UnsupportedEncodingException, URISyntaxException {
+    public CompletionStage<ValueApiModel> updateAsync(String collectionId, String key, String value, String etag) throws BaseException {
         ValueApiModel model = new ValueApiModel();
         model.setData(value);
         model.setETag(etag);
@@ -119,22 +88,61 @@ public class StorageAdapterClient implements IStorageAdapterClient {
         return httpClient.putAsync(request).thenApplyAsync(m -> {
             try {
                 CheckStatusCode(m, request);
+                return fromJson(m.getContent(), ValueApiModel.class);
             } catch (Exception e) {
-                throw new CompletionException(e);
+                throw new CompletionException("Unable to update resource " + request.getUri(), e);
             }
-            return fromJson(m.getContent(), ValueApiModel.class);
         });
     }
 
     @Override
-    public CompletionStage deleteAsync(String collectionId, String key) throws UnsupportedEncodingException, URISyntaxException {
+    public CompletionStage deleteAsync(String collectionId, String key) throws BaseException {
         HttpRequest request = CreateRequest(String.format("collections/%s/values/%s", collectionId, key));
         return httpClient.deleteAsync(request).thenAcceptAsync(m -> {
             try {
                 CheckStatusCode(m, request);
             } catch (Exception e) {
-                throw new CompletionException(e);
+                throw new CompletionException("Unable to delete resource " + request.getUri(), e);
             }
         });
+    }
+
+    private HttpRequest CreateRequest(String path, ValueApiModel content) throws InvalidConfigurationException {
+        try {
+            HttpRequest request = new HttpRequest();
+            request.setUriFromString(serviceUri + "/" + path);
+            request.getOptions().setAllowInsecureSSLServer(true);
+            if (content != null) {
+                request.setContent(content);
+            }
+            return request;
+        } catch (UnsupportedEncodingException | URISyntaxException e) {
+            throw new InvalidConfigurationException("Unable to create http request", e);
+        }
+    }
+
+    private HttpRequest CreateRequest(String path) throws InvalidConfigurationException {
+        return CreateRequest(path, null);
+    }
+
+    private void CheckStatusCode(IHttpResponse response, IHttpRequest request) throws BaseException {
+        if (response.isSuccessStatusCode()) {
+            return;
+        }
+        log.info(String.format("StorageAdapter returns %s for request %s",
+            response.getStatusCode(), request.getUri().toString()));
+        switch (response.getStatusCode()) {
+            case HttpStatus.SC_NOT_FOUND:
+                throw new ResourceNotFoundException(
+                    response.getContent() + ", request URL = " + request.getUri().toString());
+
+            case HttpStatus.SC_CONFLICT:
+                throw new ConflictingResourceException(
+                    response.getContent() + ", request URL = " + request.getUri().toString());
+
+            default:
+                throw new ExternalDependencyException(
+                    String.format("Http request failed, status code = %s, content = %s, request URL = %s", response.getStatusCode(), response.getContent(), request.getUri().toString()));
+        }
     }
 }

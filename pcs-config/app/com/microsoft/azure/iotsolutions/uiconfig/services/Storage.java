@@ -4,6 +4,7 @@ package com.microsoft.azure.iotsolutions.uiconfig.services;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.*;
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.IStorageAdapterClient;
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.ValueApiModel;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.DeviceGroupServiceModel;
@@ -11,10 +12,7 @@ import com.microsoft.azure.iotsolutions.uiconfig.services.models.LogoServiceMode
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.ThemeServiceModel;
 import play.libs.Json;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -45,7 +43,7 @@ public class Storage implements IStorage {
     public CompletionStage<Object> getThemeAsync() {
         try {
             return client.getAsync(SolutionCollectionId, ThemeKey).thenApplyAsync(m ->
-                    fromJson(m.getData(), Object.class)
+                fromJson(m.getData(), Object.class)
             );
         } catch (Exception ex) {
             return CompletableFuture.supplyAsync(() -> ThemeServiceModel.Default);
@@ -53,10 +51,10 @@ public class Storage implements IStorage {
     }
 
     @Override
-    public CompletionStage<Object> setThemeAsync(Object theme) throws UnsupportedEncodingException, URISyntaxException {
+    public CompletionStage<Object> setThemeAsync(Object theme) throws BaseException {
         String value = toJson(theme);
         return client.updateAsync(SolutionCollectionId, ThemeKey, value, "*").thenApplyAsync(m ->
-                fromJson(m.getData(), Object.class)
+            fromJson(m.getData(), Object.class)
         );
     }
 
@@ -64,7 +62,7 @@ public class Storage implements IStorage {
     public CompletionStage<Object> getUserSetting(String id) {
         try {
             return client.getAsync(UserCollectionId, id).thenApplyAsync(m ->
-                    fromJson(m.getData(), Object.class)
+                fromJson(m.getData(), Object.class)
             );
         } catch (Exception ex) {
             return CompletableFuture.supplyAsync(() -> new Object());
@@ -72,64 +70,69 @@ public class Storage implements IStorage {
     }
 
     @Override
-    public CompletionStage<Object> setUserSetting(String id, Object setting) throws UnsupportedEncodingException, URISyntaxException {
+    public CompletionStage<Object> setUserSetting(String id, Object setting) throws BaseException {
         String value = toJson(setting);
         return client.updateAsync(UserCollectionId, id, value, "*").thenApplyAsync(m ->
-                fromJson(m.getData(), Object.class)
+            fromJson(m.getData(), Object.class)
         );
     }
 
     @Override
     public CompletionStage<LogoServiceModel> getLogoAsync() {
         try {
-            return client.getAsync(SolutionCollectionId, LogoKey).thenApplyAsync(m ->
-                    fromJson(m.getData(), LogoServiceModel.class)
-            );
-        } catch (Exception ex) {
-            return CompletableFuture.supplyAsync(() -> LogoServiceModel.Default);
+            return client.getAsync(SolutionCollectionId, LogoKey)
+                .handle((m, error) -> {
+                    if (error != null) {
+                        return LogoServiceModel.Default;
+                    } else {
+                        return fromJson(m.getData(), LogoServiceModel.class);
+                    }
+                });
+        } catch (BaseException ex) {
+            throw new CompletionException("Unable to get logo", ex);
         }
     }
 
     @Override
-    public CompletionStage<LogoServiceModel> setLogoAsync(LogoServiceModel model) throws UnsupportedEncodingException, URISyntaxException {
+    public CompletionStage<LogoServiceModel> setLogoAsync(LogoServiceModel model) throws BaseException {
         String value = toJson(model);
         return client.updateAsync(SolutionCollectionId, LogoKey, value, "*").thenApplyAsync(m ->
-                fromJson(m.getData(), LogoServiceModel.class)
+            fromJson(m.getData(), LogoServiceModel.class)
         );
     }
 
     @Override
-    public CompletionStage<Iterable<DeviceGroupServiceModel>> getAllDeviceGroupsAsync() throws UnsupportedEncodingException, URISyntaxException {
+    public CompletionStage<Iterable<DeviceGroupServiceModel>> getAllDeviceGroupsAsync() throws BaseException {
         return client.getAllAsync(DeviceGroupCollectionId).thenApplyAsync(m -> {
             return StreamSupport.stream(m.Items.spliterator(), false).map(Storage::createGroupServiceModel).collect(Collectors.toList());
         });
     }
 
     @Override
-    public CompletionStage<DeviceGroupServiceModel> getDeviceGroupAsync(String id) throws UnsupportedEncodingException, URISyntaxException {
+    public CompletionStage<DeviceGroupServiceModel> getDeviceGroupAsync(String id) throws BaseException {
         return client.getAsync(DeviceGroupCollectionId, id).thenApplyAsync(m -> {
             return createGroupServiceModel(m);
         });
     }
 
     @Override
-    public CompletionStage<DeviceGroupServiceModel> createDeviceGroupAsync(DeviceGroupServiceModel input) throws UnsupportedEncodingException, URISyntaxException {
+    public CompletionStage<DeviceGroupServiceModel> createDeviceGroupAsync(DeviceGroupServiceModel input) throws BaseException {
         String value = toJson(input);
         return client.createAsync(DeviceGroupCollectionId, value).thenApplyAsync(m ->
-                createGroupServiceModel(m)
+            createGroupServiceModel(m)
         );
     }
 
     @Override
-    public CompletionStage<DeviceGroupServiceModel> updateDeviceGroupAsync(String id, DeviceGroupServiceModel input, String etag) throws UnsupportedEncodingException, URISyntaxException {
+    public CompletionStage<DeviceGroupServiceModel> updateDeviceGroupAsync(String id, DeviceGroupServiceModel input, String etag) throws BaseException {
         String value = toJson(input);
         return client.updateAsync(DeviceGroupCollectionId, id, value, etag).thenApplyAsync(m ->
-                createGroupServiceModel(m)
+            createGroupServiceModel(m)
         );
     }
 
     @Override
-    public CompletionStage deleteDeviceGroupAsync(String id) throws UnsupportedEncodingException, URISyntaxException {
+    public CompletionStage deleteDeviceGroupAsync(String id) throws BaseException {
         return client.deleteAsync(DeviceGroupCollectionId, id);
     }
 

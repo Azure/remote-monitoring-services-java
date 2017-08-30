@@ -4,6 +4,7 @@ package com.microsoft.azure.iotsolutions.uiconfig.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.Lists;
+import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.BaseException;
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.IStorageAdapterClient;
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.ValueApiModel;
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.ValueListApiModel;
@@ -43,13 +44,13 @@ public class StorageTest {
 
     @Test(timeout = 100000)
     @Category({UnitTest.class})
-    public void getThemeAsyncTest() throws UnsupportedEncodingException, URISyntaxException, ExecutionException, InterruptedException {
+    public void getThemeAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         String name = rand.NextString();
         String description = rand.NextString();
         ValueApiModel model = new ValueApiModel();
         model.setData(String.format("{\"Name\":\"%s\",\"Description\":\"%s\"}", name, description));
         Mockito.when(mockClient.getAsync(Mockito.anyString(), Mockito.anyString()))
-                .thenReturn(CompletableFuture.supplyAsync(() -> model));
+            .thenReturn(CompletableFuture.supplyAsync(() -> model));
         storage = new Storage(mockClient);
         Object result = storage.getThemeAsync().toCompletableFuture().get();
         JsonNode node = Json.toJson(result);
@@ -59,9 +60,9 @@ public class StorageTest {
 
     @Test(timeout = 100000)
     @Category({UnitTest.class})
-    public void getThemeAsyncDefaultTest() throws UnsupportedEncodingException, URISyntaxException, ExecutionException, InterruptedException {
+    public void getThemeAsyncDefaultTest() throws BaseException, ExecutionException, InterruptedException {
         Mockito.when(mockClient.getAsync(Mockito.anyString(), Mockito.anyString()))
-                .thenThrow(new UnsupportedEncodingException());
+            .thenThrow(new BaseException());
         storage = new Storage(mockClient);
         Object result = storage.getThemeAsync().toCompletableFuture().get();
         JsonNode node = Json.toJson(result);
@@ -71,7 +72,7 @@ public class StorageTest {
 
     @Test(timeout = 100000)
     @Category({UnitTest.class})
-    public void setThemeAsyncTest() throws UnsupportedEncodingException, URISyntaxException, ExecutionException, InterruptedException {
+    public void setThemeAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         String name = rand.NextString();
         String description = rand.NextString();
         String jsonData = String.format("{\"Name\":\"%s\",\"Description\":\"%s\"}", name, description);
@@ -79,7 +80,7 @@ public class StorageTest {
         ValueApiModel model = new ValueApiModel();
         model.setData(jsonData);
         Mockito.when(mockClient.updateAsync(Mockito.any(String.class), Mockito.any(String.class), Mockito.any(String.class), Mockito.any(String.class))).
-                thenReturn(CompletableFuture.supplyAsync(() -> model));
+            thenReturn(CompletableFuture.supplyAsync(() -> model));
         storage = new Storage(mockClient);
         Object result = storage.setThemeAsync(theme).toCompletableFuture().get();
         JsonNode node = Json.toJson(result);
@@ -89,7 +90,7 @@ public class StorageTest {
 
     @Test(timeout = 100000)
     @Category({UnitTest.class})
-    public void getUserSettingAsyncTest() throws UnsupportedEncodingException, URISyntaxException, ExecutionException, InterruptedException {
+    public void getUserSettingAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         String id = this.rand.NextString();
         String name = rand.NextString();
         String description = rand.NextString();
@@ -98,7 +99,7 @@ public class StorageTest {
         ValueApiModel model = new ValueApiModel();
         model.setData(jsonData);
         Mockito.when(mockClient.getAsync(Mockito.any(String.class), Mockito.any(String.class)))
-                .thenReturn(CompletableFuture.supplyAsync(() -> model));
+            .thenReturn(CompletableFuture.supplyAsync(() -> model));
         storage = new Storage(mockClient);
         Object result = storage.getUserSetting(id).toCompletableFuture().get();
         JsonNode node = Json.toJson(result);
@@ -108,7 +109,7 @@ public class StorageTest {
 
     @Test(timeout = 100000)
     @Category({UnitTest.class})
-    public void setUserSettingAsyncTest() throws UnsupportedEncodingException, URISyntaxException, ExecutionException, InterruptedException {
+    public void setUserSettingAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         String id = this.rand.NextString();
         String name = rand.NextString();
         String description = rand.NextString();
@@ -117,7 +118,7 @@ public class StorageTest {
         ValueApiModel model = new ValueApiModel();
         model.setData(jsonData);
         Mockito.when(mockClient.updateAsync(Mockito.any(String.class), Mockito.any(String.class), Mockito.any(String.class), Mockito.any(String.class)))
-                .thenReturn(CompletableFuture.supplyAsync(() -> model));
+            .thenReturn(CompletableFuture.supplyAsync(() -> model));
         storage = new Storage(mockClient);
         Object result = storage.setUserSetting(id, setting).toCompletableFuture().get();
         JsonNode node = Json.toJson(result);
@@ -127,14 +128,14 @@ public class StorageTest {
 
     @Test(timeout = 100000)
     @Category({UnitTest.class})
-    public void getLogoAsyncTest() throws UnsupportedEncodingException, URISyntaxException, ExecutionException, InterruptedException {
+    public void getLogoAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         String image = rand.NextString();
         String type = rand.NextString();
         String jsonData = String.format("{\"Image\":\"%s\",\"Type\":\"%s\"}", image, type);
         ValueApiModel model = new ValueApiModel();
         model.setData(jsonData);
         Mockito.when(mockClient.getAsync(Mockito.any(String.class), Mockito.any(String.class)))
-                .thenReturn(CompletableFuture.supplyAsync(() -> model));
+            .thenReturn(CompletableFuture.supplyAsync(() -> model));
         storage = new Storage(mockClient);
         Object result = storage.getLogoAsync().toCompletableFuture().get();
         JsonNode node = Json.toJson(result);
@@ -144,7 +145,7 @@ public class StorageTest {
 
     @Test(timeout = 100000)
     @Category({UnitTest.class})
-    public void setLogoAsyncTest() throws UnsupportedEncodingException, URISyntaxException, ExecutionException, InterruptedException {
+    public void setLogoAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         String image = rand.NextString();
         String type = rand.NextString();
         LogoServiceModel logo = new LogoServiceModel();
@@ -153,7 +154,7 @@ public class StorageTest {
         ValueApiModel model = new ValueApiModel();
         model.setData(Json.stringify(Json.toJson(logo)));
         Mockito.when(mockClient.updateAsync(Mockito.any(String.class), Mockito.any(String.class), Mockito.any(String.class), Mockito.any(String.class)))
-                .thenReturn(CompletableFuture.supplyAsync(() -> model));
+            .thenReturn(CompletableFuture.supplyAsync(() -> model));
         storage = new Storage(mockClient);
         Object result = storage.setLogoAsync(logo).toCompletableFuture().get();
         JsonNode node = Json.toJson(result);
@@ -163,7 +164,7 @@ public class StorageTest {
 
     @Test(timeout = 100000)
     @Category({UnitTest.class})
-    public void getAllDeviceGroupsAsyncTest() throws UnsupportedEncodingException, URISyntaxException, ExecutionException, InterruptedException {
+    public void getAllDeviceGroupsAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         List<DeviceGroupServiceModel> groups = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             DeviceGroupServiceModel model = new DeviceGroupServiceModel();
@@ -172,7 +173,7 @@ public class StorageTest {
             groups.add(model);
         }
         List<ValueApiModel> items = groups.stream().map(m ->
-                new ValueApiModel(rand.NextString(), Json.stringify(Json.toJson(m)), rand.NextString(), null)
+            new ValueApiModel(rand.NextString(), Json.stringify(Json.toJson(m)), rand.NextString(), null)
         ).collect(Collectors.toList());
         ValueListApiModel model = new ValueListApiModel();
         model.Items = items;
@@ -190,7 +191,7 @@ public class StorageTest {
 
     @Test(timeout = 100000)
     @Category({UnitTest.class})
-    public void getDeviceGroupsAsyncTest() throws UnsupportedEncodingException, URISyntaxException, ExecutionException, InterruptedException {
+    public void getDeviceGroupsAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         String groupId = rand.NextString();
         String displayName = rand.NextString();
         String conditions = rand.NextString();
@@ -201,8 +202,8 @@ public class StorageTest {
         group.setConditions(conditions);
         model.setData(Json.stringify(Json.toJson(group)));
         Mockito.when(mockClient.getAsync(Mockito.any(String.class),
-                Mockito.any(String.class))).
-                thenReturn(CompletableFuture.supplyAsync(() -> model));
+            Mockito.any(String.class))).
+            thenReturn(CompletableFuture.supplyAsync(() -> model));
         storage = new Storage(mockClient);
         DeviceGroupServiceModel result = storage.getDeviceGroupAsync(groupId).toCompletableFuture().get();
         assertEquals(result.getDisplayName(), displayName);
@@ -211,7 +212,7 @@ public class StorageTest {
 
     @Test(timeout = 100000)
     @Category({UnitTest.class})
-    public void createDeviceGroupAsyncTest() throws UnsupportedEncodingException, URISyntaxException, ExecutionException, InterruptedException {
+    public void createDeviceGroupAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         String groupId = rand.NextString();
         String displayName = rand.NextString();
         String conditions = rand.NextString();
@@ -222,8 +223,8 @@ public class StorageTest {
         group.setDisplayName(displayName);
         model.setData(Json.stringify(Json.toJson(group)));
         Mockito.when(mockClient.createAsync(Mockito.any(String.class),
-                Mockito.any(String.class))).
-                thenReturn(CompletableFuture.supplyAsync(() -> model));
+            Mockito.any(String.class))).
+            thenReturn(CompletableFuture.supplyAsync(() -> model));
         storage = new Storage(mockClient);
         DeviceGroupServiceModel result = storage.createDeviceGroupAsync(group).toCompletableFuture().get();
         assertEquals(result.getId(), groupId);
@@ -234,7 +235,7 @@ public class StorageTest {
 
     @Test(timeout = 100000)
     @Category({UnitTest.class})
-    public void updateDeviceGroupAsyncTest() throws UnsupportedEncodingException, URISyntaxException, ExecutionException, InterruptedException {
+    public void updateDeviceGroupAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         String groupId = rand.NextString();
         String displayName = rand.NextString();
         String conditions = rand.NextString();
@@ -245,10 +246,10 @@ public class StorageTest {
         group.setConditions(conditions);
         ValueApiModel model = new ValueApiModel(groupId, Json.stringify(Json.toJson(group)), etagNew, null);
         Mockito.when(mockClient.updateAsync(Mockito.any(String.class),
-                Mockito.any(String.class),
-                Mockito.any(String.class),
-                Mockito.any(String.class))).
-                thenReturn(CompletableFuture.supplyAsync(() -> model));
+            Mockito.any(String.class),
+            Mockito.any(String.class),
+            Mockito.any(String.class))).
+            thenReturn(CompletableFuture.supplyAsync(() -> model));
         storage = new Storage(mockClient);
         DeviceGroupServiceModel result = storage.updateDeviceGroupAsync(groupId, group, etagOld).toCompletableFuture().get();
         assertEquals(result.getId(), groupId);

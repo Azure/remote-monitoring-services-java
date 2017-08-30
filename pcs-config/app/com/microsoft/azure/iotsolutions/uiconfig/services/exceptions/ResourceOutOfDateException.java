@@ -9,7 +9,7 @@ package com.microsoft.azure.iotsolutions.uiconfig.services.exceptions;
  * providing the wrong Etag value. The client should retrieve the
  * resource again, to have the new Etag, and retry.
  */
-public class ResourceOutOfDateException extends Exception {
+public class ResourceOutOfDateException extends BaseException {
     public ResourceOutOfDateException() {
     }
 

@@ -3,6 +3,7 @@
 package com.microsoft.azure.iotsolutions.uiconfig.webservice.controllers;
 
 import com.microsoft.azure.iotsolutions.uiconfig.services.IStorage;
+import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.BaseException;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.DeviceGroupServiceModel;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.DeviceGroupController;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models.DeviceGroupApiModel;
@@ -39,7 +40,7 @@ public class DeviceGroupControllerTest {
 
     @Test(timeout = 100000)
     @Category({UnitTest.class})
-    public void getAllAsyncTest() throws UnsupportedEncodingException, URISyntaxException, ExecutionException, InterruptedException {
+    public void getAllAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         List<DeviceGroupServiceModel> models = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             DeviceGroupServiceModel model = new DeviceGroupServiceModel(rand.NextString(), rand.NextString(), rand.NextString(), rand.NextString());
@@ -62,7 +63,7 @@ public class DeviceGroupControllerTest {
 
     @Test(timeout = 100000)
     @Category({UnitTest.class})
-    public void getAsyncTest() throws UnsupportedEncodingException, URISyntaxException, ExecutionException, InterruptedException {
+    public void getAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         String groupId = rand.NextString();
         String displayName = rand.NextString();
         String conditions = rand.NextString();
@@ -80,7 +81,7 @@ public class DeviceGroupControllerTest {
 
     @Test(timeout = 100000)
     @Category({UnitTest.class})
-    public void creatAsyncTest() throws UnsupportedEncodingException, URISyntaxException, ExecutionException, InterruptedException {
+    public void creatAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         String groupId = rand.NextString();
         String displayName = rand.NextString();
         String conditions = rand.NextString();
@@ -100,7 +101,7 @@ public class DeviceGroupControllerTest {
 
     @Test(timeout = 100000)
     @Category({UnitTest.class})
-    public void updateAsyncTest() throws UnsupportedEncodingException, URISyntaxException, ExecutionException, InterruptedException {
+    public void updateAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         String groupId = rand.NextString();
         String displayName = rand.NextString();
         String conditions = rand.NextString();

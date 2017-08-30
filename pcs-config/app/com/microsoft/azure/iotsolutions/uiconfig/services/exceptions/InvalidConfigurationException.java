@@ -9,7 +9,7 @@ package com.microsoft.azure.iotsolutions.uiconfig.services.exceptions;
  * In order to recover, the service owner should fix the configuration
  * and re-deploy the service.
  */
-public class InvalidConfigurationException extends Exception {
+public class InvalidConfigurationException extends BaseException {
     public InvalidConfigurationException() {
     }
 

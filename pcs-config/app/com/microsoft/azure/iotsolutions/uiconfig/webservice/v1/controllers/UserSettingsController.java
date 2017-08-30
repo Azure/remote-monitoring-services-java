@@ -5,10 +5,9 @@ package com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.microsoft.azure.iotsolutions.uiconfig.services.IStorage;
+import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.*;
 import play.mvc.Result;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
 import java.util.concurrent.CompletionStage;
 
 import static play.libs.Json.fromJson;
@@ -26,14 +25,14 @@ public class UserSettingsController {
         this.storage = storage;
     }
 
-    public CompletionStage<Result> getUserSettingAsync(String id) {
+    public CompletionStage<Result> getUserSettingAsync(String id) throws BaseException {
         return storage.getUserSetting(id)
-                .thenApply(result -> ok(toJson(result)));
+            .thenApply(result -> ok(toJson(result)));
     }
 
-    public CompletionStage<Result> setUserSettingAsync(String id) throws UnsupportedEncodingException, URISyntaxException {
+    public CompletionStage<Result> setUserSettingAsync(String id) throws BaseException  {
         Object setting = fromJson(request().body().asJson(), Object.class);
         return storage.setUserSetting(id, setting)
-                .thenApply(result -> ok(toJson(result)));
+            .thenApply(result -> ok(toJson(result)));
     }
 }

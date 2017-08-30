@@ -9,7 +9,7 @@ package com.microsoft.azure.iotsolutions.uiconfig.services.exceptions;
  * or containing invalid values. The client should fix the request before
  * retrying.
  */
-public class InvalidInputException extends Exception {
+public class InvalidInputException extends BaseException {
     public InvalidInputException() {
     }
 

@@ -5,6 +5,7 @@ package com.microsoft.azure.iotsolutions.uiconfig.webservice.controllers;
 import akka.util.ByteString;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.microsoft.azure.iotsolutions.uiconfig.services.IStorage;
+import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.BaseException;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.LogoServiceModel;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.SolutionSettingsController;
 import helpers.Random;
@@ -38,7 +39,7 @@ public class SolutionSettingsControllerTest {
 
     @Test(timeout = 100000)
     @Category({UnitTest.class})
-    public void getThemeAsyncTest() throws ExecutionException, InterruptedException {
+    public void getThemeAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         String name = rand.NextString();
         String description = rand.NextString();
         Object model = Json.fromJson(Json.parse(String.format("{\"Name\":\"%s\",\"Description\":\"%s\"}", name, description)), Object.class);
@@ -52,7 +53,7 @@ public class SolutionSettingsControllerTest {
 
     @Test(timeout = 100000)
     @Category({UnitTest.class})
-    public void setThemeAsyncTest() throws ExecutionException, InterruptedException, UnsupportedEncodingException, URISyntaxException {
+    public void setThemeAsyncTest() throws ExecutionException, InterruptedException, BaseException {
         String name = rand.NextString();
         String description = rand.NextString();
         Object model = Json.fromJson(Json.parse(String.format("{\"Name\":\"%s\",\"Description\":\"%s\"}", name, description)), Object.class);
@@ -67,7 +68,7 @@ public class SolutionSettingsControllerTest {
 
     @Test(timeout = 100000)
     @Category({UnitTest.class})
-    public void getLogoAsyncTest() throws ExecutionException, InterruptedException {
+    public void getLogoAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         String image = rand.NextString();
         String type = rand.NextString();
         LogoServiceModel model = new LogoServiceModel(image, type);
@@ -81,7 +82,7 @@ public class SolutionSettingsControllerTest {
 
     @Test(timeout = 100000)
     @Category({UnitTest.class})
-    public void setLogoAsyncTest() throws ExecutionException, InterruptedException, UnsupportedEncodingException, URISyntaxException {
+    public void setLogoAsyncTest() throws BaseException, ExecutionException, InterruptedException, UnsupportedEncodingException, URISyntaxException {
         String image = rand.NextString();
         String type = rand.NextString();
         LogoServiceModel model = new LogoServiceModel(image, type);

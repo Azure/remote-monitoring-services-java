@@ -4,6 +4,7 @@ package com.microsoft.azure.iotsolutions.uiconfig.webservice.controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.microsoft.azure.iotsolutions.uiconfig.services.IStorage;
+import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.BaseException;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.UserSettingsController;
 import helpers.Random;
 import helpers.TestUtils;
@@ -35,7 +36,7 @@ public class UserSettingsControllerTest {
 
     @Test(timeout = 100000)
     @Category({UnitTest.class})
-    public void getUserSettingAsyncTest() throws ExecutionException, InterruptedException {
+    public void getUserSettingAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         String id = this.rand.NextString();
         String name = rand.NextString();
         String description = rand.NextString();
@@ -50,7 +51,7 @@ public class UserSettingsControllerTest {
 
     @Test(timeout = 100000)
     @Category({UnitTest.class})
-    public void setUserSettingAsyncTest() throws ExecutionException, InterruptedException, UnsupportedEncodingException, URISyntaxException {
+    public void setUserSettingAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         String id = this.rand.NextString();
         String name = rand.NextString();
         String description = rand.NextString();

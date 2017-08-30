@@ -10,7 +10,7 @@ package com.microsoft.azure.iotsolutions.uiconfig.services.exceptions;
  * identifier. The client should change the identifier or assume the
  * resource has already been created.
  */
-public class ConflictingResourceException extends Exception {
+public class ConflictingResourceException extends BaseException {
     public ConflictingResourceException() {
     }
 
