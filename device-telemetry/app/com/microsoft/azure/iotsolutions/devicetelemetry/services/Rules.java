@@ -19,6 +19,7 @@ import play.libs.ws.WSRequest;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -187,21 +188,19 @@ public final class Rules implements IRules {
     public void createFromTemplate(String template)
         throws InvalidConfigurationException, ResourceNotFoundException {
 
-        String rulesTemplatePath = Play.current().path() + File.separator +
-            "conf" + File.separator + template + ".json";
-        File rulesTemplate = new File(rulesTemplatePath);
+        InputStream stream = Play.current().classloader()
+            .getResourceAsStream(template + ".json");
 
-        if (rulesTemplate.exists()) {
+        if (stream != null) {
             try {
-                JsonNode jsonTemplate = Json.parse(
-                    Files.readAllBytes(Paths.get(rulesTemplatePath)));
+                JsonNode jsonTemplate = Json.parse(stream);
 
                 for (JsonNode item : jsonTemplate.withArray("Rules")) {
                     RuleServiceModel rule = getRuleServiceModelFromTemplate(item);
                     postAsync(rule);
                 }
 
-            } catch (IOException e) {
+            } catch (Exception e) {
                 log.error("Could not read rules from given template file "
                     + template + ".json." );
                 throw new InvalidConfigurationException(
