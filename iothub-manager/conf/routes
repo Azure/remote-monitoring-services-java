@@ -3,14 +3,20 @@
 GET    /v1/status           com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.StatusController.get
 GET    /v1/status/          com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.StatusController.get
 
-GET    /v1/devices          com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.list
-GET    /v1/devices/         com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.list
+GET    /v1/devices          com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.getDevicesAsync(query: String ?= "")
+GET    /v1/devices/         com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.getDevicesAsync(query: String ?= "")
 
-GET    /v1/devices/:id      com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.get(id)
-GET    /v1/devices/:id/     com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.get(id)
+POST   /v1/devices/query    com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.queryDevicesAsync
+POST   /v1/devices/query/   com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.queryDevicesAsync
 
-POST   /v1/devices          com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.post
-POST   /v1/devices/         com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.post
+GET    /v1/devices/:id      com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.getDeviceAsync(id)
+GET    /v1/devices/:id/     com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.getDeviceAsync(id)
 
-DELETE    /v1/devices/:id   com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.delete(id)
-DELETE    /v1/devices/:id/  com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.delete(id)
+POST   /v1/devices          com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.postAsync
+POST   /v1/devices/         com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.postAsync
+
+PUT    /v1/devices/:id      com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.putAsync(id)
+PUT    /v1/devices/:id      com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.putAsync(id)
+
+DELETE /v1/devices/:id      com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.deleteAsync(id)
+DELETE /v1/devices/:id/     com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.deleteAsync(id)

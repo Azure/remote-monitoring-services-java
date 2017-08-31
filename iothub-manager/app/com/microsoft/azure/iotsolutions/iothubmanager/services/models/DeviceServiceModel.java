@@ -7,8 +7,6 @@ import com.microsoft.azure.sdk.iot.service.*;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 
-import java.security.NoSuchAlgorithmException;
-
 // TODO: documentation
 // TODO: datetime parsing
 
@@ -104,12 +102,12 @@ public final class DeviceServiceModel {
     }
 
     public Device toAzureModel() throws InvalidInputException {
-        try{
+        try {
             return Device.createFromId(
                 this.getId(),
                 this.getEnabled() ? DeviceStatus.Enabled : DeviceStatus.Disabled,
                 null);
-        } catch(Exception e){
+        } catch (Exception e) {
             throw new InvalidInputException("Unable to create device", e);
         }
     }

@@ -2,6 +2,7 @@
 
 package com.microsoft.azure.iotsolutions.iothubmanager.services;
 
+import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.ResourceNotFoundException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.*;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.runtime.IServicesConfig;
@@ -17,33 +18,74 @@ import java.util.*;
 
 public class DevicesTest {
 
-    private Config config;
-    private IServicesConfig servicesConfig;
-    private IIoTHubWrapper ioTHubWrapper;
-    private IDevices devices;
+    private static Config config;
+    private static IServicesConfig servicesConfig;
+    private static IIoTHubWrapper ioTHubWrapper;
+    private static IDevices deviceService;
+    private static ArrayList<DeviceServiceModel> testDevices = new ArrayList<>();
+    private static String batchId = UUID.randomUUID().toString().replace("-", "");
 
-    @Before
-    public void setUp() throws Exception {
-        this.config = new Config();
-        this.servicesConfig = config.getServicesConfig();
-        this.ioTHubWrapper = new IoTHubWrapper(servicesConfig);
-        this.devices = new Devices(ioTHubWrapper);
+    private static boolean setUpIsDone = false;
+
+    @BeforeClass
+    public static void setUpOnce() throws Exception {
+        if (setUpIsDone) {
+            return;
+        }
+
+        config = new Config();
+        servicesConfig = config.getServicesConfig();
+        ioTHubWrapper = new IoTHubWrapper(servicesConfig);
+        deviceService = new Devices(ioTHubWrapper);
+
+        createTestDevices(2, batchId);
+
+        setUpIsDone = true;
     }
 
-    @After
-    public void tearDown() {
-        // something after every test
+    @AfterClass
+    public static void tearDownOnce() {
+        for (DeviceServiceModel device : testDevices) {
+            try {
+                deviceService.deleteAsync(device.getId()).toCompletableFuture().get();
+                System.out.println(device.getId() + " deleted");
+            } catch (Exception ex) {
+                Assert.fail("Unable to destroy test deviceService");
+            }
+        }
     }
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    @Test(timeout = 10000)
+    @Test(timeout = 100000)
     @Category({UnitTest.class})
-    public void getListAsyncTest() throws IOException, IotHubException {
+    public void getAllAsyncTest() throws IOException, IotHubException {
         try {
-            ArrayList<DeviceServiceModel> devices = this.devices.getListAsync().toCompletableFuture().get();
-            Assert.assertNotNull(devices);
+            DeviceServiceListModel deviceList = deviceService.queryAsync("", "").toCompletableFuture().get();
+            Assert.assertTrue(deviceList.getItems().size() >= testDevices.size());
+        } catch (Exception e) {
+        }
+    }
+
+    @Test(timeout = 100000)
+    @Category({UnitTest.class})
+    public void queryByRawStringAsyncTest() throws IOException, IotHubException {
+        try {
+            String rawQueryString = String.format("Tags.BatchId='%s'", batchId);
+            DeviceServiceListModel deviceList = deviceService.queryAsync(rawQueryString, "").toCompletableFuture().get();
+            Assert.assertTrue(deviceList.getItems().size() == testDevices.size());
+        } catch (Exception e) {
+        }
+    }
+
+    @Test(timeout = 100000)
+    @Category({UnitTest.class})
+    public void queryByJsonStringAsyncTest() throws IOException, IotHubException {
+        try {
+            String jsonString = String.format("[\"Key\": \"Tags.BatchId\", \"Operator\": \"EQ\", \"Value\": \"%s\" ]", batchId);
+            DeviceServiceListModel deviceList = deviceService.queryAsync(jsonString, "").toCompletableFuture().get();
+            Assert.assertTrue(deviceList.getItems().size() > 0);
         } catch (Exception e) {
         }
     }
@@ -52,21 +94,19 @@ public class DevicesTest {
     @Category({UnitTest.class})
     public void getAsyncFailureTest() throws Exception {
         try {
-            this.devices.getAsync("IncorrectDeviceId").toCompletableFuture().get();
+            deviceService.getAsync("IncorrectDeviceId").toCompletableFuture().get();
         } catch (Exception ex) {
             Assert.assertTrue(ex.getCause() instanceof ResourceNotFoundException);
         }
     }
 
-    @Test(timeout = 10000)
+    @Test(timeout = 100000)
     @Category({UnitTest.class})
     public void getAsyncSuccessTest() throws Exception {
-        ArrayList<DeviceServiceModel> devices = this.devices.getListAsync().toCompletableFuture().get();
-        if (devices.size() > 0) {
-            DeviceServiceModel device = this.devices.getAsync(devices.get(0).getId()).toCompletableFuture().get();
-            Assert.assertEquals(device.getId(), devices.get(0).getId());
-            Assert.assertNotNull(device.getTwin());
-        }
+        DeviceServiceListModel devices = deviceService.queryAsync("", "").toCompletableFuture().get();
+        DeviceServiceModel device = deviceService.getAsync(devices.getItems().get(0).getId()).toCompletableFuture().get();
+        Assert.assertEquals(device.getId(), devices.getItems().get(0).getId());
+        Assert.assertNotNull(device.getTwin());
     }
 
     @Test(timeout = 100000)
@@ -78,7 +118,8 @@ public class DevicesTest {
             put("Building", "Building40");
             put("Floor", "1F");
         }};
-        HashMap<String, Object> desired = new HashMap() {
+        HashMap<String, Object> desired;
+        desired = new HashMap() {
             {
                 put("Config", new HashMap<String, Object>() {
                     {
@@ -90,23 +131,109 @@ public class DevicesTest {
         DeviceTwinProperties properties = new DeviceTwinProperties(desired, null);
         DeviceTwinServiceModel twin = new DeviceTwinServiceModel(eTag, deviceId, properties, tags, true);
         DeviceServiceModel device = new DeviceServiceModel(eTag, deviceId, 0, null, false, true, null, twin, null, null);
-        DeviceServiceModel newDevice = this.devices.createAsync(device).toCompletableFuture().get();
-        Assert.assertEquals(deviceId, newDevice.getId());
+        DeviceServiceModel newDevice = deviceService.createAsync(device).toCompletableFuture().get();
         DeviceTwinServiceModel newTwin = newDevice.getTwin();
+        HashMap<String, Object> configMap = (HashMap) newTwin.getProperties().getDesired().get("Config");
+        Assert.assertEquals(deviceId, newDevice.getId());
         Assert.assertEquals(newTwin.getTags().get("Building"), "Building40");
         Assert.assertEquals(newTwin.getTags().get("Floor"), "1F");
-        HashMap<String, Object> configHash = (HashMap) newTwin.getProperties().getDesired().get("Config");
-        Assert.assertEquals(configHash.get("Test"), 1);
-        Assert.assertTrue(this.devices.deleteAsync(deviceId).toCompletableFuture().get());
+        Assert.assertEquals(configMap.get("Test"), 1);
+        Assert.assertTrue(deviceService.deleteAsync(deviceId).toCompletableFuture().get());
+    }
+
+    @Test(timeout = 100000)
+    @Category({UnitTest.class})
+    public void createOrUpdateTest() throws Exception {
+        String deviceId = "unitTestDevice_" + UUID.randomUUID().toString().replace("-", "");
+        String eTag = "etagxx==";
+        HashMap<String, Object> tags = new HashMap<String, Object>() {{
+            put("Building", "Building40");
+        }};
+        HashMap desired = new HashMap() {
+            {
+                put("Config", new HashMap<String, Object>() {
+                    {
+                        put("Test", 1);
+                    }
+                });
+            }
+        };
+        DeviceTwinProperties properties = new DeviceTwinProperties(desired, null);
+        DeviceTwinServiceModel twin = new DeviceTwinServiceModel(eTag, deviceId, properties, tags, true);
+        DeviceServiceModel device = new DeviceServiceModel(eTag, deviceId, 0, null, false, true, null, twin, null, null);
+        DeviceServiceModel newDevice = deviceService.createOrUpdateAsync(device.getId(), device).toCompletableFuture().get();
+        DeviceTwinServiceModel newTwin = newDevice.getTwin();
+        HashMap<String, Object> configMap = (HashMap) newTwin.getProperties().getDesired().get("Config");
+        Assert.assertEquals(deviceId, newDevice.getId());
+        Assert.assertEquals(newTwin.getTags().get("Building"), "Building40");
+        Assert.assertEquals(configMap.get("Test"), 1);
+        Assert.assertTrue(deviceService.deleteAsync(deviceId).toCompletableFuture().get());
+    }
+
+    @Test(timeout = 100000)
+    @Category({UnitTest.class})
+    public void createOrUpdateWithMismatchedIdFailureTest() {
+        try {
+            String deviceId = "unitTestDevice_" + UUID.randomUUID().toString().replace("-", "");
+            String eTag = "etagxx==";
+            DeviceTwinServiceModel twin = new DeviceTwinServiceModel(eTag, "MismatchedDeviceID", null, null, true);
+            DeviceServiceModel device = new DeviceServiceModel(eTag, "MismatchedDeviceID", 0, null, false, true, null, twin, null, null);
+            DeviceServiceModel newDevice = deviceService.createOrUpdateAsync(deviceId, device).toCompletableFuture().get();
+        } catch (Exception e) {
+            Assert.assertTrue(e instanceof InvalidInputException);
+        }
+    }
+
+    @Test(timeout = 100000)
+    @Category({UnitTest.class})
+    public void createOrUpdateWithEmptyIdFailureTest() {
+        try {
+            String deviceId = "unitTestDevice_" + UUID.randomUUID().toString().replace("-", "");
+            String eTag = "etagxx==";
+            DeviceTwinServiceModel twin = new DeviceTwinServiceModel(eTag, "", null, null, true);
+            DeviceServiceModel device = new DeviceServiceModel(eTag, "", 0, null, false, true, null, twin, null, null);
+            DeviceServiceModel newDevice = deviceService.createOrUpdateAsync(deviceId, device).toCompletableFuture().get();
+        } catch (Exception e) {
+            Assert.assertTrue(e instanceof InvalidInputException);
+        }
     }
 
     @Test(timeout = 10000)
     @Category({UnitTest.class})
     public void deleteAsyncFailureTest() throws Exception {
         try {
-            this.devices.deleteAsync("IncorrectDeviceId").toCompletableFuture().get();
+            deviceService.deleteAsync("IncorrectDeviceId").toCompletableFuture().get();
         } catch (Exception ex) {
             Assert.assertTrue(ex.getCause() instanceof ResourceNotFoundException);
+        }
+    }
+
+    private static void createTestDevices(int count, String batchId) {
+        try {
+            for (int i = 0; i < count; i++) {
+                String deviceId = String.format("unitTestDevice-%s_%s", i, batchId);
+                String eTag = "etagxx==";
+                HashMap<String, Object> tags = new HashMap<String, Object>() {{
+                    put("BatchId", batchId);
+                }};
+                HashMap desired = new HashMap() {
+                    {
+                        put("Config", new HashMap<String, Object>() {
+                            {
+                                put("Test", 1);
+                            }
+                        });
+                    }
+                };
+                DeviceTwinProperties properties = new DeviceTwinProperties(desired, null);
+                DeviceTwinServiceModel twin = new DeviceTwinServiceModel(eTag, deviceId, properties, tags, true);
+                DeviceServiceModel device = new DeviceServiceModel(eTag, deviceId, 0, null, false, true, null, twin, null, null);
+                DeviceServiceModel newDevice = deviceService.createAsync(device).toCompletableFuture().get();
+                testDevices.add(newDevice);
+                System.out.println(deviceId + "created");
+            }
+        } catch (Exception e) {
+            Assert.fail("Unable to create test deviceService");
         }
     }
 }

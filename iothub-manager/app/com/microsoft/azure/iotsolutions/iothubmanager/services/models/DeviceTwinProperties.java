@@ -3,7 +3,6 @@
 package com.microsoft.azure.iotsolutions.iothubmanager.services.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import play.api.Mode;
 
 import java.util.HashMap;
 
