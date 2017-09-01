@@ -30,7 +30,7 @@ public final class DeviceListApiModel {
         }
     }
 
-    @JsonProperty("Items")
+    @JsonProperty("items")
     public List<DeviceRegistryApiModel> getItems() {
         return items;
     }
