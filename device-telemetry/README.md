@@ -2,13 +2,14 @@
 [![Issues][issues-badge]][issues-url]
 [![Gitter][gitter-badge]][gitter-url]
 
-# Device Telemetry Overview
-===========================
+Device Telemetry Overview
+=========================
 
 This service offers read access to device telemetry, full CRUD for rules, and read/write for
  alarms from storage for the client via a RESTful endpoint. 
 
 ## Features the microservice offers:
+
 1. Gets a list of telemetry messages for specific parameters
 1. Gets a list of alarms for specific parameters
 1. Gets a single alarm
@@ -20,14 +21,19 @@ This service offers read access to device telemetry, full CRUD for rules, and re
     1. Modify existing rule
     1. Delete existing rule
 
-# Dependencies
+Dependencies
+============
+
 1. DocumentDB Storage
 1. [Storage Adapter Webservice](https://github.com/Azure/pcs-storage-adapter-dotnet)
 
-# How to use the microservice
-=============================
+How to use the microservice
+===========================
+
 ## Local Setup
+
 ### 1. Environment Variables
+
 Run `scripts\env-vars-setup.cmd` on Windows or `source scripts\env-vars-setup`
 on Mac/Linux to set up the environment variables needed to run the service locally.
 If using envornemnt variables, this service requires the following environment
@@ -38,14 +44,18 @@ variables to be set:
   used for key value storage
 
 ## Quickstart - Running the service with Docker
+
 --todo
 
 ## Running the service in an IDE
+
 ### Prerequisites
+
 - Install SBT: http://www.scala-sbt.org/download.html
 - Install the latest Java SDK: http://www.oracle.com/technetwork/java/javase/downloads/index.html
 
 ## Run and Debug with IntelliJ
+
 Install Intellij IDEA Community: https://www.jetbrains.com/idea/download
 
 Intellij IDEA lets you quickly open the application without using a command
@@ -93,7 +103,9 @@ Steps using Eclipse Oxygen ("Eclipse for Java Developers" package):
 * After saving this configuration, you can click "Debug" to connect to the
   running application.
 
-# Project Structure
+Project Structure
+=================
+
 * **Code** for the application is in app/com.microsoft.azure.iotsolutions.devicetelemetry/
     * **WebService** - Java web service exposing REST interface for managing Ruels,
     Alarms, and Messages
@@ -106,7 +118,8 @@ Steps using Eclipse Oxygen ("Eclipse for Java Developers" package):
 * **Routes** - defines the URL mapping to web service classes
 
 
-# Build & Run from the command line
+Build & Run from the command line
+=================================
 
 The [scripts](scripts) folder includes some scripts for frequent tasks you
 might want to run from the command line:
@@ -123,7 +136,9 @@ If you are familiar with [SBT](http://www.scala-sbt.org), you can also use SBT
 directly. A copy of SBT is included in the root of the project.
 
 
-# Updating the Docker image
+Updating the Docker image
+=========================
+
 The `scripts` folder includes a [docker](scripts/docker) subfolder with the files
 required to package the service into a Docker image:
 
@@ -147,14 +162,18 @@ The package logic is executed via
 in [plugins.sbt](project/plugins.sbt).
 
 
-# Contributing to the solution
+Contributing to the solution
+============================
+
 Please follow our contribution guildelines and code style conventions defined in [guidelines](https://github.com/Azure/iothub-manager-java/blob/master/CONTRIBUTING.md).
 
-# Feedback
+Feedback
+========
+
 Please enter issues, bugs, or suggestions as GitHub Issues here: https://github.com/Azure/device-telemetry-java/issues.
 
-# Other documents
-=================
+Other documents
+===============
 
 * [Contributing and Development setup](CONTRIBUTING.md)
 * [Development setup, scripts and tools](DEVELOPMENT.md)
