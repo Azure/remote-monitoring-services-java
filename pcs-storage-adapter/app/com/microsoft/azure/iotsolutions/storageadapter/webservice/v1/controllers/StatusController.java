@@ -7,6 +7,7 @@ import com.google.inject.Singleton;
 import com.microsoft.azure.iotsolutions.storageadapter.services.DocDBKeyValueContainer;
 import com.microsoft.azure.iotsolutions.storageadapter.services.IKeyValueContainer;
 import com.microsoft.azure.iotsolutions.storageadapter.services.Status;
+import com.microsoft.azure.iotsolutions.storageadapter.services.exceptions.CreateResourceException;
 import com.microsoft.azure.iotsolutions.storageadapter.webservice.v1.models.StatusApiModel;
 import play.mvc.Result;
 
@@ -30,7 +31,7 @@ public final class StatusController {
     /**
      * @return Service health details.
      */
-    public Result index() {
+    public Result index() throws Exception {
         Status status = storageClient.ping();
         return ok(toJson(new StatusApiModel(status)));
     }

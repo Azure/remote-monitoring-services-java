@@ -8,6 +8,6 @@ import com.microsoft.azure.iotsolutions.storageadapter.services.exceptions.Creat
 
 @ImplementedBy(DocumentClientFactory.class)
 public interface IFactory<T> {
-    T Create() throws DocumentClientException, CreateResourceException;
+    T create() throws CreateResourceException;
 }
 

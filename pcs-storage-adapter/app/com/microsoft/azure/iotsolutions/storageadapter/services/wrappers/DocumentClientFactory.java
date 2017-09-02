@@ -50,7 +50,6 @@ public class DocumentClientFactory implements IFactory<DocumentClient> {
             databaseInfo.setId(databaseName);
             client.createDatabase(databaseInfo, requestOptions);
         } catch (DocumentClientException ex) {
-            this.hasCreatingError = true;
             log.error("Error creating database: " + databaseName);
             throw ex;
         }
@@ -83,7 +82,6 @@ public class DocumentClientFactory implements IFactory<DocumentClient> {
             collectionInfo.setId(collectionId);
             client.createCollection(databaseLink, collectionInfo, requestOptions);
         } catch (DocumentClientException ex) {
-            this.hasCreatingError = true;
             log.error("Error creating collection: " + databaseName + "/colls/" + collectionId);
             throw ex;
         }
@@ -135,13 +133,18 @@ public class DocumentClientFactory implements IFactory<DocumentClient> {
         }
     }
 
-    public DocumentClient Create() throws DocumentClientException, CreateResourceException {
+    public DocumentClient create() throws CreateResourceException {
         DocumentClient client = new DocumentClient(docDbEndpoint, docDbKey, ConnectionPolicy.GetDefault(), ConsistencyLevel.Session);
         // Do not try to create new if we know it will fail.
-        if (!this.hasCreatingError) {
+        if (this.hasCreatingError)
+            throw new CreateResourceException("Could not create DocumentDB. Check connection string.");
+        try {
             createDatabaseIfNotExists(client, databaseName);
             createCollectionIfNotExists(client, databaseName, collectionId);
-        } else {
+        }
+        catch (Exception ex)
+        {
+            this.hasCreatingError = true;
             throw new CreateResourceException("Could not create DocumentDB.");
         }
         return client;

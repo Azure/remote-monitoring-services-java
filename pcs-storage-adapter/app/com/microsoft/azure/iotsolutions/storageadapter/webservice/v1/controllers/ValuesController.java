@@ -60,7 +60,7 @@ public final class ValuesController {
     }
 
     /**
-     * Create a new item
+     * create a new item
      *
      * @return result
      */
@@ -74,7 +74,7 @@ public final class ValuesController {
     }
 
     /**
-     * Create or update an item
+     * create or update an item
      *
      * @return result
      */

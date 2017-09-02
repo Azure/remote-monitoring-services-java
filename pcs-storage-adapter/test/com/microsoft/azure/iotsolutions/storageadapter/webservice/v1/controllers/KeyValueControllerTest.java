@@ -44,28 +44,28 @@ public class KeyValueControllerTest {
     }
 
     @After
-    public void tearDown() throws DocumentClientException {
+    public void tearDown() throws DocumentClientException, CreateResourceException {
         // something after every test
         container.delete(collectionId, key);
     }
 
     @Test(timeout = 5000)
     @Category({UnitTest.class})
-    public void getTest() throws DocumentClientException {
+    public void getTest() throws DocumentClientException, CreateResourceException {
         ValueServiceModel value = container.get(collectionId, key);
         assertThat(value.Key, is(key));
     }
 
     @Test(timeout = 5000)
     @Category({UnitTest.class})
-    public void listTest() throws DocumentClientException {
+    public void listTest() throws DocumentClientException, CreateResourceException {
         Iterator<ValueServiceModel> value = container.list(collectionId);
         assertNotNull(value);
     }
 
     @Test(timeout = 5000)
     @Category({UnitTest.class})
-    public void putTest() throws DocumentClientException {
+    public void putTest() throws DocumentClientException, CreateResourceException {
         String inputKey = key + UUID.randomUUID().toString();
         ValueServiceModel value = container.create(collectionId, inputKey, inModel);
         assertThat(value.Key, is(inputKey));
@@ -74,7 +74,7 @@ public class KeyValueControllerTest {
 
     @Test(timeout = 5000)
     @Category({UnitTest.class})
-    public void postTest() throws DocumentClientException {
+    public void postTest() throws DocumentClientException, CreateResourceException {
         String inputKey = key + UUID.randomUUID().toString();
         ValueServiceModel value = container.upsert(collectionId, inputKey, inModel);
         assertThat(value.Key, is(inputKey));

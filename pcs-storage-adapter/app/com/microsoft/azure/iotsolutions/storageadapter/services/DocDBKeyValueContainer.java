@@ -21,17 +21,24 @@ public class DocDBKeyValueContainer implements IKeyValueContainer {
 
     private static final Logger.ALogger log = Logger.of(DocDBKeyValueContainer.class);
     private DocumentClient client;
+    private IFactory<DocumentClient> clientFactory;
     // Todo: Rename colUrl
     private String colUrl;
 
     @Inject
     public DocDBKeyValueContainer(IFactory<DocumentClient> clientFactory,
                                   final IServicesConfig config) throws DocumentClientException, CreateResourceException {
-        this.client = clientFactory.Create();
+        this.clientFactory = clientFactory;
         this.colUrl = config.getContainerName();
     }
 
-    public ValueServiceModel get(String collectionId, String key) throws DocumentClientException {
+    private void createDocumentClientLazily() throws CreateResourceException {
+        if(client==null)
+            this.client = this.clientFactory.create();
+    }
+
+    public ValueServiceModel get(String collectionId, String key) throws DocumentClientException, CreateResourceException {
+        createDocumentClientLazily();
         String docUrl = colUrl + "/docs/" + DocumentIdHelper.GenerateId(collectionId, key);
         try {
             Document response = this.client.readDocument(docUrl, new RequestOptions()).getResource();
@@ -43,7 +50,8 @@ public class DocDBKeyValueContainer implements IKeyValueContainer {
     }
 
 
-    public java.util.Iterator<ValueServiceModel> list(String collectionId) {
+    public java.util.Iterator<ValueServiceModel> list(String collectionId) throws CreateResourceException {
+        createDocumentClientLazily();
         String sqlQuery = QueryBuilder.buildSQL(collectionId);
         FeedOptions queryOptions = new FeedOptions();
         queryOptions.setPageSize(-1);
@@ -58,9 +66,10 @@ public class DocDBKeyValueContainer implements IKeyValueContainer {
     }
 
 
-    public ValueServiceModel create(String collectionId, String key, ValueServiceModel input) throws DocumentClientException {
+    public ValueServiceModel create(String collectionId, String key, ValueServiceModel input) throws DocumentClientException, CreateResourceException {
         KeyValueDocument document = new KeyValueDocument(collectionId, key, input.Data);
         try {
+            createDocumentClientLazily();
             Document response = this.client.createDocument(colUrl, document, new RequestOptions(), true).getResource();
             return new ValueServiceModel(response);
         } catch (DocumentClientException ex) {
@@ -69,7 +78,7 @@ public class DocDBKeyValueContainer implements IKeyValueContainer {
         }
     }
 
-    public ValueServiceModel upsert(String collectionId, String key, ValueServiceModel input) throws DocumentClientException {
+    public ValueServiceModel upsert(String collectionId, String key, ValueServiceModel input) throws DocumentClientException, CreateResourceException {
         try {
             KeyValueDocument document = new KeyValueDocument(collectionId, key, input.Data);
             RequestOptions option = new RequestOptions();
@@ -77,6 +86,7 @@ public class DocDBKeyValueContainer implements IKeyValueContainer {
             condition.setType(AccessConditionType.IfMatch);
             condition.setCondition(input.ETag);
             option.setAccessCondition(condition);
+            createDocumentClientLazily();
             Document response = this.client.upsertDocument(colUrl, document, option, false).getResource();
             return new ValueServiceModel(response);
         } catch (DocumentClientException ex) {
@@ -85,9 +95,10 @@ public class DocDBKeyValueContainer implements IKeyValueContainer {
         }
     }
 
-    public void delete(String collectionId, String key) throws DocumentClientException {
+    public void delete(String collectionId, String key) throws DocumentClientException, CreateResourceException {
         String docUrl = colUrl + "/docs/" + DocumentIdHelper.GenerateId(collectionId, key);
         try {
+            createDocumentClientLazily();
             this.client.deleteDocument(docUrl, new RequestOptions());
         } catch (DocumentClientException ex) {
             log.error("Error deleting document: " + docUrl);
@@ -96,7 +107,8 @@ public class DocDBKeyValueContainer implements IKeyValueContainer {
     }
 
 
-    public Status ping() {
+    public Status ping() throws CreateResourceException {
+        createDocumentClientLazily();
         URI response = null;
         if (this.client != null) {
             response = this.client.getReadEndpoint();
