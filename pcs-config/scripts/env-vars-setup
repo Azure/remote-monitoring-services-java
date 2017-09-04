@@ -7,7 +7,7 @@
 # * the variables are set only in the current shell, run this script every time, or automate
 #   the setup using your `~/.bash_profile`.
 
-#  Prepare the environment variables used by the application.
+# Prepare the environment variables used by the application
 
 # The URL where Storage Adapter web service is listening
 export PCS_STORAGEADAPTER_WEBSERVICE_URL="http://127.0.0.1:9022/v1"
