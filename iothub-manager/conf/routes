@@ -20,3 +20,6 @@ PUT    /v1/devices/:id      com.microsoft.azure.iotsolutions.iothubmanager.webse
 
 DELETE /v1/devices/:id      com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.deleteAsync(id)
 DELETE /v1/devices/:id/     com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.deleteAsync(id)
+
+POST /v1/devices/:id/methods    com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.invokeDeviceMethodAsync(id)
+POST /v1/devices/:id/methods/   com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.invokeDeviceMethodAsync(id)

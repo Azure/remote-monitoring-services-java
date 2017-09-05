@@ -8,6 +8,7 @@ import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.Invali
 import com.microsoft.azure.iotsolutions.iothubmanager.services.runtime.IServicesConfig;
 import com.microsoft.azure.sdk.iot.service.IotHubConnectionStringBuilder;
 import com.microsoft.azure.sdk.iot.service.RegistryManager;
+import com.microsoft.azure.sdk.iot.service.devicetwin.DeviceMethod;
 import com.microsoft.azure.sdk.iot.service.devicetwin.DeviceTwin;
 
 import java.io.IOException;
@@ -30,7 +31,7 @@ public final class IoTHubWrapper implements IIoTHubWrapper {
         try {
             return DeviceTwin.createFromConnectionString(this.config.getHubConnString());
         } catch (Exception e) {
-            throw new ExternalDependencyException("Can not create IoTHub connection for DeviceTwinClient", e);
+            throw new ExternalDependencyException("Can not create IoTHub connection for DeviceTwin client", e);
         }
     }
 
@@ -38,7 +39,15 @@ public final class IoTHubWrapper implements IIoTHubWrapper {
         try {
             return RegistryManager.createFromConnectionString(this.config.getHubConnString());
         } catch (Exception e) {
-            throw new ExternalDependencyException("Can not create IoTHub connection for RegistryManager", e);
+            throw new ExternalDependencyException("Can not create IoTHub connection for RegistryManager client", e);
+        }
+    }
+
+    public DeviceMethod getDeviceMethodClient() throws ExternalDependencyException {
+        try {
+            return DeviceMethod.createFromConnectionString(this.config.getHubConnString());
+        } catch (Exception e) {
+            throw new ExternalDependencyException("Can not create IoTHub connection for DeviceMethod client", e);
         }
     }
 

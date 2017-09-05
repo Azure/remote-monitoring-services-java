@@ -4,9 +4,8 @@ package com.microsoft.azure.iotsolutions.iothubmanager.services;
 
 import com.google.inject.ImplementedBy;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.*;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeviceServiceModel;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.models.*;
 import com.microsoft.azure.sdk.iot.service.exceptions.IotHubException;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeviceServiceListModel;
 
 import java.io.IOException;
 import java.util.concurrent.CompletionStage;
@@ -25,4 +24,6 @@ public interface IDevices {
     CompletionStage<DeviceServiceModel> createOrUpdateAsync(String id, DeviceServiceModel device) throws BaseException, IOException, IotHubException;
 
     CompletionStage<Boolean> deleteAsync(String id) throws IOException, IotHubException;
+
+    CompletionStage<MethodResultServiceModel> invokeDeviceMethodAsync(String id, MethodParameterServiceModel parameter) throws IOException, IotHubException;
 }

@@ -14,6 +14,7 @@ import org.junit.experimental.categories.Category;
 import org.junit.rules.ExpectedException;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.*;
 
 public class DevicesTest {
@@ -205,6 +206,35 @@ public class DevicesTest {
             deviceService.deleteAsync("IncorrectDeviceId").toCompletableFuture().get();
         } catch (Exception ex) {
             Assert.assertTrue(ex.getCause() instanceof ResourceNotFoundException);
+        }
+    }
+
+    @Test(timeout = 100000)
+    @Category({UnitTest.class})
+    public void invokeMethodAsyncTest() {
+        try {
+            DeviceServiceListModel deviceList = deviceService.queryAsync("", "").toCompletableFuture().get();
+            DeviceServiceModel targetDevice = null;
+            for (DeviceServiceModel device : deviceList.getItems()) {
+                if (device.getTwin().getProperties().getReported().containsKey("SupportedMethods")) {
+                    targetDevice = device;
+                    break;
+                }
+            }
+
+            if(targetDevice != null) {
+                MethodParameterServiceModel parameter = new MethodParameterServiceModel();
+                parameter.setName("Reboot");
+                parameter.setJsonPayload("");
+                parameter.setResponseTimeout(Duration.ofSeconds(5));
+                parameter.setConnectionTimeout(Duration.ofSeconds(5));
+                MethodResultServiceModel result = deviceService.invokeDeviceMethodAsync(
+                    targetDevice.getId(), parameter).toCompletableFuture().get();
+                Assert.assertTrue(result.getStatus() == 200);
+                Assert.assertTrue(result.getJsonPayload().contains("Reboot accepted"));
+            }
+        } catch (Exception e) {
+            Assert.fail("Unable to invoke method");
         }
     }
 

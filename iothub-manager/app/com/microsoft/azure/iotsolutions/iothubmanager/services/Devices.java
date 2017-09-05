@@ -5,13 +5,9 @@ package com.microsoft.azure.iotsolutions.iothubmanager.services;
 import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.*;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.helpers.QueryConditionTranslator;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeviceServiceModel;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeviceServiceListModel;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeviceTwinServiceModel;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.models.*;
 import com.microsoft.azure.sdk.iot.service.*;
-import com.microsoft.azure.sdk.iot.service.devicetwin.DeviceTwin;
-import com.microsoft.azure.sdk.iot.service.devicetwin.DeviceTwinDevice;
-import com.microsoft.azure.sdk.iot.service.devicetwin.Query;
+import com.microsoft.azure.sdk.iot.service.devicetwin.*;
 import com.microsoft.azure.sdk.iot.service.exceptions.*;
 
 import java.io.IOException;
@@ -29,6 +25,7 @@ public final class Devices implements IDevices {
 
     private final RegistryManager registry;
     private final DeviceTwin deviceTwinClient;
+    private final DeviceMethod deviceMethodClient;
     private final String iotHubHostName;
     IIoTHubWrapper _ioTHubService;
 
@@ -37,6 +34,7 @@ public final class Devices implements IDevices {
         _ioTHubService = ioTHubService;
         this.registry = ioTHubService.getRegistryManagerClient();
         this.deviceTwinClient = ioTHubService.getDeviceTwinClient();
+        this.deviceMethodClient = ioTHubService.getDeviceMethodClient();
         this.iotHubHostName = ioTHubService.getIotHubHostName();
     }
 
@@ -160,6 +158,11 @@ public final class Devices implements IDevices {
                     throw new CompletionException(new ExternalDependencyException("Unable to delete device" + id, error));
                 }
             });
+    }
+
+    public CompletionStage<MethodResultServiceModel> invokeDeviceMethodAsync(final String id, MethodParameterServiceModel parameter) throws IOException, IotHubException {
+        MethodResult result = this.deviceMethodClient.invoke(id, parameter.getName(), parameter.getResponseTimeout().getSeconds(), parameter.getConnectionTimeout().getSeconds(), parameter.getJsonPayload());
+        return CompletableFuture.supplyAsync(() -> new MethodResultServiceModel(result));
     }
 
     private HashMap<String, DeviceTwinServiceModel> GetTwinByQueryAsync(final String query, String continuationToken, int nubmerOfResult) throws ExternalDependencyException {
