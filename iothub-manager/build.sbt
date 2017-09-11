@@ -11,12 +11,12 @@ libraryDependencies ++= {
     guice,
 
     // https://github.com/Azure/azure-iot-sdk-java/releases
-    "com.microsoft.azure.sdk.iot" % "iot-service-client" % "1.8.24"
+    "com.microsoft.azure.sdk.iot" % "iot-service-client" % "1.9.25"
   )
 }
 
 lazy val commonSettings = Seq(
-  version := "0.1.3",
+  version := "0.1.4",
 
   organizationName := "Microsoft Azure",
   organizationHomepage := Some(new URL("https://www.microsoft.com/internet-of-things/azure-iot-suite")),

@@ -12,7 +12,7 @@ import java.util.*;
 public final class DeviceTwinServiceModel {
 
     private final String eTag;
-    private final String deviceId;
+    private String deviceId;
     private final DeviceTwinProperties properties;
     private final HashMap tags;
     private final Boolean isSimulated;
@@ -50,6 +50,10 @@ public final class DeviceTwinServiceModel {
 
     public String getDeviceId() {
         return this.deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
     }
 
     public DeviceTwinProperties getProperties() {

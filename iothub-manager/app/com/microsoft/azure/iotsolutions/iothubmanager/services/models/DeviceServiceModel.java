@@ -4,6 +4,7 @@ package com.microsoft.azure.iotsolutions.iothubmanager.services.models;
 
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidInputException;
 import com.microsoft.azure.sdk.iot.service.*;
+import com.microsoft.azure.sdk.iot.service.auth.*;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 
@@ -13,7 +14,7 @@ import org.joda.time.format.ISODateTimeFormat;
 public final class DeviceServiceModel {
 
     private final String eTag;
-    private final String id;
+    private String id;
     private final long c2DMessageCount;
     private final DateTime lastActivity;
     private final Boolean connected;
@@ -21,18 +22,18 @@ public final class DeviceServiceModel {
     private final DateTime lastStatusUpdated;
     private final DeviceTwinServiceModel twin;
     private final String ioTHubHostName;
-    private final String authPrimaryKey;
+    private final AuthenticationMechanismServiceModel authentication;
 
     public DeviceServiceModel(
         final String eTag,
-        final String id,
+        String id,
         final long c2DMessageCount,
         final String lastActivity,
         final Boolean connected,
         final Boolean enabled,
         final String lastStatusUpdated,
         final DeviceTwinServiceModel twin,
-        final String authPrimaryKey,
+        final AuthenticationMechanismServiceModel authentication,
         final String iotHubHostName) {
 
         this.eTag = eTag;
@@ -43,7 +44,7 @@ public final class DeviceServiceModel {
         this.enabled = enabled;
         this.lastStatusUpdated = lastStatusUpdated == null ? null : DateTime.parse(lastStatusUpdated, ISODateTimeFormat.dateTimeParser().withZoneUTC());
         this.twin = twin;
-        this.authPrimaryKey = authPrimaryKey;
+        this.authentication = authentication;
         this.ioTHubHostName = iotHubHostName;
     }
 
@@ -57,7 +58,7 @@ public final class DeviceServiceModel {
             device.getStatus() == DeviceStatus.Enabled,
             device.getStatusUpdatedTime(),
             twin,
-            device.getPrimaryKey(),
+            new AuthenticationMechanismServiceModel(device),
             iotHubHostName);
     }
 
@@ -67,6 +68,10 @@ public final class DeviceServiceModel {
 
     public String getId() {
         return id;
+    }
+
+    public void setId(String value) {
+        this.id = value;
     }
 
     public long getC2DMessageCount() {
@@ -97,16 +102,33 @@ public final class DeviceServiceModel {
         return this.ioTHubHostName;
     }
 
-    public String getAuthPrimaryKey() {
-        return this.authPrimaryKey;
+    public AuthenticationMechanismServiceModel getAuthentication() {
+        return this.authentication;
     }
 
     public Device toAzureModel() throws InvalidInputException {
         try {
-            return Device.createFromId(
-                this.getId(),
-                this.getEnabled() ? DeviceStatus.Enabled : DeviceStatus.Disabled,
-                null);
+            if (this.authentication == null) {
+                return Device.createFromId(
+                    this.getId(),
+                    this.getEnabled() ? DeviceStatus.Enabled : DeviceStatus.Disabled,
+                    new SymmetricKey());
+            } else if (this.authentication.getAuthenticationType() == AuthenticationType.Sas) {
+                SymmetricKey key = new SymmetricKey();
+                key.setPrimaryKey(this.authentication.getPrimaryKey());
+                key.setSecondaryKey(this.authentication.getSecondaryKey());
+                return Device.createFromId(
+                    this.getId(),
+                    this.getEnabled() ? DeviceStatus.Enabled : DeviceStatus.Disabled,
+                    key);
+            } else {
+                Device device = Device.createDevice(this.getId(),
+                    AuthenticationType.toAzureModel(this.authentication.getAuthenticationType()));
+                device.setThumbprint(
+                    this.getAuthentication().getPrimaryThumbprint(),
+                    this.getAuthentication().getSecondaryThumbprint());
+                return device;
+            }
         } catch (Exception e) {
             throw new InvalidInputException("Unable to create device", e);
         }

@@ -25,7 +25,7 @@ public final class DeviceRegistryApiModel {
     private DateTime lastActivity = null;
     private boolean connected = false;
     private DateTime lastStatusUpdated = null;
-    private String authPrimaryKey = null;
+    private AuthenticationMechanismApiModel authentication = null;
     private String ioTHubHostName = null;
     private HashMap<String, Object> tags;
     private DeviceTwinProperties properties;
@@ -51,7 +51,7 @@ public final class DeviceRegistryApiModel {
         this.connected = device.getConnected();
         this.enabled = device.getEnabled();
         this.lastStatusUpdated = device.getLastStatusUpdated();
-        this.authPrimaryKey = device.getAuthPrimaryKey();
+        this.authentication = new AuthenticationMechanismApiModel(device.getAuthentication());
         this.ioTHubHostName = device.getIoTHubHostName();
 
         DeviceTwinServiceModel twinModel = device.getTwin();
@@ -116,13 +116,13 @@ public final class DeviceRegistryApiModel {
         return dateFormat.print(this.lastStatusUpdated);
     }
 
-    @JsonProperty("AuthPrimaryKey")
-    public String getAuthPrimaryKey() {
-        return this.authPrimaryKey;
+    @JsonProperty("Authentication")
+    public AuthenticationMechanismApiModel getAuthentication() {
+        return this.authentication;
     }
 
-    public void setAuthPrimaryKey(String authPrimaryKey) {
-        this.authPrimaryKey = authPrimaryKey;
+    public void setAuthentication(AuthenticationMechanismApiModel authentication) {
+        this.authentication = authentication;
     }
 
     @JsonProperty("IoTHubHostName")
@@ -187,7 +187,7 @@ public final class DeviceRegistryApiModel {
             this.getEnabled(),
             this.getLastStatusUpdatedAsString(),
             twinServiceModel,
-            this.authPrimaryKey,
+            this.authentication.toServiceModel(),
             this.ioTHubHostName
         );
     }

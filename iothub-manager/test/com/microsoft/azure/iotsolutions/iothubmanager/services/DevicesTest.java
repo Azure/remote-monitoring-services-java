@@ -7,13 +7,12 @@ import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.Resour
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.*;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.runtime.Config;
-import com.microsoft.azure.sdk.iot.service.exceptions.IotHubException;
+import com.microsoft.azure.sdk.iot.service.auth.SymmetricKey;
 import helpers.UnitTest;
 import org.junit.*;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.ExpectedException;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.util.*;
 
@@ -61,7 +60,7 @@ public class DevicesTest {
 
     @Test(timeout = 100000)
     @Category({UnitTest.class})
-    public void getAllAsyncTest() throws IOException, IotHubException {
+    public void getAllAsyncTest() {
         try {
             DeviceServiceListModel deviceList = deviceService.queryAsync("", "").toCompletableFuture().get();
             Assert.assertTrue(deviceList.getItems().size() >= testDevices.size());
@@ -71,7 +70,7 @@ public class DevicesTest {
 
     @Test(timeout = 100000)
     @Category({UnitTest.class})
-    public void queryByRawStringAsyncTest() throws IOException, IotHubException {
+    public void queryByRawStringAsyncTest() {
         try {
             String rawQueryString = String.format("Tags.BatchId='%s'", batchId);
             DeviceServiceListModel deviceList = deviceService.queryAsync(rawQueryString, "").toCompletableFuture().get();
@@ -82,7 +81,7 @@ public class DevicesTest {
 
     @Test(timeout = 100000)
     @Category({UnitTest.class})
-    public void queryByJsonStringAsyncTest() throws IOException, IotHubException {
+    public void queryByJsonStringAsyncTest() {
         try {
             String jsonString = String.format("[\"Key\": \"Tags.BatchId\", \"Operator\": \"EQ\", \"Value\": \"%s\" ]", batchId);
             DeviceServiceListModel deviceList = deviceService.queryAsync(jsonString, "").toCompletableFuture().get();
@@ -129,17 +128,88 @@ public class DevicesTest {
                 });
             }
         };
+
         DeviceTwinProperties properties = new DeviceTwinProperties(desired, null);
         DeviceTwinServiceModel twin = new DeviceTwinServiceModel(eTag, deviceId, properties, tags, true);
         DeviceServiceModel device = new DeviceServiceModel(eTag, deviceId, 0, null, false, true, null, twin, null, null);
         DeviceServiceModel newDevice = deviceService.createAsync(device).toCompletableFuture().get();
         DeviceTwinServiceModel newTwin = newDevice.getTwin();
         HashMap<String, Object> configMap = (HashMap) newTwin.getProperties().getDesired().get("Config");
+
         Assert.assertEquals(deviceId, newDevice.getId());
+        Assert.assertNull(newDevice.getAuthentication().getPrimaryThumbprint());
+        Assert.assertNull(newDevice.getAuthentication().getSecondaryThumbprint());
         Assert.assertEquals(newTwin.getTags().get("Building"), "Building40");
         Assert.assertEquals(newTwin.getTags().get("Floor"), "1F");
         Assert.assertEquals(configMap.get("Test"), 1);
+
         Assert.assertTrue(deviceService.deleteAsync(deviceId).toCompletableFuture().get());
+    }
+
+    @Test(timeout = 100000)
+    @Category({UnitTest.class})
+    public void createDeviceWithSasTokenAsyncTest() throws Exception {
+        String deviceId = "unitTestDevice_" + UUID.randomUUID().toString().replace("-", "");
+        String eTag = "etagxx==";
+        HashMap<String, Object> tags = new HashMap<String, Object>() {{
+            put("Building", "Building40");
+            put("Floor", "1F");
+        }};
+        SymmetricKey key = new SymmetricKey();
+        AuthenticationMechanismServiceModel authModel = new AuthenticationMechanismServiceModel(AuthenticationType.Sas);
+        authModel.setPrimaryKey(key.getPrimaryKey());
+        authModel.setSecondaryKey(key.getSecondaryKey());
+
+        DeviceTwinServiceModel twin = new DeviceTwinServiceModel(eTag, deviceId, null, tags, true);
+        DeviceServiceModel device = new DeviceServiceModel(eTag, deviceId, 0, null, false, true, null, twin, authModel, null);
+        DeviceServiceModel newDevice = deviceService.createAsync(device).toCompletableFuture().get();
+
+        Assert.assertNotNull(newDevice.getId());
+        Assert.assertNull(newDevice.getAuthentication().getPrimaryThumbprint());
+        Assert.assertNull(newDevice.getAuthentication().getSecondaryThumbprint());
+        Assert.assertEquals(key.getPrimaryKey(), newDevice.getAuthentication().getPrimaryKey());
+        Assert.assertEquals(key.getSecondaryKey(), newDevice.getAuthentication().getSecondaryKey());
+
+        Assert.assertTrue(deviceService.deleteAsync(deviceId).toCompletableFuture().get());
+    }
+
+    @Test(timeout = 100000)
+    @Category({UnitTest.class})
+    public void createDeviceWithX509CertificationAsyncTest() throws Exception {
+        String deviceId = "unitTestDevice_" + UUID.randomUUID().toString().replace("-", "");
+        String eTag = "etagxx==";
+        HashMap<String, Object> tags = new HashMap<String, Object>() {{
+            put("Building", "Building40");
+            put("Floor", "1F");
+        }};
+        AuthenticationMechanismServiceModel authModel = new AuthenticationMechanismServiceModel(AuthenticationType.SelfSinged);
+
+        DeviceTwinServiceModel twin = new DeviceTwinServiceModel(eTag, deviceId, null, tags, true);
+        DeviceServiceModel device = new DeviceServiceModel(eTag, deviceId, 0, null, false, true, null, twin, authModel, null);
+        DeviceServiceModel newDevice = deviceService.createAsync(device).toCompletableFuture().get();
+
+        Assert.assertNotNull(newDevice.getId());
+        Assert.assertNull(newDevice.getAuthentication().getPrimaryKey());
+        Assert.assertNull(newDevice.getAuthentication().getSecondaryKey());
+        Assert.assertEquals(authModel.getPrimaryThumbprint(), newDevice.getAuthentication().getPrimaryThumbprint());
+        Assert.assertEquals(authModel.getSecondaryThumbprint(), newDevice.getAuthentication().getSecondaryThumbprint());
+        Assert.assertTrue(deviceService.deleteAsync(deviceId).toCompletableFuture().get());
+    }
+
+    @Test(timeout = 100000)
+    @Category({UnitTest.class})
+    public void createWithoutIdAsyncSuccessTest() throws Exception {
+        String deviceId = "";
+        String eTag = "etagxx==";
+        HashMap<String, Object> tags = new HashMap<String, Object>() {{
+            put("Building", "Building40");
+        }};
+        DeviceTwinProperties properties = new DeviceTwinProperties(null, null);
+        DeviceTwinServiceModel twin = new DeviceTwinServiceModel(eTag, deviceId, properties, tags, true);
+        DeviceServiceModel device = new DeviceServiceModel(eTag, deviceId, 0, null, false, true, null, twin, null, null);
+        DeviceServiceModel newDevice = deviceService.createAsync(device).toCompletableFuture().get();
+        Assert.assertNotNull(newDevice.getId());
+        Assert.assertTrue(deviceService.deleteAsync(newDevice.getId()).toCompletableFuture().get());
     }
 
     @Test(timeout = 100000)
@@ -222,7 +292,7 @@ public class DevicesTest {
                 }
             }
 
-            if(targetDevice != null) {
+            if (targetDevice != null) {
                 MethodParameterServiceModel parameter = new MethodParameterServiceModel();
                 parameter.setName("Reboot");
                 parameter.setJsonPayload("");
@@ -263,7 +333,7 @@ public class DevicesTest {
                 System.out.println(deviceId + "created");
             }
         } catch (Exception e) {
-            Assert.fail("Unable to create test deviceService");
+            Assert.fail("Unable to create test devices");
         }
     }
 }
