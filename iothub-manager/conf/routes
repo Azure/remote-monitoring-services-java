@@ -16,10 +16,19 @@ POST   /v1/devices          com.microsoft.azure.iotsolutions.iothubmanager.webse
 POST   /v1/devices/         com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.postAsync
 
 PUT    /v1/devices/:id      com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.putAsync(id)
-PUT    /v1/devices/:id      com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.putAsync(id)
+PUT    /v1/devices/:id/     com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.putAsync(id)
 
 DELETE /v1/devices/:id      com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.deleteAsync(id)
 DELETE /v1/devices/:id/     com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.deleteAsync(id)
 
 POST /v1/devices/:id/methods    com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.invokeDeviceMethodAsync(id)
 POST /v1/devices/:id/methods/   com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.invokeDeviceMethodAsync(id)
+
+GET    /v1/jobs             com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.JobsController.getJobsAsync
+GET    /v1/jobs/            com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.JobsController.getJobsAsync
+
+GET    /v1/jobs/:id         com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.JobsController.getJobAsync(id)
+GET    /v1/jobs/:id/        com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.JobsController.getJobAsync(id)
+
+POST   /v1/jobs             com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.JobsController.scheduleJobAsync
+POST   /v1/jobs/            com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.JobsController.scheduleJobAsync

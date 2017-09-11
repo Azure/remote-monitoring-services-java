@@ -2,9 +2,18 @@
 
 package com.microsoft.azure.iotsolutions.iothubmanager.services.models;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.ExternalDependencyException;
+import play.Logger;
+import play.libs.Json;
+
+import java.io.IOException;
 import java.time.Duration;
 
 public class MethodParameterServiceModel {
+
+    private static final Logger.ALogger log = Logger.of(MethodParameterServiceModel.class);
+
 
     private String name = null;
     private Duration responseTimeout = null;
@@ -13,6 +22,31 @@ public class MethodParameterServiceModel {
 
     public MethodParameterServiceModel() {
 
+    }
+
+    /**
+     * A Json string is expected here.
+     * for example:
+     *  {
+     *      "methodName": "Reboot",
+     *      "responseTimeoutInSeconds": 60,
+     *      "connectTimeoutInSeconds": 60,
+     *      "payload": "{\"foo\": \"bar\"}"
+     *  }
+     * @param cloudToDeviceMethod Json string to be expected
+     */
+    public MethodParameterServiceModel(String cloudToDeviceMethod) throws ExternalDependencyException {
+        try {
+            JsonNode node = Json.mapper().readTree(cloudToDeviceMethod);
+            this.name = node.get("methodName").asText();
+            this.responseTimeout = Duration.ofSeconds(node.get("responseTimeoutInSeconds").asLong());
+            this.connectionTimeout = Duration.ofSeconds(node.get("connectTimeoutInSeconds").asLong());
+            this.jsonPayload = node.get("payload").asText();
+        } catch (IOException e) {
+            String message = "Error on parsing cloudToDeviceMethod: " + cloudToDeviceMethod;
+            log.warn(message, e);
+            throw new ExternalDependencyException(message, e);
+        }
     }
 
     public String getName() {

@@ -4,7 +4,6 @@ package com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.IDevices;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.BaseException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.ExternalDependencyException;
@@ -19,7 +18,6 @@ import java.util.concurrent.CompletionStage;
 import static play.libs.Json.fromJson;
 import static play.libs.Json.toJson;
 
-@Singleton
 public final class DevicesController extends Controller {
 
     private final IDevices deviceService;

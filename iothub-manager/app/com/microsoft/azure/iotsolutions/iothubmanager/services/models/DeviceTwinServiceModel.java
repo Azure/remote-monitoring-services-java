@@ -80,7 +80,7 @@ public final class DeviceTwinServiceModel {
             twinDevice.setTags(HashMapHelper.mapToSet(this.getTags()));
         }
 
-        if (this.properties.getDesired() != null)
+        if (this.properties != null && this.properties.getDesired() != null)
             twinDevice.setDesiredProperties(HashMapHelper.mapToSet(this.properties.getDesired()));
 
         return twinDevice;

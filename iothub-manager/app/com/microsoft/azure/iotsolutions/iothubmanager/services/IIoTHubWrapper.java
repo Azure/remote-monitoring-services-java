@@ -7,6 +7,7 @@ import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.*;
 import com.microsoft.azure.sdk.iot.service.RegistryManager;
 import com.microsoft.azure.sdk.iot.service.devicetwin.DeviceMethod;
 import com.microsoft.azure.sdk.iot.service.devicetwin.DeviceTwin;
+import com.microsoft.azure.sdk.iot.service.jobs.JobClient;
 
 /**
  * A wrapper to create IoTHub Registry and DeviceTwin client to facilitate
@@ -21,4 +22,6 @@ public interface IIoTHubWrapper {
     DeviceMethod getDeviceMethodClient() throws ExternalDependencyException;
 
     String getIotHubHostName() throws InvalidConfigurationException;
+
+    JobClient getJobClient() throws ExternalDependencyException;
 }

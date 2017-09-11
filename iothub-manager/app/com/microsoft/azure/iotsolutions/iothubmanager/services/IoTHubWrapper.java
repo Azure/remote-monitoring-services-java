@@ -10,6 +10,8 @@ import com.microsoft.azure.sdk.iot.service.IotHubConnectionStringBuilder;
 import com.microsoft.azure.sdk.iot.service.RegistryManager;
 import com.microsoft.azure.sdk.iot.service.devicetwin.DeviceMethod;
 import com.microsoft.azure.sdk.iot.service.devicetwin.DeviceTwin;
+import com.microsoft.azure.sdk.iot.service.jobs.JobClient;
+import play.Logger;
 
 import java.io.IOException;
 
@@ -19,6 +21,8 @@ import java.io.IOException;
  * dependency injection and unit testing.
  */
 public final class IoTHubWrapper implements IIoTHubWrapper {
+
+    private static Logger.ALogger log = Logger.of(IoTHubWrapper.class);
 
     private final IServicesConfig config;
 
@@ -31,7 +35,9 @@ public final class IoTHubWrapper implements IIoTHubWrapper {
         try {
             return DeviceTwin.createFromConnectionString(this.config.getHubConnString());
         } catch (Exception e) {
-            throw new ExternalDependencyException("Can not create IoTHub connection for DeviceTwin client", e);
+            String message = "Can not create IoTHub connection for DeviceTwin client";
+            log.error(message, e);
+            throw new ExternalDependencyException(message, e);
         }
     }
 
@@ -39,7 +45,9 @@ public final class IoTHubWrapper implements IIoTHubWrapper {
         try {
             return RegistryManager.createFromConnectionString(this.config.getHubConnString());
         } catch (Exception e) {
-            throw new ExternalDependencyException("Can not create IoTHub connection for RegistryManager client", e);
+            String message = "Can not create IoTHub connection for RegistryManager client";
+            log.error(message, e);
+            throw new ExternalDependencyException(message, e);
         }
     }
 
@@ -47,7 +55,9 @@ public final class IoTHubWrapper implements IIoTHubWrapper {
         try {
             return DeviceMethod.createFromConnectionString(this.config.getHubConnString());
         } catch (Exception e) {
-            throw new ExternalDependencyException("Can not create IoTHub connection for DeviceMethod client", e);
+            String message = "Can not create IoTHub connection for DeviceMethod client";
+            log.error(message, e);
+            throw new ExternalDependencyException(message, e);
         }
     }
 
@@ -55,7 +65,19 @@ public final class IoTHubWrapper implements IIoTHubWrapper {
         try {
             return IotHubConnectionStringBuilder.createConnectionString(this.config.getHubConnString()).getHostName();
         } catch (IOException e) {
-            throw new InvalidConfigurationException("Can not parse IoTHubHostName", e);
+            String message = "Can not parse IoTHubHostName";
+            log.error(message, e);
+            throw new InvalidConfigurationException(message, e);
+        }
+    }
+
+    public JobClient getJobClient() throws ExternalDependencyException {
+        try {
+            return JobClient.createFromConnectionString(this.config.getHubConnString());
+        } catch (Exception e) {
+            String message = "Can not create IoTHub connection for Job client";
+            log.error(message, e);
+            throw new ExternalDependencyException(message, e);
         }
     }
 }

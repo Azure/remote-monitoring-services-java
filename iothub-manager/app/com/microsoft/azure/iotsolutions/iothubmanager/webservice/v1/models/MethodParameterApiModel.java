@@ -5,7 +5,6 @@ package com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.MethodParameterServiceModel;
-import org.joda.time.DateTime;
 
 import java.time.Duration;
 
@@ -20,10 +19,12 @@ public class MethodParameterApiModel {
     }
 
     public MethodParameterApiModel(MethodParameterServiceModel serviceModel) {
-        this.name = serviceModel.getName();
-        this.responseTimeout = serviceModel.getResponseTimeout();
-        this.connectionTimeout = serviceModel.getConnectionTimeout();
-        this.jsonPayload= serviceModel.getJsonPayload();
+        if (serviceModel != null) {
+            this.name = serviceModel.getName();
+            this.responseTimeout = serviceModel.getResponseTimeout();
+            this.connectionTimeout = serviceModel.getConnectionTimeout();
+            this.jsonPayload = serviceModel.getJsonPayload();
+        }
     }
 
     @JsonProperty("name")
@@ -36,7 +37,7 @@ public class MethodParameterApiModel {
     }
 
     @JsonProperty("responseTimeout")
-    public Duration getResponseTimeout(){
+    public Duration getResponseTimeout() {
         return this.responseTimeout;
     }
 
@@ -45,7 +46,7 @@ public class MethodParameterApiModel {
     }
 
     @JsonProperty("connectionTimeout")
-    public Duration getConnectionTimeout(){
+    public Duration getConnectionTimeout() {
         return this.connectionTimeout;
     }
 
@@ -54,7 +55,7 @@ public class MethodParameterApiModel {
     }
 
     @JsonProperty("jsonPayload")
-    public String getJsonPayload(){
+    public String getJsonPayload() {
         return this.jsonPayload;
     }
 
