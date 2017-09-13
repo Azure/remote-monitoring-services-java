@@ -66,9 +66,9 @@ public final class JobsController extends Controller {
 
         return this.jobService.getJobsAsync(jobType, jobStatus, pageSize)
             .thenApply(jobs -> {
-                List jobApiModels = new ArrayList<JobApiModel>();
-                jobs.forEach(job -> jobApiModels.add(new JobApiModel(job)));
-                return ok(toJson(jobs));
+                List jobList = new ArrayList<JobApiModel>();
+                jobs.forEach(job -> jobList.add(new JobApiModel(job)));
+                return ok(toJson(jobList));
             });
     }
 
