@@ -2,6 +2,8 @@
 
 package com.microsoft.azure.iotsolutions.iothubmanager.services.models;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum JobType {
     unknown(0),
     scheduleDeviceMethod(3),
@@ -11,6 +13,11 @@ public enum JobType {
 
     JobType(int value) {
         this.value = value;
+    }
+
+    @JsonValue
+    final int value() {
+        return this.value;
     }
 
     public static JobType from(int value) {

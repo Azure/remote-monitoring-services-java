@@ -8,9 +8,6 @@ import com.microsoft.azure.sdk.iot.service.auth.*;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 
-// TODO: documentation
-// TODO: datetime parsing
-
 public final class DeviceServiceModel {
 
     private final String eTag;
@@ -28,10 +25,10 @@ public final class DeviceServiceModel {
         final String eTag,
         String id,
         final long c2DMessageCount,
-        final String lastActivity,
+        final DateTime lastActivity,
         final Boolean connected,
         final Boolean enabled,
-        final String lastStatusUpdated,
+        final DateTime lastStatusUpdated,
         final DeviceTwinServiceModel twin,
         final AuthenticationMechanismServiceModel authentication,
         final String iotHubHostName) {
@@ -39,10 +36,10 @@ public final class DeviceServiceModel {
         this.eTag = eTag;
         this.id = id;
         this.c2DMessageCount = c2DMessageCount;
-        this.lastActivity = lastActivity == null ? null : DateTime.parse(lastActivity, ISODateTimeFormat.dateTimeParser().withZoneUTC());
+        this.lastActivity = lastActivity;
         this.connected = connected;
         this.enabled = enabled;
-        this.lastStatusUpdated = lastStatusUpdated == null ? null : DateTime.parse(lastStatusUpdated, ISODateTimeFormat.dateTimeParser().withZoneUTC());
+        this.lastStatusUpdated = lastStatusUpdated;
         this.twin = twin;
         this.authentication = authentication;
         this.ioTHubHostName = iotHubHostName;
@@ -53,10 +50,10 @@ public final class DeviceServiceModel {
             device.geteTag(),
             device.getDeviceId(),
             device.getCloudToDeviceMessageCount(),
-            device.getLastActivityTime(),
+            device.getLastActivityTime() == null ? null : DateTime.parse(device.getLastActivityTime(), ISODateTimeFormat.dateTimeParser().withZoneUTC()),
             device.getConnectionState() == DeviceConnectionState.Connected,
             device.getStatus() == DeviceStatus.Enabled,
-            device.getStatusUpdatedTime(),
+            device.getStatusUpdatedTime() == null ? null : DateTime.parse(device.getStatusUpdatedTime(), ISODateTimeFormat.dateTimeParser().withZoneUTC()),
             twin,
             new AuthenticationMechanismServiceModel(device),
             iotHubHostName);

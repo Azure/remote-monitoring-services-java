@@ -6,9 +6,6 @@ import com.fasterxml.jackson.annotation.*;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.*;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.Version;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 import java.util.*;
 
@@ -31,7 +28,7 @@ public final class DeviceRegistryApiModel {
     private DeviceTwinProperties properties;
     private boolean isSimulated;
 
-    private DateTimeFormatter dateFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
+    private final String dateFormatString = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
     public DeviceRegistryApiModel() {
     }
@@ -96,11 +93,9 @@ public final class DeviceRegistryApiModel {
     }
 
     @JsonProperty("LastActivity")
-    public String getLastActivityAsString() {
-        if (this.lastActivity == null) {
-            return null;
-        }
-        return dateFormat.print(this.lastActivity.toDateTime(DateTimeZone.UTC));
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = dateFormatString)
+    public Date getLastActivity() {
+        return this.lastActivity.toDate();
     }
 
     @JsonProperty("Connected")
@@ -109,11 +104,9 @@ public final class DeviceRegistryApiModel {
     }
 
     @JsonProperty("LastStatusUpdated")
-    public String getLastStatusUpdatedAsString() {
-        if (this.lastStatusUpdated == null) {
-            return null;
-        }
-        return dateFormat.print(this.lastStatusUpdated);
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = dateFormatString)
+    public Date getLastStatusUpdated() {
+        return this.lastStatusUpdated.toDate();
     }
 
     @JsonProperty("Authentication")
@@ -144,6 +137,7 @@ public final class DeviceRegistryApiModel {
     }
 
     @JsonProperty("Tags")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public HashMap<String, Object> getTags() {
         return this.tags;
     }
@@ -153,6 +147,7 @@ public final class DeviceRegistryApiModel {
     }
 
     @JsonProperty("Properties")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public DeviceTwinProperties getProperties() {
         return this.properties;
     }
@@ -162,6 +157,7 @@ public final class DeviceRegistryApiModel {
     }
 
     @JsonProperty("IsSimulated")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public boolean isSimulated() {
         return isSimulated;
     }
@@ -179,13 +175,13 @@ public final class DeviceRegistryApiModel {
             this.isSimulated);
 
         return new DeviceServiceModel(
-            this.getETag(),
-            this.getId(),
-            this.getC2DMessageCount(),
-            this.getLastActivityAsString(),
-            this.getConnected(),
-            this.getEnabled(),
-            this.getLastStatusUpdatedAsString(),
+            this.eTag,
+            this.id,
+            this.c2DMessageCount,
+            this.lastActivity,
+            this.connected,
+            this.enabled,
+            this.lastStatusUpdated,
             twinServiceModel,
             this.authentication.toServiceModel(),
             this.ioTHubHostName

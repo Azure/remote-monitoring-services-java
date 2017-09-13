@@ -2,6 +2,8 @@
 
 package com.microsoft.azure.iotsolutions.iothubmanager.services.models;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum JobStatus {
     unknown(0),
     enqueued(1),
@@ -16,6 +18,11 @@ public enum JobStatus {
 
     JobStatus(int value) {
         this.value = value;
+    }
+
+    @JsonValue
+    final int value() {
+        return this.value;
     }
 
     /**

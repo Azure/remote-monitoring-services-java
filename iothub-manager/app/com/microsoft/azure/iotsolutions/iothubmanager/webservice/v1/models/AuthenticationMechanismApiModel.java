@@ -2,6 +2,7 @@
 
 package com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.AuthenticationMechanismServiceModel;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.AuthenticationType;
@@ -27,6 +28,7 @@ public class AuthenticationMechanismApiModel {
     }
 
     @JsonProperty("PrimaryKey")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public String getPrimaryKey() {
         return primaryKey;
     }
@@ -36,6 +38,7 @@ public class AuthenticationMechanismApiModel {
     }
 
     @JsonProperty("SecondaryKey")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public String getSecondaryKey() {
         return secondaryKey;
     }
@@ -45,6 +48,7 @@ public class AuthenticationMechanismApiModel {
     }
 
     @JsonProperty("PrimaryThumbprint")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public String getPrimaryThumbprint() {
         return primaryThumbprint;
     }
@@ -54,6 +58,7 @@ public class AuthenticationMechanismApiModel {
     }
 
     @JsonProperty("SecondaryThumbprint")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public String getSecondaryThumbprint() {
         return secondaryThumbprint;
     }

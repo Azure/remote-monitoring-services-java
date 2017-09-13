@@ -2,6 +2,7 @@
 
 package com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.*;
 
@@ -22,6 +23,8 @@ public class JobApiModel {
     private String failureReason;
     private String statusMessage;
     private JobStatistics resultStatistics;
+
+    private final String dateFormatString = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
     public JobApiModel() {}
 
@@ -79,6 +82,7 @@ public class JobApiModel {
     }
 
     @JsonProperty("createdTimeUtc")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = dateFormatString)
     public Date getCreatedTimeUtc() {
         return createdTimeUtc;
     }
@@ -88,6 +92,7 @@ public class JobApiModel {
     }
 
     @JsonProperty("startTimeUtc")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = dateFormatString)
     public Date getStartTimeUtc() {
         return startTimeUtc;
     }
@@ -97,6 +102,7 @@ public class JobApiModel {
     }
 
     @JsonProperty("endTimeUtc")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = dateFormatString)
     public Date getEndTimeUtc() {
         return endTimeUtc;
     }

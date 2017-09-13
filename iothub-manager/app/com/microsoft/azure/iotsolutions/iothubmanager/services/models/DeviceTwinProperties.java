@@ -2,6 +2,7 @@
 
 package com.microsoft.azure.iotsolutions.iothubmanager.services.models;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.HashMap;
@@ -19,6 +20,7 @@ public class DeviceTwinProperties {
     public DeviceTwinProperties() {}
 
     @JsonProperty("Desired")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public HashMap<String, Object> getDesired() {
         return desired;
     }
@@ -28,6 +30,7 @@ public class DeviceTwinProperties {
     }
 
     @JsonProperty("Reported")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public HashMap<String, Object> getReported() {
         return reported;
     }
