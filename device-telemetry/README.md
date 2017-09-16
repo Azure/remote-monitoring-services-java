@@ -6,7 +6,7 @@ Device Telemetry Overview
 =========================
 
 This service offers read access to device telemetry, full CRUD for rules, and read/write for
- alarms from storage for the client via a RESTful endpoint. 
+ alarms from storage for the client via a RESTful endpoint.
 
 ## Features the microservice offers:
 
