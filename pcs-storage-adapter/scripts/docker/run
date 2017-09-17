@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Note: use lowercase names for the Docker images
-DOCKER_IMAGE="azureiotpcs/storage-adapter-java"
+DOCKER_IMAGE="azureiotpcs/pcs-storage-adapter-java"
 
 set -e
 APP_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && cd .. && pwd )/"
@@ -14,7 +14,7 @@ run_container() {
 
     # Some settings are used to connect to an external dependency, e.g. Azure IoT Hub and IoT Hub Manager API
     # Depending on which settings and which dependencies are needed, edit the list of variables
-    echo "Starting storage-adapter Here ..."
+    echo "Starting storage adapter..."
     docker run -it \
 	-p 9022:9022 \
 	-e "PCS_STORAGEADAPTER_DOCUMENTDB_CONNSTRING=$PCS_STORAGEADAPTER_DOCUMENTDB_CONNSTRING" \
