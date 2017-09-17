@@ -20,7 +20,7 @@ libraryDependencies ++= Seq(
 )
 
 lazy val commonSettings = Seq(
-  version := "0.1.4",
+  version := "0.1.5",
 
   organizationName := "Microsoft Azure",
   organizationHomepage := Some(new URL("https://www.microsoft.com/internet-of-things/azure-iot-suite")),
@@ -51,7 +51,7 @@ lazy val commonSettings = Seq(
   showSuccess := true,
   showTiming := true,
   logBuffered := false,
-  fork := true,
+  fork := true, // required for "sbt run" to pick up javaOptions
   parallelExecution := true
 )
 
