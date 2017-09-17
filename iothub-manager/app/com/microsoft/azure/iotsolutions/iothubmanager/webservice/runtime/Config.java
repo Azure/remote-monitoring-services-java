@@ -14,9 +14,8 @@ public class Config implements IConfig {
     private final String NAMESPACE = "com.microsoft.azure.iotsolutions.";
 
     // Settings about this application
-    private final String APPLICATION_KEY = NAMESPACE + "iothub-manager-java.";
+    private final String APPLICATION_KEY = NAMESPACE + "iothub-manager.";
     private final String PORT_KEY = APPLICATION_KEY + "webservice-port";
-    private final String HOST_NAME_KEY = APPLICATION_KEY + "webservice-hostname";
     private final String IOTHUB_CONNSTRING_KEY = APPLICATION_KEY + "iothub.connstring";
 
     private com.typesafe.config.Config data;
@@ -35,16 +34,6 @@ public class Config implements IConfig {
      */
     public int getPort() {
         return data.getInt(PORT_KEY);
-    }
-
-    /**
-     * Get the hostname where the service listen for requests, e.g. 0.0.0.0 when
-     * listening to all the network adapters.
-     *
-     * @return Hostname or IP address
-     */
-    public String getHostname() {
-        return data.getString(HOST_NAME_KEY);
     }
 
     /**

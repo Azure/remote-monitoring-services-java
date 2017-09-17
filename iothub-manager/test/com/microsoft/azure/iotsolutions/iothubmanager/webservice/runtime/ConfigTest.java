@@ -29,13 +29,4 @@ public class ConfigTest {
         int port = target.getPort();
         assertThat(port, is(9002));
     }
-
-    @Test(timeout = 1000)
-    @Category({UnitTest.class})
-    public void providesWebServiceHostname() {
-        Config target = new Config();
-
-        String hostname = target.getHostname();
-        assertThat(hostname, is("0.0.0.0"));
-    }
 }
