@@ -1,7 +1,7 @@
 @ECHO off & setlocal enableextensions enabledelayedexpansion
 
 :: Note: use lowercase names for the Docker images
-SET DOCKER_IMAGE="azureiotpcs/pcs-ui-config-java"
+SET DOCKER_IMAGE="azureiotpcs/pcs-config-java"
 
 :: strlen("\scripts\docker\") => 16
 SET APP_HOME=%~dp0
@@ -17,7 +17,7 @@ call .\scripts\env-vars-check.cmd
 IF %ERRORLEVEL% NEQ 0 GOTO FAIL
 
 :: Start the application
-echo Starting UI Config...
+echo Starting Config service...
 docker run -it -p 9005:9005 ^
     -e PCS_STORAGEADAPTER_WEBSERVICE_URL=%PCS_STORAGEADAPTER_WEBSERVICE_URL% ^
     %DOCKER_IMAGE%

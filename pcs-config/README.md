@@ -3,11 +3,11 @@
 [![Issues][issues-badge]][issues-url]
 [![Gitter][gitter-badge]][gitter-url]
 
-UI Config Overview 
-==========================
+Config service Overview
+=======================
 This service handles communication with the [Storage Adapter] microservice to complete the its tasks.
 
-The microservice provides a RESTful endpoint to make CRUD operation for "devicegroups","solution-settings" and "user-settings". The data will be stored in [Azure DocumentDB] by [Storage Adapter] microservice. 
+The microservice provides a RESTful endpoint to make CRUD operation for "devicegroups","solution-settings" and "user-settings". The data will be stored in [Azure DocumentDB] by [Storage Adapter] microservice.
 
 Dependencies
 ============
@@ -28,7 +28,7 @@ variables to be set:
   used for key value storage
 
 ## Quickstart - Running the service with Docker
-You can quickly start UI Config and its dependencies in one simple step, using Docker Compose with the
+You can quickly start the Config service and its dependencies in one simple step, using Docker Compose with the
 [docker-compose.yml](scripts/docker/docker-compose.yml) file in the project:
 
 ```
@@ -42,7 +42,7 @@ Running the service in an IDE
 =============================
 ## Prerequisites
 - Install SBT: http://www.scala-sbt.org/download.html
-- Install the latest Java SDK: 
+- Install the latest Java SDK:
   http://www.oracle.com/technetwork/java/javase/downloads/index.html
 
 ## Run and Debug with IntelliJ
@@ -97,14 +97,14 @@ Steps using Eclipse Oxygen ("Eclipse for Java Developers" package):
 Project Structure
 =================
 This microservice contains the following projects:
-* **app/com/microsoft/azure/iotsolutions/uiconfig**
-    * **webservice** - web service exposing REST interface 
+* **app/com/microsoft/azure/iotsolutions/config**
+    * **webservice** - web service exposing REST interface
     * **services** - business logic for interacting with [Storage Adapter] webservice
-* **test/com/microsoft/azure/iotsolutions/uiconfig** 
+* **test/com/microsoft/azure/iotsolutions/config**
     * **webservice** - tests for webservice functionality
     * **services** - tests for services functionality
 * **conf** - configuration files and routes
-* **scripts** - contains build scripts, docker container creation scripts, 
+* **scripts** - contains build scripts, docker container creation scripts,
    and scripts for running the microservice from the command line
 * **routes** - defines the URL mapping to web service classes
 
@@ -127,7 +127,7 @@ directly. A copy of SBT is included in the root of the project.
 Updating the Docker image
 =========================
 
-The `scripts` folder includes a [docker](scripts/docker) subfolder with the 
+The `scripts` folder includes a [docker](scripts/docker) subfolder with the
 files required to package the service into a Docker image:
 
 * `build`: build a Docker container and store the image in the local registry
@@ -143,7 +143,7 @@ maintainer in Docker := "Devis Lucato (https://github.com/dluc)"
 dockerBaseImage := "toketi/openjdk-8-jre-alpine-bash"
 dockerUpdateLatest := true
 dockerBuildOptions ++= Seq("--squash", "--compress", "--label", "Tags=Azure,IoT,PCS,Java")
-dockerEntrypoint := Seq("bin/pcs-ui-config")
+dockerEntrypoint := Seq("bin/pcs-config")
 ```
 The package logic is executed via
 [sbt-native-packager](https://github.com/sbt/sbt-native-packager), installed
@@ -153,25 +153,25 @@ in [plugins.sbt](project/plugins.sbt).
 Service Configuration
 =======================================
 The service configuration is stored in
-[`conf/application.conf`](conf/application.conf). The format allows to store 
+[`conf/application.conf`](conf/application.conf). The format allows to store
 values in a readable format, with comments. The application also supports inserting environment variables, such as credentials and networking details.
 
 The configuration file [`conf/application.conf`](conf/application.conf) references the environment variable `PCS_STORAGEADAPTER_WEBSERVICE_URL` that is required to be created at least once. Depending on your OS and the IDE, there are several ways to manage environment variables:
 
 Contributing to the solution
 ============================
-Please follow our [contribution guildelines](CONTRIBUTING.md) and code style 
+Please follow our [contribution guildelines](CONTRIBUTING.md) and code style
 conventions.
 
 Feedback
 ========
 Please enter issues, bugs, or suggestions as GitHub Issues here:
-https://github.com/Azure/pcs-ui-config-java/issues.
+https://github.com/Azure/pcs-config-java/issues.
 
-[build-badge]: https://img.shields.io/travis/Azure/pcs-ui-config-java.svg
-[build-url]: https://travis-ci.org/Azure/pcs-ui-config-java
-[issues-badge]: https://img.shields.io/github/issues/azure/pcs-ui-config-java.svg
-[issues-url]: https://github.com/azure/pcs-ui-config-java/issues
+[build-badge]: https://img.shields.io/travis/Azure/pcs-config-java.svg
+[build-url]: https://travis-ci.org/Azure/pcs-config-java
+[issues-badge]: https://img.shields.io/github/issues/azure/pcs-config-java.svg
+[issues-url]: https://github.com/azure/pcs-config-java/issues
 [gitter-badge]: https://img.shields.io/gitter/room/azure/iot-pcs.js.svg
 [gitter-url]: https://gitter.im/azure/iot-pcs
 [Storage Adapter]:https://github.com/Azure/pcs-storage-adapter-java/blob/master/README.md

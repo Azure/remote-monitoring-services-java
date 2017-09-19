@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft. All rights reserved.
 
-name := "pcs-ui-config"
+name := "pcs-config"
 organization := "com.microsoft.azure.iotsolutions"
 
 scalaVersion := "2.12.2"
@@ -53,7 +53,7 @@ lazy val commonSettings = Seq(
 )
 
 // Main module
-lazy val uiconfig = project.in(file("."))
+lazy val pcsconfig = project.in(file("."))
   .enablePlugins(PlayJava)
   .configs(IntegrationTest)
   .settings(commonSettings)
@@ -71,4 +71,4 @@ dockerBaseImage := "toketi/openjdk-8-jre-alpine-bash"
 dockerUpdateLatest := true
 dockerBuildOptions ++= Seq("--squash", "--compress", "--label", "Tags=Azure,IoT,PCS,Java")
 // Example params: -Dconfig.file=/opt/conf/prod.conf -Dhttp.port=1234 -Dhttp.address=127.0.0.1
-dockerEntrypoint := Seq("bin/pcs-ui-config")
+dockerEntrypoint := Seq("bin/pcs-config")

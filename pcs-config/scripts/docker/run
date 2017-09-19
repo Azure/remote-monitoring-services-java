@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Note: use lowercase names for the Docker images
-DOCKER_IMAGE="azureiotpcs/pcs-ui-config-java"
+DOCKER_IMAGE="azureiotpcs/pcs-config-java"
 
 set -e
 APP_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && cd .. && pwd )/"
@@ -12,7 +12,7 @@ run_container() {
 
     $APP_HOME/scripts/env-vars-check
 
-    echo "Starting UI Config Here ..."
+    echo "Starting Config service..."
     docker run -it -p 9005:9005 \
         -e "PCS_STORAGEADAPTER_WEBSERVICE_URL=PCS_STORAGEADAPTER_WEBSERVICE_URL" \
         "$DOCKER_IMAGE"

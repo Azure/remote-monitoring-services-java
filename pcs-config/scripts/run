@@ -20,7 +20,7 @@ run() {
     check_dependency_java
     ./scripts/env-vars-check
 
-    echo "Starting UI Config here..."
+    echo "Starting Config service..."
     chmod +x sbt
     ./sbt "run 9005"
 }

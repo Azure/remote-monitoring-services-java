@@ -90,7 +90,7 @@ dockerBaseImage := "toketi/openjdk-8-jre-alpine-bash"
 dockerExposedPorts := Seq(8080)
 dockerUpdateLatest := false
 dockerBuildOptions ++= Seq("--squash", "--compress", "--label", "Tags=Azure,IoT,PCS,Java")
-dockerEntrypoint := Seq("bin/devicetelemetry","-Dhttp.port=8080")
+dockerEntrypoint := Seq("bin/pcs-config","-Dhttp.port=8080")
 ```
 
 The package logic is executed via
@@ -123,7 +123,7 @@ Development setup
    however anything should be just fine.
 
 We provide also a
-[.NET version](https://github.com/Azure/pcs-ui-config-dotnet)
+[.NET version](https://github.com/Azure/pcs-config-dotnet)
 of this project and other Azure IoT PCS components.
 
 ## Git setup
