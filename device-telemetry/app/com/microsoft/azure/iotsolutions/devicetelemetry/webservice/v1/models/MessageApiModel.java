@@ -4,6 +4,7 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.MessageServiceModel;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -18,7 +19,7 @@ public final class MessageApiModel {
 
     private String deviceId = null;
     private DateTime time = null;
-    private Object data = null;
+    private JsonNode data = null;
 
     private DateTimeFormatter dateFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
 
@@ -32,7 +33,7 @@ public final class MessageApiModel {
     public MessageApiModel(
         final String deviceId,
         final DateTime time,
-        final Object data) {
+        final JsonNode data) {
 
         this.deviceId = deviceId;
         this.time = time;
@@ -61,7 +62,7 @@ public final class MessageApiModel {
     }
 
     @JsonProperty("Data")
-    public Object getData() {
+    public JsonNode getData() {
         return this.data;
     }
 }

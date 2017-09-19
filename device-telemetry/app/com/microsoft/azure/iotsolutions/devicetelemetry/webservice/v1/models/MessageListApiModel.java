@@ -7,7 +7,9 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.MessageL
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.MessageServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.Version;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.Hashtable;
 
 public class MessageListApiModel {
 
