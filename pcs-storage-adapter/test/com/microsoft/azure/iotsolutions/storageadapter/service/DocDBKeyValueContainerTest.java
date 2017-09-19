@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft. All rights reserved.
 
-package com.microsoft.azure.iotsolutions.storageadapter.webservice.v1.controllers;
+package com.microsoft.azure.iotsolutions.storageadapter.service;
 
 import com.microsoft.azure.documentdb.DocumentClientException;
 import com.microsoft.azure.iotsolutions.storageadapter.services.DocDBKeyValueContainer;
@@ -24,7 +24,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-public class KeyValueControllerTest {
+public class DocDBKeyValueContainerTest {
 
     private ValueServiceModel inModel;
     private IKeyValueContainer container;
@@ -34,18 +34,16 @@ public class KeyValueControllerTest {
 
     @Before
     public void setUp() throws DocumentClientException, InvalidConfigurationException, CreateResourceException {
-        // something before every test
         Config config = new Config();
         IServicesConfig servicesConfig = config.getServicesConfig();
         DocumentClientFactory factory = new DocumentClientFactory(config);
         container = new DocDBKeyValueContainer(factory, servicesConfig);
-        inModel = new ValueServiceModel(value);
+        inModel = new ValueServiceModel(key, value);
         container.upsert(collectionId, key, inModel);
     }
 
     @After
     public void tearDown() throws DocumentClientException, CreateResourceException {
-        // something after every test
         container.delete(collectionId, key);
     }
 

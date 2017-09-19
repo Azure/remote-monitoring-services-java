@@ -14,8 +14,10 @@ public class ValueServiceModel {
     public DateTime Timestamp;
 
 
-    public ValueServiceModel(String data) {
+    public ValueServiceModel(String key, String data) {
+        this.Key = key;
         this.Data = data;
+        Timestamp = new DateTime();
     }
 
     //Http body json -> ValueServiceModel

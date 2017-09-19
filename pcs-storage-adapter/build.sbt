@@ -9,6 +9,7 @@ libraryDependencies ++= {
   Seq(
     filters,
     guice,
+    "org.mockito" % "mockito-core" % "2.8.47",
     // https://github.com/Azure/azure-iot-sdk-java/releases
     "com.microsoft.azure.sdk.iot" % "iot-service-client" % "1.5.22",
     // http://azure.microsoft.com/en-us/services/documentdb/
@@ -17,7 +18,7 @@ libraryDependencies ++= {
 }
 
 lazy val commonSettings = Seq(
-  version := "0.1.3",
+  version := "0.1.4",
 
   organizationName := "Microsoft Azure",
   organizationHomepage := Some(new URL("https://www.microsoft.com/internet-of-things/azure-iot-suite")),
