@@ -2,6 +2,8 @@
 
 package com.microsoft.azure.iotsolutions.devicetelemetry.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 import com.microsoft.azure.documentdb.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.helpers.QueryBuilder;
@@ -11,7 +13,8 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServic
 import org.joda.time.DateTime;
 import play.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
 
 // TODO: use StorageClient
 public final class Messages implements IMessages {
@@ -69,7 +72,7 @@ public final class Messages implements IMessages {
         for (Document doc : docs) {
 
             // Document fields to expose
-            Map<String, Object> data = new HashMap<>();
+            ObjectNode data = new ObjectMapper().createObjectNode();
 
             // Extract all the telemetry data and types
             doc.getHashMap().entrySet().stream()
@@ -78,7 +81,7 @@ public final class Messages implements IMessages {
                 .forEach(x -> {
                     // Remove the "data." prefix
                     String key = x.getKey().substring(dataPrefixLen);
-                    data.put(key, x.getValue());
+                    data.putPOJO(key, x.getValue());
 
                     // Telemetry types auto-discovery magic
                     properties.add(key);

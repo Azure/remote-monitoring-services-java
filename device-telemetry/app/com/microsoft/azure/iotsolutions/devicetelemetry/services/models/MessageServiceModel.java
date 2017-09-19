@@ -2,14 +2,16 @@
 
 package com.microsoft.azure.iotsolutions.devicetelemetry.services.models;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.ISODateTimeFormat;
+import org.json.JSONObject;
 
 public final class MessageServiceModel {
     private final String deviceId;
     private final DateTime time;
-    private final Object data;
+    private final JsonNode data;
 
     public MessageServiceModel() {
         this.deviceId = "";
@@ -20,7 +22,7 @@ public final class MessageServiceModel {
     public MessageServiceModel(
         final String deviceId,
         final long time,
-        final Object data) {
+        final JsonNode data) {
 
         this.deviceId = deviceId;
         this.time = new DateTime(time, DateTimeZone.UTC);
@@ -31,7 +33,7 @@ public final class MessageServiceModel {
         return this.deviceId;
     }
 
-    public Object getData() {
+    public JsonNode getData() {
         return this.data;
     }
 
