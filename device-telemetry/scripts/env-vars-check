@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-if [[ -z "$PCS_DEVICETELEMETRY_DOCUMENTDB_CONNSTRING" ]]; then
-    echo "Error: the PCS_DEVICETELEMETRY_DOCUMENTDB_CONNSTRING environment variable is not defined."
+if [[ -z "$PCS_TELEMETRY_DOCUMENTDB_CONNSTRING" ]]; then
+    echo "Error: the PCS_TELEMETRY_DOCUMENTDB_CONNSTRING environment variable is not defined."
     exit -1
 fi
 

@@ -15,7 +15,7 @@ import play.mvc.Result;
 import static play.libs.Json.toJson;
 
 /**
- * Gets device telemetry, rules, and alarm messages
+ * Gets telemetry, rules, and alarm messages
  */
 public final class MessagesController extends Controller {
 

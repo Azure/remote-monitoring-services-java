@@ -38,7 +38,7 @@ Run `scripts\env-vars-setup.cmd` on Windows or `source scripts\env-vars-setup`
 on Mac/Linux to set up the environment variables needed to run the service locally.
 If using envornemnt variables, this service requires the following environment
 variables to be set:
-- PCS_DEVICETELEMETRY_DOCUMENTDB_CONNSTRING - the connection string for the Azure DocumentDB backend
+- PCS_TELEMETRY_DOCUMENTDB_CONNSTRING - the connection string for the Azure DocumentDB backend
 - PCS_STORAGEADAPTER_WEBSERVICE_URL - the url for
   the [Storage Adapter Webservice](https://github.com/Azure/pcs-storage-adapter-dotnet)
   used for key value storage
@@ -106,7 +106,7 @@ Steps using Eclipse Oxygen ("Eclipse for Java Developers" package):
 Project Structure
 =================
 
-* **Code** for the application is in app/com.microsoft.azure.iotsolutions.devicetelemetry/
+* **Code** for the application is in app/com.microsoft.azure.iotsolutions.telemetry/
     * **WebService** - Java web service exposing REST interface for managing Ruels,
     Alarms, and Messages
     * **Services** - Java project containing business logic for interacting with
@@ -154,7 +154,7 @@ dockerAlias := DockerAlias(dockerRepository.value, None, packageName.value + "-j
 dockerBaseImage := "toketi/openjdk-8-jre-alpine-bash"
 dockerUpdateLatest := false
 dockerBuildOptions ++= Seq("--squash", "--compress", "--label", "Tags=azure,iot,pcs,telemetry,Java")
-dockerEntrypoint := Seq("bin/device-telemetry")
+dockerEntrypoint := Seq("bin/telemetry")
 ```
 
 The package logic is executed via

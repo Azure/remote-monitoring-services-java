@@ -10,7 +10,7 @@
 #  Prepare the environment variables used by the application.
 
 # Connection information for Azure DocumentDb
-export PCS_DEVICETELEMETRY_DOCUMENTDB_CONNSTRING="..."
+export PCS_TELEMETRY_DOCUMENTDB_CONNSTRING="..."
 
 # Url for the PCS Storage Adapter Webservice
 export PCS_STORAGEADAPTER_WEBSERVICE_URL="..."

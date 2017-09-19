@@ -16,7 +16,7 @@ public class Config implements IConfig {
     private final String Namespace = "com.microsoft.azure.iotsolutions.";
 
     // Settings about this application
-    private final String ApplicationKey = Namespace + "devicetelemetry.";
+    private final String ApplicationKey = Namespace + "telemetry.";
     private final String PortKey = ApplicationKey + "webservice-port";
 
     // Storage dependency settings

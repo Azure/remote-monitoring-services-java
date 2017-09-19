@@ -11,9 +11,9 @@ version: "3"
 
 services:
   devicesimulation:
-    image: azureiotpcs/device-telemetry-java
+    image: azureiotpcs/telemetry-java
     ports:
       - "9004:9004"
     environment:
-      - PCS_DEVICETELEMETRY_DOCUMENTDB_CONNSTRING
+      - PCS_TELEMETRY_DOCUMENTDB_CONNSTRING
       - PCS_STORAGEADAPTER_WEBSERVICE_URL

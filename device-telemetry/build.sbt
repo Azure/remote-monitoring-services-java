@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft. All rights reserved.
 
-name := "device-telemetry"
+name := "telemetry"
 organization := "com.microsoft.azure.iotsolutions"
 
 scalaVersion := "2.12.2"
@@ -35,7 +35,7 @@ lazy val commonSettings = Seq(
   },
 
   // Publishing options, see http://www.scala-sbt.org/0.13/docs/Artifacts.html
-  licenses += ("MIT", url("https://github.com/Azure/device-telemetry-java/blob/master/LICENSE")),
+  licenses += ("MIT", url("https://github.com/Azure/telemetry-java/blob/master/LICENSE")),
   publishMavenStyle := true,
   publishArtifact in Test := true,
   publishArtifact in(Compile, packageDoc) := true,
@@ -56,7 +56,7 @@ lazy val commonSettings = Seq(
 )
 
 // Main module
-lazy val devicetelemetry = project.in(file("."))
+lazy val telemetry = project.in(file("."))
   .enablePlugins(PlayJava)
   .configs(IntegrationTest)
   .settings(commonSettings)
@@ -74,4 +74,4 @@ dockerBaseImage := "toketi/openjdk-8-jre-alpine-bash"
 dockerUpdateLatest := true
 dockerBuildOptions ++= Seq("--squash", "--compress", "--label", "Tags=Azure,IoT,PCS,telemetry,Java")
 // Example params: -Dconfig.file=/opt/conf/prod.conf -Dhttp.port=1234 -Dhttp.address=127.0.0.1
-dockerEntrypoint := Seq("bin/device-telemetry")
+dockerEntrypoint := Seq("bin/telemetry")

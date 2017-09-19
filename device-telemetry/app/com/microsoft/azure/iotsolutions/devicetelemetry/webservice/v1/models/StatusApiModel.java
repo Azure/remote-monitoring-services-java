@@ -34,7 +34,7 @@ public final class StatusApiModel {
 
     @JsonProperty("Name")
     public String getName() {
-        return "devicetelemetry";
+        return "telemetry";
     }
 
     @JsonProperty("Status")
