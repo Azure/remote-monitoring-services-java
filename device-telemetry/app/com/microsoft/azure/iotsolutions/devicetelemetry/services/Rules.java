@@ -17,13 +17,10 @@ import play.libs.Json;
 import play.libs.ws.WSClient;
 import play.libs.ws.WSRequest;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
@@ -150,10 +147,8 @@ public final class Rules implements IRules {
     public CompletionStage<RuleServiceModel> postAsync(
         RuleServiceModel ruleServiceModel) {
 
-        JsonNode jsonRule = Json.toJson(ruleServiceModel);
-
         ObjectNode jsonData = new ObjectMapper().createObjectNode();
-        jsonData.put("Data", jsonRule.toString());
+        jsonData.put("Data", ruleServiceModel.toJson().toString());
 
         return this.prepareRequest(null)
             .post(jsonData.toString())
@@ -201,8 +196,8 @@ public final class Rules implements IRules {
                 }
 
             } catch (Exception e) {
-                log.error("Could not read rules from given template file "
-                    + template + ".json." );
+                log.error("Could not read rules from given template" +
+                    " file {}.json", template);
                 throw new InvalidConfigurationException(
                     "Could not read rules from given template file");
             }
@@ -214,10 +209,8 @@ public final class Rules implements IRules {
 
     public CompletionStage<RuleServiceModel> putAsync(RuleServiceModel ruleServiceModel) {
 
-        JsonNode jsonRule = Json.toJson(ruleServiceModel);
-
         ObjectNode jsonData = new ObjectMapper().createObjectNode();
-        jsonData.put("Data", jsonRule.toString());
+        jsonData.put("Data", ruleServiceModel.toJson().toString());
         jsonData.put("ETag", ruleServiceModel.getETag());
 
         return this.prepareRequest(ruleServiceModel.getId())
@@ -234,7 +227,8 @@ public final class Rules implements IRules {
                 if (result.getStatus() == CONFLICT) {
                     log.error("Key value storage ETag mismatch");
                     throw new CompletionException(
-                        new ResourceOutOfDateException());
+                        new ResourceOutOfDateException(
+                            "Key value storage ETag mismatch"));
                 } else if (result.getStatus() != OK) {
                     log.error("Key value storage error code {}",
                         result.getStatusText());
@@ -308,7 +302,8 @@ public final class Rules implements IRules {
         JsonNode jsonResultRule = null;
 
         try {
-            jsonResultRule = mapper.readTree(response.findValue("Data").asText());
+            jsonResultRule = mapper.readTree(
+                getJsonNodeIgnoreCase(response, "Data").asText());
         } catch (Exception e) {
             log.error("Could not parse data from Key Value Storage. " +
                 "Json result: {}", jsonResultRule.asText());
@@ -319,25 +314,26 @@ public final class Rules implements IRules {
 
         if (jsonResultRule != null) {
             ArrayList<ConditionServiceModel> conditions = new ArrayList<>();
-            for (JsonNode condition : jsonResultRule.withArray("conditions")) {
+            for (JsonNode condition : getJsonNodeIgnoreCase(jsonResultRule,
+                "conditions")) {
                 conditions.add(
                     new ConditionServiceModel(
-                        condition.findValue("field").asText(),
-                        condition.findValue("operator").asText(),
-                        condition.findValue("value").asText())
+                        getJsonNodeIgnoreCase(condition, "field").asText(),
+                        getJsonNodeIgnoreCase(condition, "operator").asText(),
+                        getJsonNodeIgnoreCase(condition, "value").asText())
                 );
             }
 
             return new RuleServiceModel(
-                response.findValue("ETag").asText(),
-                response.findValue("Key").asText(),
-                jsonResultRule.findValue("name").asText(),
-                jsonResultRule.findValue("dateCreated").asText(),
-                jsonResultRule.findValue("dateModified").asText(),
-                jsonResultRule.findValue("enabled").asBoolean(),
-                jsonResultRule.findValue("description").asText(),
-                jsonResultRule.findValue("groupId").asText(),
-                jsonResultRule.findValue("severity").asText(),
+                getJsonNodeIgnoreCase(response, "ETag").asText(),
+                getJsonNodeIgnoreCase(response, "Key").asText(),
+                getJsonNodeIgnoreCase(jsonResultRule, "name").asText(),
+                getJsonNodeIgnoreCase(jsonResultRule, "dateCreated").asText(),
+                getJsonNodeIgnoreCase(jsonResultRule, "dateModified").asText(),
+                getJsonNodeIgnoreCase(jsonResultRule, "enabled").asBoolean(),
+                getJsonNodeIgnoreCase(jsonResultRule, "description").asText(),
+                getJsonNodeIgnoreCase(jsonResultRule, "groupId").asText(),
+                getJsonNodeIgnoreCase(jsonResultRule, "severity").asText(),
                 conditions
             );
         }
@@ -364,18 +360,35 @@ public final class Rules implements IRules {
                         + rule.asText()));
         }
 
-        for (JsonNode condition : rule.withArray("Conditions")) {
+        for (JsonNode condition : getJsonNodeIgnoreCase(rule,
+            "Conditions")) {
             conditions.add(Json.fromJson(
                 condition,
                 ConditionApiModel.class).toServiceModel());
         }
 
         return new RuleServiceModel(
-            rule.findValue("Name").asText(),
-            rule.findValue("Enabled").asBoolean(),
-            rule.findValue("Description").asText(),
-            rule.findValue("GroupId").asText(),
-            rule.findValue("Severity").asText(),
+            getJsonNodeIgnoreCase(rule, "Name").asText(),
+            getJsonNodeIgnoreCase(rule, "Enabled").asBoolean(),
+            getJsonNodeIgnoreCase(rule, "Description").asText(),
+            getJsonNodeIgnoreCase(rule, "GroupId").asText(),
+            getJsonNodeIgnoreCase(rule, "Severity").asText(),
             conditions);
+    }
+
+    // returns the object associated with the given key, ignoring case
+    // if object cannot be found, returns null
+    private JsonNode getJsonNodeIgnoreCase(JsonNode node, String key) {
+
+        Iterator<String> fieldNames = node.fieldNames();
+
+        while (fieldNames.hasNext()) {
+            String fieldName = fieldNames.next();
+            if (fieldName.equalsIgnoreCase(key)) {
+                return node.get(fieldName);
+            }
+        }
+
+        return null;
     }
 }

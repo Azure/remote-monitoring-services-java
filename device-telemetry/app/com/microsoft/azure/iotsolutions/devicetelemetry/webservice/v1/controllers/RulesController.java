@@ -187,7 +187,9 @@ public class RulesController extends Controller {
             .thenApply(newRule -> ok(toJson(new RuleApiModel(newRule))))
             .exceptionally(e -> {
                 if (e.getCause() instanceof ResourceOutOfDateException) {
-                    return status(CONFLICT, Json.toJson(finalRuleServiceModel));
+                    return status(
+                        CONFLICT,
+                        "Request ETag and storage ETag mismatch");
                 } else {
                     return internalServerError(e.getMessage());
                 }

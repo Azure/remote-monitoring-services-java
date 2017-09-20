@@ -2,6 +2,10 @@
 
 package com.microsoft.azure.iotsolutions.devicetelemetry.services.models;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
@@ -123,5 +127,32 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
     @Override
     public int compareTo(RuleServiceModel rule) {
         return getDateCreated().compareTo(rule.getDateCreated());
+    }
+
+    // returns rule as json with key names in a storage compatible format
+    public JsonNode toJson() {
+        ObjectNode jsonRule = new ObjectMapper().createObjectNode();
+
+        jsonRule.put("ETag", this.eTag);
+        jsonRule.put("Id", this.id);
+        jsonRule.put("Name", this.name);
+        jsonRule.put("DateCreated", this.dateCreated);
+        jsonRule.put("DateModified", this.dateModified);
+        jsonRule.put("Enabled", this.enabled);
+        jsonRule.put("Description", this.description);
+        jsonRule.put("GroupId", this.groupId);
+        jsonRule.put("Severity", this.severity);
+
+        ArrayNode jsonConditions = jsonRule.putArray("Conditions");
+        for (ConditionServiceModel condition : this.conditions) {
+            ObjectNode jsonCondition = new ObjectMapper().createObjectNode();
+            jsonCondition.put("Field", condition.getField());
+            jsonCondition.put("Operator", condition.getOperator());
+            jsonCondition.put("Value", condition.getValue());
+
+            jsonConditions.add(jsonCondition);
+        }
+
+        return jsonRule;
     }
 }
