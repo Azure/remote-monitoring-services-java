@@ -315,6 +315,7 @@ public class DevicesTest {
                 String eTag = "etagxx==";
                 HashMap<String, Object> tags = new HashMap<String, Object>() {{
                     put("BatchId", batchId);
+                    put("Purpose", "UnitTest");
                 }};
                 HashMap desired = new HashMap() {
                     {
@@ -330,7 +331,7 @@ public class DevicesTest {
                 DeviceServiceModel device = new DeviceServiceModel(eTag, deviceId, 0, null, false, true, null, twin, null, null);
                 DeviceServiceModel newDevice = deviceService.createAsync(device).toCompletableFuture().get();
                 testDevices.add(newDevice);
-                System.out.println(deviceId + "created");
+                System.out.println(deviceId + " created");
             }
         } catch (Exception e) {
             Assert.fail("Unable to create test devices");

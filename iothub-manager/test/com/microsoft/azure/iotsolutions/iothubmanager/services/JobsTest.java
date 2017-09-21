@@ -5,10 +5,12 @@ package com.microsoft.azure.iotsolutions.iothubmanager.services;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.*;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.runtime.Config;
+import com.microsoft.azure.sdk.iot.service.exceptions.*;
 import helpers.UnitTest;
 import org.junit.*;
 import org.junit.experimental.categories.Category;
 
+import javax.sound.midi.SysexMessage;
 import java.time.Duration;
 import java.util.*;
 
@@ -43,7 +45,14 @@ public class JobsTest {
 
     @AfterClass
     public static void tearDownOnce() {
-
+        for (DeviceServiceModel device : testDevices) {
+            try {
+                deviceService.deleteAsync(device.getId()).toCompletableFuture().get();
+                System.out.println(device.getId() + " deleted");
+            } catch (Exception ex) {
+                Assert.fail("Unable to destroy test deviceService");
+            }
+        }
     }
 
     // Ignore this test temporarily due to bug of SDK can not accept twin without
@@ -67,7 +76,7 @@ public class JobsTest {
         Assert.assertEquals(JobType.scheduleUpdateTwin, newJob.getJobType());
     }
 
-    @Test(timeout = 100000)
+    @Test(timeout = 310000)
     @Category({UnitTest.class})
     public void scheduleMethodJobAsyncTest() throws Exception {
         String jobId = "unitTestJob" + batchId;
@@ -77,9 +86,23 @@ public class JobsTest {
         parameter.setJsonPayload("{\"key1\": \"value1\"}");
         parameter.setResponseTimeout(Duration.ofSeconds(5));
         parameter.setConnectionTimeout(Duration.ofSeconds(5));
-        JobServiceModel job = jobService.scheduleDeviceMethodAsync(jobId, condition, parameter, new Date(), 120).toCompletableFuture().get();
-        Assert.assertEquals(jobId, job.getJobId());
-        Assert.assertEquals(job.getJobType(), JobType.scheduleDeviceMethod);
+
+        JobServiceModel job;
+        // retry scheduling job with back off time when throttled by IotHub
+        for(int i = 0; i < 10; i++) {
+            try {
+                job = jobService.scheduleDeviceMethodAsync(jobId, condition, parameter, new Date(), 10).toCompletableFuture().get();
+                Assert.assertEquals(jobId, job.getJobId());
+                Assert.assertEquals(job.getJobType(), JobType.scheduleDeviceMethod);
+                break;
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                Thread.sleep(30000);
+                // reconnect to IotHub
+                jobService = new Jobs(ioTHubWrapper);
+                continue;
+            }
+        }
 
         JobServiceModel newJob = jobService.getJobAsync(jobId).toCompletableFuture().get();
         Assert.assertEquals(jobId, newJob.getJobId());
@@ -99,6 +122,7 @@ public class JobsTest {
                 String eTag = "etagxx==";
                 HashMap<String, Object> tags = new HashMap<String, Object>() {{
                     put("BatchId", batchId);
+                    put("Purpose", "UnitTest");
                 }};
                 HashMap desired = new HashMap() {
                     {
@@ -114,7 +138,7 @@ public class JobsTest {
                 DeviceServiceModel device = new DeviceServiceModel(eTag, deviceId, 0, null, false, true, null, twin, null, null);
                 DeviceServiceModel newDevice = deviceService.createAsync(device).toCompletableFuture().get();
                 testDevices.add(newDevice);
-                System.out.println(deviceId + "created");
+                System.out.println(deviceId + " created");
             }
         } catch (Exception e) {
             Assert.fail("Unable to create test deviceService");
