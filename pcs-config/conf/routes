@@ -1,14 +1,17 @@
 # Note: temporarily duplicate every rule with and without trailing slash
 
-GET           /v1/status                         com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.StatusController.index
-GET           /v1/devicegroups                   com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.DeviceGroupController.getAllAsync
-GET           /v1/devicegroups/:id               com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.DeviceGroupController.getAsync(id)
-POST          /v1/devicegroups                   com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.DeviceGroupController.createAsync
-PUT           /v1/devicegroups/:id               com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.DeviceGroupController.updateAsync(id)
-DELETE        /v1/devicegroups/:id               com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.DeviceGroupController.deleteAsync(id)
-GET           /v1/solution-settings/theme        com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.SolutionSettingsController.getThemeAsync
-PUT           /v1/solution-settings/theme        com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.SolutionSettingsController.setThemeAsync
-GET           /v1/solution-settings/logo         com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.SolutionSettingsController.getLogoAsync
-PUT           /v1/solution-settings/logo         com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.SolutionSettingsController.setLogoAsync
-GET           /v1/user-settings/:id              com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.UserSettingsController.getUserSettingAsync(id)
-PUT           /v1/user-settings/:id              com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.UserSettingsController.setUserSettingAsync(id)
+GET           /v1/status                            com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.StatusController.index
+GET           /v1/devicegroups                      com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.DeviceGroupController.getAllAsync
+GET           /v1/devicegroups/:id                  com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.DeviceGroupController.getAsync(id)
+POST          /v1/devicegroups                      com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.DeviceGroupController.createAsync
+PUT           /v1/devicegroups/:id                  com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.DeviceGroupController.updateAsync(id)
+DELETE        /v1/devicegroups/:id                  com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.DeviceGroupController.deleteAsync(id)
+GET           /v1/solution-settings/theme           com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.SolutionSettingsController.getThemeAsync
+PUT           /v1/solution-settings/theme           com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.SolutionSettingsController.setThemeAsync
+GET           /v1/solution-settings/logo            com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.SolutionSettingsController.getLogoAsync
+PUT           /v1/solution-settings/logo            com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.SolutionSettingsController.setLogoAsync
+GET           /v1/user-settings/:id                 com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.UserSettingsController.getUserSettingAsync(id)
+PUT           /v1/user-settings/:id                 com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.UserSettingsController.setUserSettingAsync(id)
+GET           /v1/devicegroupfilters                com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.DeviceGroupFiltersController.getAllAsync()
+POST          /v1/devicegroupfilters                com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.DeviceGroupFiltersController.setAsync()
+POST          /v1/devicegroupfilters/rebuild        com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.DeviceGroupFiltersController.rebuildAsync

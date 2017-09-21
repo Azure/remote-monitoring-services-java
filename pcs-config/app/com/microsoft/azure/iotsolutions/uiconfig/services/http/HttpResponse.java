@@ -14,6 +14,15 @@ public class HttpResponse implements IHttpResponse {
     private String content;
     private final int TooManyRequests = 429;
 
+    public HttpResponse() {
+    }
+
+    public HttpResponse(int statusCode, Header[] headers, String content) {
+        this.statusCode = statusCode;
+        this.headers = headers;
+        this.content = content;
+    }
+
     @Override
     public int getStatusCode() {
         return statusCode;

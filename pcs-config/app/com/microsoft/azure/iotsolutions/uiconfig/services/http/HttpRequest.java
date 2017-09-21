@@ -108,12 +108,12 @@ public class HttpRequest implements IHttpRequest {
 
     @Override
     public <T> void setContent(T sourceObject) throws UnsupportedEncodingException {
-        this.setContent(content, this.defaultEncoding, this.defaultMediaType);
+        this.setContent(sourceObject, this.defaultEncoding, this.defaultMediaType);
     }
 
     @Override
     public <T> void setContent(T sourceObject, Charset encoding) throws UnsupportedEncodingException {
-        this.setContent(content, encoding, this.defaultMediaType);
+        this.setContent(sourceObject, encoding, this.defaultMediaType);
     }
 
     @Override

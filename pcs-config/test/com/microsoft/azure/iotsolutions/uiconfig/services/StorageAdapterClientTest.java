@@ -20,8 +20,6 @@ import org.junit.experimental.categories.Category;
 import org.mockito.Mockito;
 import play.libs.Json;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -54,12 +52,12 @@ public class StorageAdapterClientTest {
         response.setContent(Json.stringify(Json.toJson(model)));
         response.setStatusCode(200);
         Mockito.when(mockHttpClient.getAsync(Mockito.any(HttpRequest.class)))
-            .thenReturn(CompletableFuture.supplyAsync(() -> response));
+                .thenReturn(CompletableFuture.supplyAsync(() -> response));
         client = new StorageAdapterClient(
-            mockHttpClient,
-            new ServicesConfig(MockServiceUri));
+                mockHttpClient,
+                new ServicesConfig(MockServiceUri, null, null, 0, 0));
         ValueApiModel result = client.getAsync(collectionId, key)
-            .toCompletableFuture().get();
+                .toCompletableFuture().get();
         assertEquals(result.getData(), data);
         assertEquals(result.getKey(), key);
         assertEquals(result.getETag(), etag);
@@ -67,16 +65,16 @@ public class StorageAdapterClientTest {
 
     @Test(timeout = 100000)
     @Category({UnitTest.class})
-    public void getAsyncNotFoundTest() throws UnsupportedEncodingException, URISyntaxException, ExecutionException, InterruptedException {
+    public void getAsyncNotFoundTest() {
         String collectionId = rand.NextString();
         String key = rand.NextString();
         HttpResponse response = new HttpResponse();
         response.setStatusCode(404);
         Mockito.when(mockHttpClient.getAsync(Mockito.any(HttpRequest.class)))
-            .thenReturn(CompletableFuture.supplyAsync(() -> response));
+                .thenReturn(CompletableFuture.supplyAsync(() -> response));
         client = new StorageAdapterClient(
-            mockHttpClient,
-            new ServicesConfig(MockServiceUri));
+                mockHttpClient,
+                new ServicesConfig(MockServiceUri, null, null, 0, 0));
         try {
             client.getAsync(collectionId, key).toCompletableFuture().get();
         } catch (Exception e) {
@@ -99,10 +97,10 @@ public class StorageAdapterClientTest {
         response.setStatusCode(200);
         response.setContent(Json.stringify(Json.toJson(listApiModel)));
         Mockito.when(mockHttpClient.getAsync(Mockito.any(HttpRequest.class)))
-            .thenReturn(CompletableFuture.supplyAsync(() -> response));
+                .thenReturn(CompletableFuture.supplyAsync(() -> response));
         client = new StorageAdapterClient(
-            mockHttpClient,
-            new ServicesConfig(MockServiceUri));
+                mockHttpClient,
+                new ServicesConfig(MockServiceUri, null, null, 0, 0));
         ValueListApiModel result = client.getAllAsync(collectionId).toCompletableFuture().get();
         assertEquals(Lists.newArrayList(result.Items).size(), models.size());
         for (ValueApiModel item : result.Items) {
@@ -124,10 +122,10 @@ public class StorageAdapterClientTest {
         ValueApiModel model = new ValueApiModel(key, data, etag, null);
         response.setContent(Json.stringify(Json.toJson(model)));
         Mockito.when(mockHttpClient.postAsync(Mockito.any(HttpRequest.class)))
-            .thenReturn(CompletableFuture.supplyAsync(() -> response));
+                .thenReturn(CompletableFuture.supplyAsync(() -> response));
         client = new StorageAdapterClient(
-            mockHttpClient,
-            new ServicesConfig(MockServiceUri));
+                mockHttpClient,
+                new ServicesConfig(MockServiceUri, null, null, 0, 0));
         ValueApiModel result = client.createAsync(collectionId, data).toCompletableFuture().get();
         assertEquals(result.getKey(), key);
         assertEquals(result.getData(), data);
@@ -147,10 +145,10 @@ public class StorageAdapterClientTest {
         ValueApiModel model = new ValueApiModel(key, data, etagNew, null);
         response.setContent(Json.stringify(Json.toJson(model)));
         Mockito.when(mockHttpClient.putAsync(Mockito.any(HttpRequest.class)))
-            .thenReturn(CompletableFuture.supplyAsync(() -> response));
+                .thenReturn(CompletableFuture.supplyAsync(() -> response));
         client = new StorageAdapterClient(
-            mockHttpClient,
-            new ServicesConfig(MockServiceUri));
+                mockHttpClient,
+                new ServicesConfig(MockServiceUri, null, null, 0, 0));
         ValueApiModel result = client.updateAsync(collectionId, key, data, etagOld).toCompletableFuture().get();
         assertEquals(result.getKey(), key);
         assertEquals(result.getData(), data);
@@ -167,10 +165,10 @@ public class StorageAdapterClientTest {
         HttpResponse response = new HttpResponse();
         response.setStatusCode(409);
         Mockito.when(mockHttpClient.putAsync(Mockito.any(HttpRequest.class)))
-            .thenReturn(CompletableFuture.supplyAsync(() -> response));
+                .thenReturn(CompletableFuture.supplyAsync(() -> response));
         client = new StorageAdapterClient(
-            mockHttpClient,
-            new ServicesConfig(MockServiceUri));
+                mockHttpClient,
+                new ServicesConfig(MockServiceUri, null, null, 0, 0));
         try {
             client.updateAsync(collectionId, key, data, etag).toCompletableFuture().get();
         } catch (Exception e) {
