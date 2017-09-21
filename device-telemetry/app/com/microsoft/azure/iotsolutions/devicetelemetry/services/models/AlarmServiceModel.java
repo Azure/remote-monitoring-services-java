@@ -63,8 +63,8 @@ public final class AlarmServiceModel {
         if (doc != null) {
             this.eTag = doc.getETag();
             this.id = doc.getId();
-            this.dateCreated = new DateTime(doc.getLong("dateCreated"), DateTimeZone.UTC);
-            this.dateModified = new DateTime(doc.getLong("dateModified"), DateTimeZone.UTC);
+            this.dateCreated = new DateTime(doc.getLong("created"), DateTimeZone.UTC);
+            this.dateModified = new DateTime(doc.getLong("modified"), DateTimeZone.UTC);
             this.description = doc.getString("description");
             this.groupId = doc.getString("group.id");
             this.deviceId = doc.getString("device.id");
