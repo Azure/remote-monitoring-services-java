@@ -164,7 +164,9 @@ public final class Rules implements IRules {
                     log.error("Key value storage request error: {}",
                         error.getMessage());
                     throw new CompletionException(
-                        new ExternalDependencyException(error.getMessage()));
+                        new ExternalDependencyException(
+                            "Could not connect to key value storage " +
+                            error.getMessage()));
                 }
 
                 try {
