@@ -24,6 +24,7 @@ public class AlarmsController extends Controller {
     public AlarmsController(IAlarms alarms) {
         this.alarms = alarms;
     }
+
     /**
      * Return a list of alerts. The list of alerts can be paginated, and
      * filtered by device, period of time, status. The list is sorted
@@ -33,7 +34,7 @@ public class AlarmsController extends Controller {
      * @return List of alerts.
      */
     public Result list(String from, String to, String order, int skip,
-                        int limit, String devices) throws Exception {
+                       int limit, String devices) throws Exception {
         // TODO: move this logic to the storage engine, depending on the
         // storage type the limit will be different. 200 is DocumentDb
         // limit for the IN clause.
@@ -60,7 +61,19 @@ public class AlarmsController extends Controller {
      * @return One alert.
      */
     public Result patch(String id) throws Exception {
+
         AlarmStatus alarm = Json.fromJson(request().body().asJson(), AlarmStatus.class);
+
+        // validate input
+        if (!(alarm.status.equalsIgnoreCase("open") ||
+              alarm.status.equalsIgnoreCase("closed") ||
+              alarm.status.equalsIgnoreCase("acknowledged"))) {
+
+            return badRequest(
+                "Status must be `open`, acknowledged`, or `closed`. " +
+                    "Value provided: " + alarm.status);
+        }
+
         return ok(toJson(new AlarmApiModel(this.alarms.update(id, alarm.status))));
     }
 }

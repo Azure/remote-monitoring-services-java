@@ -20,7 +20,7 @@ libraryDependencies ++= Seq(
 )
 
 lazy val commonSettings = Seq(
-  version := "0.1.8",
+  version := "0.1.9",
 
   organizationName := "Microsoft Azure",
   organizationHomepage := Some(new URL("https://www.microsoft.com/internet-of-things/azure-iot-suite")),
