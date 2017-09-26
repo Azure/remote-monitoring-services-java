@@ -3,7 +3,7 @@
 package com.microsoft.azure.iotsolutions.iothubmanager.services;
 
 import com.google.inject.ImplementedBy;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.ExternalDependencyException;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.*;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.*;
 
 import java.util.*;
@@ -16,7 +16,7 @@ public interface IJobs {
         JobType jobType,
         JobStatus jobStatus,
         Integer pageSize)
-        throws ExternalDependencyException;
+        throws ExternalDependencyException, InvalidInputException;
 
     CompletionStage<JobServiceModel> getJobAsync(String jobId)
         throws ExternalDependencyException;

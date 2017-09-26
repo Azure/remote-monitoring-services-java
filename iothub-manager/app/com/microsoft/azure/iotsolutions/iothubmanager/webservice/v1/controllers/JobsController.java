@@ -7,8 +7,7 @@ import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.IJobs;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.BaseException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidInputException;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.models.JobStatus;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.models.JobType;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.models.*;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models.JobApiModel;
 import com.microsoft.azure.sdk.iot.service.exceptions.IotHubException;
 import org.joda.time.DateTime;
@@ -20,7 +19,9 @@ import play.mvc.Result;
 import javax.transaction.NotSupportedException;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.stream.Collectors;
 
 import static play.libs.Json.fromJson;
 import static play.libs.Json.toJson;
@@ -44,21 +45,10 @@ public final class JobsController extends Controller {
         JobType jobType;
         JobStatus jobStatus;
         Integer pageSize;
-
-        if (type == null || type.isEmpty()) {
-            log.error("jobType is null or empty in query string");
-            throw new InvalidInputException("jobType is null or empty in query string");
-        }
-
-        if (status == null || status.isEmpty()) {
-            log.error("jobStatus is null or empty in query string");
-            throw new InvalidInputException("jobStatus is null or empty in query string");
-        }
-
         try {
-            jobType = JobType.from(Integer.parseInt(type));
-            jobStatus = JobStatus.from(Integer.parseInt(status));
-            pageSize = Integer.parseInt(size);
+            jobType = type == null || type.isEmpty() ? null : JobType.from(Integer.parseInt(type));
+            jobStatus = status == null || status.isEmpty() ? null : JobStatus.from(Integer.parseInt(status));
+            pageSize = size == null || size.isEmpty() ? 100 : Integer.parseInt(size);
         } catch (IllegalArgumentException e) {
             log.error(String.format("Invalid query string: %s, %s, %s", type, status, size));
             throw new InvalidInputException(String.format("Invalid query string: %s, %s, %s", type, status, size), e);
