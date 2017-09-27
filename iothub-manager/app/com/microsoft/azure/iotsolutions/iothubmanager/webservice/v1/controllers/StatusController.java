@@ -2,12 +2,11 @@
 
 package com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers;
 
+import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.IIoTHubWrapper;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models.StatusApiModel;
 import com.microsoft.azure.sdk.iot.service.RegistryManager;
 import play.mvc.Result;
-
-import javax.inject.Inject;
 
 import static play.libs.Json.toJson;
 import static play.mvc.Results.ok;

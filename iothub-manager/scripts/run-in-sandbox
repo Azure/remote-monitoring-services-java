@@ -26,7 +26,7 @@ run_in_sandbox() {
         check_dependency_docker
         docker run -it \
             -p $EXT_PORT:8080 \
-            -e "PCS_IOTHUB_CONNSTRING=$PCS_IOTHUB_CONNSTRING" \
+            -e PCS_IOTHUB_CONNSTRING \
             -v "$APP_HOME/.cache/sandbox/.ivy2:/root/.ivy2" \
             -v "$APP_HOME/.cache/sandbox/.sbt:/root/.sbt" \
             -v "$APP_HOME:/opt/code" \

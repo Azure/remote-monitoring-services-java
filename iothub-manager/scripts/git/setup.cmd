@@ -8,6 +8,7 @@ cd %APP_HOME%
 
 IF "%1"=="--with-sandbox" goto :WITH_SANDBOX
 IF "%1"=="--no-sandbox" goto :WITHOUT_SANDBOX
+IF "%1"=="" goto :WITHOUT_SANDBOX
 goto :USAGE
 
 :: - - - - - - - - - - - - - -

@@ -11,12 +11,21 @@ libraryDependencies ++= {
     guice,
 
     // https://github.com/Azure/azure-iot-sdk-java/releases
-    "com.microsoft.azure.sdk.iot" % "iot-service-client" % "1.9.25"
+    "com.microsoft.azure.sdk.iot" % "iot-service-client" % "1.9.25",
+
+    // https://mvnrepository.com/artifact/com.nimbusds/oauth2-oidc-sdk
+    "com.nimbusds" % "oauth2-oidc-sdk" % "5.36"
   )
 }
 
+// Test dependencies
+libraryDependencies ++= Seq(
+  // http://search.maven.org/#search%7Cga%7C1%7Cmockito-core
+  "org.mockito" % "mockito-core" % "2.8.47" % "test"
+)
+
 lazy val commonSettings = Seq(
-  version := "0.1.7",
+  version := "0.2.0",
 
   organizationName := "Microsoft Azure",
   organizationHomepage := Some(new URL("https://www.microsoft.com/internet-of-things/azure-iot-suite")),
@@ -68,6 +77,6 @@ dockerAlias := DockerAlias(dockerRepository.value, None, packageName.value + "-j
 maintainer in Docker := "Devis Lucato (https://github.com/dluc)"
 dockerBaseImage := "toketi/openjdk-8-jre-alpine-bash"
 dockerUpdateLatest := true
-dockerBuildOptions ++= Seq("--squash", "--compress", "--label", "Tags=toketi,dluc")
+dockerBuildOptions ++= Seq("--squash", "--compress", "--label", "Tags=Azure,IoT,Solutions,IoT Hub,Java")
 // Example params: -Dconfig.file=/opt/conf/prod.conf -Dhttp.port=1234 -Dhttp.address=127.0.0.1
 dockerEntrypoint := Seq("bin/iothub-manager")

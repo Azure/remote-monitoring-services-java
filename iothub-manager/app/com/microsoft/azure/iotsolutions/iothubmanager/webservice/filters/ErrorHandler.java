@@ -3,21 +3,20 @@
 package com.microsoft.azure.iotsolutions.iothubmanager.webservice.filters;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.inject.*;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.*;
 import com.typesafe.config.Config;
-
-import play.*;
+import play.Environment;
 import play.api.OptionalSourceMapper;
 import play.api.routing.Router;
 import play.http.DefaultHttpErrorHandler;
-import play.mvc.Http.*;
-import play.mvc.*;
+import play.mvc.Http.RequestHeader;
+import play.mvc.Http.Status;
+import play.mvc.Result;
+import play.mvc.Results;
 
-import javax.inject.*;
 import java.util.HashMap;
 import java.util.concurrent.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 
 import static play.libs.Json.toJson;
 

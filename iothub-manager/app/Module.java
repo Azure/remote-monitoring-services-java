@@ -3,6 +3,7 @@
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.runtime.IServicesConfig;
+import com.microsoft.azure.iotsolutions.iothubmanager.webservice.auth.IClientAuthConfig;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.runtime.IConfig;
 
 /**
@@ -26,5 +27,10 @@ public class Module extends AbstractModule {
     @Provides
     IServicesConfig provideIServicesConfig(IConfig config) {
         return config.getServicesConfig();
+    }
+
+    @Provides
+    IClientAuthConfig provideIClientAuthConfig(IConfig config) {
+        return config.getClientAuthConfig();
     }
 }

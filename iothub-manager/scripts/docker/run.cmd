@@ -21,7 +21,7 @@ IF %ERRORLEVEL% NEQ 0 GOTO FAIL
 :: Depending on which settings and which dependencies are needed, edit the list of variables
 echo Starting IoT Hub Manager...
 docker run -it -p 9002:9002 ^
-    -e PCS_IOTHUB_CONNSTRING=%PCS_IOTHUB_CONNSTRING% ^
+    -e PCS_IOTHUB_CONNSTRING ^
     %DOCKER_IMAGE%
 
 :: - - - - - - - - - - - - - -

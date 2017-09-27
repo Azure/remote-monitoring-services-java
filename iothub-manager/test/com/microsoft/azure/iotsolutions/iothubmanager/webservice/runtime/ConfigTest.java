@@ -2,12 +2,8 @@
 
 package com.microsoft.azure.iotsolutions.iothubmanager.webservice.runtime;
 
-import helpers.UnitTest;
-import org.junit.*;
-import org.junit.experimental.categories.Category;
-
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import org.junit.After;
+import org.junit.Before;
 
 public class ConfigTest {
 
@@ -19,14 +15,5 @@ public class ConfigTest {
     @After
     public void tearDown() {
         // something after every test
-    }
-
-    @Test(timeout = 1000)
-    @Category({UnitTest.class})
-    public void providesWebServicePort() {
-        Config target = new Config();
-
-        int port = target.getPort();
-        assertThat(port, is(9002));
     }
 }
