@@ -5,12 +5,13 @@ package com.microsoft.azure.iotsolutions.uiconfig.services;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.Lists;
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.BaseException;
+import com.microsoft.azure.iotsolutions.uiconfig.services.external.ConditionApiModel;
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.IStorageAdapterClient;
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.ValueApiModel;
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.ValueListApiModel;
-import com.microsoft.azure.iotsolutions.uiconfig.services.models.DeviceGroupServiceModel;
-import com.microsoft.azure.iotsolutions.uiconfig.services.models.LogoServiceModel;
-import com.microsoft.azure.iotsolutions.uiconfig.services.models.ThemeServiceModel;
+import com.microsoft.azure.iotsolutions.uiconfig.services.models.DeviceGroup;
+import com.microsoft.azure.iotsolutions.uiconfig.services.models.Logo;
+import com.microsoft.azure.iotsolutions.uiconfig.services.models.Theme;
 import helpers.Random;
 import helpers.UnitTest;
 import org.junit.Before;
@@ -20,7 +21,6 @@ import org.mockito.Mockito;
 import play.libs.Json;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +50,7 @@ public class StorageTest {
         ValueApiModel model = new ValueApiModel();
         model.setData(String.format("{\"Name\":\"%s\",\"Description\":\"%s\"}", name, description));
         Mockito.when(mockClient.getAsync(Mockito.anyString(), Mockito.anyString()))
-            .thenReturn(CompletableFuture.supplyAsync(() -> model));
+                .thenReturn(CompletableFuture.supplyAsync(() -> model));
         storage = new Storage(mockClient);
         Object result = storage.getThemeAsync().toCompletableFuture().get();
         JsonNode node = Json.toJson(result);
@@ -62,12 +62,12 @@ public class StorageTest {
     @Category({UnitTest.class})
     public void getThemeAsyncDefaultTest() throws BaseException, ExecutionException, InterruptedException {
         Mockito.when(mockClient.getAsync(Mockito.anyString(), Mockito.anyString()))
-            .thenThrow(new BaseException());
+                .thenThrow(new BaseException());
         storage = new Storage(mockClient);
         Object result = storage.getThemeAsync().toCompletableFuture().get();
         JsonNode node = Json.toJson(result);
-        assertEquals(node.get("Name").asText(), ThemeServiceModel.Default.getName());
-        assertEquals(node.get("Description").asText(), ThemeServiceModel.Default.getDescription());
+        assertEquals(node.get("Name").asText(), Theme.Default.getName());
+        assertEquals(node.get("Description").asText(), Theme.Default.getDescription());
     }
 
     @Test(timeout = 100000)
@@ -80,7 +80,7 @@ public class StorageTest {
         ValueApiModel model = new ValueApiModel();
         model.setData(jsonData);
         Mockito.when(mockClient.updateAsync(Mockito.any(String.class), Mockito.any(String.class), Mockito.any(String.class), Mockito.any(String.class))).
-            thenReturn(CompletableFuture.supplyAsync(() -> model));
+                thenReturn(CompletableFuture.supplyAsync(() -> model));
         storage = new Storage(mockClient);
         Object result = storage.setThemeAsync(theme).toCompletableFuture().get();
         JsonNode node = Json.toJson(result);
@@ -99,7 +99,7 @@ public class StorageTest {
         ValueApiModel model = new ValueApiModel();
         model.setData(jsonData);
         Mockito.when(mockClient.getAsync(Mockito.any(String.class), Mockito.any(String.class)))
-            .thenReturn(CompletableFuture.supplyAsync(() -> model));
+                .thenReturn(CompletableFuture.supplyAsync(() -> model));
         storage = new Storage(mockClient);
         Object result = storage.getUserSetting(id).toCompletableFuture().get();
         JsonNode node = Json.toJson(result);
@@ -118,7 +118,7 @@ public class StorageTest {
         ValueApiModel model = new ValueApiModel();
         model.setData(jsonData);
         Mockito.when(mockClient.updateAsync(Mockito.any(String.class), Mockito.any(String.class), Mockito.any(String.class), Mockito.any(String.class)))
-            .thenReturn(CompletableFuture.supplyAsync(() -> model));
+                .thenReturn(CompletableFuture.supplyAsync(() -> model));
         storage = new Storage(mockClient);
         Object result = storage.setUserSetting(id, setting).toCompletableFuture().get();
         JsonNode node = Json.toJson(result);
@@ -135,7 +135,7 @@ public class StorageTest {
         ValueApiModel model = new ValueApiModel();
         model.setData(jsonData);
         Mockito.when(mockClient.getAsync(Mockito.any(String.class), Mockito.any(String.class)))
-            .thenReturn(CompletableFuture.supplyAsync(() -> model));
+                .thenReturn(CompletableFuture.supplyAsync(() -> model));
         storage = new Storage(mockClient);
         Object result = storage.getLogoAsync().toCompletableFuture().get();
         JsonNode node = Json.toJson(result);
@@ -148,13 +148,13 @@ public class StorageTest {
     public void setLogoAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         String image = rand.NextString();
         String type = rand.NextString();
-        LogoServiceModel logo = new LogoServiceModel();
+        Logo logo = new Logo();
         logo.setImage(image);
         logo.setType(type);
         ValueApiModel model = new ValueApiModel();
         model.setData(Json.stringify(Json.toJson(logo)));
         Mockito.when(mockClient.updateAsync(Mockito.any(String.class), Mockito.any(String.class), Mockito.any(String.class), Mockito.any(String.class)))
-            .thenReturn(CompletableFuture.supplyAsync(() -> model));
+                .thenReturn(CompletableFuture.supplyAsync(() -> model));
         storage = new Storage(mockClient);
         Object result = storage.setLogoAsync(logo).toCompletableFuture().get();
         JsonNode node = Json.toJson(result);
@@ -165,25 +165,25 @@ public class StorageTest {
     @Test(timeout = 100000)
     @Category({UnitTest.class})
     public void getAllDeviceGroupsAsyncTest() throws BaseException, ExecutionException, InterruptedException {
-        List<DeviceGroupServiceModel> groups = new ArrayList<>();
+        List<DeviceGroup> groups = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            DeviceGroupServiceModel model = new DeviceGroupServiceModel();
+            DeviceGroup model = new DeviceGroup();
             model.setDisplayName(rand.NextString());
-            model.setConditions(rand.NextString());
+            model.setConditions(null);
             groups.add(model);
         }
         List<ValueApiModel> items = groups.stream().map(m ->
-            new ValueApiModel(rand.NextString(), Json.stringify(Json.toJson(m)), rand.NextString(), null)
+                new ValueApiModel(rand.NextString(), Json.stringify(Json.toJson(m)), rand.NextString(), null)
         ).collect(Collectors.toList());
         ValueListApiModel model = new ValueListApiModel();
         model.Items = items;
         Mockito.when(mockClient.getAllAsync(Mockito.any(String.class))).thenReturn(CompletableFuture.supplyAsync(() -> model));
         storage = new Storage(mockClient);
-        List<DeviceGroupServiceModel> result = Lists.newArrayList(storage.getAllDeviceGroupsAsync().toCompletableFuture().get());
+        List<DeviceGroup> result = Lists.newArrayList(storage.getAllDeviceGroupsAsync().toCompletableFuture().get());
         assertEquals(result.size(), groups.size());
-        for (DeviceGroupServiceModel item : result) {
+        for (DeviceGroup item : result) {
             ValueApiModel value = items.stream().filter(m -> m.getKey().equals(item.getId())).findFirst().get();
-            DeviceGroupServiceModel group = Json.fromJson(Json.parse(value.getData()), DeviceGroupServiceModel.class);
+            DeviceGroup group = Json.fromJson(Json.parse(value.getData()), DeviceGroup.class);
             assertEquals(group.getDisplayName(), item.getDisplayName());
             assertEquals(group.getConditions(), item.getConditions());
         }
@@ -194,18 +194,18 @@ public class StorageTest {
     public void getDeviceGroupsAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         String groupId = rand.NextString();
         String displayName = rand.NextString();
-        String conditions = rand.NextString();
+        Iterable<ConditionApiModel> conditions = null;
         String etag = rand.NextString();
         ValueApiModel model = new ValueApiModel(groupId, null, etag, null);
-        DeviceGroupServiceModel group = new DeviceGroupServiceModel();
+        DeviceGroup group = new DeviceGroup();
         group.setDisplayName(displayName);
         group.setConditions(conditions);
         model.setData(Json.stringify(Json.toJson(group)));
         Mockito.when(mockClient.getAsync(Mockito.any(String.class),
-            Mockito.any(String.class))).
-            thenReturn(CompletableFuture.supplyAsync(() -> model));
+                Mockito.any(String.class))).
+                thenReturn(CompletableFuture.supplyAsync(() -> model));
         storage = new Storage(mockClient);
-        DeviceGroupServiceModel result = storage.getDeviceGroupAsync(groupId).toCompletableFuture().get();
+        DeviceGroup result = storage.getDeviceGroupAsync(groupId).toCompletableFuture().get();
         assertEquals(result.getDisplayName(), displayName);
         assertEquals(result.getConditions(), conditions);
     }
@@ -215,18 +215,18 @@ public class StorageTest {
     public void createDeviceGroupAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         String groupId = rand.NextString();
         String displayName = rand.NextString();
-        String conditions = rand.NextString();
+        Iterable<ConditionApiModel> conditions = null;
         String etag = rand.NextString();
         ValueApiModel model = new ValueApiModel(groupId, null, etag, null);
-        DeviceGroupServiceModel group = new DeviceGroupServiceModel();
+        DeviceGroup group = new DeviceGroup();
         group.setConditions(conditions);
         group.setDisplayName(displayName);
         model.setData(Json.stringify(Json.toJson(group)));
         Mockito.when(mockClient.createAsync(Mockito.any(String.class),
-            Mockito.any(String.class))).
-            thenReturn(CompletableFuture.supplyAsync(() -> model));
+                Mockito.any(String.class))).
+                thenReturn(CompletableFuture.supplyAsync(() -> model));
         storage = new Storage(mockClient);
-        DeviceGroupServiceModel result = storage.createDeviceGroupAsync(group).toCompletableFuture().get();
+        DeviceGroup result = storage.createDeviceGroupAsync(group).toCompletableFuture().get();
         assertEquals(result.getId(), groupId);
         assertEquals(result.getDisplayName(), displayName);
         assertEquals(result.getConditions(), conditions);
@@ -238,20 +238,20 @@ public class StorageTest {
     public void updateDeviceGroupAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         String groupId = rand.NextString();
         String displayName = rand.NextString();
-        String conditions = rand.NextString();
+        Iterable<ConditionApiModel> conditions = null;
         String etagOld = rand.NextString();
         String etagNew = rand.NextString();
-        DeviceGroupServiceModel group = new DeviceGroupServiceModel();
+        DeviceGroup group = new DeviceGroup();
         group.setDisplayName(displayName);
         group.setConditions(conditions);
         ValueApiModel model = new ValueApiModel(groupId, Json.stringify(Json.toJson(group)), etagNew, null);
         Mockito.when(mockClient.updateAsync(Mockito.any(String.class),
-            Mockito.any(String.class),
-            Mockito.any(String.class),
-            Mockito.any(String.class))).
-            thenReturn(CompletableFuture.supplyAsync(() -> model));
+                Mockito.any(String.class),
+                Mockito.any(String.class),
+                Mockito.any(String.class))).
+                thenReturn(CompletableFuture.supplyAsync(() -> model));
         storage = new Storage(mockClient);
-        DeviceGroupServiceModel result = storage.updateDeviceGroupAsync(groupId, group, etagOld).toCompletableFuture().get();
+        DeviceGroup result = storage.updateDeviceGroupAsync(groupId, group, etagOld).toCompletableFuture().get();
         assertEquals(result.getId(), groupId);
         assertEquals(result.getDisplayName(), displayName);
         assertEquals(result.getConditions(), conditions);

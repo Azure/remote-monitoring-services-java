@@ -15,3 +15,4 @@ PUT           /v1/user-settings/:id                 com.microsoft.azure.iotsolut
 GET           /v1/devicegroupfilters                com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.DeviceGroupFiltersController.getAllAsync()
 POST          /v1/devicegroupfilters                com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.DeviceGroupFiltersController.setAsync()
 POST          /v1/devicegroupfilters/rebuild        com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.DeviceGroupFiltersController.rebuildAsync
+POST          /v1/seed                              com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.SeedController.postAsync

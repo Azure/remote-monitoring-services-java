@@ -15,6 +15,7 @@ import play.libs.Json;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 
@@ -38,17 +39,17 @@ public class StorageAdapterClient implements IStorageAdapterClient {
     }
 
     @Override
-    public CompletionStage<ValueApiModel> getAsync(String collectionId, String key) throws BaseException {
-        HttpRequest request = CreateRequest(String.format("collections/%s/values/%s", collectionId, key));
-        return httpClient.getAsync(request)
-            .thenApplyAsync(m -> {
-                try {
-                    CheckStatusCode(m, request);
-                    return fromJson(m.getContent(), ValueApiModel.class);
-                } catch (Exception e) {
-                    throw new CompletionException("Unable to retrieve " + request.getUri(), e);
-                }
-            });
+    public CompletionStage<ValueApiModel> getAsync(String collectionId, String key) throws ResourceNotFoundException {
+        try {
+            HttpRequest request = CreateRequest(String.format("collections/%s/values/%s", collectionId, key));
+            IHttpResponse response = httpClient.getAsync(request).toCompletableFuture().get();
+            CheckStatusCode(response, request);
+            return CompletableFuture.supplyAsync(() -> fromJson(response.getContent(), ValueApiModel.class));
+        } catch (ResourceNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new CompletionException("Unable to retrieve " + String.format("collections/%s/values/%s", collectionId, key), e);
+        }
     }
 
     @Override
@@ -130,19 +131,19 @@ public class StorageAdapterClient implements IStorageAdapterClient {
             return;
         }
         log.info(String.format("StorageAdapter returns %s for request %s",
-            response.getStatusCode(), request.getUri().toString()));
+                response.getStatusCode(), request.getUri().toString()));
         switch (response.getStatusCode()) {
             case HttpStatus.SC_NOT_FOUND:
                 throw new ResourceNotFoundException(
-                    response.getContent() + ", request URL = " + request.getUri().toString());
+                        response.getContent() + ", request URL = " + request.getUri().toString());
 
             case HttpStatus.SC_CONFLICT:
                 throw new ConflictingResourceException(
-                    response.getContent() + ", request URL = " + request.getUri().toString());
+                        response.getContent() + ", request URL = " + request.getUri().toString());
 
             default:
                 throw new ExternalDependencyException(
-                    String.format("Http request failed, status code = %s, content = %s, request URL = %s", response.getStatusCode(), response.getContent(), request.getUri().toString()));
+                        String.format("Http request failed, status code = %s, content = %s, request URL = %s", response.getStatusCode(), response.getContent(), request.getUri().toString()));
         }
     }
 }

@@ -8,14 +8,18 @@ import com.microsoft.azure.iotsolutions.uiconfig.services.models.CacheValue;
 import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.ServicesConfig;
 import helpers.UnitTest;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mockito.Mockito;
 import play.libs.Json;
+import scala.collection.mutable.HashTable;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.TreeSet;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -29,21 +33,24 @@ public class CacheTest {
     private String cacheModel = "";
     private IServicesConfig config;
     private Cache cache;
+    private Hashtable<String, String> metaData = null;
 
     @Before
     public void setUp() {
+        metaData = new Hashtable<>();
+        metaData.put("$modified", DateTime.now().plusDays(2).toString("yyyy-MM-dd'T'HH:mm:ssZZ"));
         mockStorageAdapterClient = Mockito.mock(IStorageAdapterClient.class);
         mockIothubManagerClient = Mockito.mock(IIothubManagerServiceClient.class);
         mockSimulationClient = Mockito.mock(ISimulationServiceClient.class);
         cacheModel = "{\"Rebuilding\": false,\"Tags\": [ \"c\", \"a\", \"y\", \"z\" ],\"Reported\": [\"1\",\"9\",\"2\",\"3\"] }";
-        config = new ServicesConfig(null, null, null, 0, 0);
+        config = new ServicesConfig(null,null, null, null, 0, 0, null);
     }
 
     @Test(timeout = 100000)
     @Category({UnitTest.class})
     public void getCacheAsyncTestAsync() throws BaseException, ExecutionException, InterruptedException {
         Mockito.when(mockStorageAdapterClient.getAsync(Mockito.any(String.class), Mockito.any(String.class)))
-                .thenReturn(CompletableFuture.supplyAsync(() -> new ValueApiModel("", this.cacheModel, "", null)));
+                .thenReturn(CompletableFuture.supplyAsync(() -> new ValueApiModel("", this.cacheModel, "", metaData)));
         cache = new Cache(mockStorageAdapterClient, mockIothubManagerClient, mockSimulationClient, config);
         CacheValue result = this.cache.GetCacheAsync().toCompletableFuture().get();
         assertEquals(String.join(",", new TreeSet<String>(result.getTags())), "a,c,y,z");
@@ -54,7 +61,7 @@ public class CacheTest {
     @Category({UnitTest.class})
     public void setCacheAsyncTestAsync() throws BaseException, ExecutionException, InterruptedException {
         Mockito.when(mockStorageAdapterClient.getAsync(Mockito.any(String.class), Mockito.any(String.class)))
-                .thenReturn(CompletableFuture.supplyAsync(() -> new ValueApiModel("", this.cacheModel, "", null)));
+                .thenReturn(CompletableFuture.supplyAsync(() -> new ValueApiModel("", this.cacheModel, "", metaData)));
         CacheValue resultModel = new CacheValue(new HashSet<String>(Arrays.asList("c", "a", "y", "z", "@", "#")),
                 new HashSet<String>(Arrays.asList("1", "9", "2", "3", "12", "11")), false);
         CacheValue model = new CacheValue(new HashSet<String>(Arrays.asList("a", "y", "z", "@", "#")),

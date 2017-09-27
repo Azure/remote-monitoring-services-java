@@ -7,22 +7,40 @@ package com.microsoft.azure.iotsolutions.uiconfig.services.runtime;
  */
 public class ServicesConfig implements IServicesConfig {
 
+    private String seedTemplate;
     private String storageAdapterApiUrl;
     private String deviceSimulationApiUrl;
+    private String telemetryApiUrl;
     private String hubManagerApiUrl;
     private int cacheTTL;
     private int cacheRebuildTimeout;
 
+    @Override
+    public String getTelemetryApiUrl() {
+        return telemetryApiUrl;
+    }
+
+    public void setTelemetryApiUrl(String telemetryApiUrl) {
+        this.telemetryApiUrl = telemetryApiUrl;
+    }
+
     public ServicesConfig() {
     }
 
-    public ServicesConfig(String storageAdapterApiUrl, String deviceSimulationApiUrl,
-                          String hubManagerApiUrl, int cacheTTL, int cacheRebuildTimeout) {
+    public ServicesConfig(String telemetryApiUrl, String storageAdapterApiUrl, String deviceSimulationApiUrl,
+                          String hubManagerApiUrl, int cacheTTL, int cacheRebuildTimeout, String seedTemplate) {
         this.storageAdapterApiUrl = storageAdapterApiUrl;
         this.deviceSimulationApiUrl = deviceSimulationApiUrl;
         this.hubManagerApiUrl = hubManagerApiUrl;
         this.cacheTTL = cacheTTL;
         this.cacheRebuildTimeout = cacheRebuildTimeout;
+        this.seedTemplate = seedTemplate;
+        this.telemetryApiUrl = telemetryApiUrl;
+    }
+
+    @Override
+    public String getSeedTemplate() {
+        return seedTemplate;
     }
 
     @Override

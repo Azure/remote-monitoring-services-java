@@ -55,7 +55,7 @@ public class StorageAdapterClientTest {
                 .thenReturn(CompletableFuture.supplyAsync(() -> response));
         client = new StorageAdapterClient(
                 mockHttpClient,
-                new ServicesConfig(MockServiceUri, null, null, 0, 0));
+                new ServicesConfig(null,MockServiceUri, null, null, 0, 0, null));
         ValueApiModel result = client.getAsync(collectionId, key)
                 .toCompletableFuture().get();
         assertEquals(result.getData(), data);
@@ -74,11 +74,11 @@ public class StorageAdapterClientTest {
                 .thenReturn(CompletableFuture.supplyAsync(() -> response));
         client = new StorageAdapterClient(
                 mockHttpClient,
-                new ServicesConfig(MockServiceUri, null, null, 0, 0));
+                new ServicesConfig(null,MockServiceUri, null, null, 0, 0, null));
         try {
             client.getAsync(collectionId, key).toCompletableFuture().get();
         } catch (Exception e) {
-            assertEquals(e.getCause().getClass(), ResourceNotFoundException.class);
+            assertEquals(e.getClass(), ResourceNotFoundException.class);
         }
     }
 
@@ -100,7 +100,7 @@ public class StorageAdapterClientTest {
                 .thenReturn(CompletableFuture.supplyAsync(() -> response));
         client = new StorageAdapterClient(
                 mockHttpClient,
-                new ServicesConfig(MockServiceUri, null, null, 0, 0));
+                new ServicesConfig(null,MockServiceUri, null, null, 0, 0, null));
         ValueListApiModel result = client.getAllAsync(collectionId).toCompletableFuture().get();
         assertEquals(Lists.newArrayList(result.Items).size(), models.size());
         for (ValueApiModel item : result.Items) {
@@ -125,7 +125,7 @@ public class StorageAdapterClientTest {
                 .thenReturn(CompletableFuture.supplyAsync(() -> response));
         client = new StorageAdapterClient(
                 mockHttpClient,
-                new ServicesConfig(MockServiceUri, null, null, 0, 0));
+                new ServicesConfig(null,MockServiceUri, null, null, 0, 0, null));
         ValueApiModel result = client.createAsync(collectionId, data).toCompletableFuture().get();
         assertEquals(result.getKey(), key);
         assertEquals(result.getData(), data);
@@ -148,7 +148,7 @@ public class StorageAdapterClientTest {
                 .thenReturn(CompletableFuture.supplyAsync(() -> response));
         client = new StorageAdapterClient(
                 mockHttpClient,
-                new ServicesConfig(MockServiceUri, null, null, 0, 0));
+                new ServicesConfig(null,MockServiceUri, null, null, 0, 0, null));
         ValueApiModel result = client.updateAsync(collectionId, key, data, etagOld).toCompletableFuture().get();
         assertEquals(result.getKey(), key);
         assertEquals(result.getData(), data);
@@ -168,7 +168,7 @@ public class StorageAdapterClientTest {
                 .thenReturn(CompletableFuture.supplyAsync(() -> response));
         client = new StorageAdapterClient(
                 mockHttpClient,
-                new ServicesConfig(MockServiceUri, null, null, 0, 0));
+                new ServicesConfig(null,MockServiceUri, null, null, 0, 0, null));
         try {
             client.updateAsync(collectionId, key, data, etag).toCompletableFuture().get();
         } catch (Exception e) {

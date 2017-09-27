@@ -3,7 +3,7 @@
 package com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.microsoft.azure.iotsolutions.uiconfig.services.models.DeviceGroupServiceModel;
+import com.microsoft.azure.iotsolutions.uiconfig.services.models.DeviceGroup;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.Version;
 
 import java.util.Hashtable;
@@ -36,7 +36,7 @@ public class DeviceGroupListApiModel {
     public DeviceGroupListApiModel() {
     }
 
-    public DeviceGroupListApiModel(Iterable<DeviceGroupServiceModel> models) {
+    public DeviceGroupListApiModel(Iterable<DeviceGroup> models) {
         items = StreamSupport.stream(models.spliterator(), false)
                 .map(m -> new DeviceGroupApiModel(m)).collect(Collectors.toList());
         metadata = new Hashtable<String, String>();

@@ -29,7 +29,7 @@ public final class StatusApiModel {
 
     @JsonProperty("Name")
     public String getName() {
-        return "Config";
+        return "UIConfig";
     }
 
     @JsonProperty("Status")

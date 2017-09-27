@@ -4,8 +4,8 @@ package com.microsoft.azure.iotsolutions.uiconfig.services;
 
 import com.google.inject.ImplementedBy;
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.*;
-import com.microsoft.azure.iotsolutions.uiconfig.services.models.DeviceGroupServiceModel;
-import com.microsoft.azure.iotsolutions.uiconfig.services.models.LogoServiceModel;
+import com.microsoft.azure.iotsolutions.uiconfig.services.models.DeviceGroup;
+import com.microsoft.azure.iotsolutions.uiconfig.services.models.Logo;
 
 import java.util.concurrent.CompletionStage;
 
@@ -20,17 +20,17 @@ public interface IStorage {
 
     CompletionStage<Object> setUserSetting(String id, Object setting) throws BaseException;
 
-    CompletionStage<LogoServiceModel> getLogoAsync() throws BaseException;
+    CompletionStage<Logo> getLogoAsync() throws BaseException;
 
-    CompletionStage<LogoServiceModel> setLogoAsync(LogoServiceModel model) throws BaseException;
+    CompletionStage<Logo> setLogoAsync(Logo model) throws BaseException;
 
-    CompletionStage<Iterable<DeviceGroupServiceModel>> getAllDeviceGroupsAsync() throws BaseException;
+    CompletionStage<Iterable<DeviceGroup>> getAllDeviceGroupsAsync() throws BaseException;
 
-    CompletionStage<DeviceGroupServiceModel> getDeviceGroupAsync(String id) throws BaseException;
+    CompletionStage<DeviceGroup> getDeviceGroupAsync(String id) throws BaseException;
 
-    CompletionStage<DeviceGroupServiceModel> createDeviceGroupAsync(DeviceGroupServiceModel input) throws BaseException;
+    CompletionStage<DeviceGroup> createDeviceGroupAsync(DeviceGroup input) throws BaseException;
 
-    CompletionStage<DeviceGroupServiceModel> updateDeviceGroupAsync(String id, DeviceGroupServiceModel input, String etag) throws BaseException;
+    CompletionStage<DeviceGroup> updateDeviceGroupAsync(String id, DeviceGroup input, String etag) throws BaseException;
 
     CompletionStage deleteDeviceGroupAsync(String id) throws BaseException;
 }

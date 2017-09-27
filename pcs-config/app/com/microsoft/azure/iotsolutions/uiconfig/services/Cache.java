@@ -3,6 +3,7 @@
 package com.microsoft.azure.iotsolutions.uiconfig.services;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.BaseException;
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.ConflictingResourceException;
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.ExternalDependencyException;
@@ -15,6 +16,9 @@ import com.microsoft.azure.iotsolutions.uiconfig.services.models.CacheValue;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.DeviceTwinName;
 import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.IServicesConfig;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeParser;
 import play.Logger;
 import play.libs.Json;
 
@@ -24,6 +28,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 
+@Singleton
 public class Cache implements ICache {
 
     private final IStorageAdapterClient storageClient;
@@ -39,12 +44,18 @@ public class Cache implements ICache {
     public Cache(IStorageAdapterClient storageClient,
                  IIothubManagerServiceClient iotHubClient,
                  ISimulationServiceClient simulationClient,
-                 IServicesConfig config) {
+                 IServicesConfig config) throws ExternalDependencyException {
         this.storageClient = storageClient;
         this.iotHubClient = iotHubClient;
         this.simulationClient = simulationClient;
         this.cacheTTL = config.getCacheTTL();
         this.rebuildTimeout = config.getCacheRebuildTimeout();
+        // global setting is not recommend for application_onStart event, PLS refer here for details :https://www.playframework.com/documentation/2.6.x/GlobalSettings
+        try {
+            RebuildCacheAsync().toCompletableFuture().get();
+        } catch (InterruptedException | ExecutionException | BaseException | URISyntaxException e) {
+            throw new ExternalDependencyException("RebuildCache failed");
+        }
     }
 
     @Override
@@ -182,7 +193,8 @@ public class Cache implements ICache {
             needBuild = true;
         } else {
             boolean rebuilding = Json.fromJson(Json.parse(twin.getData()), CacheValue.class).isRebuilding();
-            DateTime timestamp = DateTime.parse(twin.getMetadata().get("$modified"));
+            DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
+            DateTime timestamp = formatter.parseDateTime(twin.getMetadata().get("$modified"));
             needBuild = needBuild || !rebuilding && timestamp.plusSeconds(this.cacheTTL).isBeforeNow();
             needBuild = needBuild || rebuilding && timestamp.plusSeconds(this.rebuildTimeout).isBeforeNow();
         }

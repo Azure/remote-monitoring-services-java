@@ -6,7 +6,7 @@ import akka.util.ByteString;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.microsoft.azure.iotsolutions.uiconfig.services.IStorage;
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.BaseException;
-import com.microsoft.azure.iotsolutions.uiconfig.services.models.LogoServiceModel;
+import com.microsoft.azure.iotsolutions.uiconfig.services.models.Logo;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.SolutionSettingsController;
 import helpers.Random;
 import helpers.TestUtils;
@@ -71,7 +71,7 @@ public class SolutionSettingsControllerTest {
     public void getLogoAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         String image = rand.NextString();
         String type = rand.NextString();
-        LogoServiceModel model = new LogoServiceModel(image, type);
+        Logo model = new Logo(image, type);
         Mockito.when(mockStorage.getLogoAsync()).thenReturn(CompletableFuture.supplyAsync(() -> model));
         controller = new SolutionSettingsController(mockStorage);
         TestUtils.setRequest("{\"Name\":\"1\"}");
@@ -85,8 +85,8 @@ public class SolutionSettingsControllerTest {
     public void setLogoAsyncTest() throws BaseException, ExecutionException, InterruptedException, UnsupportedEncodingException, URISyntaxException {
         String image = rand.NextString();
         String type = rand.NextString();
-        LogoServiceModel model = new LogoServiceModel(image, type);
-        Mockito.when(mockStorage.setLogoAsync(Mockito.any(LogoServiceModel.class))).thenReturn(CompletableFuture.supplyAsync(() -> model));
+        Logo model = new Logo(image, type);
+        Mockito.when(mockStorage.setLogoAsync(Mockito.any(Logo.class))).thenReturn(CompletableFuture.supplyAsync(() -> model));
         controller = new SolutionSettingsController(mockStorage);
         TestUtils.setRequest("{\"Name\":\"1\"}");
         byte[] bytes = TestUtils.getBytes(controller.setLogoAsync().toCompletableFuture().get());

@@ -69,7 +69,7 @@ public class SimulationServiceClientTest {
                 .thenReturn(CompletableFuture.supplyAsync(() -> response));
         client = new SimulationServiceClient(
                 mockHttpClient,
-                new ServicesConfig(null, MockServiceUri, null, 0, 0));
+                new ServicesConfig(null,null, MockServiceUri, null, 0, 0,null));
         HashSet<String> result = this.client.GetDevicePropertyNamesAsync().toCompletableFuture().get();
         TreeSet<String> treeset = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         treeset.addAll(result);
