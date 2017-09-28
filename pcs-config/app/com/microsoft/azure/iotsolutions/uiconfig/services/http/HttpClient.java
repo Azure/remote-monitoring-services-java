@@ -73,7 +73,9 @@ public class HttpClient implements IHttpClient {
             HttpResponse response = new HttpResponse();
             response.setStatusCode(httpResponse.getStatusLine().getStatusCode());
             response.setHeaders(httpResponse.getAllHeaders());
-            response.setContent(EntityUtils.toString(httpResponse.getEntity()));
+            String content = EntityUtils.toString(httpResponse.getEntity());
+            response.setContent(content);
+            log.debug(String.format("Sending request %s %s :content:%s", httpMethod.name(), request.getUri().toString(), content));
             return CompletableFuture.supplyAsync(() -> response);
         } catch (Exception e) {
             log.error("Request failed", e);

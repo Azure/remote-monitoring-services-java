@@ -51,11 +51,17 @@ public class Cache implements ICache {
         this.cacheTTL = config.getCacheTTL();
         this.rebuildTimeout = config.getCacheRebuildTimeout();
         // global setting is not recommend for application_onStart event, PLS refer here for details :https://www.playframework.com/documentation/2.6.x/GlobalSettings
-        try {
-            RebuildCacheAsync().toCompletableFuture().get();
-        } catch (InterruptedException | ExecutionException | BaseException | URISyntaxException e) {
-            throw new ExternalDependencyException("RebuildCache failed");
-        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(10000);
+                    RebuildCacheAsync().toCompletableFuture().get();
+                } catch (Exception e) {
+                    Logger.of(Seed.class).error("RebuildCacheAsync");
+                }
+            }
+        }).start();
     }
 
     @Override

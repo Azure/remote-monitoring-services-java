@@ -1,6 +1,21 @@
 #!/usr/bin/env bash
 
-if [[ -z "PCS_STORAGEADAPTER_WEBSERVICE_URL" ]]; then
+if [[ -z "$PCS_STORAGEADAPTER_WEBSERVICE_URL" ]]; then
     echo "Error: the PCS_STORAGEADAPTER_WEBSERVICE_URL environment variable is not defined."
+    exit -1
+fi
+
+if [[ -z "$PCS_DEVICESIMULATION_WEBSERVICE_URL" ]]; then
+    echo "Error: the PCS_DEVICESIMULATION_WEBSERVICE_URL environment variable is not defined."
+    exit -1
+fi
+
+if [[ -z "$PCS_TELEMETRY_WEBSERVICE_URL" ]]; then
+    echo "Error: the PCS_TELEMETRY_WEBSERVICE_URL environment variable is not defined."
+    exit -1
+fi
+
+if [[ -z "$PCS_IOTHUBMANAGER_WEBSERVICE_URL" ]]; then
+    echo "Error: the PCS_IOTHUBMANAGER_WEBSERVICE_URL environment variable is not defined."
     exit -1
 fi

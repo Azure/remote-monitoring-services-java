@@ -58,13 +58,18 @@ public class Seed implements ISeed {
         this.storageClient = storageClient;
         this.simulationClient = simulationClient;
         this.telemetryClient = telemetryClient;
-
         // global setting is not recommend for application_onStart event, PLS refer here for details :https://www.playframework.com/documentation/2.6.x/GlobalSettings
-        try {
-            TrySeedAsync().toCompletableFuture().get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new ExternalDependencyException("Seed failed");
-        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(10000);
+                    TrySeedAsync().toCompletableFuture().get();
+                } catch (Exception e) {
+                    Logger.of(Seed.class).error("TrySeedAsync error");
+                }
+            }
+        }).start();
     }
 
     @Override
@@ -134,7 +139,7 @@ public class Seed implements ISeed {
                     line = reader.readLine();
                 }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             // Because travis test can not read file by now for some reason, Java.lang.Class can not read resource
             content = "{" +
                     "  \"Groups\": [" +

@@ -11,3 +11,12 @@
 
 # The URL where Storage Adapter web service is listening
 export PCS_STORAGEADAPTER_WEBSERVICE_URL="http://127.0.0.1:9022/v1"
+
+# The URL where Telemetry web service is listening
+export PCS_TELEMETRY_WEBSERVICE_URL="http://127.0.0.1:9004/v1"
+
+# The URL where Device Simulation web service is listening
+export PCS_DEVICESIMULATION_WEBSERVICE_URL="http://127.0.0.1:9003/v1"
+
+# The URL where IoTHub Manager web service is listening
+export PCS_IOTHUBMANAGER_WEBSERVICE_URL="http://127.0.0.1:9002/v1"
