@@ -9,18 +9,22 @@ libraryDependencies ++= Seq(
   filters,
   guice,
   javaWs,
+
   // https://github.com/Azure/azure-documentdb-java
-  "com.microsoft.azure" % "azure-documentdb" % "1.12.0"
+  "com.microsoft.azure" % "azure-documentdb" % "1.12.0",
+
+  // https://mvnrepository.com/artifact/com.nimbusds/oauth2-oidc-sdk
+  "com.nimbusds" % "oauth2-oidc-sdk" % "5.36"
 )
 
 // Test dependencies
 libraryDependencies ++= Seq(
   // http://search.maven.org/#search%7Cga%7C1%7Cmockito-core
-  "org.mockito" % "mockito-core" % "2.8.47" % "test"
+  "org.mockito" % "mockito-core" % "2.10.0" % "test"
 )
 
 lazy val commonSettings = Seq(
-  version := "0.1.9",
+  version := "0.2.0",
 
   organizationName := "Microsoft Azure",
   organizationHomepage := Some(new URL("https://www.microsoft.com/internet-of-things/azure-iot-suite")),
