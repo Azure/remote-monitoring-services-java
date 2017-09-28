@@ -37,14 +37,15 @@ public class Jobs implements IJobs {
     public CompletionStage<List<JobServiceModel>> getJobsAsync(
         JobType jobType,
         JobStatus jobStatus,
-        Integer pageSize)
+        Integer pageSize,
+        long from, long to)
         throws InvalidInputException, ExternalDependencyException {
         try {
 
             // Remove this workaround block once the Java SDK support empty jobType and jobStatus.
             boolean workaround = true;
             if (workaround) {
-                return getJobsWorkaroundAsync(jobType, jobStatus, pageSize);
+                return getJobsWorkaroundAsync(jobType, jobStatus, pageSize, from, to);
             }
 
             Query query = this.jobClient.queryJobResponse(
@@ -55,7 +56,9 @@ public class Jobs implements IJobs {
             List jobs = new ArrayList<JobResult>();
             while (this.jobClient.hasNextJob(query)) {
                 JobResult job = this.jobClient.getNextJob(query);
-                jobs.add(new JobServiceModel(job));
+                if (job.getCreatedTime().getTime() >= from && job.getCreatedTime().getTime() <= to) {
+                    jobs.add(new JobServiceModel(job));
+                }
             }
             return CompletableFuture.supplyAsync(() -> jobs);
         } catch (IOException | IotHubException e) {
@@ -137,8 +140,8 @@ public class Jobs implements IJobs {
     // jobs with type of scheduleDeviceMethod and scheduleUpdateTwin
     // and status of queued, running, failed, completed.
     // https://github.com/Azure/iothub-manager-java/issues/48
-    private CompletionStage<List<JobServiceModel>> getJobsWorkaroundAsync(JobType type, JobStatus status, Integer size)
-        throws InvalidInputException, ExternalDependencyException {
+    private CompletionStage<List<JobServiceModel>> getJobsWorkaroundAsync(JobType type, JobStatus status, Integer size, long from, long to)
+            throws InvalidInputException, ExternalDependencyException {
         List<JobType> types = new ArrayList();
         List<JobStatus> statuses = new ArrayList();
         try {
@@ -178,7 +181,9 @@ public class Jobs implements IJobs {
                     List jobs = new ArrayList<JobServiceModel>();
                     while (this.jobClient.hasNextJob(query)) {
                         JobResult job = this.jobClient.getNextJob(query);
-                        jobs.add(new JobServiceModel(job));
+                        if (job.getCreatedTime().getTime() >= from && job.getCreatedTime().getTime() <= to) {
+                            jobs.add(new JobServiceModel(job));
+                        }
                     }
                     queries.add(CompletableFuture.supplyAsync(() -> jobs));
                 }

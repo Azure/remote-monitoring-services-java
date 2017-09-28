@@ -8,6 +8,7 @@ import com.microsoft.azure.iotsolutions.iothubmanager.services.IJobs;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.BaseException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.*;
+import com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.helpers.DateHelper;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models.JobApiModel;
 import com.microsoft.azure.sdk.iot.service.exceptions.IotHubException;
 import org.joda.time.DateTime;
@@ -42,19 +43,31 @@ public final class JobsController extends Controller {
         String type = request().getQueryString("jobType");
         String status = request().getQueryString("jobStatus");
         String size = request().getQueryString("pageSize");
+        String from = request().getQueryString("from");
+        String to = request().getQueryString("to");
         JobType jobType;
         JobStatus jobStatus;
+        long jobFrom;
+        long jobTo;
         Integer pageSize;
         try {
+            DateTime temp;
             jobType = type == null || type.isEmpty() ? null : JobType.from(Integer.parseInt(type));
             jobStatus = status == null || status.isEmpty() ? null : JobStatus.from(Integer.parseInt(status));
+            from = (from == null || from.isEmpty()) ? "" : from;
+            to = (to == null || to.isEmpty()) ? "" : to;
             pageSize = size == null || size.isEmpty() ? 100 : Integer.parseInt(size);
+
+            temp = DateHelper.parseDate(from);
+            jobFrom = (temp == null) ? Long.MIN_VALUE : temp.getMillis();
+            temp = DateHelper.parseDate(to);
+            jobTo = (temp == null) ? Long.MAX_VALUE : temp.getMillis();
         } catch (IllegalArgumentException e) {
             log.error(String.format("Invalid query string: %s, %s, %s", type, status, size));
             throw new InvalidInputException(String.format("Invalid query string: %s, %s, %s", type, status, size), e);
         }
 
-        return this.jobService.getJobsAsync(jobType, jobStatus, pageSize)
+        return this.jobService.getJobsAsync(jobType, jobStatus, pageSize, jobFrom, jobTo)
             .thenApply(jobs -> {
                 List jobList = new ArrayList<JobApiModel>();
                 jobs.forEach(job -> jobList.add(new JobApiModel(job)));

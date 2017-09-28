@@ -15,7 +15,8 @@ public interface IJobs {
     CompletionStage<List<JobServiceModel>> getJobsAsync(
         JobType jobType,
         JobStatus jobStatus,
-        Integer pageSize)
+        Integer pageSize,
+        long from, long to)
         throws ExternalDependencyException, InvalidInputException;
 
     CompletionStage<JobServiceModel> getJobAsync(String jobId)

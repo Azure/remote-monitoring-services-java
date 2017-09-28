@@ -7,6 +7,7 @@ import com.microsoft.azure.iotsolutions.iothubmanager.services.runtime.IServices
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.runtime.Config;
 import com.microsoft.azure.sdk.iot.service.exceptions.*;
 import helpers.UnitTest;
+import org.joda.time.DateTime;
 import org.junit.*;
 import org.junit.experimental.categories.Category;
 
@@ -109,7 +110,7 @@ public class JobsTest {
         Assert.assertEquals(parameter.getName(), newJob.getMethodParameter().getName());
         Assert.assertEquals(parameter.getJsonPayload(), newJob.getMethodParameter().getJsonPayload());
 
-        List<JobServiceModel> jobs = jobService.getJobsAsync(JobType.scheduleDeviceMethod, JobStatus.completed, 10).toCompletableFuture().get();
+        List<JobServiceModel> jobs = jobService.getJobsAsync(JobType.scheduleDeviceMethod, JobStatus.completed, 10, Long.MIN_VALUE, Long.MAX_VALUE).toCompletableFuture().get();
         if (jobs.size() > 0) {
             Assert.assertEquals(JobType.scheduleDeviceMethod, jobs.get(0).getJobType());
         }
