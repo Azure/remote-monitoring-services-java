@@ -172,7 +172,8 @@ https://github.com/Azure/pcs-config-java/issues.
 [build-url]: https://travis-ci.org/Azure/pcs-config-java
 [issues-badge]: https://img.shields.io/github/issues/azure/pcs-config-java.svg
 [issues-url]: https://github.com/azure/pcs-config-java/issues
-[gitter-badge]: https://img.shields.io/gitter/room/azure/iot-pcs.js.svg
-[gitter-url]: https://gitter.im/azure/iot-pcs
+[gitter-badge]: https://img.shields.io/gitter/room/azure/iot-solutions.js.svg
+[gitter-url]: https://gitter.im/azure/iot-solutions
+
 [Storage Adapter]:https://github.com/Azure/pcs-storage-adapter-java/blob/master/README.md
 [Azure DocumentDB]:(https://ms.portal.azure.com/#create/Microsoft.DocumentDB)
