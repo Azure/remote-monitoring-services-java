@@ -25,16 +25,4 @@ public class ConfigTest {
     public void tearDown() {
         // something after every test
     }
-
-    @Test(timeout = 1000)
-    @Category({UnitTest.class})
-    public void getPortTest() throws NoSuchFieldException, IllegalAccessException {
-        assertThat(config.getPort(), is(9005));
-    }
-
-    @Test(timeout = 1000)
-    @Category({UnitTest.class})
-    public void getCorsWhitelistTest() throws NoSuchFieldException, IllegalAccessException {
-        assertThat(config.getCorsWhitelist(), is("{ 'origins': ['*'], 'methods': ['*'], 'headers': ['*'] }"));
-    }
 }

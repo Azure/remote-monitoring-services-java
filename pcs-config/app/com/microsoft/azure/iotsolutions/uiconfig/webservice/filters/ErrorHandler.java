@@ -3,6 +3,7 @@
 package com.microsoft.azure.iotsolutions.uiconfig.webservice.filters;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.inject.*;
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.*;
 import com.typesafe.config.Config;
 import play.Environment;
@@ -14,7 +15,6 @@ import play.mvc.Http.Status;
 import play.mvc.Result;
 import play.mvc.Results;
 
-import javax.inject.*;
 import java.util.HashMap;
 import java.util.concurrent.*;
 

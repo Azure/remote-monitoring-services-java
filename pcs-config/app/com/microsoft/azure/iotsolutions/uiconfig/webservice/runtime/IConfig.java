@@ -4,15 +4,10 @@ package com.microsoft.azure.iotsolutions.uiconfig.webservice.runtime;
 
 import com.google.inject.ImplementedBy;
 import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.IServicesConfig;
+import com.microsoft.azure.iotsolutions.uiconfig.webservice.auth.IClientAuthConfig;
 
 @ImplementedBy(Config.class)
 public interface IConfig {
-    /**
-     * Get the TCP port number where the service listen for requests.
-     *
-     * @return TCP port number
-     */
-    int getPort();
 
     /**
      * Service layer configuration
@@ -20,7 +15,7 @@ public interface IConfig {
     IServicesConfig getServicesConfig();
 
     /**
-     * CORS whitelist, in form { "origins": [], "methods": [], "headers": [] }
+     * Client authorization configuration
      */
-    String getCorsWhitelist();
+    IClientAuthConfig getClientAuthConfig();
 }

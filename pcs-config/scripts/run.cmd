@@ -54,10 +54,10 @@ IF "%1"=="--in-sandbox" GOTO :RunInSandbox
     :: Start the sandbox and run the service
     docker run -it ^
         -p 9005:9005 ^
-        -e "PCS_STORAGEADAPTER_WEBSERVICE_URL=%PCS_STORAGEADAPTER_WEBSERVICE_URL%" ^
-        -e "PCS_DEVICESIMULATION_WEBSERVICE_URL=%PCS_DEVICESIMULATION_WEBSERVICE_URL%" ^
-        -e "PCS_TELEMETRY_WEBSERVICE_URL=%PCS_TELEMETRY_WEBSERVICE_URL%" ^
-        -e "PCS_IOTHUBMANAGER_WEBSERVICE_URL=%PCS_IOTHUBMANAGER_WEBSERVICE_URL% ^
+        -e PCS_STORAGEADAPTER_WEBSERVICE_URL ^
+        -e PCS_DEVICESIMULATION_WEBSERVICE_URL ^
+        -e PCS_TELEMETRY_WEBSERVICE_URL ^
+        -e PCS_IOTHUBMANAGER_WEBSERVICE_URL ^
         -v %PCS_CACHE%\sandbox\.ivy2:/root/.ivy2 ^
         -v %PCS_CACHE%\sandbox\.sbt:/root/.sbt ^
         -v %APP_HOME%:/opt/code ^

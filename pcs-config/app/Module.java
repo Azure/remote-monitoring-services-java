@@ -7,6 +7,7 @@ import com.microsoft.azure.iotsolutions.uiconfig.services.ICache;
 import com.microsoft.azure.iotsolutions.uiconfig.services.ISeed;
 import com.microsoft.azure.iotsolutions.uiconfig.services.Seed;
 import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.IServicesConfig;
+import com.microsoft.azure.iotsolutions.uiconfig.webservice.auth.IClientAuthConfig;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.runtime.IConfig;
 
 /**
@@ -33,5 +34,10 @@ public class Module extends AbstractModule {
     @Provides
     IServicesConfig provideIServicesConfig(IConfig config) {
         return config.getServicesConfig();
+    }
+
+    @Provides
+    IClientAuthConfig provideIClientAuthConfig(IConfig config) {
+        return config.getClientAuthConfig();
     }
 }

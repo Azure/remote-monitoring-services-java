@@ -9,16 +9,28 @@ libraryDependencies ++= {
   Seq(
     filters,
     guice,
-    // https://github.com/Azure/azure-iot-sdk-java/releases
-    "com.microsoft.azure.sdk.iot" % "iot-service-client" % "1.4.20"
+
+    // https://mvnrepository.com/artifact/com.nimbusds/oauth2-oidc-sdk
+    "com.nimbusds" % "oauth2-oidc-sdk" % "5.36",
+
+    "org.apache.httpcomponents" % "httpclient" % "4.5.3",
+
+    "io.netty" % "netty-all" % "4.1.0.Final"
   )
 }
-libraryDependencies += "org.apache.httpcomponents" % "httpclient" % "4.5.3"
-libraryDependencies += "org.mockito" % "mockito-core" % "2.8.47"
-libraryDependencies += "io.netty" % "netty-all" % "4.1.0.Final"
-lazy val commonSettings = Seq(
-  version := "0.1.7",
 
+// Test dependencies
+libraryDependencies ++= Seq(
+
+  // https://github.com/Azure/azure-iot-sdk-java/releases
+  "com.microsoft.azure.sdk.iot" % "iot-service-client" % "1.4.20" % "test",
+
+  // http://search.maven.org/#search%7Cga%7C1%7Cmockito-core
+  "org.mockito" % "mockito-core" % "2.8.47" % "test"
+)
+
+lazy val commonSettings = Seq(
+  version := "0.2.0",
   organizationName := "Microsoft Azure",
   organizationHomepage := Some(new URL("https://www.microsoft.com/internet-of-things/azure-iot-suite")),
   homepage := Some(new URL("https://www.microsoft.com/internet-of-things/azure-iot-suite")),
@@ -69,6 +81,6 @@ dockerAlias := DockerAlias(dockerRepository.value, None, packageName.value + "-j
 maintainer in Docker := "Devis Lucato (https://github.com/dluc)"
 dockerBaseImage := "toketi/openjdk-8-jre-alpine-bash"
 dockerUpdateLatest := true
-dockerBuildOptions ++= Seq("--squash", "--compress", "--label", "Tags=Azure,IoT,PCS,Java")
+dockerBuildOptions ++= Seq("--squash", "--compress", "--label", "Tags=Azure,IoT,Solutions,Java")
 // Example params: -Dconfig.file=/opt/conf/prod.conf -Dhttp.port=1234 -Dhttp.address=127.0.0.1
 dockerEntrypoint := Seq("bin/pcs-config")
