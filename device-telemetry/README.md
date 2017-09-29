@@ -182,5 +182,5 @@ Other documents
 [build-url]: https://travis-ci.org/Azure/device-telemetry-java
 [issues-badge]: https://img.shields.io/github/issues/azure/device-telemetry-java.svg
 [issues-url]: https://github.com/azure/device-telemetry-java/issues
-[gitter-badge]: https://img.shields.io/gitter/room/azure/iot-pcs.js.svg
-[gitter-url]: https://gitter.im/azure/iot-pcs
+[gitter-badge]: https://img.shields.io/gitter/room/azure/iot-solutions.js.svg
+[gitter-url]: https://gitter.im/azure/iot-solutions
