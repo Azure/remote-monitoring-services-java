@@ -161,5 +161,5 @@ https://github.com/Azure/iot-hub-manager-java/issues.
 [build-url]: https://travis-ci.org/Azure/iot-hub-manager-java
 [issues-badge]: https://img.shields.io/github/issues/azure/iot-hub-manager-java.svg
 [issues-url]: https://github.com/azure/iot-hub-manager-java/issues
-[gitter-badge]: https://img.shields.io/gitter/room/azure/iot-pcs.js.svg
-[gitter-url]: https://gitter.im/azure/iot-pcs
+[gitter-badge]: https://img.shields.io/gitter/room/azure/iot-solutions.js.svg
+[gitter-url]: https://gitter.im/azure/iot-solutions
