@@ -95,8 +95,6 @@ public class ValuesControllerTest {
     @Test(timeout = 100000)
     public void deleteTest() throws Exception {
         Mockito.doNothing().when(mockStorage).delete(Mockito.any(String.class), Mockito.any(String.class));
-        controller.delete(Mockito.any(String.class), Mockito.any(String.class));
+        controller.delete(keyGenerator.generate(), keyGenerator.generate());
     }
-
-
 }
