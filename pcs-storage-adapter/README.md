@@ -168,5 +168,5 @@ Please enter issues, bugs, or suggestions as GitHub Issues here: https://github.
 [build-url]: https://travis-ci.org/Azure/pcs-storage-adapter-dotnet
 [issues-badge]: https://img.shields.io/github/issues/azure/pcs-storage-adapter-dotnet.svg
 [issues-url]: https://github.com/azure/pcs-storage-adapter-dotnet/issues
-[gitter-badge]: https://img.shields.io/gitter/room/azure/iot-pcs.js.svg
-[gitter-url]: https://gitter.im/azure/iot-pcs
+[gitter-badge]: https://img.shields.io/gitter/room/azure/iot-solutions.js.svg
+[gitter-url]: https://gitter.im/azure/iot-solutions
