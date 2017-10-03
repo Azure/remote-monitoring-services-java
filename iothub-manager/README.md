@@ -157,9 +157,9 @@ Feedback
 Please enter issues, bugs, or suggestions as GitHub Issues here:
 https://github.com/Azure/iot-hub-manager-java/issues.
 
-[build-badge]: https://img.shields.io/travis/Azure/iot-hub-manager-java.svg
-[build-url]: https://travis-ci.org/Azure/iot-hub-manager-java
-[issues-badge]: https://img.shields.io/github/issues/azure/iot-hub-manager-java.svg
-[issues-url]: https://github.com/azure/iot-hub-manager-java/issues
+[build-badge]: https://img.shields.io/travis/Azure/iothub-manager-java.svg
+[build-url]: https://travis-ci.org/Azure/iothub-manager-java
+[issues-badge]: https://img.shields.io/github/issues/azure/iothub-manager-java.svg
+[issues-url]: https://github.com/azure/iothub-manager-java/issues
 [gitter-badge]: https://img.shields.io/gitter/room/azure/iot-solutions.js.svg
 [gitter-url]: https://gitter.im/azure/iot-solutions
