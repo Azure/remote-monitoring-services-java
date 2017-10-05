@@ -1,9 +1,8 @@
-#!/usr/bin/env bash
+#!/usr/bin/env bash -e
 
 # Note: use lowercase names for the Docker images
 DOCKER_IMAGE="azureiotpcs/iothub-manager-java"
 
-set -e
 APP_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && cd .. && pwd )/"
 source "$APP_HOME/scripts/.functions.sh"
 
@@ -17,7 +16,7 @@ run_container() {
     echo "Starting IoT Hub Manager ..."
     docker run -it -p 9002:9002 \
         -e PCS_IOTHUB_CONNSTRING \
-        "$DOCKER_IMAGE"
+        "$DOCKER_IMAGE:testing"
 }
 
 run_container
