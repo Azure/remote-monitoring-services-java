@@ -12,6 +12,7 @@ _dev/
 envvars.sh
 .cache/**
 .travis
+*.ipr
 
 
 ### Java

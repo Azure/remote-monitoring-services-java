@@ -11,7 +11,7 @@ version: "3"
 
 services:
   config:
-    image: azureiotpcs/pcs-config-java:latest
+    image: azureiotpcs/pcs-config-java:testing
     depends_on:
       - storageadapter
       - telemetry
@@ -26,31 +26,31 @@ services:
       - PCS_IOTHUBMANAGER_WEBSERVICE_URL=http://iothubmanager:9002/v1
 
   storageadapter:
-    image: azureiotpcs/pcs-storage-adapter-java:latest
+    image: azureiotpcs/pcs-storage-adapter-java:testing
     ports:
       - "9022:9022"
     environment:
-      - PCS_STORAGEADAPTER_DOCUMENTDB_CONNSTRING=${PCS_STORAGEADAPTER_DOCUMENTDB_CONNSTRING}
+      - PCS_STORAGEADAPTER_DOCUMENTDB_CONNSTRING
       
   telemetry:
-    # image: azureiotpcs/telemetry-java:latest
+    image: azureiotpcs/telemetry-java:testing
     ports:
       - "9004:9004"
     environment:
-      - PCS_TELEMETRY_DOCUMENTDB_CONNSTRING=${PCS_TELEMETRY_DOCUMENTDB_CONNSTRING}
-      - PCS_STORAGEADAPTER_WEBSERVICE_URL=${PCS_STORAGEADAPTER_WEBSERVICE_URL}
+      - PCS_TELEMETRY_DOCUMENTDB_CONNSTRING
+      - PCS_STORAGEADAPTER_WEBSERVICE_URL=http://storageadapter:9022:/v1
       
   devicesimulation:
-    image: azureiotpcs/pcs-device-simulation-java:latest
+    image: azureiotpcs/pcs-device-simulation-java:testing
     ports:
       - "9003:9003"
     environment:
-      - PCS_IOTHUB_CONNSTRING=${PCS_IOTHUB_CONNSTRING}
-      - PCS_STORAGEADAPTER_WEBSERVICE_URL=${PCS_STORAGEADAPTER_WEBSERVICE_URL}
+      - PCS_IOTHUB_CONNSTRING
+      - PCS_STORAGEADAPTER_WEBSERVICE_URL=http://storageadapter:9022:/v1
       
   iothubmanager:
-    image: azureiotpcs/iothub-manager-java:latest
+    image: azureiotpcs/iothub-manager-java:testing
     ports:
       - "9002:9002"
     environment:
-      - PCS_IOTHUB_CONNSTRING=${PCS_IOTHUB_CONNSTRING}
+      - PCS_IOTHUB_CONNSTRING

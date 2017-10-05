@@ -1,11 +1,10 @@
-#!/usr/bin/env bash
+#!/usr/bin/env bash -e
 
 # Usage:
 # Run the service in the local environment:  ./scripts/run
 # Run the service inside a Docker container: ./scripts/run -s
 # Run the service inside a Docker container: ./scripts/run --in-sandbox
 
-set -e
 APP_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )/"
 source "$APP_HOME/scripts/.functions.sh"
 
