@@ -54,7 +54,7 @@ IF "%1"=="--in-sandbox" GOTO :RunInSandbox
     :: Start the sandbox and run the service
     docker run -it ^
         -p 9022:9022 ^
-        -e PCS_STORAGEADAPTER_DOCUMENTDB_CONNSTRING=%PCS_STORAGEADAPTER_DOCUMENTDB_CONNSTRING% ^
+        -e PCS_STORAGEADAPTER_DOCUMENTDB_CONNSTRING ^
         -v %PCS_CACHE%\sandbox\.ivy2:/root/.ivy2 ^
         -v %PCS_CACHE%\sandbox\.sbt:/root/.sbt ^
         -v %APP_HOME%:/opt/code ^

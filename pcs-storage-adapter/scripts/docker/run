@@ -17,8 +17,8 @@ run_container() {
     echo "Starting storage adapter..."
     docker run -it \
 	-p 9022:9022 \
-	-e "PCS_STORAGEADAPTER_DOCUMENTDB_CONNSTRING=$PCS_STORAGEADAPTER_DOCUMENTDB_CONNSTRING" \
-        "$DOCKER_IMAGE"
+	-e PCS_STORAGEADAPTER_DOCUMENTDB_CONNSTRING \
+        "$DOCKER_IMAGE:testing"
 }
 
 run_container
