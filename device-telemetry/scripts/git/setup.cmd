@@ -6,8 +6,9 @@ SET APP_HOME=%APP_HOME:~0,-13%
 
 cd %APP_HOME%
 
-IF "%1"=="--with-sandbox" goto :WITH_SANDBOX
+IF "%1"=="" goto :WITHOUT_SANDBOX
 IF "%1"=="--no-sandbox" goto :WITHOUT_SANDBOX
+IF "%1"=="--with-sandbox" goto :WITH_SANDBOX
 goto :USAGE
 
 :: - - - - - - - - - - - - - -
@@ -44,24 +45,23 @@ goto :USAGE
 
     git config --local alias.branches "branch -v -a"
     git config --local alias.lg "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative"
-    git config --local alias.lg1 "log --pretty=oneline"
     git config --local alias.lgx "log --stat"
     git config --local alias.lgt "log --graph --pretty=oneline --oneline --all"
+    git config --local alias.lg1 "log --reverse --pretty=oneline"
     git config --local alias.stashdiff "stash show --patience"
 
     goto :END
 
 
 :USAGE
-    echo ERROR: sandboxing mode not specified.
-    echo.
     echo The pre-commit hook can run in two different modes:
+    echo   Without sandbox (default): the build script runs using binaries like Java from your workstation
     echo   With sandbox: the build script runs inside a Docker container so you need to install only Docker
-    echo   Without sandbox: the build script runs using binaries like Java from your workstation
     echo.
     echo Usage:
-    echo .\scripts\git\setup --with-sandbox
+    echo .\scripts\git\setup
     echo .\scripts\git\setup --no-sandbox
+    echo .\scripts\git\setup --with-sandbox
     exit /B 1
 
 

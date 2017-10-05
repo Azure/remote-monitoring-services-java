@@ -11,7 +11,7 @@ version: "3"
 
 services:
   devicesimulation:
-    image: azureiotpcs/telemetry-java
+    image: azureiotpcs/telemetry-java:testing
     ports:
       - "9004:9004"
     environment:

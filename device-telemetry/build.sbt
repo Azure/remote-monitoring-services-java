@@ -24,7 +24,7 @@ libraryDependencies ++= Seq(
 )
 
 lazy val commonSettings = Seq(
-  version := "0.2.1",
+  version := "testing",
 
   organizationName := "Microsoft Azure",
   organizationHomepage := Some(new URL("https://www.microsoft.com/internet-of-things/azure-iot-suite")),
@@ -75,7 +75,7 @@ dockerRepository := Some("azureiotpcs")
 dockerAlias := DockerAlias(dockerRepository.value, None, packageName.value + "-java", Some((version in Docker).value))
 maintainer in Docker := "Jill Bender (https://github.com/jillcary)"
 dockerBaseImage := "toketi/openjdk-8-jre-alpine-bash"
-dockerUpdateLatest := true
+dockerUpdateLatest := false
 dockerBuildOptions ++= Seq("--squash", "--compress", "--label", "Tags=Azure,IoT,PCS,telemetry,Java")
 // Example params: -Dconfig.file=/opt/conf/prod.conf -Dhttp.port=1234 -Dhttp.address=127.0.0.1
 dockerEntrypoint := Seq("bin/telemetry")
