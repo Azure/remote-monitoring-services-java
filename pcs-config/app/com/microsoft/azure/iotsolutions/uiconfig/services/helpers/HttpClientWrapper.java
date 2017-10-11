@@ -4,7 +4,6 @@ package com.microsoft.azure.iotsolutions.uiconfig.services.helpers;
 
 import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.ExternalDependencyException;
-import com.microsoft.azure.iotsolutions.uiconfig.services.external.StorageAdapterClient;
 import com.microsoft.azure.iotsolutions.uiconfig.services.http.HttpRequest;
 import com.microsoft.azure.iotsolutions.uiconfig.services.http.IHttpClient;
 import com.microsoft.azure.iotsolutions.uiconfig.services.http.IHttpResponse;
@@ -18,7 +17,7 @@ import java.util.concurrent.CompletionStage;
 
 public class HttpClientWrapper implements IHttpClientWrapper {
 
-    private static final Logger.ALogger log = Logger.of(StorageAdapterClient.class);
+    private static final Logger.ALogger log = Logger.of(HttpClientWrapper.class);
     private IHttpClient client;
 
     @Inject
@@ -47,7 +46,7 @@ public class HttpClientWrapper implements IHttpClientWrapper {
         }
 
         if (response.getStatusCode() == 404 && acceptNotFound) {
-            return null;
+            return CompletableFuture.supplyAsync(() -> null);
         }
 
         if (response.getStatusCode() != 200) {

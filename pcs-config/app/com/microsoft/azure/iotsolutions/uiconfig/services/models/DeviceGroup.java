@@ -9,13 +9,13 @@ public class DeviceGroup {
 
     private String id;
     private String displayName;
-    private Iterable<ConditionApiModel> conditions;
+    private Iterable<DeviceGroupCondition> conditions;
     private String eTag;
 
     public DeviceGroup() {
     }
 
-    public DeviceGroup(String id, String displayName, Iterable<ConditionApiModel> conditions, String eTag) {
+    public DeviceGroup(String id, String displayName, Iterable<DeviceGroupCondition> conditions, String eTag) {
         this.id = id;
         this.displayName = displayName;
         this.conditions = conditions;
@@ -41,11 +41,11 @@ public class DeviceGroup {
     }
 
     @JsonProperty("Conditions")
-    public Iterable<ConditionApiModel> getConditions() {
+    public Iterable<DeviceGroupCondition> getConditions() {
         return conditions;
     }
 
-    public void setConditions(Iterable<ConditionApiModel> conditions) {
+    public void setConditions(Iterable<DeviceGroupCondition> conditions) {
         this.conditions = conditions;
     }
 

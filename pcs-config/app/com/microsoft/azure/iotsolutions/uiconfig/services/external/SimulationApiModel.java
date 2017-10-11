@@ -2,6 +2,8 @@
 
 package com.microsoft.azure.iotsolutions.uiconfig.services.external;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
 public class SimulationApiModel {
@@ -19,6 +21,7 @@ public class SimulationApiModel {
         this.id = id;
     }
 
+    @JsonProperty("Etag")
     public String getEtag() {
         return etag;
     }
@@ -27,6 +30,7 @@ public class SimulationApiModel {
         this.etag = etag;
     }
 
+    @JsonProperty("Id")
     public String getId() {
         return id;
     }
@@ -35,6 +39,7 @@ public class SimulationApiModel {
         this.id = id;
     }
 
+    @JsonProperty("DeviceModels")
     public List<DeviceModelRef> getDeviceModels() {
         return deviceModels;
     }

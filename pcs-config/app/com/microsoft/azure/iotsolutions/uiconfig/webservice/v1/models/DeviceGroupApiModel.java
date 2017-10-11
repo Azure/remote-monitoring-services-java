@@ -5,6 +5,7 @@ package com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.ConditionApiModel;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.DeviceGroup;
+import com.microsoft.azure.iotsolutions.uiconfig.services.models.DeviceGroupCondition;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.Version;
 
 import java.util.Hashtable;
@@ -13,7 +14,7 @@ public class DeviceGroupApiModel {
 
     private String id;
     private String displayName;
-    private Iterable<ConditionApiModel> conditions;
+    private Iterable<DeviceGroupCondition> conditions;
     private String eTag;
 
     @JsonProperty("Id")
@@ -35,11 +36,11 @@ public class DeviceGroupApiModel {
     }
 
     @JsonProperty("Conditions")
-    public Iterable<ConditionApiModel> getConditions() {
+    public Iterable<DeviceGroupCondition> getConditions() {
         return conditions;
     }
 
-    public void setConditions(Iterable<ConditionApiModel> conditions) {
+    public void setConditions(Iterable<DeviceGroupCondition> conditions) {
         this.conditions = conditions;
     }
 
@@ -66,7 +67,7 @@ public class DeviceGroupApiModel {
     public DeviceGroupApiModel() {
     }
 
-    public DeviceGroupApiModel(String id, String displayName, Iterable<ConditionApiModel> conditions, String eTag) {
+    public DeviceGroupApiModel(String id, String displayName, Iterable<DeviceGroupCondition> conditions, String eTag) {
         this.id = id;
         this.displayName = displayName;
         this.conditions = conditions;

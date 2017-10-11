@@ -6,6 +6,7 @@ import com.microsoft.azure.iotsolutions.uiconfig.services.IStorage;
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.BaseException;
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.ConditionApiModel;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.DeviceGroup;
+import com.microsoft.azure.iotsolutions.uiconfig.services.models.DeviceGroupCondition;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.DeviceGroupController;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models.DeviceGroupApiModel;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models.DeviceGroupListApiModel;
@@ -31,13 +32,13 @@ public class DeviceGroupControllerTest {
     private DeviceGroupController controller;
     private Random rand;
     private final String condition = "[{\n" +
-            "\"Field\":\"Field1\",\n" +
-            "\"Operator\":\"Operator1\",\n" +
-            "\"Value\":\"Value1\"\n" +
+            "\"Operator\":\"LT\",\n" +
+            "\"Value\":\"Value1\",\n" +
+            "\"Key\":\"Key1\"\n" +
             "},{\n" +
-            "\"Field\":\"Field2\",\n" +
-            "\"Operator\":\"Operator2\",\n" +
-            "\"Value\":\"Value2\"\n" +
+            "\"Operator\":\"EQ\",\n" +
+            "\"Value\":\"Value2\",\n" +
+            "\"Key\":\"Key2\"\n" +
             "}]";
 
     @Before
@@ -74,7 +75,7 @@ public class DeviceGroupControllerTest {
     public void getAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         String groupId = rand.NextString();
         String displayName = rand.NextString();
-        Iterable<ConditionApiModel> conditions = null;
+        Iterable<DeviceGroupCondition> conditions = null;
         String etag = rand.NextString();
         DeviceGroup model = new DeviceGroup(groupId, displayName, conditions, etag);
         Mockito.when(mockStorage.getDeviceGroupAsync(Mockito.any(String.class)))
@@ -92,7 +93,7 @@ public class DeviceGroupControllerTest {
     public void creatAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         String groupId = rand.NextString();
         String displayName = rand.NextString();
-        Iterable<ConditionApiModel> conditions = Json.fromJson(Json.parse(condition), new ArrayList<ConditionApiModel>().getClass());
+        Iterable<DeviceGroupCondition> conditions = Json.fromJson(Json.parse(condition), new ArrayList<DeviceGroupCondition>().getClass());
         String etag = rand.NextString();
         DeviceGroup model = new DeviceGroup(groupId, displayName, conditions, etag);
         Mockito.when(mockStorage.createDeviceGroupAsync(Mockito.any(DeviceGroup.class)))
@@ -112,7 +113,7 @@ public class DeviceGroupControllerTest {
     public void updateAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         String groupId = rand.NextString();
         String displayName = rand.NextString();
-        Iterable<ConditionApiModel> conditions = Json.fromJson(Json.parse(condition), new ArrayList<ConditionApiModel>().getClass());
+        Iterable<DeviceGroupCondition> conditions = Json.fromJson(Json.parse(condition), new ArrayList<DeviceGroupCondition>().getClass());
         String etagOld = rand.NextString();
         String etagNew = rand.NextString();
         DeviceGroup model = new DeviceGroup(groupId, displayName, conditions, etagNew);

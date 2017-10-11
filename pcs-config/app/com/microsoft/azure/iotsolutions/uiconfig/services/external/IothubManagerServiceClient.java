@@ -16,7 +16,7 @@ import java.util.concurrent.CompletionStage;
 public class IothubManagerServiceClient implements IIothubManagerServiceClient {
 
     private final IHttpClient httpClient;
-    private static final Logger.ALogger log = Logger.of(StorageAdapterClient.class);
+    private static final Logger.ALogger log = Logger.of(IothubManagerServiceClient.class);
     private final String serviceUri;
 
     @Inject

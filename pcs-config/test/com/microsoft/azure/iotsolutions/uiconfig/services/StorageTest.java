@@ -10,6 +10,7 @@ import com.microsoft.azure.iotsolutions.uiconfig.services.external.IStorageAdapt
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.ValueApiModel;
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.ValueListApiModel;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.DeviceGroup;
+import com.microsoft.azure.iotsolutions.uiconfig.services.models.DeviceGroupCondition;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.Logo;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.Theme;
 import helpers.Random;
@@ -194,7 +195,7 @@ public class StorageTest {
     public void getDeviceGroupsAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         String groupId = rand.NextString();
         String displayName = rand.NextString();
-        Iterable<ConditionApiModel> conditions = null;
+        Iterable<DeviceGroupCondition> conditions = null;
         String etag = rand.NextString();
         ValueApiModel model = new ValueApiModel(groupId, null, etag, null);
         DeviceGroup group = new DeviceGroup();
@@ -215,7 +216,7 @@ public class StorageTest {
     public void createDeviceGroupAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         String groupId = rand.NextString();
         String displayName = rand.NextString();
-        Iterable<ConditionApiModel> conditions = null;
+        Iterable<DeviceGroupCondition> conditions = null;
         String etag = rand.NextString();
         ValueApiModel model = new ValueApiModel(groupId, null, etag, null);
         DeviceGroup group = new DeviceGroup();
@@ -238,7 +239,7 @@ public class StorageTest {
     public void updateDeviceGroupAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         String groupId = rand.NextString();
         String displayName = rand.NextString();
-        Iterable<ConditionApiModel> conditions = null;
+        Iterable<DeviceGroupCondition> conditions = null;
         String etagOld = rand.NextString();
         String etagNew = rand.NextString();
         DeviceGroup group = new DeviceGroup();

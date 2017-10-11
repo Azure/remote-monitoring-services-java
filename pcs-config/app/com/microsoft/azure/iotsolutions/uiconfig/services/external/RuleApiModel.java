@@ -3,6 +3,8 @@
 package com.microsoft.azure.iotsolutions.uiconfig.services.external;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import java.util.List;
 
@@ -23,6 +25,11 @@ public class RuleApiModel {
     private String severity;
 
     private List<ConditionApiModel> conditions;
+
+    @JsonProperty("DateCreated")
+    public String getDateCreated() {
+        return DateTime.now(DateTimeZone.UTC).toString("yyyy-MM-dd'T'HH:mm:sszzz");
+    }
 
     @JsonProperty("ETag")
     public String getETag() {

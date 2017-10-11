@@ -2,12 +2,15 @@
 
 package com.microsoft.azure.iotsolutions.uiconfig.services.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class DeviceGroupCondition {
 
     private OperatorType operator;
     private Object value;
     private String key;
 
+    @JsonProperty("Key")
     public String getKey() {
         return key;
     }
@@ -16,6 +19,7 @@ public class DeviceGroupCondition {
         this.key = key;
     }
 
+    @JsonProperty("Operator")
     public OperatorType getOperator() {
         return operator;
     }
@@ -24,6 +28,7 @@ public class DeviceGroupCondition {
         this.operator = operator;
     }
 
+    @JsonProperty("Value")
     public Object getValue() {
         return value;
     }

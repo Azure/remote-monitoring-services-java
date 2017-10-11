@@ -16,7 +16,7 @@ import java.util.concurrent.CompletionStage;
 public class SimulationServiceClient implements ISimulationServiceClient {
 
     private final IHttpClient httpClient;
-    private static final Logger.ALogger log = Logger.of(StorageAdapterClient.class);
+    private static final Logger.ALogger log = Logger.of(SimulationServiceClient.class);
     private final String serviceUri;
 
     @Inject
