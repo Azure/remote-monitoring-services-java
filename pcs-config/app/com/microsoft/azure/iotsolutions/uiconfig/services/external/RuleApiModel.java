@@ -28,7 +28,7 @@ public class RuleApiModel {
 
     @JsonProperty("DateCreated")
     public String getDateCreated() {
-        return DateTime.now(DateTimeZone.UTC).toString("yyyy-MM-dd'T'HH:mm:sszzz");
+        return DateTime.now(DateTimeZone.UTC).toString("yyyy-MM-dd'T'HH:mm:ssZZ");
     }
 
     @JsonProperty("ETag")

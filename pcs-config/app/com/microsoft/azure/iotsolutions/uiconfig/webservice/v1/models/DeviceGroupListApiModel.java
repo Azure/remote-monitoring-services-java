@@ -15,7 +15,7 @@ public class DeviceGroupListApiModel {
     private Iterable<DeviceGroupApiModel> items;
     private Hashtable<String, String> metadata;
 
-    @JsonProperty("Items")
+    @JsonProperty("items")
     public Iterable<DeviceGroupApiModel> getItems() {
         return items;
     }

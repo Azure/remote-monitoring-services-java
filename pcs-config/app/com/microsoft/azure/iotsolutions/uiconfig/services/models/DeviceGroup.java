@@ -49,7 +49,7 @@ public class DeviceGroup {
         this.conditions = conditions;
     }
 
-    @JsonProperty("ETag(")
+    @JsonProperty("ETag")
     public String getETag() {
         return eTag;
     }
