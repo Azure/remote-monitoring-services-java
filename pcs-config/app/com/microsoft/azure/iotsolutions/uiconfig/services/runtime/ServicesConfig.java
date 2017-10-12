@@ -7,6 +7,7 @@ package com.microsoft.azure.iotsolutions.uiconfig.services.runtime;
  */
 public class ServicesConfig implements IServicesConfig {
 
+    private String bingMapKey;
     private String seedTemplate;
     private String storageAdapterApiUrl;
     private String deviceSimulationApiUrl;
@@ -14,6 +15,15 @@ public class ServicesConfig implements IServicesConfig {
     private String hubManagerApiUrl;
     private int cacheTTL;
     private int cacheRebuildTimeout;
+
+    public String getBingMapKey() {
+        return bingMapKey;
+    }
+
+    public void setBingMapKey(String bingMapKey) {
+        this.bingMapKey = bingMapKey;
+    }
+
 
     @Override
     public String getTelemetryApiUrl() {
@@ -28,7 +38,7 @@ public class ServicesConfig implements IServicesConfig {
     }
 
     public ServicesConfig(String telemetryApiUrl, String storageAdapterApiUrl, String deviceSimulationApiUrl,
-                          String hubManagerApiUrl, int cacheTTL, int cacheRebuildTimeout, String seedTemplate) {
+                          String hubManagerApiUrl, int cacheTTL, int cacheRebuildTimeout, String seedTemplate, String bingMapKey) {
         this.storageAdapterApiUrl = storageAdapterApiUrl;
         this.deviceSimulationApiUrl = deviceSimulationApiUrl;
         this.hubManagerApiUrl = hubManagerApiUrl;
@@ -36,6 +46,7 @@ public class ServicesConfig implements IServicesConfig {
         this.cacheRebuildTimeout = cacheRebuildTimeout;
         this.seedTemplate = seedTemplate;
         this.telemetryApiUrl = telemetryApiUrl;
+        this.bingMapKey = bingMapKey;
     }
 
     @Override

@@ -20,4 +20,9 @@ IF "%PCS_IOTHUBMANAGER_WEBSERVICE_URL%" == "" (
     exit /B 1
 )
 
+IF "%PCS_BINGMAP_KEY%" == "" (
+    echo Error: the PCS_BINGMAP_KEY environment variable is not defined.
+    exit /B 1
+)
+
 endlocal

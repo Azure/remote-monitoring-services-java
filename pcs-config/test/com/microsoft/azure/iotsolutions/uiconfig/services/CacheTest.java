@@ -43,7 +43,7 @@ public class CacheTest {
         mockIothubManagerClient = Mockito.mock(IIothubManagerServiceClient.class);
         mockSimulationClient = Mockito.mock(ISimulationServiceClient.class);
         cacheModel = "{\"Rebuilding\": false,\"Tags\": [ \"c\", \"a\", \"y\", \"z\" ],\"Reported\": [\"1\",\"9\",\"2\",\"3\"] }";
-        config = new ServicesConfig(null,null, null, null, 0, 0, null);
+        config = new ServicesConfig(null, null, null, null, 0, 0, null, null);
     }
 
     @Test(timeout = 100000)

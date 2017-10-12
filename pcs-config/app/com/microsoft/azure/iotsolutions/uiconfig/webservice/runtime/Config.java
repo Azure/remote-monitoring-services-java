@@ -24,6 +24,7 @@ public class Config implements IConfig {
     private final String CACHE_TTL = APPLICATION_KEY + "cache_TTL";
     private final String REBUILD_TIMEOUT = APPLICATION_KEY + "rebuild_timeout";
     private final String SEED_TEMPLATEKEY = APPLICATION_KEY + "seed-template";
+    private final String BINGMAP_KEY = APPLICATION_KEY + "bingmap-key";
 
     private final String CLIENT_AUTH_KEY = APPLICATION_KEY + "client-auth.";
     private final String AUTH_REQUIRED_KEY = CLIENT_AUTH_KEY + "auth_required";
@@ -53,7 +54,8 @@ public class Config implements IConfig {
                 this.data.getString(IOTHUBMANAGER_WEBSERVICE_URL),
                 this.data.getInt(CACHE_TTL),
                 this.data.getInt(REBUILD_TIMEOUT),
-                this.data.getString(SEED_TEMPLATEKEY));
+                this.data.getString(SEED_TEMPLATEKEY),
+                this.data.getString(BINGMAP_KEY));
         return servicesConfig;
     }
 

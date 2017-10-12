@@ -13,6 +13,7 @@ import com.microsoft.azure.iotsolutions.uiconfig.services.models.DeviceGroup;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.DeviceGroupCondition;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.Logo;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.Theme;
+import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.ServicesConfig;
 import helpers.Random;
 import helpers.UnitTest;
 import org.junit.Before;
@@ -36,11 +37,16 @@ public class StorageTest {
     private IStorageAdapterClient mockClient;
     private Storage storage;
     private Random rand;
+    private ServicesConfig config;
+    private String bingMapKey;
 
     @Before
     public void setUp() throws URISyntaxException, IOException {
         mockClient = Mockito.mock(IStorageAdapterClient.class);
         rand = new Random();
+        config = new ServicesConfig();
+        bingMapKey = rand.NextString();
+        config.setBingMapKey(bingMapKey);
     }
 
     @Test(timeout = 100000)
@@ -52,11 +58,12 @@ public class StorageTest {
         model.setData(String.format("{\"Name\":\"%s\",\"Description\":\"%s\"}", name, description));
         Mockito.when(mockClient.getAsync(Mockito.anyString(), Mockito.anyString()))
                 .thenReturn(CompletableFuture.supplyAsync(() -> model));
-        storage = new Storage(mockClient);
+        storage = new Storage(mockClient, config);
         Object result = storage.getThemeAsync().toCompletableFuture().get();
         JsonNode node = Json.toJson(result);
         assertEquals(node.get("Name").asText(), name);
         assertEquals(node.get("Description").asText(), description);
+        assertEquals(node.get("BingMapKey").asText(), bingMapKey);
     }
 
     @Test(timeout = 100000)
@@ -64,11 +71,12 @@ public class StorageTest {
     public void getThemeAsyncDefaultTest() throws BaseException, ExecutionException, InterruptedException {
         Mockito.when(mockClient.getAsync(Mockito.anyString(), Mockito.anyString()))
                 .thenThrow(new BaseException());
-        storage = new Storage(mockClient);
+        storage = new Storage(mockClient, config);
         Object result = storage.getThemeAsync().toCompletableFuture().get();
         JsonNode node = Json.toJson(result);
         assertEquals(node.get("Name").asText(), Theme.Default.getName());
         assertEquals(node.get("Description").asText(), Theme.Default.getDescription());
+        assertEquals(node.get("BingMapKey").asText(), bingMapKey);
     }
 
     @Test(timeout = 100000)
@@ -82,11 +90,12 @@ public class StorageTest {
         model.setData(jsonData);
         Mockito.when(mockClient.updateAsync(Mockito.any(String.class), Mockito.any(String.class), Mockito.any(String.class), Mockito.any(String.class))).
                 thenReturn(CompletableFuture.supplyAsync(() -> model));
-        storage = new Storage(mockClient);
+        storage = new Storage(mockClient, config);
         Object result = storage.setThemeAsync(theme).toCompletableFuture().get();
         JsonNode node = Json.toJson(result);
         assertEquals(node.get("Name").asText(), name);
         assertEquals(node.get("Description").asText(), description);
+        assertEquals(node.get("BingMapKey").asText(), bingMapKey);
     }
 
     @Test(timeout = 100000)
@@ -101,7 +110,7 @@ public class StorageTest {
         model.setData(jsonData);
         Mockito.when(mockClient.getAsync(Mockito.any(String.class), Mockito.any(String.class)))
                 .thenReturn(CompletableFuture.supplyAsync(() -> model));
-        storage = new Storage(mockClient);
+        storage = new Storage(mockClient, config);
         Object result = storage.getUserSetting(id).toCompletableFuture().get();
         JsonNode node = Json.toJson(result);
         assertEquals(node.get("Name").asText(), name);
@@ -120,7 +129,7 @@ public class StorageTest {
         model.setData(jsonData);
         Mockito.when(mockClient.updateAsync(Mockito.any(String.class), Mockito.any(String.class), Mockito.any(String.class), Mockito.any(String.class)))
                 .thenReturn(CompletableFuture.supplyAsync(() -> model));
-        storage = new Storage(mockClient);
+        storage = new Storage(mockClient, config);
         Object result = storage.setUserSetting(id, setting).toCompletableFuture().get();
         JsonNode node = Json.toJson(result);
         assertEquals(node.get("Name").asText(), name);
@@ -137,7 +146,7 @@ public class StorageTest {
         model.setData(jsonData);
         Mockito.when(mockClient.getAsync(Mockito.any(String.class), Mockito.any(String.class)))
                 .thenReturn(CompletableFuture.supplyAsync(() -> model));
-        storage = new Storage(mockClient);
+        storage = new Storage(mockClient, config);
         Object result = storage.getLogoAsync().toCompletableFuture().get();
         JsonNode node = Json.toJson(result);
         assertEquals(node.get("Image").asText(), image);
@@ -156,7 +165,7 @@ public class StorageTest {
         model.setData(Json.stringify(Json.toJson(logo)));
         Mockito.when(mockClient.updateAsync(Mockito.any(String.class), Mockito.any(String.class), Mockito.any(String.class), Mockito.any(String.class)))
                 .thenReturn(CompletableFuture.supplyAsync(() -> model));
-        storage = new Storage(mockClient);
+        storage = new Storage(mockClient, config);
         Object result = storage.setLogoAsync(logo).toCompletableFuture().get();
         JsonNode node = Json.toJson(result);
         assertEquals(node.get("Image").asText(), image);
@@ -179,7 +188,7 @@ public class StorageTest {
         ValueListApiModel model = new ValueListApiModel();
         model.Items = items;
         Mockito.when(mockClient.getAllAsync(Mockito.any(String.class))).thenReturn(CompletableFuture.supplyAsync(() -> model));
-        storage = new Storage(mockClient);
+        storage = new Storage(mockClient, config);
         List<DeviceGroup> result = Lists.newArrayList(storage.getAllDeviceGroupsAsync().toCompletableFuture().get());
         assertEquals(result.size(), groups.size());
         for (DeviceGroup item : result) {
@@ -205,7 +214,7 @@ public class StorageTest {
         Mockito.when(mockClient.getAsync(Mockito.any(String.class),
                 Mockito.any(String.class))).
                 thenReturn(CompletableFuture.supplyAsync(() -> model));
-        storage = new Storage(mockClient);
+        storage = new Storage(mockClient, config);
         DeviceGroup result = storage.getDeviceGroupAsync(groupId).toCompletableFuture().get();
         assertEquals(result.getDisplayName(), displayName);
         assertEquals(result.getConditions(), conditions);
@@ -226,7 +235,7 @@ public class StorageTest {
         Mockito.when(mockClient.createAsync(Mockito.any(String.class),
                 Mockito.any(String.class))).
                 thenReturn(CompletableFuture.supplyAsync(() -> model));
-        storage = new Storage(mockClient);
+        storage = new Storage(mockClient, config);
         DeviceGroup result = storage.createDeviceGroupAsync(group).toCompletableFuture().get();
         assertEquals(result.getId(), groupId);
         assertEquals(result.getDisplayName(), displayName);
@@ -251,7 +260,7 @@ public class StorageTest {
                 Mockito.any(String.class),
                 Mockito.any(String.class))).
                 thenReturn(CompletableFuture.supplyAsync(() -> model));
-        storage = new Storage(mockClient);
+        storage = new Storage(mockClient, config);
         DeviceGroup result = storage.updateDeviceGroupAsync(groupId, group, etagOld).toCompletableFuture().get();
         assertEquals(result.getId(), groupId);
         assertEquals(result.getDisplayName(), displayName);

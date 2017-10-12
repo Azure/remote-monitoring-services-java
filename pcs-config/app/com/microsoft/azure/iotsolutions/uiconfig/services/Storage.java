@@ -2,6 +2,7 @@
 
 package com.microsoft.azure.iotsolutions.uiconfig.services;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.*;
@@ -10,6 +11,7 @@ import com.microsoft.azure.iotsolutions.uiconfig.services.external.ValueApiModel
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.DeviceGroup;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.Logo;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.Theme;
+import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.IServicesConfig;
 import play.libs.Json;
 
 import java.util.concurrent.*;
@@ -24,11 +26,14 @@ public class Storage implements IStorage {
     static String LogoKey = "logo";
     static String UserCollectionId = "user-settings";
     static String DeviceGroupCollectionId = "deviceGroups";
+    static String BingMapKey = "BingMapKey";
     private final IStorageAdapterClient client;
+    private final IServicesConfig config;
 
     @Inject
-    public Storage(IStorageAdapterClient client) {
+    public Storage(IStorageAdapterClient client, IServicesConfig config) {
         this.client = client;
+        this.config = config;
     }
 
     private static <T> String toJson(T o) {
@@ -41,20 +46,37 @@ public class Storage implements IStorage {
 
     @Override
     public CompletionStage<Object> getThemeAsync() {
+        String data = toJson(Theme.Default);
         try {
-            return client.getAsync(SolutionCollectionId, ThemeKey).thenApplyAsync(m ->
-                    fromJson(m.getData(), Object.class)
-            );
+            String serverData = client.getAsync(SolutionCollectionId, ThemeKey).toCompletableFuture().get().getData();
+            if (serverData != null && serverData.trim() != "") {
+                data = serverData;
+            }
         } catch (Exception ex) {
-            return CompletableFuture.supplyAsync(() -> Theme.Default);
         }
+        ObjectNode themeOut = (ObjectNode) Json.parse(data);
+        appendBingMapKey(themeOut);
+        return CompletableFuture.supplyAsync(() -> fromJson(themeOut.toString(), Object.class));
     }
 
     @Override
-    public CompletionStage<Object> setThemeAsync(Object theme) throws BaseException {
-        String value = toJson(theme);
-        return client.updateAsync(SolutionCollectionId, ThemeKey, value, "*").thenApplyAsync(m ->
-                fromJson(m.getData(), Object.class)
+    public CompletionStage<Object> setThemeAsync(Object themeIn) throws BaseException {
+
+        String value = "";
+        try {
+            value = toJson(themeIn);
+        } catch (Exception e) {
+        }
+
+        return client.updateAsync(SolutionCollectionId, ThemeKey, value, "*").thenApplyAsync(m -> {
+                    String data = "{}";
+                    if (m.getData() != null && m.getData().trim() != "") {
+                        data = m.getData();
+                    }
+                    ObjectNode themeOut = (ObjectNode) Json.parse(data);
+                    appendBingMapKey(themeOut);
+                    return fromJson(themeOut.toString(), Object.class);
+                }
         );
     }
 
@@ -141,5 +163,11 @@ public class Storage implements IStorage {
         output.setId(input.getKey());
         output.setETag(input.getETag());
         return output;
+    }
+
+    private void appendBingMapKey(ObjectNode theme) {
+        if (!theme.has(BingMapKey)) {
+            theme.put(BingMapKey, config.getBingMapKey());
+        }
     }
 }
