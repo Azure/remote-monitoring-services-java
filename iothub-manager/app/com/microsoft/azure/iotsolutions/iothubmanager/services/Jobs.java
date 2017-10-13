@@ -41,16 +41,9 @@ public class Jobs implements IJobs {
         long from, long to)
         throws InvalidInputException, ExternalDependencyException {
         try {
-
-            // Remove this workaround block once the Java SDK support empty jobType and jobStatus.
-            boolean workaround = true;
-            if (workaround) {
-                return getJobsWorkaroundAsync(jobType, jobStatus, pageSize, from, to);
-            }
-
             Query query = this.jobClient.queryJobResponse(
-                JobType.toAzureJobType(jobType),
-                JobStatus.toAzureJobStatus(jobStatus),
+                jobType == null ? null : JobType.toAzureJobType(jobType),
+                jobStatus == null ? null : JobStatus.toAzureJobStatus(jobStatus),
                 pageSize);
 
             List jobs = new ArrayList<JobResult>();
@@ -133,76 +126,5 @@ public class Jobs implements IJobs {
             log.error(message, e);
             throw new ExternalDependencyException(message, e);
         }
-    }
-
-    // As a work around to support empty jobType and jobStatus
-    // we will leverage current SDK query function to retrieve
-    // jobs with type of scheduleDeviceMethod and scheduleUpdateTwin
-    // and status of queued, running, failed, completed.
-    // https://github.com/Azure/iothub-manager-java/issues/48
-    private CompletionStage<List<JobServiceModel>> getJobsWorkaroundAsync(JobType type, JobStatus status, Integer size, long from, long to)
-            throws InvalidInputException, ExternalDependencyException {
-        List<JobType> types = new ArrayList();
-        List<JobStatus> statuses = new ArrayList();
-        try {
-            if (type == null) {
-                types.add(JobType.scheduleDeviceMethod);
-                // uncomment this line once issue 26 is fixed:
-                // https://github.com/Azure/iothub-manager-java/issues/26
-                // types.add(JobType.scheduleUpdateTwin);
-
-                // uncomment this line once issue 27 is fixed:
-                // https://github.com/Azure/iothub-manager-java/issues/27
-                // types.add(JobType.unknown);
-            } else {
-                types.add(type);
-            }
-            if (status == null) {
-                statuses.add(JobStatus.running);
-                statuses.add(JobStatus.failed);
-                statuses.add(JobStatus.completed);
-                statuses.add(JobStatus.queued);
-            } else {
-                statuses.add(status);
-            }
-        } catch (IllegalArgumentException e) {
-            log.error(String.format("Invalid query string: %s, %s, %s", type, status, size));
-            throw new InvalidInputException(String.format("Invalid query string: %s, %s, %s", type, status, size), e);
-        }
-
-        ArrayList<CompletableFuture<List<JobServiceModel>>> queries = new ArrayList<>();
-        try {
-            for (JobType t : types) {
-                for (JobStatus s : statuses) {
-                    Query query = this.jobClient.queryJobResponse(
-                        JobType.toAzureJobType(t),
-                        JobStatus.toAzureJobStatus(s),
-                        size);
-                    List jobs = new ArrayList<JobServiceModel>();
-                    while (this.jobClient.hasNextJob(query)) {
-                        JobResult job = this.jobClient.getNextJob(query);
-                        if (job.getCreatedTime().getTime() >= from && job.getCreatedTime().getTime() <= to) {
-                            jobs.add(new JobServiceModel(job));
-                        }
-                    }
-                    queries.add(CompletableFuture.supplyAsync(() -> jobs));
-                }
-            }
-        } catch (IotHubException | IOException e) {
-            String message = String.format("Unable to query device jobs by: %s, %s, %d", type, status, size);
-            log.error(message, e);
-            throw new ExternalDependencyException(message, e);
-        }
-
-        CompletableFuture<Void> allFutures = CompletableFuture.allOf(queries.toArray(new CompletableFuture[queries.size()]));
-        CompletableFuture<List<List<JobServiceModel>>> allResults = allFutures.
-            thenApply(r -> queries.stream().map(future -> future.join()).collect(Collectors.toList()));
-        return allResults.thenApply(
-            result -> {
-                List jobList = new ArrayList<JobServiceModel>();
-                result.forEach(jobs -> jobs.forEach(job -> jobList.add(job)));
-                return jobList;
-            }
-        );
     }
 }

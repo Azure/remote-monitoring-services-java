@@ -5,13 +5,10 @@ package com.microsoft.azure.iotsolutions.iothubmanager.services;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.*;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.runtime.Config;
-import com.microsoft.azure.sdk.iot.service.exceptions.*;
-import helpers.UnitTest;
-import org.joda.time.DateTime;
+import helpers.IntegrationTest;
 import org.junit.*;
 import org.junit.experimental.categories.Category;
 
-import javax.sound.midi.SysexMessage;
 import java.time.Duration;
 import java.util.*;
 
@@ -61,7 +58,7 @@ public class JobsTest {
     // Device ID cannot be null or empty". Will enable it once the bug is fixed.
     @Ignore
     @Test(timeout = 100000)
-    @Category({UnitTest.class})
+    @Category({IntegrationTest.class})
     public void scheduleTwinJobAsyncTest() throws Exception {
         String jobId = "unitTestJob" + batchId;
         String condition = String.format("tags.BatchId='%s'", batchId);
@@ -78,7 +75,7 @@ public class JobsTest {
     }
 
     @Test(timeout = 310000)
-    @Category({UnitTest.class})
+    @Category({IntegrationTest.class})
     public void scheduleMethodJobAsyncTest() throws Exception {
         String jobId = "unitTestJob" + batchId;
         String condition = String.format("tags.BatchId='%s'", batchId);

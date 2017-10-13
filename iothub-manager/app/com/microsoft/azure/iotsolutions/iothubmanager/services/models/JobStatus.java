@@ -45,6 +45,7 @@ public enum JobStatus {
     }
 
     public static com.microsoft.azure.sdk.iot.service.jobs.JobStatus toAzureJobStatus(JobStatus jobStatus) {
+        if(jobStatus == null) throw new IllegalArgumentException("JobStatus");
         switch (jobStatus) {
             case enqueued:
                 return com.microsoft.azure.sdk.iot.service.jobs.JobStatus.enqueued;

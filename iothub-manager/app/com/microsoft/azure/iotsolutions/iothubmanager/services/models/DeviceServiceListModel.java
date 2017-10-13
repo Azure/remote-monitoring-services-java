@@ -8,11 +8,11 @@ import java.util.List;
 
 public class DeviceServiceListModel {
 
-    private String ContinuationToken;
+    private String continuationToken;
     private List<DeviceServiceModel> items;
 
     public DeviceServiceListModel(List<DeviceServiceModel> devices, String continuationToken) {
-        this.ContinuationToken = continuationToken;
+        this.continuationToken = continuationToken;
         this.items = devices;
     }
 
@@ -22,6 +22,6 @@ public class DeviceServiceListModel {
     }
 
     public String getContinuationToken() {
-        return this.ContinuationToken;
+        return this.continuationToken;
     }
 }

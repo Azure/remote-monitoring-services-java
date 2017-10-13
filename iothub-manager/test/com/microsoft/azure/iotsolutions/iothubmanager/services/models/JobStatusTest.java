@@ -92,4 +92,11 @@ public class JobStatusTest {
             com.microsoft.azure.sdk.iot.service.jobs.JobStatus.queued,
             JobStatus.toAzureJobStatus(JobStatus.queued));
     }
+
+    @Test(timeout = 100000, expected = IllegalArgumentException.class)
+    @Category({UnitTest.class})
+    public void toAzureModelWithNullValueTest() {
+        JobStatus.toAzureJobStatus(null);
+    }
+
 }

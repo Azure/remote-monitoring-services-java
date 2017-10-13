@@ -74,7 +74,8 @@ public final class DeviceTwinServiceModel {
     }
 
     public DeviceTwinDevice toDeviceTwinDevice() {
-        DeviceTwinDevice twinDevice = new DeviceTwinDevice(this.getDeviceId());
+        DeviceTwinDevice twinDevice = this.getDeviceId() == null || this.getDeviceId().isEmpty()
+            ? new DeviceTwinDevice() : new DeviceTwinDevice(this.getDeviceId());
 
         if (this.getEtag() != null) {
             twinDevice.setETag(this.getEtag());

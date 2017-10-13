@@ -19,7 +19,7 @@ public class JobTypeTest {
     @Test(timeout = 100000, expected = IllegalArgumentException.class)
     @Category({UnitTest.class})
     public void fromValueFailureTest() {
-        Assert.assertEquals(JobType.unknown, JobType.from(10));
+        JobType.from(10);
     }
 
     @Test(timeout = 100000)
@@ -33,6 +33,10 @@ public class JobTypeTest {
             JobType.scheduleUpdateTwin,
             JobType.fromAzureJobType(
                 com.microsoft.azure.sdk.iot.service.jobs.JobType.scheduleUpdateTwin));
+        Assert.assertEquals(
+            JobType.unknown,
+            JobType.fromAzureJobType(
+                com.microsoft.azure.sdk.iot.service.jobs.JobType.unknown));
     }
 
     @Test(timeout = 100000)
@@ -44,5 +48,15 @@ public class JobTypeTest {
         Assert.assertEquals(
             com.microsoft.azure.sdk.iot.service.jobs.JobType.scheduleUpdateTwin,
             JobType.toAzureJobType(JobType.scheduleUpdateTwin));
+        Assert.assertEquals(
+            com.microsoft.azure.sdk.iot.service.jobs.JobType.unknown,
+            JobType.toAzureJobType(JobType.unknown));
+    }
+
+
+    @Test(timeout = 100000, expected = IllegalArgumentException.class)
+    @Category({UnitTest.class})
+    public void toAzureModelWithNullValueTest() {
+        JobType.toAzureJobType(null);
     }
 }

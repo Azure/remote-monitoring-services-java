@@ -12,7 +12,7 @@ import java.util.*;
 public final class DeviceListApiModel {
 
     private final List<DeviceRegistryApiModel> items;
-    private String ContinuationToken;
+    private String continuationToken;
 
     public DeviceListApiModel(final ArrayList<DeviceServiceModel> devices) {
 
@@ -24,7 +24,7 @@ public final class DeviceListApiModel {
 
     public DeviceListApiModel(final DeviceServiceListModel devices) {
         this.items = new ArrayList<DeviceRegistryApiModel>();
-        this.ContinuationToken = devices.getContinuationToken();
+        this.continuationToken = devices.getContinuationToken();
         for (DeviceServiceModel d : devices.getItems()) {
             this.items.add(new DeviceRegistryApiModel(d));
         }
@@ -41,5 +41,14 @@ public final class DeviceListApiModel {
             put("$type", "DeviceList;" + Version.NUMBER);
             put("$uri", "/" + Version.PATH + "/devices");
         }};
+    }
+
+    @JsonProperty("continuationToken")
+    public String getContinuationToken() {
+        return continuationToken;
+    }
+
+    public void setContinuationToken(String continuationToken) {
+        this.continuationToken = continuationToken;
     }
 }

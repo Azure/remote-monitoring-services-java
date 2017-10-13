@@ -19,9 +19,9 @@ public final class DeviceRegistryApiModel {
     private String id = null;
     private boolean enabled = false;
     private long c2DMessageCount = 0;
-    private DateTime lastActivity = null;
+    private Date lastActivity = null;
     private boolean connected = false;
-    private DateTime lastStatusUpdated = null;
+    private Date lastStatusUpdated = null;
     private AuthenticationMechanismApiModel authentication = null;
     private String ioTHubHostName = null;
     private HashMap<String, Object> tags;
@@ -44,10 +44,10 @@ public final class DeviceRegistryApiModel {
         this.id = device.getId();
         this.eTag = device.getETag();
         this.c2DMessageCount = device.getC2DMessageCount();
-        this.lastActivity = device.getLastActivity();
+        this.lastActivity = device.getLastActivity().toDate();
         this.connected = device.getConnected();
         this.enabled = device.getEnabled();
-        this.lastStatusUpdated = device.getLastStatusUpdated();
+        this.lastStatusUpdated = device.getLastStatusUpdated().toDate();
         this.authentication = new AuthenticationMechanismApiModel(device.getAuthentication());
         this.ioTHubHostName = device.getIoTHubHostName();
 
@@ -95,7 +95,11 @@ public final class DeviceRegistryApiModel {
     @JsonProperty("LastActivity")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = dateFormatString)
     public Date getLastActivity() {
-        return this.lastActivity.toDate();
+        return this.lastActivity;
+    }
+
+    public void setLastActivity(Date value) {
+        this.lastActivity = value;
     }
 
     @JsonProperty("Connected")
@@ -106,7 +110,11 @@ public final class DeviceRegistryApiModel {
     @JsonProperty("LastStatusUpdated")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = dateFormatString)
     public Date getLastStatusUpdated() {
-        return this.lastStatusUpdated.toDate();
+        return this.lastStatusUpdated;
+    }
+
+    public void setLastStatusUpdated(Date value) {
+        this.lastActivity = value;
     }
 
     @JsonProperty("Authentication")
@@ -133,6 +141,7 @@ public final class DeviceRegistryApiModel {
         return new Hashtable<String, String>() {{
             put("$type", "Device;" + Version.NUMBER);
             put("$uri", "/" + Version.PATH + "/devices/" + id);
+            put("$twin_uri", "/" + Version.PATH + "/devices/" + id + "/twin");
         }};
     }
 
@@ -178,12 +187,12 @@ public final class DeviceRegistryApiModel {
             this.eTag,
             this.id,
             this.c2DMessageCount,
-            this.lastActivity,
+            new DateTime(this.lastActivity),
             this.connected,
             this.enabled,
-            this.lastStatusUpdated,
+            new DateTime(this.lastStatusUpdated),
             twinServiceModel,
-            this.authentication.toServiceModel(),
+            this.authentication == null ? null : this.authentication.toServiceModel(),
             this.ioTHubHostName
         );
     }

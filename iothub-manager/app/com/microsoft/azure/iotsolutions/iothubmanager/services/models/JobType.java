@@ -32,13 +32,15 @@ public enum JobType {
     }
 
     public static com.microsoft.azure.sdk.iot.service.jobs.JobType toAzureJobType(JobType jobType) {
+        if (jobType == null) throw new IllegalArgumentException("JobType");
         switch (jobType) {
             case scheduleDeviceMethod:
                 return com.microsoft.azure.sdk.iot.service.jobs.JobType.scheduleDeviceMethod;
             case scheduleUpdateTwin:
                 return com.microsoft.azure.sdk.iot.service.jobs.JobType.scheduleUpdateTwin;
+            case unknown:
+                return com.microsoft.azure.sdk.iot.service.jobs.JobType.unknown;
             default:
-                // unknown is not defined in SDK.
                 throw new IllegalArgumentException("JobType");
         }
     }

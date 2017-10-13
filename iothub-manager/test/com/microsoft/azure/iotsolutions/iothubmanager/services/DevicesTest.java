@@ -8,10 +8,9 @@ import com.microsoft.azure.iotsolutions.iothubmanager.services.models.*;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.runtime.Config;
 import com.microsoft.azure.sdk.iot.service.auth.SymmetricKey;
-import helpers.UnitTest;
+import helpers.IntegrationTest;
 import org.junit.*;
 import org.junit.experimental.categories.Category;
-import org.junit.rules.ExpectedException;
 
 import java.time.Duration;
 import java.util.*;
@@ -24,6 +23,7 @@ public class DevicesTest {
     private static IDevices deviceService;
     private static ArrayList<DeviceServiceModel> testDevices = new ArrayList<>();
     private static String batchId = UUID.randomUUID().toString().replace("-", "");
+    private static final String MALFORMED_JSON_EXCEED_5_LEVELS = "Malformed Json: exceed 5 levels";
 
     private static boolean setUpIsDone = false;
 
@@ -55,43 +55,43 @@ public class DevicesTest {
         }
     }
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
-
     @Test(timeout = 100000)
-    @Category({UnitTest.class})
+    @Category({IntegrationTest.class})
     public void getAllAsyncTest() {
         try {
             DeviceServiceListModel deviceList = deviceService.queryAsync("", "").toCompletableFuture().get();
             Assert.assertTrue(deviceList.getItems().size() >= testDevices.size());
         } catch (Exception e) {
+            assertException(e, "Unable to get all devices");
         }
     }
 
     @Test(timeout = 100000)
-    @Category({UnitTest.class})
+    @Category({IntegrationTest.class})
     public void queryByRawStringAsyncTest() {
         try {
             String rawQueryString = String.format("Tags.BatchId='%s'", batchId);
             DeviceServiceListModel deviceList = deviceService.queryAsync(rawQueryString, "").toCompletableFuture().get();
             Assert.assertTrue(deviceList.getItems().size() == testDevices.size());
         } catch (Exception e) {
+            assertException(e, "Unable to query devices by raw query string");
         }
     }
 
     @Test(timeout = 100000)
-    @Category({UnitTest.class})
+    @Category({IntegrationTest.class})
     public void queryByJsonStringAsyncTest() {
         try {
-            String jsonString = String.format("[\"Key\": \"Tags.BatchId\", \"Operator\": \"EQ\", \"Value\": \"%s\" ]", batchId);
+            String jsonString = String.format("[{ \"Key\": \"Tags.BatchId\", \"Operator\": \"EQ\", \"Value\": \"%s\" }]", batchId);
             DeviceServiceListModel deviceList = deviceService.queryAsync(jsonString, "").toCompletableFuture().get();
             Assert.assertTrue(deviceList.getItems().size() > 0);
         } catch (Exception e) {
+            assertException(e, "Unable to query devices by json query string");
         }
     }
 
     @Test(timeout = 10000)
-    @Category({UnitTest.class})
+    @Category({IntegrationTest.class})
     public void getAsyncFailureTest() throws Exception {
         try {
             deviceService.getAsync("IncorrectDeviceId").toCompletableFuture().get();
@@ -101,16 +101,20 @@ public class DevicesTest {
     }
 
     @Test(timeout = 100000)
-    @Category({UnitTest.class})
+    @Category({IntegrationTest.class})
     public void getAsyncSuccessTest() throws Exception {
-        DeviceServiceListModel devices = deviceService.queryAsync("", "").toCompletableFuture().get();
-        DeviceServiceModel device = deviceService.getAsync(devices.getItems().get(0).getId()).toCompletableFuture().get();
-        Assert.assertEquals(device.getId(), devices.getItems().get(0).getId());
-        Assert.assertNotNull(device.getTwin());
+        try {
+            DeviceServiceListModel devices = deviceService.queryAsync("", "").toCompletableFuture().get();
+            DeviceServiceModel device = deviceService.getAsync(devices.getItems().get(0).getId()).toCompletableFuture().get();
+            Assert.assertEquals(device.getId(), devices.getItems().get(0).getId());
+            Assert.assertNotNull(device.getTwin());
+        } catch (Exception e) {
+            assertException(e, "Unable to get all devices");
+        }
     }
 
     @Test(timeout = 100000)
-    @Category({UnitTest.class})
+    @Category({IntegrationTest.class})
     public void createAndDeleteAsyncSuccessTest() throws Exception {
         String deviceId = "unitTestDevice_" + UUID.randomUUID().toString().replace("-", "");
         String eTag = "etagxx==";
@@ -147,7 +151,7 @@ public class DevicesTest {
     }
 
     @Test(timeout = 100000)
-    @Category({UnitTest.class})
+    @Category({IntegrationTest.class})
     public void createDeviceWithSasTokenAsyncTest() throws Exception {
         String deviceId = "unitTestDevice_" + UUID.randomUUID().toString().replace("-", "");
         String eTag = "etagxx==";
@@ -174,7 +178,7 @@ public class DevicesTest {
     }
 
     @Test(timeout = 100000)
-    @Category({UnitTest.class})
+    @Category({IntegrationTest.class})
     public void createDeviceWithX509CertificationAsyncTest() throws Exception {
         String deviceId = "unitTestDevice_" + UUID.randomUUID().toString().replace("-", "");
         String eTag = "etagxx==";
@@ -197,7 +201,7 @@ public class DevicesTest {
     }
 
     @Test(timeout = 100000)
-    @Category({UnitTest.class})
+    @Category({IntegrationTest.class})
     public void createWithoutIdAsyncSuccessTest() throws Exception {
         String deviceId = "";
         String eTag = "etagxx==";
@@ -213,7 +217,7 @@ public class DevicesTest {
     }
 
     @Test(timeout = 100000)
-    @Category({UnitTest.class})
+    @Category({IntegrationTest.class})
     public void createOrUpdateTest() throws Exception {
         String deviceId = "unitTestDevice_" + UUID.randomUUID().toString().replace("-", "");
         String eTag = "etagxx==";
@@ -241,36 +245,28 @@ public class DevicesTest {
         Assert.assertTrue(deviceService.deleteAsync(deviceId).toCompletableFuture().get());
     }
 
-    @Test(timeout = 100000)
-    @Category({UnitTest.class})
-    public void createOrUpdateWithMismatchedIdFailureTest() {
-        try {
-            String deviceId = "unitTestDevice_" + UUID.randomUUID().toString().replace("-", "");
-            String eTag = "etagxx==";
-            DeviceTwinServiceModel twin = new DeviceTwinServiceModel(eTag, "MismatchedDeviceID", null, null, true);
-            DeviceServiceModel device = new DeviceServiceModel(eTag, "MismatchedDeviceID", 0, null, false, true, null, twin, null, null);
-            DeviceServiceModel newDevice = deviceService.createOrUpdateAsync(deviceId, device).toCompletableFuture().get();
-        } catch (Exception e) {
-            Assert.assertTrue(e instanceof InvalidInputException);
-        }
+    @Test(timeout = 100000, expected = InvalidInputException.class)
+    @Category({IntegrationTest.class})
+    public void createOrUpdateWithMismatchedIdFailureTest() throws Exception {
+        String deviceId = "unitTestDevice_" + UUID.randomUUID().toString().replace("-", "");
+        String eTag = "etagxx==";
+        DeviceTwinServiceModel twin = new DeviceTwinServiceModel(eTag, "MismatchedDeviceID", null, null, true);
+        DeviceServiceModel device = new DeviceServiceModel(eTag, "MismatchedDeviceID", 0, null, false, true, null, twin, null, null);
+        deviceService.createOrUpdateAsync(deviceId, device).toCompletableFuture().get();
     }
 
-    @Test(timeout = 100000)
-    @Category({UnitTest.class})
-    public void createOrUpdateWithEmptyIdFailureTest() {
-        try {
-            String deviceId = "unitTestDevice_" + UUID.randomUUID().toString().replace("-", "");
-            String eTag = "etagxx==";
-            DeviceTwinServiceModel twin = new DeviceTwinServiceModel(eTag, "", null, null, true);
-            DeviceServiceModel device = new DeviceServiceModel(eTag, "", 0, null, false, true, null, twin, null, null);
-            DeviceServiceModel newDevice = deviceService.createOrUpdateAsync(deviceId, device).toCompletableFuture().get();
-        } catch (Exception e) {
-            Assert.assertTrue(e instanceof InvalidInputException);
-        }
+    @Test(timeout = 100000, expected = InvalidInputException.class)
+    @Category({IntegrationTest.class})
+    public void createOrUpdateWithEmptyIdFailureTest() throws Exception {
+        String deviceId = "unitTestDevice_" + UUID.randomUUID().toString().replace("-", "");
+        String eTag = "etagxx==";
+        DeviceTwinServiceModel twin = new DeviceTwinServiceModel(eTag, "", null, null, true);
+        DeviceServiceModel device = new DeviceServiceModel(eTag, "", 0, null, false, true, null, twin, null, null);
+        deviceService.createOrUpdateAsync(deviceId, device).toCompletableFuture().get();
     }
 
     @Test(timeout = 10000)
-    @Category({UnitTest.class})
+    @Category({IntegrationTest.class})
     public void deleteAsyncFailureTest() throws Exception {
         try {
             deviceService.deleteAsync("IncorrectDeviceId").toCompletableFuture().get();
@@ -280,7 +276,7 @@ public class DevicesTest {
     }
 
     @Test(timeout = 100000)
-    @Category({UnitTest.class})
+    @Category({IntegrationTest.class})
     public void invokeMethodAsyncTest() {
         try {
             DeviceServiceListModel deviceList = deviceService.queryAsync("", "").toCompletableFuture().get();
@@ -292,6 +288,7 @@ public class DevicesTest {
                 }
             }
 
+            // Only device that supports method will be invoked and tested.
             if (targetDevice != null) {
                 MethodParameterServiceModel parameter = new MethodParameterServiceModel();
                 parameter.setName("Reboot");
@@ -304,7 +301,18 @@ public class DevicesTest {
                 Assert.assertTrue(result.getJsonPayload().contains("Reboot accepted"));
             }
         } catch (Exception e) {
-            Assert.fail("Unable to invoke method");
+            assertException(e, "Unable to invoke method");
+        }
+    }
+
+    private void assertException(Exception e, String message) {
+        // In order to make the test resilient to the issue 158 of Java SDK,
+        // the expected exception will be checked if the issue is hit.
+        // see more detail at https://github.com/Azure/azure-iot-sdk-java/issues/158
+        if (e.getCause() instanceof IllegalArgumentException) {
+            Assert.assertTrue(e.getMessage().contains(MALFORMED_JSON_EXCEED_5_LEVELS));
+        } else {
+            Assert.fail(message);
         }
     }
 
