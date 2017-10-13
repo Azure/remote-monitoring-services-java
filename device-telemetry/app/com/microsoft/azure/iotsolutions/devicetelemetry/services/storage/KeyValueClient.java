@@ -1,8 +1,9 @@
 // Copyright (c) Microsoft. All rights reserved.
 
-package com.microsoft.azure.iotsolutions.devicetelemetry.services;
+package com.microsoft.azure.iotsolutions.devicetelemetry.services.storage;
 
 import com.google.inject.Inject;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.Status;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import play.libs.ws.WSClient;
 import play.libs.ws.WSRequest;

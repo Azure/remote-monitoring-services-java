@@ -5,7 +5,7 @@ package webservice.test.v1.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.Alarms;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.IAlarms;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.StorageClient;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.StorageClient;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.AlarmServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime.Config;

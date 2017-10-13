@@ -36,8 +36,8 @@ GET    /v1/rules/                    com.microsoft.azure.iotsolutions.devicetele
 GET    /v1/rules/:rule_id            com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.RulesController.getAsync(rule_id)
 GET    /v1/rules/:rule_id/           com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.RulesController.getAsync(rule_id)
 
-POST   /v1/rules                     com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.RulesController.postAsync(template: String ?= null)
-POST   /v1/rules/                    com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.RulesController.postAsync(template: String ?= null)
+POST   /v1/rules                     com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.RulesController.postAsync()
+POST   /v1/rules/                    com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.RulesController.postAsync()
 
 PUT    /v1/rules/:rule_id            com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.RulesController.putAsync(rule_id)
 PUT    /v1/rules/:rule_id/           com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.RulesController.putAsync(rule_id)

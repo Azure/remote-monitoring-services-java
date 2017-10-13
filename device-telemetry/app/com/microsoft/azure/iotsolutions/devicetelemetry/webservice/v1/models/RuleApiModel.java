@@ -149,25 +149,4 @@ public final class RuleApiModel {
             put("$uri", "/" + Version.NAME + "/rules/" + id);
         }};
     }
-
-    public RuleServiceModel toServiceModel() {
-        ArrayList<ConditionServiceModel> conditionServiceModelArrayList =
-            new ArrayList<>();
-
-        for (ConditionApiModel condition : this.getConditions()) {
-            conditionServiceModelArrayList.add(condition.toServiceModel());
-        }
-
-        return new RuleServiceModel(
-            this.getETag(),
-            this.getId(),
-            this.getName(),
-            this.getDateCreated(),
-            this.getDateModified(),
-            this.getEnabled(),
-            this.getDescription(),
-            this.getGroupId(),
-            this.getSeverity(),
-            conditionServiceModelArrayList);
-    }
 }

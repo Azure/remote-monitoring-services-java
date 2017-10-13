@@ -3,8 +3,8 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers;
 
 import com.google.inject.Inject;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.IKeyValueClient;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.IStorageClient;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.IKeyValueClient;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.IStorageClient;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.Status;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.StatusApiModel;
 import play.mvc.Controller;

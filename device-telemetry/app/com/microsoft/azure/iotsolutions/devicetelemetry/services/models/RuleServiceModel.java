@@ -7,10 +7,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
 
 public final class RuleServiceModel implements Comparable<RuleServiceModel> {
+
+    private final static String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZZ";
 
     private final String eTag;
     private final String id;
@@ -46,17 +51,29 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
         final String severity,
         final ArrayList<ConditionServiceModel> conditions) {
 
-        this.name = name;
-        this.enabled = enabled;
-        this.description = description;
-        this.groupId = groupId;
-        this.severity = severity;
-        this.conditions = conditions;
+        this("", name, enabled, description, groupId, severity, conditions);
+    }
 
-        this.eTag = "";
-        this.id = "";
-        this.dateCreated = DateTime.now().toString();
-        this.dateModified = DateTime.now().toString();
+    public RuleServiceModel(
+        final String id,
+        final String name,
+        final Boolean enabled,
+        final String description,
+        final String groupId,
+        final String severity,
+        final ArrayList<ConditionServiceModel> conditions) {
+
+        this(
+            "",
+            id,
+            name,
+            DateTime.now(DateTimeZone.UTC).toString(DATE_FORMAT),
+            enabled,
+            description,
+            groupId,
+            severity,
+            conditions
+        );
     }
 
     public RuleServiceModel(
@@ -64,7 +81,6 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
         final String id,
         final String name,
         final String dateCreated,
-        final String dateModified,
         final Boolean enabled,
         final String description,
         final String groupId,
@@ -75,7 +91,7 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
         this.id = id;
         this.name = name;
         this.dateCreated = dateCreated;
-        this.dateModified = dateModified;
+        this.dateModified = DateTime.now(DateTimeZone.UTC).toString(DATE_FORMAT);
         this.enabled = enabled;
         this.description = description;
         this.groupId = groupId;

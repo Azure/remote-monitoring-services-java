@@ -7,6 +7,7 @@ import com.microsoft.azure.documentdb.Document;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.helpers.QueryBuilder;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.AlarmServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.IStorageClient;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
