@@ -2,16 +2,19 @@
 
 package com.microsoft.azure.iotsolutions.iothubmanager.services;
 
-import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidInputException;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.ResourceNotFoundException;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.*;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.*;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.runtime.Config;
+import com.microsoft.azure.sdk.iot.device.*;
 import com.microsoft.azure.sdk.iot.service.auth.SymmetricKey;
 import helpers.IntegrationTest;
+import helpers.DeviceMethodEmulator;
 import org.junit.*;
 import org.junit.experimental.categories.Category;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.time.Duration;
 import java.util.*;
 
@@ -22,6 +25,7 @@ public class DevicesTest {
     private static IIoTHubWrapper ioTHubWrapper;
     private static IDevices deviceService;
     private static ArrayList<DeviceServiceModel> testDevices = new ArrayList<>();
+    private static ArrayList<DeviceClient> testDeviceEmulators = new ArrayList<>();
     private static String batchId = UUID.randomUUID().toString().replace("-", "");
     private static final String MALFORMED_JSON_EXCEED_5_LEVELS = "Malformed Json: exceed 5 levels";
 
@@ -45,12 +49,21 @@ public class DevicesTest {
 
     @AfterClass
     public static void tearDownOnce() {
+        for (DeviceClient client : testDeviceEmulators) {
+            try {
+                System.out.println("Shutting down device emulator...");
+                client.closeNow();
+            } catch (IOException e) {
+                System.out.println("Warning: Error on shutting down device emulator");
+            }
+        }
         for (DeviceServiceModel device : testDevices) {
             try {
                 deviceService.deleteAsync(device.getId()).toCompletableFuture().get();
                 System.out.println(device.getId() + " deleted");
-            } catch (Exception ex) {
-                Assert.fail("Unable to destroy test deviceService");
+            } catch (Exception e) {
+                System.out.println(String.format("Warning: Unable to destroy test devices: %s, error: %s",
+                    device.getId(), e.getMessage()));
             }
         }
     }
@@ -62,7 +75,7 @@ public class DevicesTest {
             DeviceServiceListModel deviceList = deviceService.queryAsync("", "").toCompletableFuture().get();
             Assert.assertTrue(deviceList.getItems().size() >= testDevices.size());
         } catch (Exception e) {
-            assertException(e, "Unable to get all devices");
+            ignoreMalformedJsonExceptions(e, "Unable to get all devices");
         }
     }
 
@@ -74,7 +87,7 @@ public class DevicesTest {
             DeviceServiceListModel deviceList = deviceService.queryAsync(rawQueryString, "").toCompletableFuture().get();
             Assert.assertTrue(deviceList.getItems().size() == testDevices.size());
         } catch (Exception e) {
-            assertException(e, "Unable to query devices by raw query string");
+            ignoreMalformedJsonExceptions(e, "Unable to query devices by raw query string");
         }
     }
 
@@ -86,7 +99,7 @@ public class DevicesTest {
             DeviceServiceListModel deviceList = deviceService.queryAsync(jsonString, "").toCompletableFuture().get();
             Assert.assertTrue(deviceList.getItems().size() > 0);
         } catch (Exception e) {
-            assertException(e, "Unable to query devices by json query string");
+            ignoreMalformedJsonExceptions(e, "Unable to query devices by json query string");
         }
     }
 
@@ -109,14 +122,14 @@ public class DevicesTest {
             Assert.assertEquals(device.getId(), devices.getItems().get(0).getId());
             Assert.assertNotNull(device.getTwin());
         } catch (Exception e) {
-            assertException(e, "Unable to get all devices");
+            ignoreMalformedJsonExceptions(e, "Unable to get all devices");
         }
     }
 
     @Test(timeout = 100000)
     @Category({IntegrationTest.class})
     public void createAndDeleteAsyncSuccessTest() throws Exception {
-        String deviceId = "unitTestDevice_" + UUID.randomUUID().toString().replace("-", "");
+        String deviceId = randomDeviceId();
         String eTag = "etagxx==";
         HashMap<String, Object> tags = new HashMap<String, Object>() {{
             put("Building", "Building40");
@@ -153,7 +166,7 @@ public class DevicesTest {
     @Test(timeout = 100000)
     @Category({IntegrationTest.class})
     public void createDeviceWithSasTokenAsyncTest() throws Exception {
-        String deviceId = "unitTestDevice_" + UUID.randomUUID().toString().replace("-", "");
+        String deviceId = randomDeviceId();
         String eTag = "etagxx==";
         HashMap<String, Object> tags = new HashMap<String, Object>() {{
             put("Building", "Building40");
@@ -180,7 +193,7 @@ public class DevicesTest {
     @Test(timeout = 100000)
     @Category({IntegrationTest.class})
     public void createDeviceWithX509CertificationAsyncTest() throws Exception {
-        String deviceId = "unitTestDevice_" + UUID.randomUUID().toString().replace("-", "");
+        String deviceId = randomDeviceId();
         String eTag = "etagxx==";
         HashMap<String, Object> tags = new HashMap<String, Object>() {{
             put("Building", "Building40");
@@ -219,7 +232,7 @@ public class DevicesTest {
     @Test(timeout = 100000)
     @Category({IntegrationTest.class})
     public void createOrUpdateTest() throws Exception {
-        String deviceId = "unitTestDevice_" + UUID.randomUUID().toString().replace("-", "");
+        String deviceId = randomDeviceId();
         String eTag = "etagxx==";
         HashMap<String, Object> tags = new HashMap<String, Object>() {{
             put("Building", "Building40");
@@ -248,7 +261,7 @@ public class DevicesTest {
     @Test(timeout = 100000, expected = InvalidInputException.class)
     @Category({IntegrationTest.class})
     public void createOrUpdateWithMismatchedIdFailureTest() throws Exception {
-        String deviceId = "unitTestDevice_" + UUID.randomUUID().toString().replace("-", "");
+        String deviceId = randomDeviceId();
         String eTag = "etagxx==";
         DeviceTwinServiceModel twin = new DeviceTwinServiceModel(eTag, "MismatchedDeviceID", null, null, true);
         DeviceServiceModel device = new DeviceServiceModel(eTag, "MismatchedDeviceID", 0, null, false, true, null, twin, null, null);
@@ -258,7 +271,7 @@ public class DevicesTest {
     @Test(timeout = 100000, expected = InvalidInputException.class)
     @Category({IntegrationTest.class})
     public void createOrUpdateWithEmptyIdFailureTest() throws Exception {
-        String deviceId = "unitTestDevice_" + UUID.randomUUID().toString().replace("-", "");
+        String deviceId = randomDeviceId();
         String eTag = "etagxx==";
         DeviceTwinServiceModel twin = new DeviceTwinServiceModel(eTag, "", null, null, true);
         DeviceServiceModel device = new DeviceServiceModel(eTag, "", 0, null, false, true, null, twin, null, null);
@@ -279,33 +292,22 @@ public class DevicesTest {
     @Category({IntegrationTest.class})
     public void invokeMethodAsyncTest() {
         try {
-            DeviceServiceListModel deviceList = deviceService.queryAsync("", "").toCompletableFuture().get();
-            DeviceServiceModel targetDevice = null;
-            for (DeviceServiceModel device : deviceList.getItems()) {
-                if (device.getTwin().getProperties().getReported().containsKey("SupportedMethods")) {
-                    targetDevice = device;
-                    break;
-                }
-            }
-
-            // Only device that supports method will be invoked and tested.
-            if (targetDevice != null) {
-                MethodParameterServiceModel parameter = new MethodParameterServiceModel();
-                parameter.setName("Reboot");
-                parameter.setJsonPayload("");
-                parameter.setResponseTimeout(Duration.ofSeconds(5));
-                parameter.setConnectionTimeout(Duration.ofSeconds(5));
-                MethodResultServiceModel result = deviceService.invokeDeviceMethodAsync(
-                    targetDevice.getId(), parameter).toCompletableFuture().get();
-                Assert.assertTrue(result.getStatus() == 200);
-                Assert.assertTrue(result.getJsonPayload().contains("Reboot accepted"));
-            }
+            DeviceServiceModel targetDevice = testDevices.get(0);
+            MethodParameterServiceModel parameter = new MethodParameterServiceModel();
+            parameter.setName("Reboot");
+            parameter.setJsonPayload("");
+            parameter.setResponseTimeout(Duration.ofSeconds(5));
+            parameter.setConnectionTimeout(Duration.ofSeconds(5));
+            MethodResultServiceModel result = deviceService.invokeDeviceMethodAsync(
+                targetDevice.getId(), parameter).toCompletableFuture().get();
+            Assert.assertTrue(result.getStatus() == 200);
+            Assert.assertTrue(result.getJsonPayload().contains("Reboot accepted"));
         } catch (Exception e) {
-            assertException(e, "Unable to invoke method");
+            ignoreMalformedJsonExceptions(e, "Unable to invoke method");
         }
     }
 
-    private void assertException(Exception e, String message) {
+    private void ignoreMalformedJsonExceptions(Exception e, String message) {
         // In order to make the test resilient to the issue 158 of Java SDK,
         // the expected exception will be checked if the issue is hit.
         // see more detail at https://github.com/Azure/azure-iot-sdk-java/issues/158
@@ -319,11 +321,11 @@ public class DevicesTest {
     private static void createTestDevices(int count, String batchId) {
         try {
             for (int i = 0; i < count; i++) {
-                String deviceId = String.format("unitTestDevice-%s_%s", i, batchId);
+                String deviceId = String.format("IntegrationTestDevice_%s_%s", batchId, i);
                 String eTag = "etagxx==";
                 HashMap<String, Object> tags = new HashMap<String, Object>() {{
                     put("BatchId", batchId);
-                    put("Purpose", "UnitTest");
+                    put("Purpose", "IntegrationTest");
                 }};
                 HashMap desired = new HashMap() {
                     {
@@ -340,10 +342,39 @@ public class DevicesTest {
                 DeviceServiceModel newDevice = deviceService.createAsync(device).toCompletableFuture().get();
                 testDevices.add(newDevice);
                 System.out.println(deviceId + " created");
+                createDeviceEmulator(newDevice);
             }
         } catch (Exception e) {
-            Assert.fail("Unable to create test devices");
+            Assert.fail(String.format("Unable to create test devices cause by: %s", e.getMessage()));
         }
+    }
+
+    private static void createDeviceEmulator(DeviceServiceModel newDevice)
+        throws IOException, URISyntaxException, InvalidConfigurationException {
+        DeviceClient client = null;
+        try {
+            String connString = String.format("HostName=%s;DeviceId=%s;SharedAccessKey=%s",
+                ioTHubWrapper.getIotHubHostName(),
+                newDevice.getId(),
+                newDevice.getAuthentication().getPrimaryKey());
+            client = new DeviceClient(connString, IotHubClientProtocol.MQTT);
+            client.open();
+            System.out.println("Connected to IoT Hub.");
+            client.subscribeToDeviceMethod(new DeviceMethodEmulator.DeviceMethodCallback(),
+                null, new DeviceMethodEmulator.DeviceMethodStatusCallBack(), null);
+            System.out.println("Subscribed to device method and waiting for method trigger");
+            testDeviceEmulators.add(client);
+        } catch (IOException e) {
+            System.out.println(String.format("Warning: on exception: %s, shutting down device emulator",
+                e.getMessage()));
+            if (client != null) {
+                client.closeNow();
+            }
+        }
+    }
+
+    private String randomDeviceId() {
+        return "IntegrationTestDevice_" + UUID.randomUUID().toString().replace("-", "");
     }
 }
 

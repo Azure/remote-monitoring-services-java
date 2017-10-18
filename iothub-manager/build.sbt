@@ -21,7 +21,9 @@ libraryDependencies ++= {
 // Test dependencies
 libraryDependencies ++= Seq(
   // http://search.maven.org/#search%7Cga%7C1%7Cmockito-core
-  "org.mockito" % "mockito-core" % "2.8.47" % "test"
+  "org.mockito" % "mockito-core" % "2.8.47" % "test",
+  // https://github.com/Azure/azure-iot-sdk-java/releases
+  "com.microsoft.azure.sdk.iot" % "iot-device-client" % "1.5.36" % "test"
 )
 
 lazy val commonSettings = Seq(
