@@ -101,7 +101,7 @@
       "Severity": "info",
       "Conditions": [
         {
-          "Field": "fuel",
+          "Field": "fuellevel",
           "Operator": "LessThan",
           "Value": "5"
         }
