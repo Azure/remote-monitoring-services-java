@@ -29,6 +29,10 @@ public class OpenIdConnectJwtValidation implements IJwtValidation {
 
     private static final Logger.ALogger log = Logger.of(OpenIdConnectJwtValidation.class);
 
+    private final IClientAuthConfig config;
+
+    private boolean setupComplete;
+
     /**
      * A set of JWT processors, one for each trusted signing algorithm
      */
@@ -56,8 +60,11 @@ public class OpenIdConnectJwtValidation implements IJwtValidation {
         this.issuer = config.getJwtIssuer().toLowerCase();
         this.audience = config.getJwtAudience();
         this.signingAlgos = config.getJwtAllowedAlgos();
+        this.config = config;
 
-        this.setupProcessors((int) config.getJwtClockSkew().getSeconds());
+        // Note, the setup cannot throw exceptions or DI won't complete
+        this.setupComplete = false;
+        this.trySetup(false);
     }
 
     /**
@@ -68,7 +75,10 @@ public class OpenIdConnectJwtValidation implements IJwtValidation {
      * - expected issuer
      * - expected audience
      */
-    public Boolean validateToken(String token) {
+    public Boolean validateToken(String token)
+        throws InvalidConfigurationException, ExternalDependencyException {
+
+        this.trySetup(true);
 
         // Parse the token, we need this to know the signing algo and to decide
         // which processor to use
@@ -95,7 +105,6 @@ public class OpenIdConnectJwtValidation implements IJwtValidation {
 
             // Check issuer and audience
             return this.validateTokenIssuer(claims) && this.validateTokenAudience(claims);
-
         } catch (java.text.ParseException e) {
             log.error("Unable to parse the authorization token", e);
         } catch (BadJOSEException e) {
@@ -107,6 +116,34 @@ public class OpenIdConnectJwtValidation implements IJwtValidation {
         }
 
         return false;
+    }
+
+    /**
+     * Try to setup the Open Id authentication classes, including downloading
+     * the certificates used to verify JWT signatures. The call could fail
+     * so it should be retried if that happens.
+     *
+     * The method can be called from the constructor, but in that case
+     * exceptions should not be thrown, to allow Guice DI to complete
+     * the object provisioning.
+     */
+    private void trySetup(Boolean throwOnError)
+        throws InvalidConfigurationException, ExternalDependencyException {
+
+        if (this.setupComplete) return;
+
+        try {
+            log.info("Configuring OpenId Connect");
+            this.setupProcessors((int) this.config.getJwtClockSkew().getSeconds());
+            this.setupComplete = true;
+        } catch (Exception e) {
+            log.error("Setup failed", e);
+            this.setupComplete = false;
+
+            if (throwOnError) {
+                throw e;
+            }
+        }
     }
 
     /**
