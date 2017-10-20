@@ -52,9 +52,9 @@ git update-index --chmod=+x ./scripts/sbt-dist/bin/sbt
 git update-index --chmod=+x ./scripts/sbt-dist/bin/sbt-launch-lib.bash
 
 if [ -d ./scripts/docker/content ]; then
-  git update-index --chmod=+x ./scripts/docker/content/*.sh
+  git update-index --chmod=+x ./scripts/docker/content/*.sh 2> /dev/null
 fi
 
 if [ -d ./scripts/iothub ]; then
-  git update-index --chmod=+x ./scripts/iothub/*.sh
+  git update-index --chmod=+x ./scripts/iothub/*.sh 2> /dev/null
 fi
