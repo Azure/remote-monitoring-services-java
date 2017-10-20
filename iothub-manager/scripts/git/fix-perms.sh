@@ -22,6 +22,9 @@ chmod ugo+x ./scripts/docker/run          2> /dev/null
 chmod ugo+x ./scripts/docker/publish      2> /dev/null
 chmod ugo+x ./scripts/git/setup           2> /dev/null
 chmod ugo+x ./scripts/git/*.sh            2> /dev/null
+chmod ugo+X ./sbt                         2> /dev/null
+chmod ugo+X ./scripts/sbt-dist/bin/sbt    2> /dev/null
+chmod ugo+X ./scripts/sbt-dist/bin/sbt-launch-lib.bash 2> /dev/null
 
 if [ -d ./scripts/docker/content ]; then
   chmod ugo+x ./scripts/docker/content/*.sh 2> /dev/null
@@ -44,6 +47,9 @@ git update-index --chmod=+x ./scripts/docker/run
 git update-index --chmod=+x ./scripts/docker/publish
 git update-index --chmod=+x ./scripts/git/setup
 git update-index --chmod=+x ./scripts/git/*.sh
+git update-index --chmod=+x ./sbt
+git update-index --chmod=+x ./scripts/sbt-dist/bin/sbt
+git update-index --chmod=+x ./scripts/sbt-dist/bin/sbt-launch-lib.bash
 
 if [ -d ./scripts/docker/content ]; then
   git update-index --chmod=+x ./scripts/docker/content/*.sh

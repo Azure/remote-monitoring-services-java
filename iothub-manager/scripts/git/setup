@@ -3,10 +3,8 @@
 APP_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && cd .. && pwd )/"
 
 usage() {
-    echo "ERROR: sandboxing mode not specified."
-    echo ""
     echo "The pre-commit hook can run in two different modes:"
-    echo "  Without sandbox: the build script runs using binaries like Java from your workstation"
+    echo "  Without sandbox (default): the build script runs using binaries like Java from your workstation"
     echo "  With sandbox: the build script runs inside a Docker container so you need to install only Docker"
     echo ""
     echo "Usage:"

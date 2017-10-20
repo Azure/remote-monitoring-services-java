@@ -5,14 +5,16 @@ package com.microsoft.azure.iotsolutions.iothubmanager.webservice.auth;
 import akka.stream.Materializer;
 import com.google.inject.Inject;
 import play.Logger;
-import play.http.HttpEntity;
+import play.libs.Json;
 import play.mvc.*;
-import play.twirl.api.Content;
 
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
+
+import static play.mvc.Results.*;
 
 public class AuthorizationFilter extends Filter {
 
@@ -72,8 +74,12 @@ public class AuthorizationFilter extends Filter {
         if (authHeader.isPresent()) {
             try {
                 authorized = this.validateHeader(authHeader.get());
+            } catch (ExternalDependencyException e) {
+                log.error("Authorization header validation failed", e);
+                return CompletableFuture.completedFuture(serviceTemporaryUnavailableResponse(e));
             } catch (Exception e) {
                 log.error("Authorization header validation failed", e);
+                return CompletableFuture.completedFuture(internalServerErrorResponse(e));
             }
         } else {
             log.error(AUTH_HEADER + " header not found");
@@ -82,7 +88,7 @@ public class AuthorizationFilter extends Filter {
         // If not authorized, stop the request here
         if (!authorized) {
             log.warn("The request is not authorized");
-            return CompletableFuture.completedFuture(unauthorizedErrorResponse());
+            return CompletableFuture.completedFuture(unauthorizedResponse());
         }
 
         // Proceed with the request
@@ -93,7 +99,8 @@ public class AuthorizationFilter extends Filter {
     /**
      * Validate the JWT token in the authorization header
      */
-    private Boolean validateHeader(String s) {
+    private Boolean validateHeader(String s)
+        throws InvalidConfigurationException, ExternalDependencyException {
 
         if (!s.startsWith(AUTH_HEADER_PREFIX)) {
             log.error(AUTH_HEADER + " header prefix not found");
@@ -105,28 +112,24 @@ public class AuthorizationFilter extends Filter {
         return this.jwtValidation.validateToken(token);
     }
 
-    /**
-     * Return a 401 HTTP Response
-     */
-    private Result unauthorizedErrorResponse() {
-        return new Result(401, errorResponsePayload());
+    private Result unauthorizedResponse() {
+
+        return unauthorized(Json.toJson(new HashMap<String, String>() {{
+            put("Error", "Authentication required");
+        }}));
     }
 
-    private HttpEntity errorResponsePayload() {
-        return HttpEntity.fromContent(new Error401(), "utf-8");
+    private Result serviceTemporaryUnavailableResponse(Exception e) {
+
+        return status(Http.Status.SERVICE_UNAVAILABLE, Json.toJson(new HashMap<String, String>() {{
+            put("Error", e.getMessage());
+        }}));
     }
 
-    // TODO: there must be a simpler way to return a JSON object...
-    private class Error401 implements Content {
+    private Result internalServerErrorResponse(Exception e) {
 
-        @Override
-        public String body() {
-            return "{\"Error\":\"Authentication required\"}";
-        }
-
-        @Override
-        public String contentType() {
-            return "application/json";
-        }
+        return internalServerError(Json.toJson(new HashMap<String, String>() {{
+            put("Error", e.getMessage());
+        }}));
     }
 }
