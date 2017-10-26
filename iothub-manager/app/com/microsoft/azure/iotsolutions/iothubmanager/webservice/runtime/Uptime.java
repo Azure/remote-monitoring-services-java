@@ -41,6 +41,6 @@ final public class Uptime {
      * @return A randomly generated ID used to identify the process in the logs.
      */
     public static String getProcessId() {
-        return processId;
+        return "WebService." + processId;
     }
 }

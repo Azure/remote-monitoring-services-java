@@ -14,10 +14,12 @@ import org.joda.time.format.DateTimeFormatter;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
-@JsonPropertyOrder({"Status", "CurrentTime", "StartTime", "UpTime", "Properties", "Dependencies", "$metadata"})
+@JsonPropertyOrder({"Name", "Status", "CurrentTime", "StartTime", "UpTime", "UID", "Properties", "Dependencies", "$metadata"})
 public final class StatusApiModel {
 
+    private String name = "IoTHubManager";
     private String status;
+    private String uid = Uptime.getProcessId();
     private DateTimeFormatter dateFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
     private Dictionary<String, String> dependencies;
 
@@ -29,6 +31,12 @@ public final class StatusApiModel {
         this.dependencies = new Hashtable<String, String>() {{
             put("IoTHub", "OK:...msg...");
         }};
+    }
+
+    @JsonProperty("Name")
+    @JsonPropertyOrder()
+    public String getName() {
+        return this.name;
     }
 
     @JsonProperty("Status")
@@ -49,6 +57,11 @@ public final class StatusApiModel {
     @JsonProperty("UpTime")
     public long getUpTime() {
         return Uptime.getDuration().getMillis() / 1000;
+    }
+
+    @JsonProperty("UID")
+    public String getUID() {
+        return this.uid;
     }
 
     @JsonProperty("Properties")

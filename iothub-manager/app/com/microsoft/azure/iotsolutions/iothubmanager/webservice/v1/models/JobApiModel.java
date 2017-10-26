@@ -2,8 +2,7 @@
 
 package com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.*;
 
 import java.util.*;
@@ -38,7 +37,8 @@ public class JobApiModel {
             this.maxExecutionTimeInSeconds = serviceModel.getMaxExecutionTimeInSeconds();
             this.type = serviceModel.getJobType();
             this.status = serviceModel.getJobStatus();
-            this.methodParameter = new MethodParameterApiModel(serviceModel.getMethodParameter());
+            this.methodParameter = serviceModel.getMethodParameter() == null ?
+                null : new MethodParameterApiModel(serviceModel.getMethodParameter());
             this.updateTwin = serviceModel.getUpdateTwin();
             this.failureReason = serviceModel.getFailureReason();
             this.statusMessage = serviceModel.getStatusMessage();
@@ -73,6 +73,7 @@ public class JobApiModel {
     }
 
     @JsonProperty("queryCondition")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public String getQueryCondition() {
         return queryCondition;
     }
@@ -82,6 +83,7 @@ public class JobApiModel {
     }
 
     @JsonProperty("createdTimeUtc")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = dateFormatString)
     public Date getCreatedTimeUtc() {
         return createdTimeUtc;
@@ -92,6 +94,7 @@ public class JobApiModel {
     }
 
     @JsonProperty("startTimeUtc")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = dateFormatString)
     public Date getStartTimeUtc() {
         return startTimeUtc;
@@ -102,6 +105,7 @@ public class JobApiModel {
     }
 
     @JsonProperty("endTimeUtc")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = dateFormatString)
     public Date getEndTimeUtc() {
         return endTimeUtc;
@@ -112,6 +116,7 @@ public class JobApiModel {
     }
 
     @JsonProperty("maxExecutionTimeInSeconds")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public Long getMaxExecutionTimeInSeconds() {
         return maxExecutionTimeInSeconds;
     }
@@ -139,6 +144,7 @@ public class JobApiModel {
     }
 
     @JsonProperty("methodParameter")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public MethodParameterApiModel getMethodParameter() {
         return methodParameter;
     }
@@ -148,6 +154,7 @@ public class JobApiModel {
     }
 
     @JsonProperty("updateTwin")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public DeviceTwinServiceModel getUpdateTwin() {
         return updateTwin;
     }
@@ -157,6 +164,7 @@ public class JobApiModel {
     }
 
     @JsonProperty("failureReason")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public String getFailureReason() {
         return failureReason;
     }
@@ -166,6 +174,7 @@ public class JobApiModel {
     }
 
     @JsonProperty("statusMessage")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public String getStatusMessage() {
         return statusMessage;
     }
@@ -175,6 +184,7 @@ public class JobApiModel {
     }
 
     @JsonProperty("resultStatistics")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public JobStatistics getResultStatistics() {
         return resultStatistics;
     }

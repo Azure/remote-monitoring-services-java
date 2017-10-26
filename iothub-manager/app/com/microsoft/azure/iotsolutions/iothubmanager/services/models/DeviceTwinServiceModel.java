@@ -7,15 +7,15 @@ import com.microsoft.azure.sdk.iot.service.devicetwin.DeviceTwinDevice;
 
 import java.util.*;
 
-// TODO: documentation
-
 public final class DeviceTwinServiceModel {
 
-    private final String eTag;
+    private String eTag;
     private String deviceId;
-    private final DeviceTwinProperties properties;
-    private final HashMap tags;
-    private final Boolean isSimulated;
+    private DeviceTwinProperties properties;
+    private HashMap tags;
+    private Boolean isSimulated;
+
+    public DeviceTwinServiceModel () {}
 
     public DeviceTwinServiceModel(
         final String eTag,

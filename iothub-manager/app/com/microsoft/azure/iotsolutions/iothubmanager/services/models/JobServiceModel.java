@@ -49,21 +49,6 @@ public class JobServiceModel {
         this.resultStatistics = new JobStatistics(jobResult.getJobStatistics());
     }
 
-    public static com.microsoft.azure.sdk.iot.service.jobs.JobType toJobTypeAzureModel(JobType jobType) {
-        if (jobType == null) {
-            return null;
-        }
-
-        switch (jobType) {
-            case scheduleDeviceMethod:
-            case scheduleUpdateTwin:
-                return JobType.toAzureJobType(jobType);
-            default:
-                // there is no jobType 'unknown'
-                return null;
-        }
-    }
-
     public String getJobId() {
         return jobId;
     }
