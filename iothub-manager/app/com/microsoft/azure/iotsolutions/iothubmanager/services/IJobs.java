@@ -19,7 +19,10 @@ public interface IJobs {
         long from, long to)
         throws ExternalDependencyException, InvalidInputException;
 
-    CompletionStage<JobServiceModel> getJobAsync(String jobId)
+    CompletionStage<JobServiceModel> getJobAsync(
+        String jobId,
+        boolean includeDeviceDetails,
+        DeviceJobStatus devicejobStatus)
         throws ExternalDependencyException;
 
     CompletionStage<JobServiceModel> scheduleTwinUpdateAsync(

@@ -22,10 +22,11 @@ public class JobServiceModel {
     private String failureReason;
     private String statusMessage;
     private JobStatistics resultStatistics;
+    private List<DeviceJobServiceModel> devices;
 
     public JobServiceModel() {}
 
-    public JobServiceModel(JobResult jobResult) throws ExternalDependencyException {
+    public JobServiceModel(JobResult jobResult, List<JobResult> deviceJobs) throws ExternalDependencyException {
         this.jobId = jobResult.getJobId();
         this.queryCondition = jobResult.getQueryCondition();
         this.createdTimeUtc = jobResult.getCreatedTime();
@@ -47,6 +48,15 @@ public class JobServiceModel {
         this.statusMessage = jobResult.getStatusMessage();
 
         this.resultStatistics = new JobStatistics(jobResult.getJobStatistics());
+
+        if (deviceJobs == null) {
+            this.devices = null;
+        } else {
+            this.devices = new ArrayList<>();
+            for(JobResult job : deviceJobs) {
+                this.devices.add(new DeviceJobServiceModel(job));
+            }
+        }
     }
 
     public String getJobId() {
@@ -151,5 +161,9 @@ public class JobServiceModel {
 
     public void setResultStatistics(JobStatistics resultStatistics) {
         this.resultStatistics = resultStatistics;
+    }
+
+    public List<DeviceJobServiceModel> getDevices() {
+        return devices;
     }
 }

@@ -22,6 +22,7 @@ public class JobApiModel {
     private String failureReason;
     private String statusMessage;
     private JobStatistics resultStatistics;
+    private List<DeviceJobApiModel> devices;
 
     private final String dateFormatString = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
@@ -43,6 +44,13 @@ public class JobApiModel {
             this.failureReason = serviceModel.getFailureReason();
             this.statusMessage = serviceModel.getStatusMessage();
             this.resultStatistics = serviceModel.getResultStatistics();
+            List<DeviceJobServiceModel> deviceJobModels = serviceModel.getDevices();
+            if(deviceJobModels == null) {
+                this.devices = null;
+            } else {
+                this.devices = new ArrayList<>();
+                deviceJobModels.forEach(job -> this.devices.add(new DeviceJobApiModel(job)));
+            }
         }
     }
 
@@ -191,5 +199,15 @@ public class JobApiModel {
 
     public void setResultStatistics(JobStatistics resultStatistics) {
         this.resultStatistics = resultStatistics;
+    }
+
+    @JsonProperty("Devices")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public List<DeviceJobApiModel> getDevices() {
+        return devices;
+    }
+
+    public void setDevices(List<DeviceJobApiModel> devices) {
+        this.devices = devices;
     }
 }

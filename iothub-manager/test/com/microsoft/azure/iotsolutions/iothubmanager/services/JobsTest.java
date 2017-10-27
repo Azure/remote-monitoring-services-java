@@ -12,6 +12,7 @@ import org.junit.experimental.categories.Category;
 
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.CompletionStage;
 
 public class JobsTest {
 
@@ -55,6 +56,35 @@ public class JobsTest {
         }
     }
 
+    @Test(timeout = 100000)
+    @Category({IntegrationTest.class})
+    public void getJobsAsyncTest() throws Exception {
+        long from = 0;
+        long to = new Date().getTime();
+        List<JobServiceModel> jobs = jobService.getJobsAsync(
+            JobType.scheduleUpdateTwin, JobStatus.completed, 10, from, to).toCompletableFuture().get();
+        if (jobs.size() >= 0) {
+            Assert.assertTrue(!jobs.get(0).getJobId().isEmpty());
+            Assert.assertEquals(jobs.get(0).getJobType(), JobType.scheduleUpdateTwin);
+            Assert.assertEquals(jobs.get(0).getJobStatus(), JobStatus.completed);
+        }
+
+        jobs = jobService.getJobsAsync(
+            JobType.scheduleDeviceMethod, JobStatus.completed, 10, from, to).toCompletableFuture().get();
+        if (jobs.size() >= 0) {
+            Assert.assertTrue(!jobs.get(0).getJobId().isEmpty());
+            Assert.assertEquals(jobs.get(0).getJobType(), JobType.scheduleDeviceMethod);
+            Assert.assertEquals(jobs.get(0).getJobStatus(), JobStatus.completed);
+        }
+
+        jobs = jobService.getJobsAsync(null, null, 10, from, to).toCompletableFuture().get();
+        if (jobs.size() >= 0) {
+            Assert.assertTrue(!jobs.get(0).getJobId().isEmpty());
+            Assert.assertNotNull(jobs.get(0).getJobType());
+            Assert.assertNotNull(jobs.get(0).getJobStatus());
+        }
+    }
+
     @Test(timeout = 310000)
     @Category({IntegrationTest.class})
     public void scheduleTwinJobAsyncTest() throws Exception {
@@ -65,23 +95,31 @@ public class JobsTest {
             put("Floor", "1F");
         }};
         DeviceTwinServiceModel twin = new DeviceTwinServiceModel("*", "", null, tags, true);
+
+        IJobs twinJobService = new Jobs(ioTHubWrapper);
         // retry scheduling job with back off time when throttled by IotHub
-        for(int i = 1; i <= MAX_RETRIES; i++) {
+        for (int i = 1; i <= MAX_RETRIES; i++) {
             try {
                 String newJobId = jobIdPrefix + i;
-                jobService.scheduleTwinUpdateAsync(newJobId, condition, twin, new Date(), 120).toCompletableFuture().get();
-                JobServiceModel newJob = jobService.getJobAsync(newJobId).toCompletableFuture().get();
+                twinJobService.scheduleTwinUpdateAsync(newJobId, condition, twin, new Date(), 120).toCompletableFuture().get();
+                JobServiceModel newJob = twinJobService.getJobAsync(newJobId, false, null).toCompletableFuture().get();
                 Assert.assertEquals(newJobId, newJob.getJobId());
                 Assert.assertEquals(JobType.scheduleUpdateTwin, newJob.getJobType());
                 Assert.assertEquals(newJob.getUpdateTwin().getTags().get("Building"), "Building40");
                 Assert.assertEquals(newJob.getUpdateTwin().getTags().get("Floor"), "1F");
+
+                newJob = twinJobService.getJobAsync(newJobId, true, null).toCompletableFuture().get();
+                DeviceJobServiceModel deviceJob = newJob.getDevices().get(0);
+                Assert.assertNotNull(deviceJob.getDeviceId());
+                Assert.assertNotNull(deviceJob.getStatus());
+
                 return;
             } catch (Exception e) {
                 if (e.getCause() instanceof IotHubTooManyRequestsException) {
                     System.out.println(String.format("Warning: job scheduling is throttled and will be retried(%d) after 30s", i));
                     Thread.sleep(30000);
                     // reconnect to IotHub
-                    jobService = new Jobs(ioTHubWrapper);
+                    twinJobService = new Jobs(ioTHubWrapper);
                     continue;
                 } else {
                     Assert.fail("failed to schedule twin job");
@@ -105,14 +143,14 @@ public class JobsTest {
 
         JobServiceModel job;
         // retry scheduling job with back off time when throttled by IotHub
-        for(int i = 1; i <= MAX_RETRIES; i++) {
+        for (int i = 1; i <= MAX_RETRIES; i++) {
             try {
                 String newJobId = jobIdPrefix + i;
                 job = jobService.scheduleDeviceMethodAsync(newJobId, condition, parameter, new Date(), 10).toCompletableFuture().get();
                 Assert.assertEquals(newJobId, job.getJobId());
                 Assert.assertEquals(job.getJobType(), JobType.scheduleDeviceMethod);
 
-                JobServiceModel newJob = jobService.getJobAsync(newJobId).toCompletableFuture().get();
+                JobServiceModel newJob = jobService.getJobAsync(newJobId, false, null).toCompletableFuture().get();
                 Assert.assertEquals(newJobId, newJob.getJobId());
                 Assert.assertEquals(parameter.getName(), newJob.getMethodParameter().getName());
                 Assert.assertEquals(parameter.getJsonPayload(), newJob.getMethodParameter().getJsonPayload());

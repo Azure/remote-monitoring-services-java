@@ -20,9 +20,7 @@ import play.mvc.Result;
 import javax.transaction.NotSupportedException;
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.util.stream.Collectors;
 
 import static play.libs.Json.fromJson;
 import static play.libs.Json.toJson;
@@ -63,8 +61,9 @@ public final class JobsController extends Controller {
             temp = DateHelper.parseDate(to);
             jobTo = (temp == null) ? Long.MAX_VALUE : temp.getMillis();
         } catch (IllegalArgumentException e) {
-            log.error(String.format("Invalid query string: %s, %s, %s", type, status, size));
-            throw new InvalidInputException(String.format("Invalid query string: %s, %s, %s", type, status, size), e);
+            String message = String.format("Invalid query string: %s, %s, %s", type, status, size);
+            log.error(message, e);
+            throw new InvalidInputException(message, e);
         }
 
         return this.jobService.getJobsAsync(jobType, jobStatus, pageSize, jobFrom, jobTo)
@@ -77,7 +76,19 @@ public final class JobsController extends Controller {
 
     public CompletionStage<Result> getJobAsync(String jobId)
         throws IOException, IotHubException, BaseException {
-        return this.jobService.getJobAsync(jobId)
+        String includeDeviceDetails = request().getQueryString("includeDeviceDetails");
+        String deviceJobStatus = request().getQueryString("deviceJobStatus");
+        Boolean include;
+        DeviceJobStatus status;
+        try {
+            include = Boolean.parseBoolean(includeDeviceDetails);
+            status = deviceJobStatus == null ? null : DeviceJobStatus.from(Integer.parseInt(deviceJobStatus));
+        } catch (IllegalArgumentException e) {
+            String message = String.format("Invalid query string: %s, %s", includeDeviceDetails, deviceJobStatus);
+            log.error(message, e);
+            throw new InvalidInputException(message, e);
+        }
+        return this.jobService.getJobAsync(jobId, include, status)
             .thenApply(job -> ok(toJson(new JobApiModel(job))));
     }
 

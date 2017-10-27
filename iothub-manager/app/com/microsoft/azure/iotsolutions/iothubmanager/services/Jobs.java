@@ -9,8 +9,6 @@ import com.microsoft.azure.sdk.iot.service.devicetwin.Query;
 import com.microsoft.azure.sdk.iot.service.exceptions.IotHubException;
 import com.microsoft.azure.sdk.iot.service.jobs.JobClient;
 import com.microsoft.azure.sdk.iot.service.jobs.JobResult;
-import org.omg.CORBA.DynAnyPackage.Invalid;
-import org.omg.CORBA.INVALID_ACTIVITY;
 import play.Logger;
 import play.libs.Json;
 
@@ -18,7 +16,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.util.stream.Collectors;
 
 public class Jobs implements IJobs {
 
@@ -26,6 +23,9 @@ public class Jobs implements IJobs {
 
     private IIoTHubWrapper ioTHubService;
     private final JobClient jobClient;
+
+    private final String DEVICE_DETAILS_QUERY_FORMAT = "select * from devices.jobs where devices.jobs.jobId = '%s'";
+    private final String DEVICE_DETAILS_QUERYWITH_STATUS_FORMAT = "select * from devices.jobs where devices.jobs.jobId = '%s' and devices.jobs.status = '%s'";
 
     @Inject
     public Jobs(final IIoTHubWrapper ioTHubService) throws Exception {
@@ -50,7 +50,7 @@ public class Jobs implements IJobs {
             while (this.jobClient.hasNextJob(query)) {
                 JobResult job = this.jobClient.getNextJob(query);
                 if (job.getCreatedTime().getTime() >= from && job.getCreatedTime().getTime() <= to) {
-                    jobs.add(new JobServiceModel(job));
+                    jobs.add(new JobServiceModel(job, null));
                 }
             }
             return CompletableFuture.supplyAsync(() -> jobs);
@@ -62,11 +62,27 @@ public class Jobs implements IJobs {
     }
 
     @Override
-    public CompletionStage<JobServiceModel> getJobAsync(String jobId)
+    public CompletionStage<JobServiceModel> getJobAsync(
+        String jobId,
+        boolean includeDeviceDetails,
+        DeviceJobStatus devicejobStatus)
         throws ExternalDependencyException {
         try {
             JobResult result = this.jobClient.getJob(jobId);
-            JobServiceModel jobModel = new JobServiceModel(result);
+            JobServiceModel jobModel;
+            if (!includeDeviceDetails) {
+                jobModel = new JobServiceModel(result, null);
+            } else {
+                String queryString = devicejobStatus == null ? String.format(DEVICE_DETAILS_QUERY_FORMAT, jobId) :
+                    String.format(DEVICE_DETAILS_QUERYWITH_STATUS_FORMAT, jobId, devicejobStatus);
+                Query query = this.jobClient.queryDeviceJob(queryString);
+                List deviceJobs = new ArrayList<JobServiceModel>();
+                while (this.jobClient.hasNextJob(query)) {
+                    JobResult deviceJob = this.jobClient.getNextJob(query);
+                    deviceJobs.add(deviceJob);
+                }
+                jobModel = new JobServiceModel(result, deviceJobs);
+            }
             return CompletableFuture.supplyAsync(() -> jobModel);
         } catch (IOException | IotHubException e) {
             String message = String.format("Unable to get device job by id: %s", jobId);
@@ -93,7 +109,7 @@ public class Jobs implements IJobs {
                 parameter.getJsonPayload(),
                 startTime,
                 maxExecutionTimeInSeconds);
-            JobServiceModel jobModel = new JobServiceModel(result);
+            JobServiceModel jobModel = new JobServiceModel(result, null);
             return CompletableFuture.supplyAsync(() -> jobModel);
         } catch (IOException | IotHubException e) {
             String message = String.format("Unable to schedule device method job: %s, %s, %s",
@@ -118,7 +134,7 @@ public class Jobs implements IJobs {
                 twin.toDeviceTwinDevice(),
                 startTime,
                 maxExecutionTimeInSeconds);
-            JobServiceModel jobModel = new JobServiceModel(result);
+            JobServiceModel jobModel = new JobServiceModel(result, null);
             return CompletableFuture.supplyAsync(() -> jobModel);
         } catch (IOException | IotHubException e) {
             String message = String.format("Unable to schedule twin update job: %s, %s, %s",
