@@ -52,7 +52,7 @@ public final class Messages implements IMessages {
 
         int dataPrefixLen = dataPrefix.length();
 
-        String sql = QueryBuilder.buildSQL(
+        String sql = QueryBuilder.getDocumentsSQL(
             "d2cmessage",
             null, null,
             from, "device.msg.received",

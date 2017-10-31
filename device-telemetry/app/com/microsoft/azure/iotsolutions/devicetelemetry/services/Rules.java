@@ -9,10 +9,13 @@ import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ExternalDependencyException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ResourceOutOfDateException;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.AlarmCountByRuleServiceModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.AlarmServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.ConditionServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.RuleServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.serialization.JsonHelper;
+import org.joda.time.DateTime;
 import play.Logger;
 import play.libs.Json;
 import play.libs.ws.WSClient;
@@ -34,13 +37,17 @@ public final class Rules implements IRules {
     private final String storageUrl;
     private final WSClient wsClient;
 
+    private final IAlarms alarmsService;
+
     @Inject
     public Rules(
         final IServicesConfig servicesConfig,
-        final WSClient wsClient) {
+        final WSClient wsClient,
+        final IAlarms alarmsService) {
 
         this.storageUrl = servicesConfig.getKeyValueStorageUrl() + "/collections/rules/values";
         this.wsClient = wsClient;
+        this.alarmsService = alarmsService;
     }
 
     public CompletionStage<RuleServiceModel> getAsync(String id) {
@@ -140,6 +147,78 @@ public final class Rules implements IRules {
                         new ExternalDependencyException(
                             "Could not parse result from Key Value Storage"));
                 }
+            });
+    }
+
+
+    @Override
+    public CompletionStage<List<AlarmCountByRuleServiceModel>> getAlarmCountForList(
+        DateTime from,
+        DateTime to,
+        String order,
+        int skip,
+        int limit,
+        String[] devices
+    ) throws ExternalDependencyException {
+
+        ArrayList<AlarmCountByRuleServiceModel> alarmByRuleList = new ArrayList<>();
+
+        // get list of rules
+        return this.getListAsync(order, skip, limit, null)
+            .thenApply(rulesList -> {
+
+                // get open alarm count and most recent alarm for each rule
+                for (RuleServiceModel rule : rulesList) {
+
+                    int alarmCount;
+                    try {
+                        alarmCount = this.alarmsService.getCountByRuleId(
+                            rule.getId(),
+                            from,
+                            to,
+                            devices);
+                    } catch (java.lang.Exception e) {
+                        log.error("Could not retrieve alarm count for " +
+                            "rule id {}", rule.getId(), e);
+                        throw new CompletionException(
+                            new ExternalDependencyException(
+                                "Could not retrieve alarm count for " +
+                                "rule id " + rule.getId(), e));
+                    }
+
+                    // skip to next rule if no alarms found
+                    if (alarmCount == 0) {
+                        continue;
+                    }
+
+                    // get most recent alarm for rule
+                    AlarmServiceModel recentAlarm = this.getMostRecentAlarmForRule(
+                        rule.getId(),
+                        from,
+                        to,
+                        devices);
+
+                    // should always find alarm at this point
+                    if (recentAlarm == null) {
+                        log.error("Alarm count mismatch -- could not " +
+                            "find alarm for rule id {} when alarm count for " +
+                            "rule is {}.", rule.getId(), alarmCount);
+                        throw new CompletionException(
+                            new ExternalDependencyException(
+                                "Alarm count mismatch -- could not " +
+                                "find alarm for rule id " + rule.getId()));
+                    }
+
+                    // Add alarm by rule to list
+                    alarmByRuleList.add(
+                        new AlarmCountByRuleServiceModel(
+                            alarmCount,
+                            recentAlarm.getStatus(),
+                            recentAlarm.getDateCreated(),
+                            rule));
+                }
+
+                return alarmByRuleList;
             });
     }
 
@@ -251,6 +330,39 @@ public final class Rules implements IRules {
             .addHeader("Content-Type", "application/json");
 
         return wsRequest;
+    }
+
+    private AlarmServiceModel getMostRecentAlarmForRule(
+        String ruleId,
+        DateTime from,
+        DateTime to,
+        String[] devices) {
+
+        AlarmServiceModel result = null;
+
+        try {
+            ArrayList<AlarmServiceModel> resultList
+                = this.alarmsService.getListByRuleId(
+                ruleId,
+                from,
+                to,
+                "desc",
+                0,
+                1,
+                devices);
+
+            if (resultList.size() > 0) {
+                result = resultList.get(0);
+            }
+        } catch (java.lang.Exception e) {
+            String errorMsg = "Could not retrieve most recent alarm " +
+                "for rule id " + ruleId;
+            log.error(errorMsg, e);
+            throw new CompletionException(
+                new ExternalDependencyException(errorMsg, e));
+        }
+
+        return result;
     }
 
     private ArrayList<JsonNode> getResultListFromJson(JsonNode response) {

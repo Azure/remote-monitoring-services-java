@@ -3,7 +3,9 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.services;
 
 import com.google.inject.ImplementedBy;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.AlarmCountByRuleServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.RuleServiceModel;
+import org.joda.time.DateTime;
 
 import java.util.List;
 import java.util.concurrent.CompletionStage;
@@ -17,6 +19,15 @@ public interface IRules {
         int skip,
         int limit,
         String groupId);
+
+    CompletionStage<List<AlarmCountByRuleServiceModel>> getAlarmCountForList(
+        DateTime from,
+        DateTime to,
+        String order,
+        int skip,
+        int limit,
+        String[] devices
+    ) throws Exception;
 
     CompletionStage<RuleServiceModel> postAsync(
         RuleServiceModel ruleServiceModel);
