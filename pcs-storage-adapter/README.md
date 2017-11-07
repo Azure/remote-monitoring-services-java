@@ -57,7 +57,7 @@ Steps using IntelliJ IDEA Community 2017, with SBT plugin enabled:
 
 * "Open" the project with IntelliJ, the IDE should automatically recognize
   the SBT structure. Wait for the IDE to download some dependencies
-  (see IntelliJ status bar)
+  (see IntelliJ status bar). This may take a while, hang in there!
 * Create a new Run Configuration, of type "SBT Task", with any name.
   * Enter "run 9022" (including the double quotes) in Tasks. This ensures that
     the service starts using the TCP port 9022.  If you desire to use a
