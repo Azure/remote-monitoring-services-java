@@ -242,17 +242,27 @@ public final class Devices implements IDevices {
         final String query, String continuationToken, int nubmerOfResult)
         throws ExternalDependencyException {
         String fullQuery = query.isEmpty() ? QueryPrefix : String.format("%s where %s", QueryPrefix, query);
+        QueryOptions options = new QueryOptions();
+        if (continuationToken != null && !continuationToken.isEmpty()) {
+            options.setContinuationToken(continuationToken);
+        }
 
         HashMap<String, DeviceTwinServiceModel> twins = new HashMap();
-
         try {
-            Query twinQuery = this.deviceTwinClient.queryTwin(fullQuery);
-            while (this.deviceTwinClient.hasNextDeviceTwin(twinQuery)) {
-                DeviceTwinDevice twin = this.deviceTwinClient.getNextDeviceTwin(twinQuery);
-                twins.put(twin.getDeviceId(), new DeviceTwinServiceModel(twin));
+            QueryCollection twinQuery = this.deviceTwinClient.queryTwinCollection(fullQuery);
+            while (this.deviceTwinClient.hasNext(twinQuery) && twins.size() < nubmerOfResult) {
+                QueryCollectionResponse<DeviceTwinDevice> response = this.deviceTwinClient.next(twinQuery, options);
+                response.getCollection().forEach(twin -> twins.put(twin.getDeviceId(), new DeviceTwinServiceModel(twin)));
             }
         } catch (IotHubException | IOException e) {
             throw new ExternalDependencyException("Unable to query device twin", e);
+        } catch (IllegalArgumentException e) {
+            // Java SDK will throw IllegalArgumentException when the query result is empty:
+            // "java.lang.IllegalArgumentException: Provided Collection must not be null and cannot be empty"
+            // This is workaround to capture this exception and ignore it.
+            // bug filed for Java SDK: https://github.com/Azure/azure-iot-sdk-java/issues/176
+            String message = String.format("Ignored IllegalArgumentException when twin query return empty result: %s", query);
+            log.warn(message, e);
         }
 
         return twins;
