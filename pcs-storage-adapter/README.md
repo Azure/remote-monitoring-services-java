@@ -4,7 +4,7 @@
 
 Storage Adapter Overview
 ========================
-This service allows management of of key-values, abstracting the storage
+This service allows management of key-values, abstracting the storage
 service semantic and presenting a simple interface to store data of any
 format using [Azure Cosmos DB](https://azure.microsoft.com/en-us/services/cosmos-db/).
 DocDb is used in the service but could be easily swapped with a different
@@ -48,7 +48,7 @@ How to use the microservice
 
 ## Running the service with IntelliJ
 
-Intellij IDEA lets you  open the application without using a command
+Intellij IDEA lets you open the application without using a command
 prompt, without configuring anything outside of the IDE. The SBT build tool
 takes care of downloading appropriate libraries, resolving dependencies and
 building the project (more info [here](https://www.playframework.com/documentation/2.6.x/IDE)).
