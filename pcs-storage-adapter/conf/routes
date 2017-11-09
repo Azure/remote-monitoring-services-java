@@ -1,23 +1,19 @@
-# Note: temporarily duplicate every rule with and without trailing slash
+# Notes:
+# * duplicate routes pointing to a "collection" adding an extra rule with a trailing slash
+#   so that collections can be retrieved with and without the trailing "/"
+# * prefix every action with `@` to avoid caching exceptions occurring in controllers constructors
+#   (see https://www.playframework.com/documentation/2.6.x/JavaDependencyInjection for more info)
 
-GET    /v1/status                                   com.microsoft.azure.iotsolutions.storageadapter.webservice.v1.controllers.StatusController.index
-GET    /v1/status/                                  com.microsoft.azure.iotsolutions.storageadapter.webservice.v1.controllers.StatusController.index
+GET    /v1/status                                   @com.microsoft.azure.iotsolutions.storageadapter.webservice.v1.controllers.StatusController.index
 
-GET    /v1/collections/:collectionId/values/:key    com.microsoft.azure.iotsolutions.storageadapter.webservice.v1.controllers.ValuesController.get(collectionId, key)
-GET    /v1/collections/:collectionId/values/:key/   com.microsoft.azure.iotsolutions.storageadapter.webservice.v1.controllers.ValuesController.get(collectionId, key)
+GET    /v1/collections/:collectionId/values/:key    @com.microsoft.azure.iotsolutions.storageadapter.webservice.v1.controllers.ValuesController.get(collectionId, key)
 
-PUT    /v1/collections/:collectionId/values/:key    com.microsoft.azure.iotsolutions.storageadapter.webservice.v1.controllers.ValuesController.put(collectionId, key)
-PUT    /v1/collections/:collectionId/values/:key/   com.microsoft.azure.iotsolutions.storageadapter.webservice.v1.controllers.ValuesController.put(collectionId, key)
+PUT    /v1/collections/:collectionId/values/:key    @com.microsoft.azure.iotsolutions.storageadapter.webservice.v1.controllers.ValuesController.put(collectionId, key)
 
-GET    /v1/collections/:collectionId/values          com.microsoft.azure.iotsolutions.storageadapter.webservice.v1.controllers.ValuesController.list(collectionId)
-GET    /v1/collections/:collectionId/values/         com.microsoft.azure.iotsolutions.storageadapter.webservice.v1.controllers.ValuesController.list(collectionId)
+GET    /v1/collections/:collectionId/values         @com.microsoft.azure.iotsolutions.storageadapter.webservice.v1.controllers.ValuesController.list(collectionId)
+GET    /v1/collections/:collectionId/values/        @com.microsoft.azure.iotsolutions.storageadapter.webservice.v1.controllers.ValuesController.list(collectionId)
 
-POST   /v1/collections/:collectionId/values          com.microsoft.azure.iotsolutions.storageadapter.webservice.v1.controllers.ValuesController.post(collectionId)
-POST   /v1/collections/:collectionId/values/         com.microsoft.azure.iotsolutions.storageadapter.webservice.v1.controllers.ValuesController.post(collectionId)
+POST   /v1/collections/:collectionId/values         @com.microsoft.azure.iotsolutions.storageadapter.webservice.v1.controllers.ValuesController.post(collectionId)
+POST   /v1/collections/:collectionId/values/        @com.microsoft.azure.iotsolutions.storageadapter.webservice.v1.controllers.ValuesController.post(collectionId)
 
-DELETE /v1/collections/:collectionId/values/:key    com.microsoft.azure.iotsolutions.storageadapter.webservice.v1.controllers.ValuesController.delete(collectionId, key)
-DELETE /v1/collections/:collectionId/values/:key/   com.microsoft.azure.iotsolutions.storageadapter.webservice.v1.controllers.ValuesController.delete(collectionId, key)
-
-
-
-
+DELETE /v1/collections/:collectionId/values/:key    @com.microsoft.azure.iotsolutions.storageadapter.webservice.v1.controllers.ValuesController.delete(collectionId, key)

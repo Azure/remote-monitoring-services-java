@@ -6,7 +6,7 @@ resolvers += Classpaths.sbtPluginReleases
 
 // Play framework
 // - https://github.com/playframework/playframework/tags
-addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.6.1")
+addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.6.7")
 
 // `sbt assembly`
 // - https://github.com/sbt/sbt-assembly/releases
