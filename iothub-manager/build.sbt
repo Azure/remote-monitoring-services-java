@@ -3,7 +3,7 @@
 name := "iothub-manager"
 organization := "com.microsoft.azure.iotsolutions"
 
-scalaVersion := "2.12.2"
+scalaVersion := "2.12.4"
 
 libraryDependencies ++= {
   Seq(
