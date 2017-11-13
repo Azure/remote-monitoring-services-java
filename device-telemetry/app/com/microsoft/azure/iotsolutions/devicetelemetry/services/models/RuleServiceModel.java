@@ -67,6 +67,28 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
             "",
             id,
             name,
+            enabled,
+            description,
+            groupId,
+            severity,
+            conditions
+        );
+    }
+
+    public RuleServiceModel(
+        final String eTag,
+        final String id,
+        final String name,
+        final Boolean enabled,
+        final String description,
+        final String groupId,
+        final String severity,
+        final ArrayList<ConditionServiceModel> conditions) {
+
+        this(
+            eTag,
+            id,
+            name,
             DateTime.now(DateTimeZone.UTC).toString(DATE_FORMAT),
             enabled,
             description,
@@ -76,6 +98,8 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
         );
     }
 
+    // TODO: pull date created from backend for existing rules
+    // https://github.com/Azure/device-telemetry-java/issues/103
     public RuleServiceModel(
         final String eTag,
         final String id,

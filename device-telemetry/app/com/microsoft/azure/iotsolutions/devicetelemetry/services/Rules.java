@@ -64,6 +64,7 @@ public final class Rules implements IRules {
                 }
 
                 if (result.getStatus() == NOT_FOUND) {
+                    log.info("Rule id " + id + " not found.");
                     return null;
                 }
 
@@ -290,8 +291,12 @@ public final class Rules implements IRules {
                 }
 
                 try {
-                    return getServiceModelFromJson(
-                        Json.parse(result.getBody()));
+                    RuleServiceModel rule =
+                        getServiceModelFromJson(Json.parse(result.getBody()));
+
+                    log.info("Successfully retrieved rule id " + rule.getId());
+
+                    return rule;
                 } catch (Exception e) {
                     log.error("Could not parse result from Key Value Storage: {}",
                         e.getMessage());
@@ -314,6 +319,7 @@ public final class Rules implements IRules {
                         new ExternalDependencyException(error.getMessage()));
                 }
 
+                log.info("Successfully deleted rule id " + id);
                 return true;
             });
     }
@@ -417,7 +423,6 @@ public final class Rules implements IRules {
                 JsonHelper.getNode(response, "ETag").asText(),
                 JsonHelper.getNode(response, "Key").asText(),
                 JsonHelper.getNode(jsonResultRule, "name").asText(),
-                JsonHelper.getNode(jsonResultRule, "dateCreated").asText(),
                 JsonHelper.getNode(jsonResultRule, "enabled").asBoolean(),
                 JsonHelper.getNode(jsonResultRule, "description").asText(),
                 JsonHelper.getNode(jsonResultRule, "groupId").asText(),
@@ -425,6 +430,8 @@ public final class Rules implements IRules {
                 conditions
             );
         }
+
+        log.error("Could not parse rule from json: " + response);
         return null;
     }
 }
