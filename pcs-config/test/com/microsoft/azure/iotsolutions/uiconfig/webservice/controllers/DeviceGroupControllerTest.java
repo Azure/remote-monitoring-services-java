@@ -90,7 +90,7 @@ public class DeviceGroupControllerTest {
 
     @Test(timeout = 100000)
     @Category({UnitTest.class})
-    public void creatAsyncTest() throws BaseException, ExecutionException, InterruptedException {
+    public void creatAsyncTest() throws Exception {
         String groupId = rand.NextString();
         String displayName = rand.NextString();
         Iterable<DeviceGroupCondition> conditions = Json.fromJson(Json.parse(condition), new ArrayList<DeviceGroupCondition>().getClass());
@@ -110,7 +110,7 @@ public class DeviceGroupControllerTest {
 
     @Test(timeout = 100000)
     @Category({UnitTest.class})
-    public void updateAsyncTest() throws BaseException, ExecutionException, InterruptedException {
+    public void updateAsyncTest() throws Exception {
         String groupId = rand.NextString();
         String displayName = rand.NextString();
         Iterable<DeviceGroupCondition> conditions = Json.fromJson(Json.parse(condition), new ArrayList<DeviceGroupCondition>().getClass());

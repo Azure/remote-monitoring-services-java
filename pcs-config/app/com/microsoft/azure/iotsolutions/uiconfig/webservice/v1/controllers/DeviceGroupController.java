@@ -2,10 +2,12 @@
 
 package com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.microsoft.azure.iotsolutions.uiconfig.services.IStorage;
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.*;
+import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.exceptions.BadRequestException;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models.DeviceGroupApiModel;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models.DeviceGroupListApiModel;
 import play.libs.Json;
@@ -34,13 +36,21 @@ public final class DeviceGroupController extends Controller {
         return storage.getDeviceGroupAsync(id).thenApplyAsync(m -> ok(toJson(new DeviceGroupApiModel(m))));
     }
 
-    public CompletionStage<Result> createAsync() throws BaseException {
-        DeviceGroupApiModel input = Json.fromJson(request().body().asJson(), DeviceGroupApiModel.class);
+    public CompletionStage<Result> createAsync() throws BaseException, BadRequestException {
+        JsonNode json = request().body().asJson();
+        if (json == null || json.size() == 0) {
+            throw new BadRequestException("request body is empty");
+        }
+        DeviceGroupApiModel input = Json.fromJson(json, DeviceGroupApiModel.class);
         return storage.createDeviceGroupAsync(input.ToServiceModel()).thenApplyAsync(m -> ok(toJson(new DeviceGroupApiModel(m))));
     }
 
-    public CompletionStage<Result> updateAsync(String id) throws BaseException {
-        DeviceGroupApiModel input = Json.fromJson(request().body().asJson(), DeviceGroupApiModel.class);
+    public CompletionStage<Result> updateAsync(String id) throws BaseException, BadRequestException {
+        JsonNode json = request().body().asJson();
+        if (json == null || json.size() == 0) {
+            throw new BadRequestException("request body is empty");
+        }
+        DeviceGroupApiModel input = Json.fromJson(json, DeviceGroupApiModel.class);
         return storage.updateDeviceGroupAsync(id, input.ToServiceModel(), input.getETag()).thenApplyAsync(m -> ok(toJson(new DeviceGroupApiModel(m))));
     }
 

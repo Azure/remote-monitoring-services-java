@@ -5,6 +5,7 @@ package com.microsoft.azure.iotsolutions.uiconfig.webservice.filters;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.*;
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.*;
+import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.exceptions.BadRequestException;
 import com.typesafe.config.Config;
 import play.Environment;
 import play.api.OptionalSourceMapper;
@@ -47,7 +48,11 @@ public class ErrorHandler extends DefaultHttpErrorHandler {
     public CompletionStage<Result> onServerError(RequestHeader request, Throwable e) {
         if (e instanceof CompletionException) {
             Throwable cause = e.getCause();
-            if (cause instanceof ResourceNotFoundException) {
+            if (cause instanceof BadRequestException) {
+                return CompletableFuture.completedFuture(
+                    Results.badRequest(getErrorResponse(cause, true))
+                );
+            } else if (cause instanceof ResourceNotFoundException) {
                 return CompletableFuture.completedFuture(
                     Results.notFound(getErrorResponse(cause, true))
                 );
