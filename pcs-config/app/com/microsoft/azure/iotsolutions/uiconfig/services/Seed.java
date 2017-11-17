@@ -131,7 +131,7 @@ public class Seed implements ISeed {
 
     private CompletionStage SeedAsync(String template) throws ExternalDependencyException, InvalidInputException {
         String content = "";
-        try (InputStream is = this.getClass().getResourceAsStream("data/default.json")) {
+        try (InputStream is = this.getClass().getResourceAsStream("/resources/data/default.json")) {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
                 String line = reader.readLine();
                 while (line != null) {
