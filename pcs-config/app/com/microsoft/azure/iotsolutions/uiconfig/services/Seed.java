@@ -11,17 +11,18 @@ import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.ExternalDep
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.ResourceNotFoundException;
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.*;
+import com.microsoft.azure.iotsolutions.uiconfig.services.models.DeviceGroup;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.Template;
 import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.IServicesConfig;
 import play.Logger;
 import play.libs.Json;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
@@ -34,7 +35,7 @@ public class Seed implements ISeed {
     private final String SeedCollectionId = "solution-settings";
     private final String MutexKey = "seedMutex";
     private final String CompletedFlagKey = "seedCompleted";
-    private int mutexTimeout = 60 * 5;
+    private int mutexTimeout = 60 * 5;// seconds
 
     private IServicesConfig config;
     private IStorageMutex mutex;
@@ -58,18 +59,6 @@ public class Seed implements ISeed {
         this.storageClient = storageClient;
         this.simulationClient = simulationClient;
         this.telemetryClient = telemetryClient;
-        // global setting is not recommend for application_onStart event, PLS refer here for details :https://www.playframework.com/documentation/2.6.x/GlobalSettings
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(10000);
-                    TrySeedAsync().toCompletableFuture().get();
-                } catch (Exception e) {
-                    Logger.of(Seed.class).error("TrySeedAsync error");
-                }
-            }
-        }).start();
     }
 
     @Override
@@ -77,8 +66,7 @@ public class Seed implements ISeed {
         try {
             if (!(this.mutex.EnterAsync(SeedCollectionId, MutexKey, this.mutexTimeout).toCompletableFuture().get().booleanValue())) {
                 this.log.info("Seed skipped (conflict)");
-                return CompletableFuture.runAsync(() -> {
-                });
+                return CompletableFuture.completedFuture(Optional.empty());
             }
         } catch (InterruptedException | ExecutionException | BaseException e) {
             log.error("mutex.EnterAsync failed");
@@ -87,8 +75,7 @@ public class Seed implements ISeed {
         try {
             if (this.CheckCompletedFlagAsync().toCompletableFuture().get().booleanValue()) {
                 this.log.info("Seed skipped (completed)");
-                return CompletableFuture.runAsync(() -> {
-                });
+                return CompletableFuture.completedFuture(Optional.empty());
             }
         } catch (InterruptedException | ExecutionException e) {
             log.error("CheckCompletedFlagAsync failed");
@@ -101,12 +88,11 @@ public class Seed implements ISeed {
             this.log.info("Seed end");
             this.SetCompletedFlagAsync().toCompletableFuture().get();
             this.mutex.LeaveAsync(SeedCollectionId, MutexKey).toCompletableFuture().get();
-        } catch (InterruptedException | ExecutionException | BaseException e) {
-            log.error("Seed failed");
-            throw new ExternalDependencyException("Seed failed");
+            return CompletableFuture.completedFuture(Optional.empty());
+        } catch (Exception e) {
+            log.error("Seed failed", e);
+            throw new ExternalDependencyException("Seed failed", e);
         }
-        return CompletableFuture.runAsync(() -> {
-        });
     }
 
     private CompletionStage<Boolean> CheckCompletedFlagAsync() throws ExternalDependencyException {
@@ -114,7 +100,7 @@ public class Seed implements ISeed {
             return this.storageClient.getAsync(SeedCollectionId, CompletedFlagKey).thenApplyAsync(m -> new Boolean(true));
         } catch (ResourceNotFoundException e) {
             log.error(String.format("%s,%s is not found", SeedCollectionId, CompletedFlagKey));
-            return CompletableFuture.supplyAsync(() -> new Boolean(false));
+            return CompletableFuture.completedFuture(new Boolean(false));
         } catch (BaseException e) {
             throw new ExternalDependencyException("CheckCompletedFlagAsync failed");
         }
@@ -328,7 +314,7 @@ public class Seed implements ISeed {
         return this.SeedSingleTemplateAsync(content);
     }
 
-    private CompletionStage SeedSingleTemplateAsync(String content) throws InvalidInputException {
+    private CompletionStage SeedSingleTemplateAsync(String content) throws InvalidInputException, ExternalDependencyException {
         Template template;
         try {
             template = Json.fromJson(Json.parse(content), Template.class);
@@ -353,35 +339,39 @@ public class Seed implements ISeed {
         if (rulesWithInvalidGroupId.size() > 0) {
             this.log.warn("Invalid group ID found in rules");
         }
-        StreamSupport.stream(template.getGroups().spliterator(), false).forEach(m -> {
+        for (DeviceGroup group : template.getGroups()) {
             try {
-                this.storage.updateDeviceGroupAsync(m.getId(), m, "*");
-            } catch (Exception ex) {
-                this.log.error(String.format("Failed to seed default group {group.DisplayName}", m.getDisplayName()));
+                this.storage.updateDeviceGroupAsync(group.getId(), group, "*");
+            } catch (Exception e) {
+                String errorMessage = String.format("Failed to seed default group %s", group.getDisplayName());
+                this.log.error(errorMessage, e);
+                throw new ExternalDependencyException(errorMessage, e);
             }
-        });
+        }
 
-        StreamSupport.stream(template.getRules().spliterator(), false).forEach(m -> {
+        for (RuleApiModel rule : template.getRules()) {
             try {
-                this.telemetryClient.UpdateRuleAsync(m, "*");
-            } catch (Exception ex) {
-                this.log.error(String.format("Failed to seed default rule %s", m.getDescription()));
+                this.telemetryClient.UpdateRuleAsync(rule, "*");
+            } catch (Exception e) {
+                String errorMessage = String.format("Failed to seed default rule %s", rule.getDescription());
+                this.log.error(errorMessage, e);
+                throw new ExternalDependencyException(errorMessage, e);
             }
-        });
+        }
 
         try {
             SimulationApiModel simulationModel = this.simulationClient.GetSimulationAsync().toCompletableFuture().get();
-
             if (simulationModel != null) {
                 this.log.info("Skip seed simulation since there is already one simuation");
             } else {
                 simulationModel = new SimulationApiModel(Lists.newArrayList(template.getDeviceModels()), "*", "1");
                 this.simulationClient.UpdateSimulationAsync(simulationModel).toCompletableFuture().get();
             }
-        } catch (Exception ex) {
-            this.log.info("Failed to seed default simulation");
+        } catch (Exception e) {
+            String errorMessage = "Failed to seed default simulation";
+            this.log.error(errorMessage, e);
+            throw new ExternalDependencyException(errorMessage, e);
         }
-        return CompletableFuture.runAsync(() -> {
-        });
+        return CompletableFuture.completedFuture(Optional.empty());
     }
 }

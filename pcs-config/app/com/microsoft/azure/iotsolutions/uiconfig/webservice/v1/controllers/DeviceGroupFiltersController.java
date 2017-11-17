@@ -42,7 +42,7 @@ public class DeviceGroupFiltersController extends Controller {
     }
 
     @With(DepressedFilter.class)
-    public CompletionStage<Result> rebuildAsync() throws BaseException, InterruptedException, ExecutionException, URISyntaxException {
+    public CompletionStage<Result> rebuildAsync() throws Exception {
         return cache.RebuildCacheAsync(true).thenApplyAsync(m -> ok());
     }
 }

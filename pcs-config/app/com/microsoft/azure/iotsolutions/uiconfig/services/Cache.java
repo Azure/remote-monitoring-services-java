@@ -18,12 +18,11 @@ import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.IServicesConfi
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.DateTimeParser;
 import play.Logger;
 import play.libs.Json;
 
-import java.net.URISyntaxException;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
@@ -50,18 +49,6 @@ public class Cache implements ICache {
         this.simulationClient = simulationClient;
         this.cacheTTL = config.getCacheTTL();
         this.rebuildTimeout = config.getCacheRebuildTimeout();
-        // global setting is not recommend for application_onStart event, PLS refer here for details :https://www.playframework.com/documentation/2.6.x/GlobalSettings
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(10000);
-                    RebuildCacheAsync().toCompletableFuture().get();
-                } catch (Exception e) {
-                    Logger.of(Seed.class).error("RebuildCacheAsync");
-                }
-            }
-        }).start();
     }
 
     @Override
@@ -129,66 +116,55 @@ public class Cache implements ICache {
     }
 
     @Override
-    public CompletionStage RebuildCacheAsync(boolean force) throws BaseException, ExecutionException, InterruptedException, URISyntaxException {
-        {
-            int retry = 5;
-            while (true) {
-                HashSet<String> reportedNames = null;
-                DeviceTwinName twinNames = null;
-                ValueApiModel cache = null;
-                String etag = null;
+    public CompletionStage RebuildCacheAsync(boolean force) throws Exception {
+        HashSet<String> reportedNames = null;
+        DeviceTwinName twinNames = null;
+        ValueApiModel cache = null;
+        String etag = null;
 
-                try {
-                    cache = this.storageClient.getAsync(CacheCollectionId, CacheKey).toCompletableFuture().get();
-                } catch (Exception e) {
-                    log.info(String.format("RebuildCacheAsync:%s:%s not found.", CacheCollectionId, CacheKey));
-                }
+        try {
+            cache = this.storageClient.getAsync(CacheCollectionId, CacheKey).toCompletableFuture().get();
+        } catch (Exception e) {
+            log.info(String.format("RebuildCacheAsync:%s:%s not found.", CacheCollectionId, CacheKey));
+        }
 
-                boolean needBuild = this.NeedBuild(force, cache);
-                if (!needBuild) {
-                    return CompletableFuture.runAsync(() -> {
-                    });
-                }
+        boolean needBuild = this.NeedBuild(force, cache);
+        if (!needBuild) {
+            return CompletableFuture.completedFuture(Optional.empty());
+        }
 
-                try {
-                    CompletableFuture<DeviceTwinName> twinNamesTask = this.iotHubClient.GetDeviceTwinNamesAsync().toCompletableFuture();
-                    CompletableFuture<HashSet<String>> reportedNamesTask = this.simulationClient.GetDevicePropertyNamesAsync().toCompletableFuture();
-                    CompletableFuture.allOf(twinNamesTask, reportedNamesTask).get();
-                    twinNames = twinNamesTask.get();
-                    reportedNames = reportedNamesTask.get();
-                    reportedNames.addAll(twinNames.getReportedProperties());
-                } catch (Exception e) {
-                    log.info(String.format("retry %d for %s:%s  IothubManagerService and SimulationService  are not both ready,wait 10 seconds", retry, CacheCollectionId, CacheKey));
-                    if (retry-- < 1) {
-                        return CompletableFuture.runAsync(() -> {
-                        });
-                    }
-                    Thread.sleep(10000);
-                    continue;
-                }
+        try {
+            CompletableFuture<DeviceTwinName> twinNamesTask = this.iotHubClient.GetDeviceTwinNamesAsync().toCompletableFuture();
+            CompletableFuture<HashSet<String>> reportedNamesTask = this.simulationClient.GetDevicePropertyNamesAsync().toCompletableFuture();
+            CompletableFuture.allOf(twinNamesTask, reportedNamesTask).get();
+            twinNames = twinNamesTask.get();
+            reportedNames = reportedNamesTask.get();
+            reportedNames.addAll(twinNames.getReportedProperties());
+        } catch (Exception e) {
+            String errorMessage = "error to get DevicePropertyNames or DeviceTwinNames";
+            log.warn(errorMessage, e);
+            throw new ExternalDependencyException(errorMessage, e);
+        }
 
-                if (cache != null) {
-                    CacheValue model = Json.fromJson(Json.parse(cache.getData()), CacheValue.class);
-                    model.setRebuilding(true);
-                    ValueApiModel response = this.storageClient.updateAsync(CacheCollectionId, CacheKey, Json.stringify(Json.toJson(model)),
-                            cache.getETag()).
-                            toCompletableFuture().get();
-                    etag = response.getETag();
-                } else {
-                    ValueApiModel response = this.storageClient.updateAsync(CacheCollectionId, CacheKey,
-                            Json.stringify(Json.toJson(new CacheValue(null, null, false))), null).
-                            toCompletableFuture().get();
-                    etag = response.getETag();
-                }
-                String value = Json.stringify(Json.toJson(new CacheValue(twinNames.getTags(), reportedNames, false)));
-                try {
-                    return this.storageClient.updateAsync(CacheCollectionId, CacheKey, value, etag).thenAcceptAsync(m -> {
-                    });
-                } catch (ConflictingResourceException e) {
-                    log.info("rebuild Conflicted ");
-                    continue;
-                }
-            }
+        if (cache != null) {
+            CacheValue model = Json.fromJson(Json.parse(cache.getData()), CacheValue.class);
+            model.setRebuilding(true);
+            ValueApiModel response = this.storageClient.updateAsync(CacheCollectionId, CacheKey, Json.stringify(Json.toJson(model)),
+                    cache.getETag()).
+                    toCompletableFuture().get();
+            etag = response.getETag();
+        } else {
+            ValueApiModel response = this.storageClient.updateAsync(CacheCollectionId, CacheKey,
+                    Json.stringify(Json.toJson(new CacheValue(null, null, false))), null).
+                    toCompletableFuture().get();
+            etag = response.getETag();
+        }
+        String value = Json.stringify(Json.toJson(new CacheValue(twinNames.getTags(), reportedNames, false)));
+        try {
+            return this.storageClient.updateAsync(CacheCollectionId, CacheKey, value, etag);
+        } catch (ConflictingResourceException e) {
+            log.warn("rebuild Conflicted ");
+            throw e;
         }
     }
 

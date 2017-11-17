@@ -28,7 +28,7 @@ public class IothubManagerServiceClient implements IIothubManagerServiceClient {
     @Override
     public CompletionStage<DeviceTwinName> GetDeviceTwinNamesAsync() throws URISyntaxException {
         HttpRequest request = new HttpRequest();
-        request.setUriFromString(String.format("%s/Devices", this.serviceUri));
+        request.setUriFromString(String.format("%s/devices", this.serviceUri));
         if (this.serviceUri.toLowerCase().startsWith("https:")) {
             request.getOptions().setAllowInsecureSSLServer(true);
         }

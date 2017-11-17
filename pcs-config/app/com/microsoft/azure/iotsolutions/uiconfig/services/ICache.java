@@ -16,9 +16,9 @@ public interface ICache {
 
     CompletionStage<CacheValue> SetCacheAsync(CacheValue cache) throws BaseException, ExecutionException, InterruptedException;
 
-    CompletionStage RebuildCacheAsync(boolean force) throws BaseException, ExecutionException, InterruptedException, URISyntaxException;
+    CompletionStage RebuildCacheAsync(boolean force) throws Exception;
 
-    default public CompletionStage RebuildCacheAsync() throws InterruptedException, ExecutionException, BaseException, URISyntaxException {
+    default public CompletionStage RebuildCacheAsync() throws Exception {
         return RebuildCacheAsync(false);
     }
 }
