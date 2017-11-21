@@ -29,4 +29,13 @@ public class QueryConditionTranslatorTest {
         String expected = "Tags.Building = 43 and Properties.Reported.Type = 'Chiller'";
         Assert.assertEquals(query, expected);
     }
+
+    @Test()
+    @Category({UnitTest.class})
+    public void ToQueryEmptyStringTest() throws Exception {
+        Assert.assertEquals(QueryConditionTranslator.ToQueryString(""), "");
+        Assert.assertEquals(QueryConditionTranslator.ToQueryString("\"\""), "''");
+        Assert.assertEquals(QueryConditionTranslator.ToQueryString("[]"), "");
+        Assert.assertEquals(QueryConditionTranslator.ToQueryString("[  ]"), "");
+    }
 }
