@@ -26,7 +26,7 @@ public class SimulationServiceClient implements ISimulationServiceClient {
     }
 
     @Override
-    public CompletionStage<HashSet<String>> GetDevicePropertyNamesAsync() throws URISyntaxException {
+    public CompletionStage<HashSet<String>> getDevicePropertyNamesAsync() throws URISyntaxException {
         HttpRequest request = new HttpRequest();
         request.setUriFromString(String.format("%s/DeviceModels", this.serviceUri));
         if (this.serviceUri.toLowerCase().startsWith("https:")) {

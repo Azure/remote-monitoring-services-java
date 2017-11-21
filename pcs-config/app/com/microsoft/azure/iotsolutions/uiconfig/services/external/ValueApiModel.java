@@ -41,7 +41,7 @@ public class ValueApiModel {
         this.data = data;
     }
 
-    @JsonProperty("Etag")
+    @JsonProperty("ETag")
     public String getETag() {
         return eTag;
     }

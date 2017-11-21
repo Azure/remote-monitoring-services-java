@@ -7,14 +7,14 @@ import java.util.HashSet;
 
 public class HashSetHelper {
 
-    public static void PreparePropNames(HashSet<String> set, Object obj, String prefix) {
+    public static void preparePropNames(HashSet<String> set, Object obj, String prefix) {
         if (obj instanceof String || obj instanceof Boolean || obj instanceof Number) {
             set.add(prefix);
             return;
         }
         HashMap<String, ? extends Object> map = (HashMap<String, ? extends Object>) obj;
         map.entrySet().stream().forEach(m -> {
-            PreparePropNames(set, m.getValue(), String.format("%s.%s", prefix, m.getKey()));
+            preparePropNames(set, m.getValue(), String.format("%s.%s", prefix, m.getKey()));
         });
     }
 }

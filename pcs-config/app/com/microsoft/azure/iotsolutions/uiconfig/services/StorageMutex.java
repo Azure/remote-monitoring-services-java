@@ -26,7 +26,7 @@ public class StorageMutex implements IStorageMutex {
         this.storageClient = storageClient;
     }
 
-    public CompletionStage<Boolean> EnterAsync(String collectionId, String key, int timeout) throws InterruptedException, BaseException, ExecutionException {
+    public CompletionStage<Boolean> enterAsync(String collectionId, String key, int timeout) throws InterruptedException, BaseException, ExecutionException {
         String etag = null;
         while (true) {
             try {
@@ -65,7 +65,7 @@ public class StorageMutex implements IStorageMutex {
         }
     }
 
-    public CompletionStage LeaveAsync(String collectionId, String key) throws BaseException {
+    public CompletionStage leaveAsync(String collectionId, String key) throws BaseException {
         return this.storageClient.updateAsync(collectionId, key, "false", "*");
     }
 }

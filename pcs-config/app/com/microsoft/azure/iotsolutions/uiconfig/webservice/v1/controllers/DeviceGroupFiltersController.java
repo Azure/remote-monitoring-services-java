@@ -13,7 +13,6 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.With;
 
-import java.net.URISyntaxException;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 
@@ -29,20 +28,20 @@ public class DeviceGroupFiltersController extends Controller {
     }
 
     public CompletionStage<Result> getAllAsync() throws BaseException {
-        return cache.GetCacheAsync().thenApplyAsync(m ->
+        return cache.getCacheAsync().thenApplyAsync(m ->
                 ok(toJson(new DeviceGroupFiltersApiModel(m)))
         );
     }
 
     public CompletionStage<Result> setAsync() throws BaseException, ExecutionException, InterruptedException {
         DeviceGroupFiltersApiModel input = Json.fromJson(request().body().asJson(), DeviceGroupFiltersApiModel.class);
-        return cache.SetCacheAsync(input.ToServiceModel()).thenApplyAsync(m ->
+        return cache.setCacheAsync(input.ToServiceModel()).thenApplyAsync(m ->
                 ok()
         );
     }
 
     @With(DepressedFilter.class)
     public CompletionStage<Result> rebuildAsync() throws Exception {
-        return cache.RebuildCacheAsync(true).thenApplyAsync(m -> ok());
+        return cache.rebuildCacheAsync(true).thenApplyAsync(m -> ok());
     }
 }

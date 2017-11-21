@@ -43,7 +43,7 @@ public class CacheTest {
         mockIothubManagerClient = Mockito.mock(IIothubManagerServiceClient.class);
         mockSimulationClient = Mockito.mock(ISimulationServiceClient.class);
         cacheModel = "{\"Rebuilding\": false,\"Tags\": [ \"c\", \"a\", \"y\", \"z\" ],\"Reported\": [\"1\",\"9\",\"2\",\"3\"] }";
-        config = new ServicesConfig(null, null, null, null, 0, 0, null, null);
+        config = new ServicesConfig(null, null, null, null, 0, 0, null, null,null);
     }
 
     @Test(timeout = 100000)
@@ -52,7 +52,7 @@ public class CacheTest {
         Mockito.when(mockStorageAdapterClient.getAsync(Mockito.any(String.class), Mockito.any(String.class)))
                 .thenReturn(CompletableFuture.supplyAsync(() -> new ValueApiModel("", this.cacheModel, "", metaData)));
         cache = new Cache(mockStorageAdapterClient, mockIothubManagerClient, mockSimulationClient, config);
-        CacheValue result = this.cache.GetCacheAsync().toCompletableFuture().get();
+        CacheValue result = this.cache.getCacheAsync().toCompletableFuture().get();
         assertEquals(String.join(",", new TreeSet<String>(result.getTags())), "a,c,y,z");
         assertEquals(String.join(",", new TreeSet<String>(result.getReported())), "1,2,3,9");
     }
@@ -70,7 +70,7 @@ public class CacheTest {
                 Mockito.any(String.class), Mockito.any(String.class)))
                 .thenReturn(CompletableFuture.supplyAsync(() -> new ValueApiModel("", Json.stringify(Json.toJson(resultModel)), "", null)));
         cache = new Cache(mockStorageAdapterClient, mockIothubManagerClient, mockSimulationClient, config);
-        CacheValue result = this.cache.SetCacheAsync(model).toCompletableFuture().get();
+        CacheValue result = this.cache.setCacheAsync(model).toCompletableFuture().get();
         assertEquals(String.join(",", new TreeSet<String>(result.getTags())), "#,@,a,c,y,z");
         assertEquals(String.join(",", new TreeSet<String>(result.getReported())), "1,11,12,2,3,9");
     }

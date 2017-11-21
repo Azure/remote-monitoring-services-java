@@ -62,9 +62,9 @@ public class Seed implements ISeed {
     }
 
     @Override
-    public CompletionStage TrySeedAsync() throws ExternalDependencyException {
+    public CompletionStage trySeedAsync() throws ExternalDependencyException {
         try {
-            if (!(this.mutex.EnterAsync(SeedCollectionId, MutexKey, this.mutexTimeout).toCompletableFuture().get().booleanValue())) {
+            if (!(this.mutex.enterAsync(SeedCollectionId, MutexKey, this.mutexTimeout).toCompletableFuture().get().booleanValue())) {
                 this.log.info("Seed skipped (conflict)");
                 return CompletableFuture.completedFuture(Optional.empty());
             }
@@ -73,7 +73,7 @@ public class Seed implements ISeed {
             throw new ExternalDependencyException("Seed failed");
         }
         try {
-            if (this.CheckCompletedFlagAsync().toCompletableFuture().get().booleanValue()) {
+            if (this.checkCompletedFlagAsync().toCompletableFuture().get().booleanValue()) {
                 this.log.info("Seed skipped (completed)");
                 return CompletableFuture.completedFuture(Optional.empty());
             }
@@ -84,10 +84,10 @@ public class Seed implements ISeed {
 
         try {
             this.log.info("Seed begin");
-            this.SeedAsync(this.config.getSeedTemplate());
+            this.seedAsync(this.config.getSeedTemplate());
             this.log.info("Seed end");
-            this.SetCompletedFlagAsync().toCompletableFuture().get();
-            this.mutex.LeaveAsync(SeedCollectionId, MutexKey).toCompletableFuture().get();
+            this.setCompletedFlagAsync().toCompletableFuture().get();
+            this.mutex.leaveAsync(SeedCollectionId, MutexKey).toCompletableFuture().get();
             return CompletableFuture.completedFuture(Optional.empty());
         } catch (Exception e) {
             log.error("Seed failed", e);
@@ -95,7 +95,7 @@ public class Seed implements ISeed {
         }
     }
 
-    private CompletionStage<Boolean> CheckCompletedFlagAsync() throws ExternalDependencyException {
+    private CompletionStage<Boolean> checkCompletedFlagAsync() throws ExternalDependencyException {
         try {
             return this.storageClient.getAsync(SeedCollectionId, CompletedFlagKey).thenApplyAsync(m -> new Boolean(true));
         } catch (ResourceNotFoundException e) {
@@ -106,7 +106,7 @@ public class Seed implements ISeed {
         }
     }
 
-    private CompletionStage SetCompletedFlagAsync() throws ExternalDependencyException {
+    private CompletionStage setCompletedFlagAsync() throws ExternalDependencyException {
         try {
             return this.storageClient.updateAsync(SeedCollectionId, CompletedFlagKey, "true", "*");
         } catch (BaseException e) {
@@ -115,7 +115,7 @@ public class Seed implements ISeed {
         }
     }
 
-    private CompletionStage SeedAsync(String template) throws ExternalDependencyException, InvalidInputException {
+    private CompletionStage seedAsync(String template) throws ExternalDependencyException, InvalidInputException {
         String content = "";
         try (InputStream is = this.getClass().getResourceAsStream("/resources/data/default.json")) {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
@@ -311,10 +311,10 @@ public class Seed implements ISeed {
                     "  ]" +
                     "}";
         }
-        return this.SeedSingleTemplateAsync(content);
+        return this.seedSingleTemplateAsync(content);
     }
 
-    private CompletionStage SeedSingleTemplateAsync(String content) throws InvalidInputException, ExternalDependencyException {
+    private CompletionStage seedSingleTemplateAsync(String content) throws InvalidInputException, ExternalDependencyException {
         Template template;
         try {
             template = Json.fromJson(Json.parse(content), Template.class);
@@ -351,7 +351,7 @@ public class Seed implements ISeed {
 
         for (RuleApiModel rule : template.getRules()) {
             try {
-                this.telemetryClient.UpdateRuleAsync(rule, "*");
+                this.telemetryClient.updateRuleAsync(rule, "*");
             } catch (Exception e) {
                 String errorMessage = String.format("Failed to seed default rule %s", rule.getDescription());
                 this.log.error(errorMessage, e);
@@ -360,12 +360,12 @@ public class Seed implements ISeed {
         }
 
         try {
-            SimulationApiModel simulationModel = this.simulationClient.GetSimulationAsync().toCompletableFuture().get();
+            SimulationApiModel simulationModel = this.simulationClient.getSimulationAsync().toCompletableFuture().get();
             if (simulationModel != null) {
                 this.log.info("Skip seed simulation since there is already one simuation");
             } else {
                 simulationModel = new SimulationApiModel(Lists.newArrayList(template.getDeviceModels()), "*", "1");
-                this.simulationClient.UpdateSimulationAsync(simulationModel).toCompletableFuture().get();
+                this.simulationClient.updateSimulationAsync(simulationModel).toCompletableFuture().get();
             }
         } catch (Exception e) {
             String errorMessage = "Failed to seed default simulation";

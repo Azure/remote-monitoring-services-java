@@ -56,7 +56,7 @@ public class RecurringTasks implements IRecurringTasks {
         while (true) {
             try {
                 this.log.info("Creating seed data...");
-                this.seed.TrySeedAsync().toCompletableFuture().get(SEED_TIMEOUT_SECS, TimeUnit.SECONDS);
+                this.seed.trySeedAsync().toCompletableFuture().get(SEED_TIMEOUT_SECS, TimeUnit.SECONDS);
                 this.log.info("Seed data created");
                 return;
             } catch (Exception e) {
@@ -79,11 +79,11 @@ public class RecurringTasks implements IRecurringTasks {
         while (true) {
             try {
                 this.log.info("Creating cache...");
-                this.cache.RebuildCacheAsync().toCompletableFuture().get(CACHE_TIMEOUT_SECS * 1000, TimeUnit.SECONDS);
+                this.cache.rebuildCacheAsync().toCompletableFuture().get(CACHE_TIMEOUT_SECS * 1000, TimeUnit.SECONDS);
                 this.log.info("Cache created");
                 return;
             } catch (Exception e) {
-                this.log.warn("Cache creation failed, will retry in few seconds");
+                this.log.warn("Cache creation failed, will retry in few seconds", e);
             }
 
             this.log.warn("Pausing thread before retrying cache creation");
@@ -114,7 +114,7 @@ public class RecurringTasks implements IRecurringTasks {
     private void upateCache() {
         try {
             this.log.info("Updating cache...");
-            this.cache.RebuildCacheAsync().toCompletableFuture().get(CACHE_TIMEOUT_SECS * 1000, TimeUnit.SECONDS);
+            this.cache.rebuildCacheAsync().toCompletableFuture().get(CACHE_TIMEOUT_SECS * 1000, TimeUnit.SECONDS);
             this.log.info("Cache updated");
         } catch (Exception e) {
             this.log.warn("Cache update failed, will retry later");

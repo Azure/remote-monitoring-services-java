@@ -6,19 +6,18 @@ import com.google.inject.ImplementedBy;
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.BaseException;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.CacheValue;
 
-import java.net.URISyntaxException;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 
 @ImplementedBy(Cache.class)
 public interface ICache {
-    CompletionStage<CacheValue> GetCacheAsync();
+    CompletionStage<CacheValue> getCacheAsync();
 
-    CompletionStage<CacheValue> SetCacheAsync(CacheValue cache) throws BaseException, ExecutionException, InterruptedException;
+    CompletionStage<CacheValue> setCacheAsync(CacheValue cache) throws BaseException, ExecutionException, InterruptedException;
 
-    CompletionStage RebuildCacheAsync(boolean force) throws Exception;
+    CompletionStage rebuildCacheAsync(boolean force) throws Exception;
 
-    default public CompletionStage RebuildCacheAsync() throws Exception {
-        return RebuildCacheAsync(false);
+    default CompletionStage rebuildCacheAsync() throws Exception {
+        return rebuildCacheAsync(false);
     }
 }

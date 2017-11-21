@@ -27,10 +27,10 @@ public class DeviceListApiModel {
         HashSet<String> reportedSet = new HashSet<>();
         this.items.stream().forEach(m -> {
             m.getTags().entrySet().forEach(n -> {
-                HashSetHelper.PreparePropNames(tagSet, n.getValue(), n.getKey());
+                HashSetHelper.preparePropNames(tagSet, n.getValue(), n.getKey());
             });
             m.getProperties().getReported().entrySet().forEach(n -> {
-                HashSetHelper.PreparePropNames(reportedSet, n.getValue(), n.getKey());
+                HashSetHelper.preparePropNames(reportedSet, n.getValue(), n.getKey());
             });
         });
         return new DeviceTwinName(tagSet, reportedSet);

@@ -12,21 +12,21 @@ import java.util.concurrent.CompletionStage;
 @ImplementedBy(HttpClientWrapper.class)
 public interface IHttpClientWrapper {
 
-    <T> CompletionStage<T> GetAsync(String uri, String description, Class<T> type, boolean acceptNotFound) throws URISyntaxException, ExternalDependencyException;
+    <T> CompletionStage<T> getAsync(String uri, String description, Class<T> type, boolean acceptNotFound) throws URISyntaxException, ExternalDependencyException;
 
-    CompletionStage PostAsync(String uri, String description, Object content) throws URISyntaxException, UnsupportedEncodingException, ExternalDependencyException;
+    CompletionStage postAsync(String uri, String description, Object content) throws URISyntaxException, UnsupportedEncodingException, ExternalDependencyException;
 
-    CompletionStage PutAsync(String uri, String description, Object content) throws URISyntaxException, UnsupportedEncodingException, ExternalDependencyException;
+    CompletionStage putAsync(String uri, String description, Object content) throws URISyntaxException, UnsupportedEncodingException, ExternalDependencyException;
 
-    default <T> CompletionStage<T> GetAsync(String uri, String description, Class<T> type) throws URISyntaxException, ExternalDependencyException {
-        return GetAsync(uri, description, type, false);
+    default <T> CompletionStage<T> getAsync(String uri, String description, Class<T> type) throws URISyntaxException, ExternalDependencyException {
+        return getAsync(uri, description, type, false);
     }
 
-    default CompletionStage PostAsync(String uri, String description) throws UnsupportedEncodingException, ExternalDependencyException, URISyntaxException {
-        return PostAsync(uri, description, null);
+    default CompletionStage postAsync(String uri, String description) throws UnsupportedEncodingException, ExternalDependencyException, URISyntaxException {
+        return postAsync(uri, description, null);
     }
 
-    default CompletionStage PutAsync(String uri, String description) throws UnsupportedEncodingException, ExternalDependencyException, URISyntaxException {
-        return PutAsync(uri, description, null);
+    default CompletionStage putAsync(String uri, String description) throws UnsupportedEncodingException, ExternalDependencyException, URISyntaxException {
+        return putAsync(uri, description, null);
     }
 }

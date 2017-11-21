@@ -20,6 +20,6 @@ public class SeedController extends Controller {
     }
 
     public CompletionStage<Result> postAsync() throws ExternalDependencyException {
-        return seed.TrySeedAsync().thenApplyAsync(m -> ok());
+        return seed.trySeedAsync().thenApplyAsync(m -> ok());
     }
 }

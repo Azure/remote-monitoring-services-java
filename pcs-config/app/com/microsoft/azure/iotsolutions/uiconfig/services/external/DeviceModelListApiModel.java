@@ -26,7 +26,7 @@ public class DeviceModelListApiModel {
         HashSet<String> set = new HashSet<>();
         StreamSupport.stream(items.spliterator(), false).forEach(m -> {
             m.getProperties().entrySet().stream().forEach(n -> {
-                HashSetHelper.PreparePropNames(set, n.getValue(), n.getKey());
+                HashSetHelper.preparePropNames(set, n.getValue(), n.getKey());
             });
         });
         return set;

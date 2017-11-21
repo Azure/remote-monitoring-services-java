@@ -10,5 +10,5 @@ import java.util.concurrent.CompletionStage;
 
 @ImplementedBy(SimulationServiceClient.class)
 public interface ISimulationServiceClient {
-    CompletionStage<HashSet<String>> GetDevicePropertyNamesAsync() throws URISyntaxException;
+    CompletionStage<HashSet<String>> getDevicePropertyNamesAsync() throws URISyntaxException;
 }

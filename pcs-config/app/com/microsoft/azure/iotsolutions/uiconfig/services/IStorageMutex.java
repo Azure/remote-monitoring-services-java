@@ -11,7 +11,7 @@ import java.util.concurrent.ExecutionException;
 @ImplementedBy(StorageMutex.class)
 public interface IStorageMutex {
 
-    CompletionStage<Boolean> EnterAsync(String collectionId, String key, int timeout) throws BaseException, ExecutionException, InterruptedException;
+    CompletionStage<Boolean> enterAsync(String collectionId, String key, int timeout) throws BaseException, ExecutionException, InterruptedException;
 
-    CompletionStage LeaveAsync(String collectionId, String key) throws BaseException;
+    CompletionStage leaveAsync(String collectionId, String key) throws BaseException;
 }

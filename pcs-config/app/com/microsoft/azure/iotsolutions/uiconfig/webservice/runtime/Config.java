@@ -2,7 +2,6 @@
 
 package com.microsoft.azure.iotsolutions.uiconfig.webservice.runtime;
 
-import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.InvalidConfigurationException;
 import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.ServicesConfig;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.auth.ClientAuthConfig;
@@ -25,6 +24,7 @@ public class Config implements IConfig {
     private final String REBUILD_TIMEOUT = APPLICATION_KEY + "rebuild_timeout";
     private final String SEED_TEMPLATEKEY = APPLICATION_KEY + "seed-template";
     private final String BINGMAP_KEY = APPLICATION_KEY + "bingmap-key";
+    private final String CACHE_WHITELIST_KEY = APPLICATION_KEY + "cache_whitelist";
 
     private final String CLIENT_AUTH_KEY = APPLICATION_KEY + "client-auth.";
     private final String AUTH_REQUIRED_KEY = CLIENT_AUTH_KEY + "auth_required";
@@ -55,7 +55,8 @@ public class Config implements IConfig {
                 this.data.getInt(CACHE_TTL),
                 this.data.getInt(REBUILD_TIMEOUT),
                 this.data.getString(SEED_TEMPLATEKEY),
-                this.data.getString(BINGMAP_KEY));
+                this.data.getString(BINGMAP_KEY),
+                this.data.getStringList(CACHE_WHITELIST_KEY));
         return servicesConfig;
     }
 

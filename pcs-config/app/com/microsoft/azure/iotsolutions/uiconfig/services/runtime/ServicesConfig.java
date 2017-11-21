@@ -2,6 +2,8 @@
 
 package com.microsoft.azure.iotsolutions.uiconfig.services.runtime;
 
+import java.util.List;
+
 /**
  * Service layer configuration
  */
@@ -15,6 +17,7 @@ public class ServicesConfig implements IServicesConfig {
     private String hubManagerApiUrl;
     private int cacheTTL;
     private int cacheRebuildTimeout;
+    private List<String> cacheWhiteList;
 
     public String getBingMapKey() {
         return bingMapKey;
@@ -38,7 +41,7 @@ public class ServicesConfig implements IServicesConfig {
     }
 
     public ServicesConfig(String telemetryApiUrl, String storageAdapterApiUrl, String deviceSimulationApiUrl,
-                          String hubManagerApiUrl, int cacheTTL, int cacheRebuildTimeout, String seedTemplate, String bingMapKey) {
+                          String hubManagerApiUrl, int cacheTTL, int cacheRebuildTimeout, String seedTemplate, String bingMapKey, List<String> cacheWhiteList) {
         this.storageAdapterApiUrl = storageAdapterApiUrl;
         this.deviceSimulationApiUrl = deviceSimulationApiUrl;
         this.hubManagerApiUrl = hubManagerApiUrl;
@@ -47,6 +50,7 @@ public class ServicesConfig implements IServicesConfig {
         this.seedTemplate = seedTemplate;
         this.telemetryApiUrl = telemetryApiUrl;
         this.bingMapKey = bingMapKey;
+        this.cacheWhiteList=cacheWhiteList;
     }
 
     @Override
@@ -77,6 +81,11 @@ public class ServicesConfig implements IServicesConfig {
     @Override
     public int getCacheRebuildTimeout() {
         return cacheRebuildTimeout;
+    }
+
+    @Override
+    public List<String> getCacheWhiteList() {
+        return cacheWhiteList;
     }
 
     public void setStorageAdapterApiUrl(String storageAdapterApiUrl) {

@@ -9,5 +9,5 @@ import java.util.concurrent.CompletionStage;
 
 @ImplementedBy(Seed.class)
 public interface ISeed {
-    CompletionStage TrySeedAsync() throws ExternalDependencyException;
+    CompletionStage trySeedAsync() throws ExternalDependencyException;
 }

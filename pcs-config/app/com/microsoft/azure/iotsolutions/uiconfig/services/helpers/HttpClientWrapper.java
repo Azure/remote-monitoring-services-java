@@ -27,7 +27,7 @@ public class HttpClientWrapper implements IHttpClientWrapper {
     }
 
     @Override
-    public <T> CompletionStage<T> GetAsync(String uri, String description, Class<T> type, boolean acceptNotFound) throws ExternalDependencyException, URISyntaxException {
+    public <T> CompletionStage<T> getAsync(String uri, String description, Class<T> type, boolean acceptNotFound) throws ExternalDependencyException, URISyntaxException {
         HttpRequest request = new HttpRequest();
         request.setUriFromString(uri);
         request.addHeader("Accept", "application/json");
@@ -63,7 +63,7 @@ public class HttpClientWrapper implements IHttpClientWrapper {
     }
 
     @Override
-    public CompletionStage PostAsync(String uri, String description, Object content) throws URISyntaxException, UnsupportedEncodingException, ExternalDependencyException {
+    public CompletionStage postAsync(String uri, String description, Object content) throws URISyntaxException, UnsupportedEncodingException, ExternalDependencyException {
         HttpRequest request = new HttpRequest();
         request.setUriFromString(uri);
         request.addHeader("Accept", "application/json");
@@ -93,7 +93,7 @@ public class HttpClientWrapper implements IHttpClientWrapper {
     }
 
     @Override
-    public CompletionStage PutAsync(String uri, String description, Object content) throws URISyntaxException, UnsupportedEncodingException, ExternalDependencyException {
+    public CompletionStage putAsync(String uri, String description, Object content) throws URISyntaxException, UnsupportedEncodingException, ExternalDependencyException {
         HttpRequest request = new HttpRequest();
         request.setUriFromString(uri);
         request.addHeader("Accept", "application/json");

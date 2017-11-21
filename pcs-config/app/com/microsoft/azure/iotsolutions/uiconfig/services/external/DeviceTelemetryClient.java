@@ -27,10 +27,10 @@ public class DeviceTelemetryClient implements IDeviceTelemetryClient {
     }
 
     @Override
-    public CompletionStage UpdateRuleAsync(RuleApiModel rule, String etag) throws ExternalDependencyException {
+    public CompletionStage updateRuleAsync(RuleApiModel rule, String etag) throws ExternalDependencyException {
         rule.setETag(etag);
         try {
-            return this.httpClient.PutAsync(String.format("%s/rules/%s", serviceUri, rule.getId()), String.format("Rule %s", rule.getId()), rule);
+            return this.httpClient.putAsync(String.format("%s/rules/%s", serviceUri, rule.getId()), String.format("Rule %s", rule.getId()), rule);
         } catch (URISyntaxException | UnsupportedEncodingException e) {
             throw new ExternalDependencyException("UpdateRule  failed");
         }

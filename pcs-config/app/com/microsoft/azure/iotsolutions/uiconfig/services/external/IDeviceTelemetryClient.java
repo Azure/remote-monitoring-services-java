@@ -11,5 +11,5 @@ import java.util.concurrent.CompletionStage;
 
 @ImplementedBy(DeviceTelemetryClient.class)
 public interface IDeviceTelemetryClient {
-    CompletionStage UpdateRuleAsync(RuleApiModel rule, String etag) throws UnsupportedEncodingException, ExternalDependencyException, URISyntaxException;
+    CompletionStage updateRuleAsync(RuleApiModel rule, String etag) throws UnsupportedEncodingException, ExternalDependencyException, URISyntaxException;
 }

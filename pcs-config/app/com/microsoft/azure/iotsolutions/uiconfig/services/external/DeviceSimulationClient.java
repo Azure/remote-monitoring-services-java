@@ -28,9 +28,9 @@ public class DeviceSimulationClient implements IDeviceSimulationClient {
     }
 
     @Override
-    public CompletionStage<SimulationApiModel> GetSimulationAsync() throws ExternalDependencyException {
+    public CompletionStage<SimulationApiModel> getSimulationAsync() throws ExternalDependencyException {
         try {
-            return this.httpClient.GetAsync(String.format("%s/simulations/%d", this.serviceUri, this.SimulationId), String.format("Simulation %d", this.SimulationId), SimulationApiModel.class, true);
+            return this.httpClient.getAsync(String.format("%s/simulations/%d", this.serviceUri, this.SimulationId), String.format("Simulation %d", this.SimulationId), SimulationApiModel.class, true);
         } catch (Exception e) {
             log.error(String.format("GetSimulationAsync failed: %s", e.getMessage()));
             throw new ExternalDependencyException("GetSimulationAsync failed");
@@ -38,9 +38,9 @@ public class DeviceSimulationClient implements IDeviceSimulationClient {
     }
 
     @Override
-    public CompletionStage UpdateSimulationAsync(SimulationApiModel model) throws ExternalDependencyException {
+    public CompletionStage updateSimulationAsync(SimulationApiModel model) throws ExternalDependencyException {
         try {
-            return this.httpClient.PutAsync(String.format("%s/simulations/%d", this.serviceUri, this.SimulationId), String.format("Simulation %d", this.SimulationId), model);
+            return this.httpClient.putAsync(String.format("%s/simulations/%d", this.serviceUri, this.SimulationId), String.format("Simulation %d", this.SimulationId), model);
         } catch (Exception e) {
             log.error(String.format("UpdateSimulationAsync failed: %s", e.getMessage()));
             throw new ExternalDependencyException("UpdateSimulationAsync failed");

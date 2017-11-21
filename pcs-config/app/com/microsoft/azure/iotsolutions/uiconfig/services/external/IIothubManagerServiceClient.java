@@ -10,5 +10,5 @@ import java.util.concurrent.CompletionStage;
 
 @ImplementedBy(IothubManagerServiceClient.class)
 public interface IIothubManagerServiceClient {
-    CompletionStage<DeviceTwinName> GetDeviceTwinNamesAsync() throws URISyntaxException;
+    CompletionStage<DeviceTwinName> getDeviceTwinNamesAsync() throws URISyntaxException;
 }

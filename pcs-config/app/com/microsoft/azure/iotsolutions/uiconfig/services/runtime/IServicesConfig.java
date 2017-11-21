@@ -2,6 +2,8 @@
 
 package com.microsoft.azure.iotsolutions.uiconfig.services.runtime;
 
+import java.util.List;
+
 public interface IServicesConfig {
 
     String getBingMapKey();
@@ -19,4 +21,6 @@ public interface IServicesConfig {
     int getCacheTTL();
 
     int getCacheRebuildTimeout();
+
+    List<String> getCacheWhiteList();
 }

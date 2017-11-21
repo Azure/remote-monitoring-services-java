@@ -9,7 +9,7 @@ import java.util.concurrent.CompletionStage;
 
 @ImplementedBy(DeviceSimulationClient.class)
 public interface IDeviceSimulationClient {
-    CompletionStage<SimulationApiModel> GetSimulationAsync() throws ExternalDependencyException;
+    CompletionStage<SimulationApiModel> getSimulationAsync() throws ExternalDependencyException;
 
-    CompletionStage UpdateSimulationAsync(SimulationApiModel model) throws ExternalDependencyException;
+    CompletionStage updateSimulationAsync(SimulationApiModel model) throws ExternalDependencyException;
 }
