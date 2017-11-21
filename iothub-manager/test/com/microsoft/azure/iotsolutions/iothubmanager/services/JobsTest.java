@@ -112,7 +112,7 @@ public class JobsTest {
                 Assert.assertEquals(newJob.getUpdateTwin().getTags().get("Building"), "Building40");
                 Assert.assertEquals(newJob.getUpdateTwin().getTags().get("Floor"), "1F");
 
-                // Sleep for a few seconds before retrieving new job with consistent status
+                // Sleep for a few seconds before IoTHub returns the new job with consistent state
                 Thread.sleep(5000);
                 newJob = twinJobService.getJobAsync(newJobId, true, null).toCompletableFuture().get();
                 DeviceJobServiceModel deviceJob = newJob.getDevices().get(0);
