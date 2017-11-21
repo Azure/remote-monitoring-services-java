@@ -10,4 +10,11 @@ public interface IServicesConfig {
      * @return Connection string
      */
     String getHubConnString();
+
+    /**
+     * Get Config service URL.
+     *
+     * @return Config service URL
+     */
+    String getConfigServiceUrl();
 }

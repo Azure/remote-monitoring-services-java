@@ -6,3 +6,4 @@
 :: see: Shared access policies => key name => Connection string
 SETX PCS_IOTHUB_CONNSTRING "..."
 
+SETX PCS_CONFIG_WEBSERVICE_URL "..."

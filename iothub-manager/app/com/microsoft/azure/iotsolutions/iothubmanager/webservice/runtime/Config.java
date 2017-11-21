@@ -22,6 +22,7 @@ public class Config implements IConfig {
     // Settings about this application
     private final String APPLICATION_KEY = NAMESPACE + "iothub-manager.";
     private final String IOTHUB_CONNSTRING_KEY = APPLICATION_KEY + "iothub.connstring";
+    private final String CONFIG_WEB_SERVICE_URL_KEY = APPLICATION_KEY + "config-webservice-url";
 
     private final String CLIENT_AUTH_KEY = APPLICATION_KEY + "client-auth.";
     private final String AUTH_REQUIRED_KEY = CLIENT_AUTH_KEY + "auth_required";
@@ -50,7 +51,8 @@ public class Config implements IConfig {
         if (this.servicesConfig != null) return this.servicesConfig;
 
         String cs = data.getString(IOTHUB_CONNSTRING_KEY);
-        this.servicesConfig = new ServicesConfig(cs);
+        String configServiceUrl = data.getString(CONFIG_WEB_SERVICE_URL_KEY);
+        this.servicesConfig = new ServicesConfig(cs, configServiceUrl);
         return this.servicesConfig;
     }
 

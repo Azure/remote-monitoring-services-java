@@ -3,6 +3,8 @@
 package com.microsoft.azure.iotsolutions.iothubmanager.services;
 
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.*;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.external.ConfigService;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.external.IConfigService;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.*;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.runtime.Config;
@@ -12,6 +14,7 @@ import helpers.IntegrationTest;
 import helpers.DeviceMethodEmulator;
 import org.junit.*;
 import org.junit.experimental.categories.Category;
+import play.test.WSTestClient;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -22,6 +25,7 @@ public class DevicesTest {
 
     private static Config config;
     private static IServicesConfig servicesConfig;
+    private static IConfigService configService;
     private static IIoTHubWrapper ioTHubWrapper;
     private static IDevices deviceService;
     private static ArrayList<DeviceServiceModel> testDevices = new ArrayList<>();
@@ -39,8 +43,9 @@ public class DevicesTest {
 
         config = new Config();
         servicesConfig = config.getServicesConfig();
+        configService = new ConfigService(servicesConfig, WSTestClient.newClient(9005));
         ioTHubWrapper = new IoTHubWrapper(servicesConfig);
-        deviceService = new Devices(ioTHubWrapper);
+        deviceService = new Devices(ioTHubWrapper, configService);
 
         createTestDevices(2, batchId);
 

@@ -8,9 +8,11 @@ package com.microsoft.azure.iotsolutions.iothubmanager.services.runtime;
 public class ServicesConfig implements IServicesConfig {
 
     private String hubConnString;
+    private String configServiceUrl;
 
-    public ServicesConfig(final String hubConnString) {
+    public ServicesConfig(final String hubConnString, final String configServiceUrl) {
         this.hubConnString = hubConnString;
+        this.configServiceUrl = configServiceUrl;
     }
 
     /**
@@ -20,5 +22,14 @@ public class ServicesConfig implements IServicesConfig {
      */
     public String getHubConnString() {
         return this.hubConnString;
+    }
+
+    /**
+     * Get Config service URL.
+     *
+     * @return Config service URL
+     */
+    public String getConfigServiceUrl() {
+        return this.configServiceUrl;
     }
 }

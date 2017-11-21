@@ -9,6 +9,7 @@ libraryDependencies ++= {
   Seq(
     filters,
     guice,
+    ws,
 
     // https://github.com/Azure/azure-iot-sdk-java/releases
     "com.microsoft.azure.sdk.iot" % "iot-service-client" % "1.10.28",

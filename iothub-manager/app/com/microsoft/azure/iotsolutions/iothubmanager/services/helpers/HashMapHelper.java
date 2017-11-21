@@ -14,14 +14,11 @@ import java.util.*;
  */
 public class HashMapHelper {
 
-    public static HashMap<String, Object> setToHashMap(Set<Pair> set)
-    {
+    public static HashMap<String, Object> setToHashMap(Set<Pair> set) {
         HashMap<String, Object> map = new HashMap<>();
 
-        if (set != null)
-        {
-            for (Pair p : set)
-            {
+        if (set != null) {
+            for (Pair p : set) {
                 map.put(p.getKey(), p.getValue());
             }
         }
@@ -29,19 +26,39 @@ public class HashMapHelper {
         return map;
     }
 
-    public static Set<Pair> mapToSet(Map<String, Object> map)
-    {
+    public static Set<Pair> mapToSet(Map<String, Object> map) {
         Set<Pair> setPair = new HashSet<>();
 
-        if (map != null)
-        {
-            for (Map.Entry<String, Object> setEntry : map.entrySet())
-            {
+        if (map != null) {
+            for (Map.Entry<String, Object> setEntry : map.entrySet()) {
                 setPair.add(new Pair(setEntry.getKey(), setEntry.getValue()));
             }
         }
 
         return setPair;
+    }
 
+    /**
+     * Convert a HashMap to HashSet in which flatten String with '.' as delimiter
+     * between each level. e.g: Tags.IsSimulated, Reported.Telemetry.Interval...
+     *
+     * @param prefix the prefix for each key in the HashSet
+     * @param map    the map to be converted such as HashMap, LinkedTreeMap.
+     */
+    public static HashSet<String> mapToHashSet(String prefix, Map<String, Object> map) {
+        HashSet<String> set = new HashSet<>();
+        if (map != null) {
+            for (Map.Entry<String, Object> setEntry : map.entrySet()) {
+                Object value = setEntry.getValue();
+                if (value instanceof String
+                    || value instanceof Boolean
+                    || value instanceof Number) {
+                    set.add(prefix + "." + setEntry.getKey());
+                } else if (value instanceof Map) {
+                    set.addAll(mapToHashSet(prefix + "." + setEntry.getKey(), (Map) setEntry.getValue()));
+                }
+            }
+        }
+        return set;
     }
 }

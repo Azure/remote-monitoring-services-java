@@ -2,6 +2,8 @@
 
 package com.microsoft.azure.iotsolutions.iothubmanager.services;
 
+import com.microsoft.azure.iotsolutions.iothubmanager.services.external.ConfigService;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.external.IConfigService;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.*;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.runtime.Config;
@@ -9,15 +11,16 @@ import com.microsoft.azure.sdk.iot.service.exceptions.IotHubTooManyRequestsExcep
 import helpers.IntegrationTest;
 import org.junit.*;
 import org.junit.experimental.categories.Category;
+import play.test.WSTestClient;
 
 import java.time.Duration;
 import java.util.*;
-import java.util.concurrent.CompletionStage;
 
 public class JobsTest {
 
     private static Config config;
     private static IServicesConfig servicesConfig;
+    private static IConfigService configService;
     private static IIoTHubWrapper ioTHubWrapper;
     private static IDevices deviceService;
     private static IJobs jobService;
@@ -35,9 +38,10 @@ public class JobsTest {
 
         config = new Config();
         servicesConfig = config.getServicesConfig();
+        configService = new ConfigService(servicesConfig, WSTestClient.newClient(9005));
         ioTHubWrapper = new IoTHubWrapper(servicesConfig);
-        deviceService = new Devices(ioTHubWrapper);
-        jobService = new Jobs(ioTHubWrapper);
+        deviceService = new Devices(ioTHubWrapper, configService);
+        jobService = new Jobs(ioTHubWrapper, configService);
 
         createTestDevices(2, batchId);
 
@@ -96,7 +100,7 @@ public class JobsTest {
         }};
         DeviceTwinServiceModel twin = new DeviceTwinServiceModel("*", "", null, tags, true);
 
-        IJobs twinJobService = new Jobs(ioTHubWrapper);
+        IJobs twinJobService = new Jobs(ioTHubWrapper, configService);
         // retry scheduling job with back off time when throttled by IotHub
         for (int i = 1; i <= MAX_RETRIES; i++) {
             try {
@@ -108,6 +112,8 @@ public class JobsTest {
                 Assert.assertEquals(newJob.getUpdateTwin().getTags().get("Building"), "Building40");
                 Assert.assertEquals(newJob.getUpdateTwin().getTags().get("Floor"), "1F");
 
+                // Sleep for a few seconds before retrieving new job with consistent status
+                Thread.sleep(5000);
                 newJob = twinJobService.getJobAsync(newJobId, true, null).toCompletableFuture().get();
                 DeviceJobServiceModel deviceJob = newJob.getDevices().get(0);
                 Assert.assertNotNull(deviceJob.getDeviceId());
@@ -119,10 +125,10 @@ public class JobsTest {
                     System.out.println(String.format("Warning: job scheduling is throttled and will be retried(%d) after 30s", i));
                     Thread.sleep(30000);
                     // reconnect to IotHub
-                    twinJobService = new Jobs(ioTHubWrapper);
+                    twinJobService = new Jobs(ioTHubWrapper, configService);
                     continue;
                 } else {
-                    Assert.fail("failed to schedule twin job");
+                    Assert.fail(String.format("failed to schedule twin job due to %s", e.getCause().getMessage()));
                     return;
                 }
             }
@@ -165,7 +171,7 @@ public class JobsTest {
                     System.out.println(String.format("Warning: job scheduling is throttled and will be retried(%d) after 30s", i));
                     Thread.sleep(30000);
                     // reconnect to IotHub
-                    jobService = new Jobs(ioTHubWrapper);
+                    jobService = new Jobs(ioTHubWrapper, configService);
                     continue;
                 } else {
                     Assert.fail("failed to schedule method job");

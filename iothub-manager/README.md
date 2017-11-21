@@ -57,7 +57,7 @@ Running the service in an IDE
    a name
 1. Under 'Tasks' type `"run 9002"` with the quotes
 1. Add a new environment variable with name
-   `PCS_IOTHUB_CONNSTRING` storing your Azure IoT Hub connection string.
+   `PCS_IOTHUB_CONNSTRING` storing your Azure IoT Hub connection string and `PCS_CONFIG_WEBSERVICE_URL` for the URL of the config service.
    [Help finding Iot Hub Connection String](https://blogs.msdn.microsoft.com/iotdev/2017/05/09/understand-different-connection-strings-in-azure-iot-hub/)
 1. Save the settings and run the configuration just created, from the IDE
    toolbar.
@@ -133,6 +133,8 @@ the IDE, there are several ways to manage environment variables:
 ## Environment Variable
 **REQUIRED** - `PCS_IOTHUB_CONNSTRING={your Iot Hub Connection String}` 
 (see [Help finding Iot Hub Connection String](https://blogs.msdn.microsoft.com/iotdev/2017/05/09/understand-different-connection-strings-in-azure-iot-hub/) for more info)
+
+**REQUIRED** - `PCS_CONFIG_WEBSERVICE_URL={your Config service URL}`
 
 * For Windows users, the [env-vars-setup.cmd](scripts/env-vars-setup.cmd)
   script needs to be prepared and executed just once. When executed, the

@@ -2,6 +2,7 @@
 
 package com.microsoft.azure.iotsolutions.iothubmanager.services.helpers;
 
+import com.google.gson.internal.LinkedTreeMap;
 import com.microsoft.azure.sdk.iot.service.devicetwin.Pair;
 
 import helpers.UnitTest;
@@ -43,7 +44,7 @@ public class HashMapHelperTest {
 
         HashMap table = new HashMap<String, String>() {
             {
-                put("ke1", "value1");
+                put("key1", "value1");
                 put("key2", "value2");
             }
         };
@@ -52,5 +53,45 @@ public class HashMapHelperTest {
         for (Pair p : pairs) {
             Assert.assertTrue(table.get(p.getKey()) == p.getValue());
         }
+    }
+
+    @Test(timeout = 1000)
+    @Category({UnitTest.class})
+    public void MapToHasSetTest() {
+        Assert.assertTrue(HashMapHelper.mapToHashSet("", null).size() == 0);
+
+        LinkedTreeMap linkedTreeMap = new LinkedTreeMap();
+        linkedTreeMap.put("mapLevel3", "string value");
+        HashMap table = new HashMap<String, Object>() {
+            {
+                put("aString", "string value");
+                put("aBool", true);
+                put("aNumber", 12.3);
+                put("map1Level1", new HashMap<String, String>() {{
+                    put("aString", "string value");
+                }});
+                put("map2Level1", new HashMap<String, Object>() {{
+                    put("map2Level2-1", new HashMap<String, Object>() {
+                        {
+                            put("aString", "string value");
+                        }
+                    });
+                    put("map2Level2-2", linkedTreeMap);
+                }});
+            }
+        };
+
+        HashSet<String> set = HashMapHelper.mapToHashSet("Tags", table);
+
+        List<String> expectedList = Arrays.asList(
+            "Tags.aString",
+            "Tags.aBool",
+            "Tags.aNumber",
+            "Tags.map1Level1.aString",
+            "Tags.map2Level1.map2Level2-1.aString",
+            "Tags.map2Level1.map2Level2-2.mapLevel3"
+        );
+        Assert.assertTrue(set.containsAll(expectedList));
+        Assert.assertTrue(expectedList.containsAll(set));
     }
 }
