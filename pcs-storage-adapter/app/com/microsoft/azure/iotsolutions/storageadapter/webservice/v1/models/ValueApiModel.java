@@ -43,7 +43,7 @@ public final class ValueApiModel {
         return this.data;
     }
 
-    @JsonProperty("Etag")
+    @JsonProperty("ETag")
     public String getEtag() {
         return this.etag;
     }
