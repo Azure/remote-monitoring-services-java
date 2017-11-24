@@ -32,6 +32,7 @@ public class MethodParameterApiModel {
         return name;
     }
 
+    @JsonProperty("Name")
     public void setName(String value) {
         this.name = value;
     }

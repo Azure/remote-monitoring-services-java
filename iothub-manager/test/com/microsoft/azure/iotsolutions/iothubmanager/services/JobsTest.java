@@ -67,7 +67,7 @@ public class JobsTest {
         long to = new Date().getTime();
         List<JobServiceModel> jobs = jobService.getJobsAsync(
             JobType.scheduleUpdateTwin, JobStatus.completed, 10, from, to).toCompletableFuture().get();
-        if (jobs.size() >= 0) {
+        if (jobs.size() > 0) {
             Assert.assertTrue(!jobs.get(0).getJobId().isEmpty());
             Assert.assertEquals(jobs.get(0).getJobType(), JobType.scheduleUpdateTwin);
             Assert.assertEquals(jobs.get(0).getJobStatus(), JobStatus.completed);
@@ -75,7 +75,7 @@ public class JobsTest {
 
         jobs = jobService.getJobsAsync(
             JobType.scheduleDeviceMethod, JobStatus.completed, 10, from, to).toCompletableFuture().get();
-        if (jobs.size() >= 0) {
+        if (jobs.size() > 0) {
             Assert.assertTrue(!jobs.get(0).getJobId().isEmpty());
             Assert.assertEquals(jobs.get(0).getJobType(), JobType.scheduleDeviceMethod);
             Assert.assertEquals(jobs.get(0).getJobStatus(), JobStatus.completed);

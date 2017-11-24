@@ -76,6 +76,7 @@ public class JobApiModel {
         return jobId;
     }
 
+    @JsonProperty("JobId")
     public void setJobId(String jobId) {
         this.jobId = jobId;
     }
@@ -86,6 +87,8 @@ public class JobApiModel {
         return queryCondition;
     }
 
+    @JsonProperty("QueryCondition")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public void setQueryCondition(String queryCondition) {
         this.queryCondition = queryCondition;
     }
@@ -97,6 +100,8 @@ public class JobApiModel {
         return createdTimeUtc;
     }
 
+    @JsonProperty("CreatedTimeUtc")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public void setCreatedTimeUtc(Date createdTimeUtc) {
         this.createdTimeUtc = createdTimeUtc;
     }
@@ -108,6 +113,8 @@ public class JobApiModel {
         return startTimeUtc;
     }
 
+    @JsonProperty("StartTimeUtc")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public void setStartTimeUtc(Date startTimeUtc) {
         this.startTimeUtc = startTimeUtc;
     }
@@ -119,6 +126,8 @@ public class JobApiModel {
         return endTimeUtc;
     }
 
+    @JsonProperty("EndTimeUtc")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public void setEndTimeUtc(Date endTimeUtc) {
         this.endTimeUtc = endTimeUtc;
     }
@@ -129,6 +138,8 @@ public class JobApiModel {
         return maxExecutionTimeInSeconds;
     }
 
+    @JsonProperty("MaxExecutionTimeInSeconds")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public void setMaxExecutionTimeInSeconds(Long maxExecutionTimeInSeconds) {
         this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
     }
@@ -138,6 +149,7 @@ public class JobApiModel {
         return type;
     }
 
+    @JsonProperty("Type")
     public void setType(JobType type) {
         this.type = type;
     }
@@ -147,6 +159,7 @@ public class JobApiModel {
         return status;
     }
 
+    @JsonProperty("Status")
     public void setStatus(JobStatus status) {
         this.status = status;
     }
@@ -157,6 +170,8 @@ public class JobApiModel {
         return methodParameter;
     }
 
+    @JsonProperty("MethodParameter")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public void setMethodParameter(MethodParameterApiModel methodParameter) {
         this.methodParameter = methodParameter;
     }
@@ -167,6 +182,7 @@ public class JobApiModel {
         return updateTwin;
     }
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public void setUpdateTwin(DeviceTwinServiceModel updateTwin) {
         this.updateTwin = updateTwin;
     }
