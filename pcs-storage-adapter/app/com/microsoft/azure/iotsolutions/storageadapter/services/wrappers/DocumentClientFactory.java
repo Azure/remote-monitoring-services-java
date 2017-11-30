@@ -114,7 +114,7 @@ public class DocumentClientFactory implements IFactory<DocumentClient> {
     }
 
     private static String getDocumentDbUri(String DocumentDbConnString) {
-        Pattern pattern = Pattern.compile(".*AccountEndpoint=(.*);.*");
+        Pattern pattern = Pattern.compile(".*AccountEndpoint=(.*);.*;");
         Matcher matcher = pattern.matcher(DocumentDbConnString);
         if (matcher.find()) {
             return matcher.group(1);
