@@ -53,7 +53,7 @@ public final class DeviceRegistryApiModel {
 
         DeviceTwinServiceModel twinModel = device.getTwin();
         if (twinModel != null) {
-            this.eTag = this.eTag + "|" + device.getTwin().getEtag();
+            this.eTag = this.eTag + "|" + device.getTwin().getETag();
             this.properties = twinModel.getProperties();
             this.tags = device.getTwin().getTags();
             this.isSimulated = device.getTwin().getIsSimulated();

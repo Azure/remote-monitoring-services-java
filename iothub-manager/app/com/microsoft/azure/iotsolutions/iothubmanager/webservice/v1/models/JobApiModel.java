@@ -71,112 +71,103 @@ public class JobApiModel {
         return serviceModel;
     }
 
-    @JsonProperty("jobId")
+    @JsonProperty("JobId")
     public String getJobId() {
         return jobId;
     }
 
-    @JsonProperty("JobId")
     public void setJobId(String jobId) {
         this.jobId = jobId;
     }
 
-    @JsonProperty("queryCondition")
+    @JsonProperty("QueryCondition")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public String getQueryCondition() {
         return queryCondition;
     }
 
-    @JsonProperty("QueryCondition")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public void setQueryCondition(String queryCondition) {
         this.queryCondition = queryCondition;
     }
 
-    @JsonProperty("createdTimeUtc")
+    @JsonProperty("CreatedTimeUtc")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = dateFormatString)
     public Date getCreatedTimeUtc() {
         return createdTimeUtc;
     }
 
-    @JsonProperty("CreatedTimeUtc")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public void setCreatedTimeUtc(Date createdTimeUtc) {
         this.createdTimeUtc = createdTimeUtc;
     }
 
-    @JsonProperty("startTimeUtc")
+    @JsonProperty("StartTimeUtc")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = dateFormatString)
     public Date getStartTimeUtc() {
         return startTimeUtc;
     }
 
-    @JsonProperty("StartTimeUtc")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public void setStartTimeUtc(Date startTimeUtc) {
         this.startTimeUtc = startTimeUtc;
     }
 
-    @JsonProperty("endTimeUtc")
+    @JsonProperty("EndTimeUtc")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = dateFormatString)
     public Date getEndTimeUtc() {
         return endTimeUtc;
     }
 
-    @JsonProperty("EndTimeUtc")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public void setEndTimeUtc(Date endTimeUtc) {
         this.endTimeUtc = endTimeUtc;
     }
 
-    @JsonProperty("maxExecutionTimeInSeconds")
+    @JsonProperty("MaxExecutionTimeInSeconds")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public Long getMaxExecutionTimeInSeconds() {
         return maxExecutionTimeInSeconds;
     }
 
-    @JsonProperty("MaxExecutionTimeInSeconds")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public void setMaxExecutionTimeInSeconds(Long maxExecutionTimeInSeconds) {
         this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
     }
 
-    @JsonProperty("type")
+    @JsonProperty("Type")
     public JobType getType() {
         return type;
     }
 
-    @JsonProperty("Type")
     public void setType(JobType type) {
         this.type = type;
     }
 
-    @JsonProperty("status")
+    @JsonProperty("Status")
     public JobStatus getStatus() {
         return status;
     }
 
-    @JsonProperty("Status")
     public void setStatus(JobStatus status) {
         this.status = status;
     }
 
-    @JsonProperty("methodParameter")
+    @JsonProperty("MethodParameter")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public MethodParameterApiModel getMethodParameter() {
         return methodParameter;
     }
 
-    @JsonProperty("MethodParameter")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public void setMethodParameter(MethodParameterApiModel methodParameter) {
         this.methodParameter = methodParameter;
     }
 
-    @JsonProperty("updateTwin")
+    @JsonProperty("UpdateTwin")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public DeviceTwinServiceModel getUpdateTwin() {
         return updateTwin;
@@ -187,7 +178,7 @@ public class JobApiModel {
         this.updateTwin = updateTwin;
     }
 
-    @JsonProperty("failureReason")
+    @JsonProperty("FailureReason")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public String getFailureReason() {
         return failureReason;
@@ -197,7 +188,7 @@ public class JobApiModel {
         this.failureReason = failureReason;
     }
 
-    @JsonProperty("statusMessage")
+    @JsonProperty("StatusMessage")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public String getStatusMessage() {
         return statusMessage;
@@ -207,7 +198,7 @@ public class JobApiModel {
         this.statusMessage = statusMessage;
     }
 
-    @JsonProperty("resultStatistics")
+    @JsonProperty("ResultStatistics")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public JobStatistics getResultStatistics() {
         return resultStatistics;

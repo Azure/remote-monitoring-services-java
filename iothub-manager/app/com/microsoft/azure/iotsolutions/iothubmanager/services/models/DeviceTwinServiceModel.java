@@ -2,6 +2,7 @@
 
 package com.microsoft.azure.iotsolutions.iothubmanager.services.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.helpers.HashMapHelper;
 import com.microsoft.azure.sdk.iot.service.devicetwin.DeviceTwinDevice;
 
@@ -44,10 +45,12 @@ public final class DeviceTwinServiceModel {
         );
     }
 
-    public String getEtag() {
+    @JsonProperty("ETag")
+    public String getETag() {
         return this.eTag;
     }
 
+    @JsonProperty("DeviceId")
     public String getDeviceId() {
         return this.deviceId;
     }
@@ -56,14 +59,17 @@ public final class DeviceTwinServiceModel {
         this.deviceId = deviceId;
     }
 
+    @JsonProperty("Properties")
     public DeviceTwinProperties getProperties() {
         return this.properties;
     }
 
+    @JsonProperty("Tags")
     public HashMap getTags() {
         return this.tags;
     }
 
+    @JsonProperty("IsSimulated")
     public Boolean getIsSimulated() {
         return isSimulated;
     }
@@ -77,8 +83,8 @@ public final class DeviceTwinServiceModel {
         DeviceTwinDevice twinDevice = this.getDeviceId() == null || this.getDeviceId().isEmpty()
             ? new DeviceTwinDevice() : new DeviceTwinDevice(this.getDeviceId());
 
-        if (this.getEtag() != null) {
-            twinDevice.setETag(this.getEtag());
+        if (this.getETag() != null) {
+            twinDevice.setETag(this.getETag());
         }
 
         if (this.getTags() != null) {

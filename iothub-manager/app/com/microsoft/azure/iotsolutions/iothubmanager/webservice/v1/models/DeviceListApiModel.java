@@ -30,7 +30,7 @@ public final class DeviceListApiModel {
         }
     }
 
-    @JsonProperty("items")
+    @JsonProperty("Items")
     public List<DeviceRegistryApiModel> getItems() {
         return items;
     }
@@ -43,7 +43,7 @@ public final class DeviceListApiModel {
         }};
     }
 
-    @JsonProperty("continuationToken")
+    @JsonProperty("ContinuationToken")
     public String getContinuationToken() {
         return continuationToken;
     }

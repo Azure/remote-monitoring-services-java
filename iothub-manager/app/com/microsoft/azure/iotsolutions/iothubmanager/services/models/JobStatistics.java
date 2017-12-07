@@ -2,6 +2,8 @@
 
 package com.microsoft.azure.iotsolutions.iothubmanager.services.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class JobStatistics {
 
     private int deviceCount;
@@ -22,6 +24,7 @@ public class JobStatistics {
         }
     }
 
+    @JsonProperty("DeviceCount")
     public int getDeviceCount() {
         return deviceCount;
     }
@@ -30,6 +33,7 @@ public class JobStatistics {
         this.deviceCount = deviceCount;
     }
 
+    @JsonProperty("FailedCount")
     public int getFailedCount() {
         return failedCount;
     }
@@ -38,6 +42,7 @@ public class JobStatistics {
         this.failedCount = failedCount;
     }
 
+    @JsonProperty("SucceededCount")
     public int getSucceededCount() {
         return succeededCount;
     }
@@ -46,6 +51,7 @@ public class JobStatistics {
         this.succeededCount = succeededCount;
     }
 
+    @JsonProperty("RunningCount")
     public int getRunningCount() {
         return runningCount;
     }
@@ -54,6 +60,7 @@ public class JobStatistics {
         this.runningCount = runningCount;
     }
 
+    @JsonProperty("PendingCount")
     public int getPendingCount() {
         return pendingCount;
     }
