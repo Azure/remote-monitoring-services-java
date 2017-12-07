@@ -28,7 +28,7 @@ public class IothubManagerServiceClientTest {
     private IHttpClient mockHttpClient;
     private IothubManagerServiceClient client;
     private String content = "{" +
-            "  \"items\": [" +
+            "  \"Items\": [" +
             "    {" +
             "      \"Properties\": {" +
             "        \"Reported\": {" +
