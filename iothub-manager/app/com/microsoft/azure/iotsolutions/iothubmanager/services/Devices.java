@@ -261,13 +261,6 @@ public final class Devices implements IDevices {
             }
         } catch (IotHubException | IOException e) {
             throw new ExternalDependencyException("Unable to query device twin", e);
-        } catch (IllegalArgumentException e) {
-            // Java SDK will throw IllegalArgumentException when the query result is empty:
-            // "java.lang.IllegalArgumentException: Provided Collection must not be null and cannot be empty"
-            // This is workaround to capture this exception and ignore it.
-            // bug filed for Java SDK: https://github.com/Azure/azure-iot-sdk-java/issues/176
-            String message = String.format("Ignored IllegalArgumentException when twin query return empty result: %s", query);
-            log.warn(message, e);
         }
 
         return twins;
