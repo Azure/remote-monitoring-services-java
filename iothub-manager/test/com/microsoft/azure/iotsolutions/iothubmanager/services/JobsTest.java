@@ -82,7 +82,7 @@ public class JobsTest {
         }
 
         jobs = jobService.getJobsAsync(null, null, 10, from, to).toCompletableFuture().get();
-        if (jobs.size() >= 0) {
+        if (jobs.size() > 0) {
             Assert.assertTrue(!jobs.get(0).getJobId().isEmpty());
             Assert.assertNotNull(jobs.get(0).getJobType());
             Assert.assertNotNull(jobs.get(0).getJobStatus());

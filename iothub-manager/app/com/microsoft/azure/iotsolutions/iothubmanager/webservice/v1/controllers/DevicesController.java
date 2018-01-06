@@ -7,11 +7,9 @@ import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.IDevices;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.*;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models.*;
-import com.microsoft.azure.sdk.iot.service.exceptions.IotHubException;
 import play.libs.Json;
 import play.mvc.*;
 
-import java.io.IOException;
 import java.util.concurrent.CompletionStage;
 
 import static play.libs.Json.fromJson;
@@ -37,7 +35,7 @@ public final class DevicesController extends Controller {
             .thenApply(devices -> ok(toJson(new DeviceListApiModel(devices))));
     }
 
-    public CompletionStage<Result> queryDevicesAsync() throws BaseException, IOException, IotHubException {
+    public CompletionStage<Result> queryDevicesAsync() throws ExternalDependencyException {
         String continuationToken = "";
         String query;
         if (request().getHeaders().get(CONTENT_TYPE).get().equals(Http.MimeTypes.JSON)) {

@@ -58,7 +58,7 @@ public class ErrorHandler extends DefaultHttpErrorHandler {
             }
             if (cause instanceof ExternalDependencyException) {
                 return CompletableFuture.completedFuture(
-                    Results.internalServerError(getErrorResponse(cause, true))
+                    Results.status(Status.SERVICE_UNAVAILABLE, getErrorResponse(cause, true))
                 );
             }
             if (cause instanceof InvalidInputException) {
@@ -68,7 +68,7 @@ public class ErrorHandler extends DefaultHttpErrorHandler {
             }
             if (cause instanceof ResourceOutOfDateException) {
                 return CompletableFuture.completedFuture(
-                    Results.status(Status.CONFLICT, getErrorResponse(cause, true))
+                    Results.status(Status.PRECONDITION_FAILED, getErrorResponse(cause, true))
                 );
             } else {
                 return CompletableFuture.completedFuture(
@@ -85,7 +85,7 @@ public class ErrorHandler extends DefaultHttpErrorHandler {
     private JsonNode getErrorResponse(Throwable e, boolean stackTrace) {
         HashMap<String, Object> errorResult = new HashMap<String, Object>() {
             {
-                put("Message", "An error has occured");
+                put("Message", "An error has occurred");
                 put("ExceptionMessage", e.getMessage());
                 put("ExceptionType", e.getClass().getName());
             }

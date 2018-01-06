@@ -5,7 +5,7 @@ package com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions;
 /**
  * Checked exception for invalid user input
  */
-public class InvalidInputException extends BaseException {
+public class InvalidInputException extends Exception {
     public InvalidInputException() {
     }
 

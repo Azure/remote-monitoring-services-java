@@ -5,12 +5,10 @@ package com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.IJobs;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.BaseException;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidInputException;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.*;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.*;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.helpers.DateHelper;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models.JobApiModel;
-import com.microsoft.azure.sdk.iot.service.exceptions.IotHubException;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import play.Logger;
@@ -18,7 +16,6 @@ import play.mvc.Controller;
 import play.mvc.Result;
 
 import javax.transaction.NotSupportedException;
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletionStage;
 
@@ -37,7 +34,7 @@ public final class JobsController extends Controller {
     }
 
     public CompletionStage<Result> getJobsAsync()
-        throws BaseException {
+        throws InvalidInputException, ExternalDependencyException {
         String type = request().getQueryString("jobType");
         String status = request().getQueryString("jobStatus");
         String size = request().getQueryString("pageSize");
@@ -75,7 +72,7 @@ public final class JobsController extends Controller {
     }
 
     public CompletionStage<Result> getJobAsync(String jobId)
-        throws IOException, IotHubException, BaseException {
+        throws InvalidInputException, ExternalDependencyException {
         String includeDeviceDetails = request().getQueryString("includeDeviceDetails");
         String deviceJobStatus = request().getQueryString("deviceJobStatus");
         Boolean include;
@@ -93,7 +90,7 @@ public final class JobsController extends Controller {
     }
 
     public CompletionStage<Result> scheduleJobAsync()
-        throws BaseException, NotSupportedException {
+        throws NotSupportedException, ExternalDependencyException {
         JsonNode json = request().body().asJson();
         final JobApiModel jobApiModel = fromJson(json, JobApiModel.class);
 
