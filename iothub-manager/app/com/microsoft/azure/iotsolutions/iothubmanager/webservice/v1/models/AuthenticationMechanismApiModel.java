@@ -77,8 +77,8 @@ public class AuthenticationMechanismApiModel {
     }
 
     public AuthenticationMechanismServiceModel toServiceModel() {
-        AuthenticationMechanismServiceModel serviceModel = new AuthenticationMechanismServiceModel(this.authenticationType);
-        serviceModel.setAuthenticationType(this.authenticationType);
+        AuthenticationMechanismServiceModel serviceModel = this.authenticationType == null
+            ? new AuthenticationMechanismServiceModel() : new AuthenticationMechanismServiceModel(this.authenticationType);
         serviceModel.setPrimaryKey(this.primaryKey);
         serviceModel.setSecondaryKey(this.secondaryKey);
         serviceModel.setPrimaryThumbprint(this.primaryThumbprint);

@@ -13,6 +13,8 @@ public class AuthenticationMechanismServiceModel {
     private String secondaryThumbprint;
     private AuthenticationType authenticationType;
 
+    public AuthenticationMechanismServiceModel() {}
+
     public AuthenticationMechanismServiceModel(AuthenticationType authenticationType) {
         this(AuthenticationType.toAzureModel(authenticationType));
         this.authenticationType = authenticationType;

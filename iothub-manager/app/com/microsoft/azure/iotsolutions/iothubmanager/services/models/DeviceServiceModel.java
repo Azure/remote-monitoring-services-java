@@ -105,7 +105,7 @@ public final class DeviceServiceModel {
 
     public Device toAzureModel() throws InvalidInputException {
         try {
-            if (this.authentication == null) {
+            if (this.authentication == null || this.authentication.getAuthenticationType() == null) {
                 return Device.createFromId(
                     this.getId(),
                     this.getEnabled() ? DeviceStatus.Enabled : DeviceStatus.Disabled,
