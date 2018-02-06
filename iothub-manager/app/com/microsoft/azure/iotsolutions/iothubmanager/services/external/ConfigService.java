@@ -31,12 +31,12 @@ public class ConfigService implements IConfigService {
         DeviceGroupFiltersApiModel model = new DeviceGroupFiltersApiModel();
 
         if (twin.getTags() != null) {
-            model.setTags(HashMapHelper.mapToHashSet("Tags", twin.getTags()));
+            model.setTags(HashMapHelper.mapToHashSet("", twin.getTags()));
         }
 
         DeviceTwinProperties properties = twin.getProperties();
         if (properties != null && properties.getReported() != null) {
-            model.setReported(HashMapHelper.mapToHashSet("Reported", properties.getReported()));
+            model.setReported(HashMapHelper.mapToHashSet("", properties.getReported()));
         }
 
         String url = this.serviceUrl + "/devicegroupfilters";

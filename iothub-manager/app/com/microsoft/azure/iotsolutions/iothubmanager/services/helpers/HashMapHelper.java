@@ -46,6 +46,7 @@ public class HashMapHelper {
      * @param map    the map to be converted such as HashMap, LinkedTreeMap.
      */
     public static HashSet<String> mapToHashSet(String prefix, Map<String, Object> map) {
+        String dottedPrefix = prefix == null || prefix.isEmpty() ? "" : prefix + ".";
         HashSet<String> set = new HashSet<>();
         if (map != null) {
             for (Map.Entry<String, Object> setEntry : map.entrySet()) {
@@ -53,9 +54,9 @@ public class HashMapHelper {
                 if (value instanceof String
                     || value instanceof Boolean
                     || value instanceof Number) {
-                    set.add(prefix + "." + setEntry.getKey());
+                    set.add(dottedPrefix + setEntry.getKey());
                 } else if (value instanceof Map) {
-                    set.addAll(mapToHashSet(prefix + "." + setEntry.getKey(), (Map) setEntry.getValue()));
+                    set.addAll(mapToHashSet(dottedPrefix + setEntry.getKey(), (Map) setEntry.getValue()));
                 }
             }
         }

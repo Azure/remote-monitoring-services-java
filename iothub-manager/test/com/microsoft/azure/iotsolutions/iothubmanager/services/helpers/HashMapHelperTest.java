@@ -57,7 +57,7 @@ public class HashMapHelperTest {
 
     @Test(timeout = 1000)
     @Category({UnitTest.class})
-    public void MapToHasSetTest() {
+    public void MapToHashSetTest() {
         Assert.assertTrue(HashMapHelper.mapToHashSet("", null).size() == 0);
 
         LinkedTreeMap linkedTreeMap = new LinkedTreeMap();
@@ -93,5 +93,18 @@ public class HashMapHelperTest {
         );
         Assert.assertTrue(set.containsAll(expectedList));
         Assert.assertTrue(expectedList.containsAll(set));
+
+        HashSet<String> setWithoutPrefix = HashMapHelper.mapToHashSet("", table);
+
+        List<String> expectedListWithoutPrefix = Arrays.asList(
+                "aString",
+                "aBool",
+                "aNumber",
+                "map1Level1.aString",
+                "map2Level1.map2Level2-1.aString",
+                "map2Level1.map2Level2-2.mapLevel3"
+        );
+        Assert.assertTrue(setWithoutPrefix.containsAll(expectedListWithoutPrefix));
+        Assert.assertTrue(expectedListWithoutPrefix.containsAll(setWithoutPrefix));
     }
 }
