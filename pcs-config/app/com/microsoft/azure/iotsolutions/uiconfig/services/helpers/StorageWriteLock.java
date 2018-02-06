@@ -66,7 +66,9 @@ public class StorageWriteLock<T> {
         try {
             this.lastValue = model == null ? type.newInstance() : Json.fromJson(Json.parse(model.getData()), type);
         } catch (InstantiationException | IllegalAccessException e) {
-            throw new ExternalDependencyException("lock error:falied to newInstance type" + type.getTypeName());
+            String message = String.format("Lock failed when creating new instance type " + type.getTypeName());
+            log.error(message, e);
+            throw new ExternalDependencyException(message);
         }
         this.setLockFlagAction.accept(this.lastValue, true);
 
@@ -86,7 +88,7 @@ public class StorageWriteLock<T> {
         } catch (ResourceNotFoundException e) {
             // Nothing to do
         } catch (Exception e) {
-            String errorMessage = String.format("unexcepted error to lock for %s,%s", this.collectionId, this.key);
+            String errorMessage = String.format("Unexpected error when releasing lock %s,%s", this.collectionId, this.key);
             log.error(errorMessage, e);
             throw new ExternalDependencyException(errorMessage, e);
         }
@@ -116,7 +118,7 @@ public class StorageWriteLock<T> {
         } catch (ResourceNotFoundException e) {
             // Nothing to do
         } catch (InterruptedException | ExecutionException | BaseException e) {
-            String errorMessage = String.format("unexcepted error to lock for %s,%s", this.collectionId, this.key);
+            String errorMessage = String.format("Unexpected error while locking %s,%s", this.collectionId, this.key);
             this.log.error(errorMessage, e);
             throw new ExternalDependencyException(errorMessage);
         }

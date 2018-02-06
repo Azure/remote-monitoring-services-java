@@ -42,7 +42,7 @@ public class Cache implements ICache {
     private final List<String> cacheWhitelist;
     private static final String WHITELIST_TAG_PREFIX = "tags.";
     private static final String WHITELIST_REPORTED_PREFIX = "reported.";
-    private static final long serviceQueryInterval = 10;
+    private static final long SERVICE_QUERY_INTERVAL_SECS = 10;
 
     @Inject
     public Cache(IStorageAdapterClient storageClient,
@@ -112,38 +112,42 @@ public class Cache implements ICache {
                 m -> this.needBuild(force, m));
 
         while (true) {
+            // Try to read non-empty twin data at first before locking cache entry
+            // to improve lock condition in case lock has been acquired but twin data
+            // might be still unavailable. When cache data is available, it will be
+            // safer to write an empty cache data in order to acquire lock and then
+            // update twin data into the cache entry.
+            DeviceTwinName twinNames = null;
+            try {
+                twinNames = this.getDevicePropertyNames();
+                if(twinNames.isEmpty()) {
+                    this.log.info(String.format("There is no property available to be cached. Retry after %d seconds", this.SERVICE_QUERY_INTERVAL_SECS));
+                    Thread.sleep(this.SERVICE_QUERY_INTERVAL_SECS * 1000);
+                    continue;
+                }
+            } catch (Exception e) {
+                this.log.warn("Some underlying service is not ready. Retry after " + this.SERVICE_QUERY_INTERVAL_SECS);
+                Thread.sleep(this.SERVICE_QUERY_INTERVAL_SECS * 1000);
+                continue;
+            }
+
             Optional<Boolean> locked = this.lockCache(lock);
             if (locked == null) {
-                this.log.warn("Cache rebuilding: lock failed due to conflict. Retry soon");
-                Thread.sleep(this.serviceQueryInterval);
+                this.log.warn(String.format("Cache rebuilding: lock failed due to conflict. Retry after %d seconds", this.SERVICE_QUERY_INTERVAL_SECS));
+                Thread.sleep(this.SERVICE_QUERY_INTERVAL_SECS * 1000);
                 continue;
             }
             if (!locked.get()) {
                 return CompletableFuture.completedFuture(false);
             }
-            // Build the cache content
-            DeviceTwinName twinNames = null;
-            try {
-                twinNames = this.updateCache();
-            } catch (Exception e) {
-                this.log.warn("Some underlying service is not ready. Retry after " + this.serviceQueryInterval);
-                try {
-                    lock.releaseAsync().toCompletableFuture().get();
-                    Thread.sleep(this.serviceQueryInterval);
-                } catch (Exception ex) {
-                    this.log.error("failed to release lock", e);
-                    throw new ExternalDependencyException("failed to release lock");
-                }
-                continue;
-            }
 
-            Boolean updated = this.unlockCache(lock, twinNames);
+            Boolean updated = this.writeAndUnlockCache(lock, twinNames);
 
             if (updated) {
                 return CompletableFuture.completedFuture(true);
             }
 
-            this.log.warn("Cache rebuilding: write failed due to conflict. Retry soon");
+            this.log.warn("The cache failed to be written due to conflict. Retry soon");
         }
     }
 
@@ -164,7 +168,7 @@ public class Cache implements ICache {
 
     private CompletionStage<DeviceTwinName> getValidNamesAsync() throws ExternalDependencyException {
         DeviceTwinName fullNameWhitelist = new DeviceTwinName(), prefixWhitelist = new DeviceTwinName();
-        parseWhitelist(this.cacheWhitelist, fullNameWhitelist, prefixWhitelist);
+        this.parseWhitelist(this.cacheWhitelist, fullNameWhitelist, prefixWhitelist);
 
         DeviceTwinName validNames = new DeviceTwinName(fullNameWhitelist.getTags(), fullNameWhitelist.getReportedProperties());
 
@@ -174,7 +178,7 @@ public class Cache implements ICache {
                 allNames = this.iotHubClient.getDeviceTwinNamesAsync().toCompletableFuture().get();
             } catch (InterruptedException | ExecutionException | URISyntaxException e) {
                 String errorMessage = "failed to get deviceTwinNames";
-                log.error(errorMessage,e);
+                log.error(errorMessage, e);
                 throw new ExternalDependencyException(errorMessage, e);
             }
 
@@ -188,7 +192,7 @@ public class Cache implements ICache {
         return CompletableFuture.supplyAsync(() -> validNames);
     }
 
-    private static void parseWhitelist(List<String> whitelist, DeviceTwinName fullNameWhitelist, DeviceTwinName prefixWhitelist) {
+    private void parseWhitelist(List<String> whitelist, DeviceTwinName fullNameWhitelist, DeviceTwinName prefixWhitelist) {
 
         List<String> tags = whitelist.stream().filter(m -> m.startsWith(WHITELIST_TAG_PREFIX)).
                 map(m -> m.substring(WHITELIST_TAG_PREFIX.length())).collect(Collectors.toList());
@@ -216,7 +220,7 @@ public class Cache implements ICache {
         } catch (ResourceNotFoundException e) {
             log.info(String.format("SetCacheAsync %s:%s not found.", CacheCollectionId, CacheKey));
         } catch (InterruptedException | ExecutionException | BaseException e) {
-            log.error(String.format("SetCacheAsync InterruptedException occured in storageClient.getAsync(%s, %s).", CacheCollectionId, CacheKey));
+            log.error(String.format("SetCacheAsync InterruptedException occurred in storageClient.getAsync(%s, %s).", CacheCollectionId, CacheKey));
             throw new ExternalDependencyException("SetCacheAsync failed");
         }
         return null;
@@ -249,7 +253,7 @@ public class Cache implements ICache {
         }
     }
 
-    private DeviceTwinName updateCache() throws ExternalDependencyException, URISyntaxException, ExecutionException, InterruptedException {
+    private DeviceTwinName getDevicePropertyNames() throws ExternalDependencyException, URISyntaxException, ExecutionException, InterruptedException {
         CompletableFuture<DeviceTwinName> twinNamesTask = this.getValidNamesAsync().toCompletableFuture();
         CompletableFuture<HashSet<String>> simulationNamesTask = this.simulationClient.getDevicePropertyNamesAsync().toCompletableFuture();
         CompletableFuture.allOf(twinNamesTask, simulationNamesTask).get();
@@ -258,11 +262,11 @@ public class Cache implements ICache {
         return twinNames;
     }
 
-    private Boolean unlockCache(StorageWriteLock<CacheValue> lock, DeviceTwinName twinNames) throws ExternalDependencyException, ResourceOutOfDateException {
+    private Boolean writeAndUnlockCache(StorageWriteLock<CacheValue> lock, DeviceTwinName twinNames) throws ExternalDependencyException, ResourceOutOfDateException {
         try {
             return lock.writeAndReleaseAsync(new CacheValue(twinNames.getTags(), twinNames.getReportedProperties())).toCompletableFuture().get();
         } catch (InterruptedException | ExecutionException e) {
-            String errorMessage = String.format("falied to WriteAndRelease lock for %s,%s ", CacheCollectionId, CacheKey);
+            String errorMessage = String.format("failed to WriteAndRelease lock for %s,%s ", CacheCollectionId, CacheKey);
             this.log.error(errorMessage, e);
             throw new ExternalDependencyException(errorMessage);
         }

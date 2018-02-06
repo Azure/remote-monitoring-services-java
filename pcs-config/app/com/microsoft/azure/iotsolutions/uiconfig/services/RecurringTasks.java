@@ -102,7 +102,7 @@ public class RecurringTasks implements IRecurringTasks {
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    upateCache();
+                    updateCache();
                 }
             }, 1000 * CACHE_UPDATE_SECS);
             this.log.info("Cache update scheduled");
@@ -111,7 +111,7 @@ public class RecurringTasks implements IRecurringTasks {
         }
     }
 
-    private void upateCache() {
+    private void updateCache() {
         try {
             this.log.info("Updating cache...");
             this.cache.rebuildCacheAsync().toCompletableFuture().get(CACHE_TIMEOUT_SECS * 1000, TimeUnit.SECONDS);
