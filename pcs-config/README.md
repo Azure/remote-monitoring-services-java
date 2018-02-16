@@ -142,7 +142,7 @@ dockerAlias := DockerAlias(dockerRepository.value, None, packageName.value + "-j
 maintainer in Docker := "Devis Lucato (https://github.com/dluc)"
 dockerBaseImage := "toketi/openjdk-8-jre-alpine-bash"
 dockerUpdateLatest := true
-dockerBuildOptions ++= Seq("--squash", "--compress", "--label", "Tags=Azure,IoT,PCS,Java")
+dockerBuildOptions ++= Seq("--compress", "--label", "Tags=Azure,IoT,PCS,Java")
 dockerEntrypoint := Seq("bin/pcs-config")
 ```
 The package logic is executed via

@@ -89,7 +89,7 @@ dockerAlias := DockerAlias(dockerRepository.value, None, packageName.value + "-j
 dockerBaseImage := "toketi/openjdk-8-jre-alpine-bash"
 dockerExposedPorts := Seq(8080)
 dockerUpdateLatest := false
-dockerBuildOptions ++= Seq("--squash", "--compress", "--label", "Tags=Azure,IoT,PCS,Java")
+dockerBuildOptions ++= Seq("--compress", "--label", "Tags=Azure,IoT,PCS,Java")
 dockerEntrypoint := Seq("bin/pcs-config","-Dhttp.port=8080")
 ```
 
