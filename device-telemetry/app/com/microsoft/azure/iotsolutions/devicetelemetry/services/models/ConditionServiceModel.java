@@ -2,20 +2,29 @@
 
 package com.microsoft.azure.iotsolutions.devicetelemetry.services.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+
 /*
  * Specifies a condition that must be met for a rule to trigger an alarm.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonNaming(PropertyNamingStrategy.UpperCamelCaseStrategy.class)
 public final class ConditionServiceModel {
 
-    private final String field;
+    private String field = null;
+    private String operator = null;
+    private String value = null;
 
-    private final String operator;
-    private final String value;
+    public ConditionServiceModel() {
+
+    }
 
     public ConditionServiceModel(
-        final String field,
-        final String operator,
-        final String value) {
+        String field,
+        String operator,
+        String value) {
 
         this.field = field;
         this.operator = operator;
@@ -26,11 +35,23 @@ public final class ConditionServiceModel {
         return this.field;
     }
 
+    public void setField(String field) {
+        this.field = field;
+    }
+
     public String getOperator() {
         return this.operator;
     }
 
+    public void setOperator(String operator) {
+        this.operator = operator;
+    }
+
     public String getValue() {
         return this.value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 }

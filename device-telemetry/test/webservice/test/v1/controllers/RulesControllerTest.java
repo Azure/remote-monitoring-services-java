@@ -7,7 +7,7 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.IRules;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.ConditionServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.RuleServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.RulesController;
-import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.AlarmStatus;
+import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.RuleApiModel;
 import helpers.UnitTest;
 import org.eclipse.jetty.util.Callback;
 import org.junit.After;
@@ -24,6 +24,7 @@ import java.util.concurrent.CompletionStage;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static play.libs.Json.toJson;
@@ -140,9 +141,9 @@ public class RulesControllerTest {
         IRules rules = mock(IRules.class);
 
         RulesController controller = new RulesController(rules);
-        when(rules.postAsync(this.sampleNewRuleServiceModel)).thenReturn(ruleResult);
+        when(rules.postAsync(any())).thenReturn(ruleResult);
 
-        mockHttpContex();
+        mockHttpContext(new RuleApiModel(this.sampleNewRuleServiceModel));
 
         // Act
         controller.postAsync().thenApply(response -> {
@@ -175,12 +176,12 @@ public class RulesControllerTest {
         IRules rules = mock(IRules.class);
 
         RulesController controller = new RulesController(rules);
-        when(rules.putAsync(this.sampleNewRuleServiceModel)).thenReturn(ruleResult);
+        when(rules.putAsync(any())).thenReturn(ruleResult);
 
-        mockHttpContex();
+        mockHttpContext(new RuleApiModel(this.sampleNewRuleServiceModel));
 
         // Act
-        controller.postAsync().thenApply(response -> {
+        controller.putAsync(this.sampleNewRuleServiceModel.getId()).thenApply(response -> {
             // Assert - that body is not null
             assertThat(response.body().isKnownEmpty(), is(false));
 
@@ -201,9 +202,9 @@ public class RulesControllerTest {
         });
     }
 
-    private void mockHttpContex() {
+    private void mockHttpContext(Object requestBody) {
         Http.Request mockRequest = mock(Http.Request.class);
-        when(mockRequest.body()).thenReturn(new Http.RequestBody(toJson(new AlarmStatus("open"))));
+        when(mockRequest.body()).thenReturn(new Http.RequestBody(toJson(requestBody)));
 
         Http.Context mockContext = mock(Http.Context.class);
         when(mockContext.request()).thenReturn(mockRequest);

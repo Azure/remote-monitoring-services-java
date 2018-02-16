@@ -3,13 +3,15 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.ConditionServiceModel;
 
 /**
  * Public model used by the web service.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonNaming(PropertyNamingStrategy.UpperCamelCaseStrategy.class)
 public final class ConditionApiModel {
 
     private String field = null;
@@ -48,19 +50,28 @@ public final class ConditionApiModel {
         }
     }
 
-    @JsonProperty("Field")
     public String getField() {
         return this.field;
     }
 
-    @JsonProperty("Operator")
+    public void setField(String field) {
+        this.field = field;
+    }
+
     public String getOperator() {
         return this.operator;
     }
 
-    @JsonProperty("Value")
+    public void setOperator(String operator) {
+        this.operator = operator;
+    }
+
     public String getValue() {
         return this.value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 
     public ConditionServiceModel toServiceModel() {

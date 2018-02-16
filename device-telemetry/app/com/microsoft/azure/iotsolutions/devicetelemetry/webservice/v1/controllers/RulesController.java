@@ -2,26 +2,18 @@
 
 package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.IRules;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ResourceOutOfDateException;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.ConditionServiceModel;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.RuleServiceModel;
-import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.exceptions.BadRequestException;
-import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.ConditionApiModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.RuleApiModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.RuleListApiModel;
-import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.serialization.JsonHelper;
 import play.Logger;
-import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
 
-import java.util.ArrayList;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
+import static play.libs.Json.fromJson;
 import static play.libs.Json.toJson;
 
 public class RulesController extends Controller {
@@ -97,29 +89,13 @@ public class RulesController extends Controller {
      * @return newly created rule
      */
     public CompletionStage<Result> postAsync() {
-
-        JsonNode jsonBody = request().body().asJson();
-
-        RuleServiceModel ruleServiceModel;
-
-        // convert body to RuleServiceModel
-        try {
-            log.info("Trying to parse rule from POST request. Input: " + jsonBody);
-
-            ruleServiceModel = requestBodyToRuleServiceModel(jsonBody, null);
-
-            log.info("Successfully parsed rule id " + ruleServiceModel.getId() +
-                " from POST request.");
-        } catch (Exception e) {
-            String msg = "Could not parse rule body from POST request. Error Msg: " +
-                e.getMessage();
-            log.error(msg, e, jsonBody);
-            return CompletableFuture.completedFuture(badRequest(msg));
+        log.info("Trying to create a new rule.");
+        RuleApiModel ruleApiModel = fromJson(request().body().asJson(), RuleApiModel.class);
+        if (ruleApiModel == null) {
+            badRequest(request().body().asText());
         }
-
-        return rules.postAsync(ruleServiceModel)
+        return rules.postAsync(ruleApiModel.toServiceModel())
             .thenApply(newRule -> ok(toJson(new RuleApiModel(newRule))));
-
     }
 
     /**
@@ -129,26 +105,12 @@ public class RulesController extends Controller {
      * @return updated rule
      */
     public CompletionStage<Result> putAsync(String id) {
-
-        JsonNode jsonBody = request().body().asJson();
-
-        RuleServiceModel ruleServiceModel;
-
-        // convert body to RuleServiceModel
-        try {
-            log.info("Trying to parse rule from PUT request. Input: " + jsonBody);
-
-            ruleServiceModel = requestBodyToRuleServiceModel(jsonBody, id);
-
-            log.info("Successfully parsed rule id " + id + " from PUT request.");
-        } catch (Exception e) {
-            String msg = "Could not complete PUT request. Error Msg: "
-                + e.getMessage();
-            log.error(msg, e, jsonBody);
-            return CompletableFuture.completedFuture(badRequest(msg));
+        log.info("Trying to update rule id " + id + ".");
+        RuleApiModel ruleApiModel = fromJson(request().body().asJson(), RuleApiModel.class);
+        if (ruleApiModel == null) {
+            badRequest(request().body().asText());
         }
-
-        return rules.putAsync(ruleServiceModel)
+        return rules.putAsync(ruleApiModel.toServiceModel(id))
             .thenApply(newRule -> ok(toJson(new RuleApiModel(newRule))))
             .exceptionally(e -> {
                 if (e.getCause() instanceof ResourceOutOfDateException) {
@@ -174,115 +136,5 @@ public class RulesController extends Controller {
     public CompletionStage<Result> deleteAsync(String id) {
         log.info("Trying to delete rule id " + id + ".");
         return rules.deleteAsync(id).thenApply(success -> ok());
-    }
-
-    /**
-     * Converts Json request body to Rule service model. Throws exception if
-     * input is invalid.
-     *
-     * @return RuleServiceModel
-     */
-    private RuleServiceModel requestBodyToRuleServiceModel(JsonNode body, String id)
-        throws BadRequestException {
-
-        RuleServiceModel result;
-
-        if (body == null) {
-            String msg = "The request is empty.";
-            log.warn(msg);
-            throw new BadRequestException(msg);
-        }
-
-        // parse conditions, ignore key case
-        ArrayList<ConditionServiceModel> conditions = new ArrayList<>();
-        String conditionsKey = body.has("Conditions") ? "Conditions" : "conditions";
-        try {
-            for (JsonNode condition : body.withArray(conditionsKey)) {
-                conditions.add(Json.fromJson(
-                    condition,
-                    ConditionApiModel.class).toServiceModel());
-            }
-        } catch (Exception e) {
-            String msg = "Invalid input, " +
-                "request does not contain the `Conditions` field. Error msg: " +
-                e.getMessage();
-            log.error(msg, e);
-            throw new BadRequestException(msg, e);
-
-        }
-
-        // update existing Rule if ETag is present
-        if (body.has("ETag") ||
-            body.has("etag") ||
-            body.has("Etag")) {
-
-            // Rule ID must be specified in the request e.g. rules/{put-rule-id}
-            if (id == null) {
-                String msg = "Bad request -- null rule id in PUT request " +
-                    "with etag in body. Must specify rule id in request URL.";
-                log.error(msg);
-                throw new BadRequestException(msg);
-            }
-
-            try {
-                log.info("Try to create new RuleServiceModel with id " + id +
-                    " from json: " + body);
-
-                result = new RuleServiceModel(
-                    JsonHelper.getNode(body, "ETag").asText(),
-                    id,
-                    JsonHelper.getNode(body, "Name").asText(),
-                    JsonHelper.getNode(body, "Enabled").asBoolean(),
-                    JsonHelper.getNode(body, "Description").asText(),
-                    JsonHelper.getNode(body, "GroupId").asText(),
-                    JsonHelper.getNode(body, "Severity").asText(),
-                    conditions);
-            } catch (Exception e) {
-                String msg = "Invalid input for rule with ETag. Error msg: "
-                    + e.getMessage();
-                log.error(msg, e);
-                throw new BadRequestException(msg, e);
-            }
-
-        } else if (id != null) { // create new rule with specified id
-            try {
-                log.info("Try to create new rule with id " + id +
-                    " from json: " + body);
-
-                result = new RuleServiceModel(
-                    id,
-                    JsonHelper.getNode(body, "Name").asText(),
-                    JsonHelper.getNode(body, "Enabled").asBoolean(),
-                    JsonHelper.getNode(body, "Description").asText(),
-                    JsonHelper.getNode(body, "GroupId").asText(),
-                    JsonHelper.getNode(body, "Severity").asText(),
-                    conditions);
-            } catch (Exception e) {
-                String msg = "Invalid input for new rule with id. Error msg: " +
-                    e.getMessage();
-                log.error(msg, e);
-                throw new BadRequestException(msg, e);
-            }
-        } else { // otherwise create new rule
-            log.info("Try to create new rule with no id provided " +
-                "from json: " + body);
-
-            try {
-                result = new RuleServiceModel(
-                    JsonHelper.getNode(body, "Name").asText(),
-                    JsonHelper.getNode(body, "Enabled").asBoolean(),
-                    JsonHelper.getNode(body, "Description").asText(),
-                    JsonHelper.getNode(body, "GroupId").asText(),
-                    JsonHelper.getNode(body, "Severity").asText(),
-                    conditions);
-            } catch (Exception e) {
-                String msg = "Invalid input for new rule. Error msg: " +
-                    e.getMessage();
-                log.error(msg, e);
-                throw new BadRequestException(msg, e);
-            }
-        }
-
-        return result;
     }
 }
