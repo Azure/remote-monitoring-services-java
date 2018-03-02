@@ -76,6 +76,6 @@ dockerAlias := DockerAlias(dockerRepository.value, None, packageName.value + "-j
 maintainer in Docker := "Jill Bender (https://github.com/jillcary)"
 dockerBaseImage := "toketi/openjdk-8-jre-alpine-bash"
 dockerUpdateLatest := false
-dockerBuildOptions ++= Seq("--squash", "--compress", "--label", "Tags=Azure,IoT,PCS,telemetry,Java")
+dockerBuildOptions ++= Seq("--compress", "--label", "Tags=Azure,IoT,PCS,telemetry,Java")
 // Example params: -Dconfig.file=/opt/conf/prod.conf -Dhttp.port=1234 -Dhttp.address=127.0.0.1
 dockerEntrypoint := Seq("bin/telemetry")

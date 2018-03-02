@@ -153,7 +153,7 @@ dockerRepository := Some("azureiotpcs")
 dockerAlias := DockerAlias(dockerRepository.value, None, packageName.value + "-java", Some((version in Docker).value))
 dockerBaseImage := "toketi/openjdk-8-jre-alpine-bash"
 dockerUpdateLatest := false
-dockerBuildOptions ++= Seq("--squash", "--compress", "--label", "Tags=azure,iot,pcs,telemetry,Java")
+dockerBuildOptions ++= Seq("--compress", "--label", "Tags=azure,iot,pcs,telemetry,Java")
 dockerEntrypoint := Seq("bin/telemetry")
 ```
 
