@@ -19,12 +19,23 @@ How to use the microservice
 
 ### 1. Environment Variables
 
-Run `scripts\env-vars-setup.cmd` on Windows or `source scripts\env-vars-setup`
+Run `scripts\env-vars-setup.cmd` on Windows or `source scripts/env-vars-setup`
 on Mac/Linux to set up the environment variables needed to run the service locally.
-If using environment variables, this service requires the following environment
+In Windows you can also set these [in your system][windows-envvars-howto-url].
+
+If using envornemnt variables, this service requires the following environment
 variables to be set:
 - `PCS_STORAGEADAPTER_WEBSERVICE_URL` - the url for
-  the [Storage Adapter Webservice](https://github.com/Azure/pcs-storage-adapter-java)
+  the [Storage Adapter Webservice](https://github.com/Azure/pcs-storage-adapter-java.git)
+  used for key value storage
+- `PCS_TELEMETRY_WEBSERVICE_URL` - the url for
+  the [Telemetry Webservice](https://github.com/Azure/device-telemetry-java.git)
+  used for key value storage
+- `PCS_DEVICESIMULATION_WEBSERVICE_URL` - the url for
+  the [Device Simulation Webservice](https://github.com/Azure/device-simulation-dotnet.git)
+  used for key value storage
+- `PCS_IOTHUBMANAGER_WEBSERVICE_URL` - the url for
+  the [IOT Hub Manager Webservice](https://github.com/Azure/iothub-manager-java.git)
   used for key value storage
 
 ## Quickstart - Running the service with Docker
@@ -174,6 +185,6 @@ https://github.com/Azure/pcs-config-java/issues.
 [issues-url]: https://github.com/azure/pcs-config-java/issues
 [gitter-badge]: https://img.shields.io/gitter/room/azure/iot-solutions.js.svg
 [gitter-url]: https://gitter.im/azure/iot-solutions
-
+[windows-envvars-howto-url]: https://superuser.com/questions/949560/how-do-i-set-system-environment-variables-in-windows-10
 [Storage Adapter]:https://github.com/Azure/pcs-storage-adapter-java/blob/master/README.md
 [Azure DocumentDB]:(https://ms.portal.azure.com/#create/Microsoft.DocumentDB)
