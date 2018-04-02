@@ -16,12 +16,20 @@ public class Logo {
     private static final Logger.ALogger log = Logger.of(Logo.class);
 
     public static final Logo Default;
+    public static final String IS_DEFAULT_HEADER = "IsDefault";
+    public static final String NAME_HEADER = "Name";
+    private static final String DEFAULT_LOGO_NAME = "Default Logo";
+    private static final String SVG_TYPE = "image/svg+xml";
+    private static final String DEFAULT_LOGO_PATH = "/resources/content/DefaultLogo.svg";
+
 
     static {
         Default = new Logo();
-        Default.setType("image/svg+xml");
+        Default.setType(Logo.SVG_TYPE);
+        Default.setName(Logo.DEFAULT_LOGO_NAME);
+        Default.setDefault(true);
         try {
-            InputStream stream = Logo.class.getResourceAsStream("/resources/content/DefaultLogo.svg");
+            InputStream stream = Logo.class.getResourceAsStream(Logo.DEFAULT_LOGO_PATH);
             InputStreamReader in = new InputStreamReader(stream, "UTF-8");
             BufferedReader reader = new BufferedReader(in);
             StringBuffer sb = new StringBuffer();
@@ -38,18 +46,17 @@ public class Logo {
 
     private String image;
     private String type;
+    private String name;
+    private boolean isDefault;
 
     public Logo() {
     }
 
-    public Logo(String image, String type) {
+    public Logo(String image, String type, String name, boolean isDefault) {
         this.image = image;
         this.type = type;
-    }
-
-    @JsonProperty("Default")
-    public static Logo getDefault() {
-        return Default;
+        this.name = name;
+        this.isDefault = isDefault;
     }
 
     @JsonProperty("Image")
@@ -69,4 +76,14 @@ public class Logo {
     public void setType(String type) {
         this.type = type;
     }
+
+    @JsonProperty("Name")
+    public String getName() { return this.name; }
+
+    public void setName(String name) { this.name = name; }
+
+    @JsonProperty("IsDefault")
+    public boolean getDefault() { return this.isDefault; }
+
+    public void setDefault(boolean isDefault) { this.isDefault = isDefault; }
 }

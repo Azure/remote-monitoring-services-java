@@ -12,6 +12,7 @@ import com.microsoft.azure.iotsolutions.uiconfig.services.models.DeviceGroup;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.Logo;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.Theme;
 import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.IServicesConfig;
+import play.Logger;
 import play.libs.Json;
 
 import java.util.concurrent.*;
@@ -20,6 +21,8 @@ import java.util.stream.StreamSupport;
 
 @Singleton
 public class Storage implements IStorage {
+
+    private static final Logger.ALogger log = Logger.of(Storage.class);
 
     static String SolutionCollectionId = "solution-settings";
     static String ThemeKey = "theme";
@@ -110,6 +113,9 @@ public class Storage implements IStorage {
                             return fromJson(m.getData(), Logo.class);
                         }
                     });
+        } catch (ResourceNotFoundException ex) {
+            log.debug("Could not find logo, returning default logo");
+            return CompletableFuture.supplyAsync(() -> Logo.Default);
         } catch (BaseException ex) {
             throw new CompletionException("Unable to get logo", ex);
         }
@@ -117,10 +123,21 @@ public class Storage implements IStorage {
 
     @Override
     public CompletionStage<Logo> setLogoAsync(Logo model) throws BaseException {
-        String value = toJson(model);
-        return client.updateAsync(SolutionCollectionId, LogoKey, value, "*").thenApplyAsync(m ->
-                fromJson(m.getData(), Logo.class)
-        );
+        if (model.getName() == null || model.getImage() == null) {
+            try {
+                return this.getLogoAsync().thenComposeAsync(current -> {
+                    try {
+                        updateLogoWithCurrent(model, current);
+                        return updateLogoAsync(toJson(model));
+                    } catch (BaseException be) {
+                        throw new CompletionException("Cannot update logo", be);
+                    }
+                });
+            } catch (Exception e) {
+                log.error("Exception on getLogoAsync: ", e.toString());
+            }
+        }
+        return updateLogoAsync(toJson(model));
     }
 
     @Override
@@ -169,5 +186,26 @@ public class Storage implements IStorage {
         if (!theme.has(BingMapKey)) {
             theme.put(BingMapKey, config.getBingMapKey());
         }
+    }
+
+    private Logo updateLogoWithCurrent(Logo model, Logo current) {
+        if (!current.getDefault()) {
+            String currentName = current.getName();
+            if (model.getName() == null && currentName != null) {
+                model.setName(currentName);
+            }
+            String currentImage = current.getImage();
+            if (model.getImage() == null && currentImage != null) {
+                model.setImage(currentImage);
+                model.setType(current.getType());
+            }
+        }
+        return model;
+    }
+
+    private CompletionStage<Logo> updateLogoAsync(String value) throws BaseException {
+        return client.updateAsync(SolutionCollectionId, LogoKey, value, "*").thenApplyAsync(m ->
+                fromJson(m.getData(), Logo.class)
+        );
     }
 }

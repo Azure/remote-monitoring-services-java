@@ -5,7 +5,7 @@ package com.microsoft.azure.iotsolutions.uiconfig.services;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.Lists;
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.BaseException;
-import com.microsoft.azure.iotsolutions.uiconfig.services.external.ConditionApiModel;
+import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.ResourceNotFoundException;
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.IStorageAdapterClient;
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.ValueApiModel;
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.ValueListApiModel;
@@ -31,6 +31,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class StorageTest {
 
@@ -39,6 +41,8 @@ public class StorageTest {
     private Random rand;
     private ServicesConfig config;
     private String bingMapKey;
+    private static final String LOGO_FORMAT = "{\"Image\":\"%s\",\"Type\":\"%s\",\"Name\":\"%s\",\"IsDefault\":%s}";
+    private static final int TIMEOUT = 100000;
 
     @Before
     public void setUp() throws URISyntaxException, IOException {
@@ -49,7 +53,7 @@ public class StorageTest {
         config.setBingMapKey(bingMapKey);
     }
 
-    @Test(timeout = 100000)
+    @Test(timeout = StorageTest.TIMEOUT)
     @Category({UnitTest.class})
     public void getThemeAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         String name = rand.NextString();
@@ -66,7 +70,7 @@ public class StorageTest {
         assertEquals(node.get("BingMapKey").asText(), bingMapKey);
     }
 
-    @Test(timeout = 100000)
+    @Test(timeout = StorageTest.TIMEOUT)
     @Category({UnitTest.class})
     public void getThemeAsyncDefaultTest() throws BaseException, ExecutionException, InterruptedException {
         Mockito.when(mockClient.getAsync(Mockito.anyString(), Mockito.anyString()))
@@ -79,7 +83,7 @@ public class StorageTest {
         assertEquals(node.get("BingMapKey").asText(), bingMapKey);
     }
 
-    @Test(timeout = 100000)
+    @Test(timeout = StorageTest.TIMEOUT)
     @Category({UnitTest.class})
     public void setThemeAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         String name = rand.NextString();
@@ -98,7 +102,7 @@ public class StorageTest {
         assertEquals(node.get("BingMapKey").asText(), bingMapKey);
     }
 
-    @Test(timeout = 100000)
+    @Test(timeout = StorageTest.TIMEOUT)
     @Category({UnitTest.class})
     public void getUserSettingAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         String id = this.rand.NextString();
@@ -117,7 +121,7 @@ public class StorageTest {
         assertEquals(node.get("Description").asText(), description);
     }
 
-    @Test(timeout = 100000)
+    @Test(timeout = StorageTest.TIMEOUT)
     @Category({UnitTest.class})
     public void setUserSettingAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         String id = this.rand.NextString();
@@ -136,43 +140,131 @@ public class StorageTest {
         assertEquals(node.get("Description").asText(), description);
     }
 
-    @Test(timeout = 100000)
+    @Test(timeout = StorageTest.TIMEOUT)
     @Category({UnitTest.class})
-    public void getLogoAsyncTest() throws BaseException, ExecutionException, InterruptedException {
+    public void getLogoShouldReturnExpectedLogo() throws BaseException, ExecutionException, InterruptedException {
+        // Arrange
         String image = rand.NextString();
         String type = rand.NextString();
-        String jsonData = String.format("{\"Image\":\"%s\",\"Type\":\"%s\"}", image, type);
+        String isDefault = "false";
+        String jsonData = String.format("{\"Image\":\"%s\",\"Type\":\"%s\",\"IsDefault\":%s}", image, type, isDefault);
+        mockGetLogo(jsonData);
+        storage = new Storage(mockClient, config);
+
+        // Act
+        Object result = storage.getLogoAsync().toCompletableFuture().get();
+        JsonNode node = Json.toJson(result);
+
+        // Assert
+        assertEquals(node.get("Image").asText(), image);
+        assertEquals(node.get("Type").asText(), type);
+        assertFalse(node.get("IsDefault").booleanValue());
+    }
+
+    @Test(timeout = StorageTest.TIMEOUT)
+    @Category({UnitTest.class})
+    public void getLogoShouldReturnExpectedLogoAndName() throws BaseException, ExecutionException, InterruptedException {
+        // Arrange
+        String image = rand.NextString();
+        String type = rand.NextString();
+        String name = rand.NextString();
+        String isDefault = "false";
+        String jsonData = String.format(StorageTest.LOGO_FORMAT, image, type, name, isDefault);
+        mockGetLogo(jsonData);
+        storage = new Storage(mockClient, config);
+
+        // Act
+        Object result = storage.getLogoAsync().toCompletableFuture().get();
+        JsonNode node = Json.toJson(result);
+
+        // Assert
+        assertEquals(node.get("Image").asText(), image);
+        assertEquals(node.get("Type").asText(), type);
+        assertEquals(node.get("Name").asText(), name);
+        assertFalse(node.get("IsDefault").booleanValue());
+    }
+
+    @Test(timeout = StorageTest.TIMEOUT)
+    @Category({UnitTest.class})
+    public void getLogoShouldReturnDefaultLogoOnException() throws BaseException, ExecutionException, InterruptedException {
+        // Arrange
+        Mockito.when(mockClient.getAsync(Mockito.any(String.class), Mockito.any(String.class))).thenThrow(new ResourceNotFoundException());
+        storage = new Storage(mockClient, config);
+
+        // Act
+        Object result = storage.getLogoAsync().toCompletableFuture().get();
+        JsonNode node = Json.toJson(result);
+
+        // Assert
+        assertEquals(Logo.Default.getImage(), node.get("Image").asText());
+        assertEquals(Logo.Default.getType(),node.get("Type").asText());
+        assertEquals(Logo.Default.getName(), node.get("Name").asText());
+        assertTrue(node.get("IsDefault").booleanValue());
+    }
+
+    @Test(timeout = StorageTest.TIMEOUT)
+    @Category({UnitTest.class})
+    public void setLogoShouldNotOverwriteOldNameWithNull() throws BaseException, ExecutionException, InterruptedException {
+        // Arrange
+        String image = rand.NextString();
+        String type = rand.NextString();
+        Logo logo = new Logo(image, type, null, false);
+        String oldName = rand.NextString();
+
+        // Act
+        JsonNode node = SetLogoHelper(logo, oldName);
+
+        // Assert
+        assertEquals(image, node.get("Image").asText());
+        assertEquals(type, node.get("Type").asText());
+        assertEquals(oldName, node.get("Name").asText());
+        assertFalse(node.get("IsDefault").booleanValue());
+    }
+
+    @Test(timeout = StorageTest.TIMEOUT)
+    @Category({UnitTest.class})
+    public void setLogoShouldSetAllPartsOfLogoIfNotNull() throws BaseException, ExecutionException, InterruptedException {
+        // Arrange
+        String image = rand.NextString();
+        String type = rand.NextString();
+        String name = rand.NextString();
+        Logo logo = new Logo(image, type, name, false);
+
+        // Act
+        JsonNode node = SetLogoHelper(logo, rand.NextString());
+
+        // Assert
+        assertEquals(image, node.get("Image").asText());
+        assertEquals(type, node.get("Type").asText());
+        assertEquals(name, node.get("Name").asText());
+        assertFalse(node.get("IsDefault").booleanValue());
+    }
+
+    private JsonNode SetLogoHelper(Logo logo, String oldName) throws BaseException, ExecutionException, InterruptedException {
+        mockSetLogo();
+        String oldImage = rand.NextString();
+        String oldType = rand.NextString();
+        String isDefault = "false";
+        String jsonData = String.format(StorageTest.LOGO_FORMAT, oldImage, oldType, oldName, isDefault);
+        mockGetLogo(jsonData);
+        storage = new Storage(mockClient, config);
+        Object result = storage.setLogoAsync(logo).toCompletableFuture().get();
+        return Json.toJson(result);
+    }
+
+    private void mockSetLogo() throws BaseException{
+        Mockito.when(mockClient.updateAsync(Mockito.any(String.class), Mockito.any(String.class), Mockito.any(String.class), Mockito.any(String.class)))
+                .thenAnswer(i -> CompletableFuture.supplyAsync(() -> new ValueApiModel(null, i.getArgument(2), null, null)));
+    }
+
+    private void mockGetLogo(String jsonData) throws BaseException {
         ValueApiModel model = new ValueApiModel();
         model.setData(jsonData);
         Mockito.when(mockClient.getAsync(Mockito.any(String.class), Mockito.any(String.class)))
                 .thenReturn(CompletableFuture.supplyAsync(() -> model));
-        storage = new Storage(mockClient, config);
-        Object result = storage.getLogoAsync().toCompletableFuture().get();
-        JsonNode node = Json.toJson(result);
-        assertEquals(node.get("Image").asText(), image);
-        assertEquals(node.get("Type").asText(), type);
     }
 
-    @Test(timeout = 100000)
-    @Category({UnitTest.class})
-    public void setLogoAsyncTest() throws BaseException, ExecutionException, InterruptedException {
-        String image = rand.NextString();
-        String type = rand.NextString();
-        Logo logo = new Logo();
-        logo.setImage(image);
-        logo.setType(type);
-        ValueApiModel model = new ValueApiModel();
-        model.setData(Json.stringify(Json.toJson(logo)));
-        Mockito.when(mockClient.updateAsync(Mockito.any(String.class), Mockito.any(String.class), Mockito.any(String.class), Mockito.any(String.class)))
-                .thenReturn(CompletableFuture.supplyAsync(() -> model));
-        storage = new Storage(mockClient, config);
-        Object result = storage.setLogoAsync(logo).toCompletableFuture().get();
-        JsonNode node = Json.toJson(result);
-        assertEquals(node.get("Image").asText(), image);
-        assertEquals(node.get("Type").asText(), type);
-    }
-
-    @Test(timeout = 100000)
+    @Test(timeout = StorageTest.TIMEOUT)
     @Category({UnitTest.class})
     public void getAllDeviceGroupsAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         List<DeviceGroup> groups = new ArrayList<>();
@@ -199,7 +291,7 @@ public class StorageTest {
         }
     }
 
-    @Test(timeout = 100000)
+    @Test(timeout = StorageTest.TIMEOUT)
     @Category({UnitTest.class})
     public void getDeviceGroupsAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         String groupId = rand.NextString();
@@ -220,7 +312,7 @@ public class StorageTest {
         assertEquals(result.getConditions(), conditions);
     }
 
-    @Test(timeout = 100000)
+    @Test(timeout = StorageTest.TIMEOUT)
     @Category({UnitTest.class})
     public void createDeviceGroupAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         String groupId = rand.NextString();
@@ -243,7 +335,7 @@ public class StorageTest {
         assertEquals(result.getETag(), etag);
     }
 
-    @Test(timeout = 100000)
+    @Test(timeout = StorageTest.TIMEOUT)
     @Category({UnitTest.class})
     public void updateDeviceGroupAsyncTest() throws BaseException, ExecutionException, InterruptedException {
         String groupId = rand.NextString();

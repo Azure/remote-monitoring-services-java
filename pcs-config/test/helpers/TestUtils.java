@@ -21,7 +21,7 @@ public class TestUtils {
         return bs.toByteBuffer().array();
     }
 
-    public static void setRequest(String body) {
+    public static Http.Response setRequest(String body) {
         Http.Request mockRequest = mock(Http.Request.class);
         when(mockRequest.body()).thenReturn(new Http.RequestBody(Json.parse(body)));
         Http.Response mockResponse = mock(Http.Response.class);
@@ -31,5 +31,6 @@ public class TestUtils {
         when(mockContext.request()).thenReturn(mockRequest);
         when(mockContext.response()).thenReturn(mockResponse);
         Http.Context.current.set(mockContext);
+        return mockResponse;
     }
 }
