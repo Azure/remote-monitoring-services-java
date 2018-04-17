@@ -30,9 +30,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class StorageTest {
 
@@ -40,7 +38,7 @@ public class StorageTest {
     private Storage storage;
     private Random rand;
     private ServicesConfig config;
-    private String bingMapKey;
+    private String azureMapsKey;
     private static final String LOGO_FORMAT = "{\"Image\":\"%s\",\"Type\":\"%s\",\"Name\":\"%s\",\"IsDefault\":%s}";
     private static final int TIMEOUT = 100000;
 
@@ -49,8 +47,8 @@ public class StorageTest {
         mockClient = Mockito.mock(IStorageAdapterClient.class);
         rand = new Random();
         config = new ServicesConfig();
-        bingMapKey = rand.NextString();
-        config.setBingMapKey(bingMapKey);
+        azureMapsKey = rand.NextString();
+        config.setAzureMapsKey(azureMapsKey);
     }
 
     @Test(timeout = StorageTest.TIMEOUT)
@@ -67,7 +65,7 @@ public class StorageTest {
         JsonNode node = Json.toJson(result);
         assertEquals(node.get("Name").asText(), name);
         assertEquals(node.get("Description").asText(), description);
-        assertEquals(node.get("BingMapKey").asText(), bingMapKey);
+        assertEquals(node.get("AzureMapsKey").asText(), azureMapsKey);
     }
 
     @Test(timeout = StorageTest.TIMEOUT)
@@ -80,7 +78,7 @@ public class StorageTest {
         JsonNode node = Json.toJson(result);
         assertEquals(node.get("Name").asText(), Theme.Default.getName());
         assertEquals(node.get("Description").asText(), Theme.Default.getDescription());
-        assertEquals(node.get("BingMapKey").asText(), bingMapKey);
+        assertEquals(node.get("AzureMapsKey").asText(), azureMapsKey);
     }
 
     @Test(timeout = StorageTest.TIMEOUT)
@@ -99,7 +97,7 @@ public class StorageTest {
         JsonNode node = Json.toJson(result);
         assertEquals(node.get("Name").asText(), name);
         assertEquals(node.get("Description").asText(), description);
-        assertEquals(node.get("BingMapKey").asText(), bingMapKey);
+        assertEquals(node.get("AzureMapsKey").asText(), azureMapsKey);
     }
 
     @Test(timeout = StorageTest.TIMEOUT)

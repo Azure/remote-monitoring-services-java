@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.microsoft.azure.iotsolutions.uiconfig.services.IStorage;
-import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.*;
+import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.BaseException;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.Logo;
 import play.Logger;
 import play.libs.Json;
@@ -20,8 +20,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Base64;
-import java.util.concurrent.CompletionStage;
 import java.util.Optional;
+import java.util.concurrent.CompletionStage;
 
 import static play.libs.Json.toJson;
 

@@ -3,7 +3,9 @@
 package com.microsoft.azure.iotsolutions.uiconfig.services;
 
 import com.google.common.collect.Lists;
-import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.*;
+import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.BaseException;
+import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.ConflictingResourceException;
+import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.ResourceNotFoundException;
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.IStorageAdapterClient;
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.StorageAdapterClient;
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.ValueApiModel;

@@ -15,8 +15,6 @@ import org.junit.experimental.categories.Category;
 import org.mockito.Mockito;
 import play.libs.Json;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 

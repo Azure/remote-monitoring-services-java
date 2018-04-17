@@ -3,7 +3,6 @@
 package com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.microsoft.azure.iotsolutions.uiconfig.services.external.ConditionApiModel;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.DeviceGroup;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.DeviceGroupCondition;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.Version;

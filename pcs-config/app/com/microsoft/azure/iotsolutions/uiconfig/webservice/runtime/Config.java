@@ -23,7 +23,7 @@ public class Config implements IConfig {
     private final String CACHE_TTL = APPLICATION_KEY + "cache_TTL";
     private final String REBUILD_TIMEOUT = APPLICATION_KEY + "rebuild_timeout";
     private final String SEED_TEMPLATEKEY = APPLICATION_KEY + "seed-template";
-    private final String BINGMAP_KEY = APPLICATION_KEY + "bingmap-key";
+    private final String AZUREMAPS_KEY = APPLICATION_KEY + "azuremaps-key";
     private final String CACHE_WHITELIST_KEY = APPLICATION_KEY + "cache_whitelist";
 
     private final String CLIENT_AUTH_KEY = APPLICATION_KEY + "client-auth.";
@@ -55,7 +55,7 @@ public class Config implements IConfig {
                 this.data.getInt(CACHE_TTL),
                 this.data.getInt(REBUILD_TIMEOUT),
                 this.data.getString(SEED_TEMPLATEKEY),
-                this.data.getString(BINGMAP_KEY),
+                this.data.getString(AZUREMAPS_KEY),
                 this.data.getStringList(CACHE_WHITELIST_KEY));
         return servicesConfig;
     }

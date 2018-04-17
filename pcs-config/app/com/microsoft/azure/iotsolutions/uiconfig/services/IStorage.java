@@ -3,7 +3,7 @@
 package com.microsoft.azure.iotsolutions.uiconfig.services;
 
 import com.google.inject.ImplementedBy;
-import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.*;
+import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.BaseException;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.DeviceGroup;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.Logo;
 

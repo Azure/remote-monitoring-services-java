@@ -23,7 +23,7 @@ docker run -it -p 9005:9005 ^
     -e PCS_DEVICESIMULATION_WEBSERVICE_URL ^
     -e PCS_TELEMETRY_WEBSERVICE_URL ^
     -e PCS_IOTHUBMANAGER_WEBSERVICE_URL ^
-    -e PCS_BINGMAP_KEY ^
+    -e PCS_AZUREMAPS_KEY ^
     %DOCKER_IMAGE%:testing
 
 :: - - - - - - - - - - - - - -

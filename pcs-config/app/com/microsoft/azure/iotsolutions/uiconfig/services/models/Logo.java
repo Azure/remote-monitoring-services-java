@@ -3,7 +3,6 @@
 package com.microsoft.azure.iotsolutions.uiconfig.services.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.ResourceNotFoundException;
 import play.Logger;
 
 import java.io.BufferedReader;

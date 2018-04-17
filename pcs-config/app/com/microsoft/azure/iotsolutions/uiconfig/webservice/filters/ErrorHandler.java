@@ -17,7 +17,9 @@ import play.mvc.Result;
 import play.mvc.Results;
 
 import java.util.HashMap;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.CompletionStage;
 
 import static play.libs.Json.toJson;
 

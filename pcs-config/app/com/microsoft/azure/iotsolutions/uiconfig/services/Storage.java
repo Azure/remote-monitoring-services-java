@@ -5,7 +5,8 @@ package com.microsoft.azure.iotsolutions.uiconfig.services;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.*;
+import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.BaseException;
+import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.ResourceNotFoundException;
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.IStorageAdapterClient;
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.ValueApiModel;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.DeviceGroup;
@@ -15,7 +16,9 @@ import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.IServicesConfi
 import play.Logger;
 import play.libs.Json;
 
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -29,7 +32,7 @@ public class Storage implements IStorage {
     static String LogoKey = "logo";
     static String UserCollectionId = "user-settings";
     static String DeviceGroupCollectionId = "deviceGroups";
-    static String BingMapKey = "BingMapKey";
+    static String AzureMapsKey = "AzureMapsKey";
     private final IStorageAdapterClient client;
     private final IServicesConfig config;
 
@@ -58,7 +61,7 @@ public class Storage implements IStorage {
         } catch (Exception ex) {
         }
         ObjectNode themeOut = (ObjectNode) Json.parse(data);
-        appendBingMapKey(themeOut);
+        appendAzureMapsKey(themeOut);
         return CompletableFuture.supplyAsync(() -> fromJson(themeOut.toString(), Object.class));
     }
 
@@ -77,7 +80,7 @@ public class Storage implements IStorage {
                         data = m.getData();
                     }
                     ObjectNode themeOut = (ObjectNode) Json.parse(data);
-                    appendBingMapKey(themeOut);
+                    appendAzureMapsKey(themeOut);
                     return fromJson(themeOut.toString(), Object.class);
                 }
         );
@@ -182,9 +185,9 @@ public class Storage implements IStorage {
         return output;
     }
 
-    private void appendBingMapKey(ObjectNode theme) {
-        if (!theme.has(BingMapKey)) {
-            theme.put(BingMapKey, config.getBingMapKey());
+    private void appendAzureMapsKey(ObjectNode theme) {
+        if (!theme.has(AzureMapsKey)) {
+            theme.put(AzureMapsKey, config.getAzureMapsKey());
         }
     }
 

@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface IServicesConfig {
 
-    String getBingMapKey();
+    String getAzureMapsKey();
 
     String getSeedTemplate();
 

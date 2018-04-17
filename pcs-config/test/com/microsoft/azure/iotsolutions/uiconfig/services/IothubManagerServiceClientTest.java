@@ -14,7 +14,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mockito.Mockito;
 
-import java.io.*;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.TreeSet;
 import java.util.concurrent.CompletableFuture;

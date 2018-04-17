@@ -4,7 +4,10 @@ package com.microsoft.azure.iotsolutions.uiconfig.services;
 
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.BaseException;
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.ResourceNotFoundException;
-import com.microsoft.azure.iotsolutions.uiconfig.services.external.*;
+import com.microsoft.azure.iotsolutions.uiconfig.services.external.IIothubManagerServiceClient;
+import com.microsoft.azure.iotsolutions.uiconfig.services.external.ISimulationServiceClient;
+import com.microsoft.azure.iotsolutions.uiconfig.services.external.IStorageAdapterClient;
+import com.microsoft.azure.iotsolutions.uiconfig.services.external.ValueApiModel;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.CacheValue;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.DeviceTwinName;
 import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.IServicesConfig;
@@ -22,9 +25,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class CacheTest {
     private IStorageAdapterClient mockStorageAdapterClient;

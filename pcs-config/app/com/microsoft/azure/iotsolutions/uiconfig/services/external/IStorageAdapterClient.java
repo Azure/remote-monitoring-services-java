@@ -3,7 +3,7 @@
 package com.microsoft.azure.iotsolutions.uiconfig.services.external;
 
 import com.google.inject.ImplementedBy;
-import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.*;
+import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.BaseException;
 
 import java.util.concurrent.CompletionStage;
 

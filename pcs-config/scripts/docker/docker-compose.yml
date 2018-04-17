@@ -24,7 +24,7 @@ services:
       - PCS_TELEMETRY_WEBSERVICE_URL=http://telemetry:9004/v1
       - PCS_DEVICESIMULATION_WEBSERVICE_URL=http://devicesimlation:9003/v1
       - PCS_IOTHUBMANAGER_WEBSERVICE_URL=http://iothubmanager:9002/v1
-      - PCS_BINGMAP_KEY
+      - PCS_AZUREMAPS_KEY
 
   storageadapter:
     image: azureiotpcs/pcs-storage-adapter-java:testing

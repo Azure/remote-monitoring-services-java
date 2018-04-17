@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class ServicesConfig implements IServicesConfig {
 
-    private String bingMapKey;
+    private String azureMapsKey;
     private String seedTemplate;
     private String storageAdapterApiUrl;
     private String deviceSimulationApiUrl;
@@ -19,12 +19,12 @@ public class ServicesConfig implements IServicesConfig {
     private int cacheRebuildTimeout;
     private List<String> cacheWhiteList;
 
-    public String getBingMapKey() {
-        return bingMapKey;
+    public String getAzureMapsKey() {
+        return azureMapsKey;
     }
 
-    public void setBingMapKey(String bingMapKey) {
-        this.bingMapKey = bingMapKey;
+    public void setAzureMapsKey(String azureMapsKey) {
+        this.azureMapsKey = azureMapsKey;
     }
 
 
@@ -41,7 +41,7 @@ public class ServicesConfig implements IServicesConfig {
     }
 
     public ServicesConfig(String telemetryApiUrl, String storageAdapterApiUrl, String deviceSimulationApiUrl,
-                          String hubManagerApiUrl, int cacheTTL, int cacheRebuildTimeout, String seedTemplate, String bingMapKey, List<String> cacheWhiteList) {
+                          String hubManagerApiUrl, int cacheTTL, int cacheRebuildTimeout, String seedTemplate, String azureMapsKey, List<String> cacheWhiteList) {
         this.storageAdapterApiUrl = storageAdapterApiUrl;
         this.deviceSimulationApiUrl = deviceSimulationApiUrl;
         this.hubManagerApiUrl = hubManagerApiUrl;
@@ -49,7 +49,7 @@ public class ServicesConfig implements IServicesConfig {
         this.cacheRebuildTimeout = cacheRebuildTimeout;
         this.seedTemplate = seedTemplate;
         this.telemetryApiUrl = telemetryApiUrl;
-        this.bingMapKey = bingMapKey;
+        this.azureMapsKey = azureMapsKey;
         this.cacheWhiteList=cacheWhiteList;
     }
 

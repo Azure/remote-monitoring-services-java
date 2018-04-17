@@ -5,7 +5,7 @@ package com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.microsoft.azure.iotsolutions.uiconfig.services.IStorage;
-import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.*;
+import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.BaseException;
 import play.mvc.Result;
 
 import java.util.concurrent.CompletionStage;

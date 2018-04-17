@@ -20,7 +20,7 @@ if [[ -z "$PCS_IOTHUBMANAGER_WEBSERVICE_URL" ]]; then
     exit -1
 fi
 
-if [[ -z "$PCS_BINGMAP_KEY" ]]; then
-    echo "Error: the PCS_BINGMAP_KEY environment variable is not defined."
+if [[ -z "$PCS_AZUREMAPS_KEY" ]]; then
+    echo "Error: the PCS_AZUREMAPS_KEY environment variable is not defined."
     exit -1
 fi

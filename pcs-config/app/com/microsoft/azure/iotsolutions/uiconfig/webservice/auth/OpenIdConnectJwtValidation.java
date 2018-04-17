@@ -17,8 +17,13 @@ import play.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.*;
-import java.util.*;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * TODO: ensure certs are cached for a reasonable time
