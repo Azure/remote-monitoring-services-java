@@ -68,7 +68,9 @@
       "Enabled": true,
       "Description": "Pressure > 250",
       "GroupId": "default_Chillers",
-      "Severity": "critical",
+      "Severity": "Critical",
+      "Calculation": "Instant",
+      "TimePeriod": "00:00:00",
       "Conditions": [
         {
           "Field": "pressure",
@@ -83,7 +85,9 @@
       "Enabled": true,
       "Description": "Temperature > 80 degrees",
       "GroupId": "default_PrototypingDevices",
-      "Severity": "critical",
+      "Severity": "Critical",
+      "Calculation": "Average",
+      "TimePeriod": "00:01:00",
       "Conditions": [
         {
           "Field": "temperature",
@@ -98,7 +102,9 @@
       "Enabled": true,
       "Description": "Fuel level is less than 5",
       "GroupId": "default_Engines",
-      "Severity": "info",
+      "Severity": "Info",
+      "Calculation": "Instant",
+      "TimePeriod": "00:00:00",
       "Conditions": [
         {
           "Field": "fuellevel",
@@ -113,10 +119,12 @@
       "Enabled": true,
       "Description": "Cargo temperature is > 45 degrees",
       "GroupId": "default_Trucks",
-      "Severity": "warning",
+      "Severity": "Warning",
+      "Calculation": "Average",
+      "TimePeriod": "00:05:00",
       "Conditions": [
         {
-          "Field": "cargotemperature",
+          "Field": "temperature",
           "Operator": "GreaterThan",
           "Value": "45"
         }
@@ -128,7 +136,9 @@
       "Enabled": true,
       "Description": "Vibration < 0.1",
       "GroupId": "default_Elevators",
-      "Severity": "warning",
+      "Severity": "Warning",
+      "Calculation": "Average",
+      "TimePeriod": "00:10:00",
       "Conditions": [
         {
           "Field": "vibration",
