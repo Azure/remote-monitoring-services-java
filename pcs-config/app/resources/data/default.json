@@ -75,7 +75,7 @@
         {
           "Field": "pressure",
           "Operator": "GreaterThan",
-          "Value": "250"
+          "Value": "298"
         }
       ]
     },
@@ -93,23 +93,6 @@
           "Field": "temperature",
           "Operator": "GreaterThan",
           "Value": "80"
-        }
-      ]
-    },
-    {
-      "Id": "default_Engine_Fuel_Empty",
-      "Name": "Engine tank empty",
-      "Enabled": true,
-      "Description": "Fuel level is less than 5",
-      "GroupId": "default_Engines",
-      "Severity": "Info",
-      "Calculation": "Instant",
-      "TimePeriod": "00:00:00",
-      "Conditions": [
-        {
-          "Field": "fuellevel",
-          "Operator": "LessThan",
-          "Value": "5"
         }
       ]
     },
