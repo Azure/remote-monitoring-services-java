@@ -44,7 +44,6 @@ public class DocumentClientFactory implements IFactory<DocumentClient> {
 
     private void createDatabase(DocumentClient client, String databaseName) throws DocumentClientException {
         RequestOptions requestOptions = new RequestOptions();
-        requestOptions.setOfferThroughput(400);
         try {
             Database databaseInfo = new Database();
             databaseInfo.setId(databaseName);
@@ -57,7 +56,6 @@ public class DocumentClientFactory implements IFactory<DocumentClient> {
 
     private void createDatabaseIfNotExists(DocumentClient client, String databaseName) throws DocumentClientException {
         RequestOptions requestOptions = new RequestOptions();
-        requestOptions.setOfferThroughput(400);
         String databaseLink = String.format("/dbs/%s", databaseName);
         try {
             client.readDatabase(databaseLink, requestOptions);
