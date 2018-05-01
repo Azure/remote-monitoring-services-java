@@ -15,6 +15,7 @@ public final class DeviceTwinServiceModel {
     private DeviceTwinProperties properties;
     private HashMap tags;
     private Boolean isSimulated;
+    private static final String SIMULATED_KEY = "IsSimulated";
 
     public DeviceTwinServiceModel () {}
 
@@ -76,7 +77,7 @@ public final class DeviceTwinServiceModel {
 
     private static Boolean isSimulated(Map tags) {
         Set<String> keys = tags.keySet();
-        return keys.contains("IsSimulated") && tags.get("IsSimulated") == "Y";
+        return keys.contains(SIMULATED_KEY) && tags.get(SIMULATED_KEY).toString().equalsIgnoreCase("Y");
     }
 
     public DeviceTwinDevice toDeviceTwinDevice() {
