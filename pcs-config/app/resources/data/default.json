@@ -70,7 +70,7 @@
       "GroupId": "default_Chillers",
       "Severity": "Critical",
       "Calculation": "Instant",
-      "TimePeriod": "00:00:00",
+      "TimePeriod": "0",
       "Conditions": [
         {
           "Field": "pressure",
@@ -87,7 +87,7 @@
       "GroupId": "default_PrototypingDevices",
       "Severity": "Critical",
       "Calculation": "Average",
-      "TimePeriod": "00:01:00",
+      "TimePeriod": "60000",
       "Conditions": [
         {
           "Field": "temperature",
@@ -104,7 +104,7 @@
       "GroupId": "default_Trucks",
       "Severity": "Warning",
       "Calculation": "Average",
-      "TimePeriod": "00:05:00",
+      "TimePeriod": "300000",
       "Conditions": [
         {
           "Field": "temperature",
@@ -121,7 +121,7 @@
       "GroupId": "default_Elevators",
       "Severity": "Warning",
       "Calculation": "Average",
-      "TimePeriod": "00:10:00",
+      "TimePeriod": "600000",
       "Conditions": [
         {
           "Field": "vibration",

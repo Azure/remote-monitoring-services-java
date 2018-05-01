@@ -24,6 +24,11 @@ public class RuleApiModel {
 
     private String severity;
 
+    private String calculation;
+
+    // Possible values - ["60000", "300000", "600000"] in milliseconds
+    private String timePeriod;
+
     private List<ConditionApiModel> conditions;
 
     @JsonProperty("DateCreated")
@@ -92,6 +97,24 @@ public class RuleApiModel {
 
     public void setSeverity(String severity) {
         this.severity = severity;
+    }
+
+    @JsonProperty("Calculation")
+    public String getCalculation() {
+        return calculation;
+    }
+
+    public void setCalculation(String calculation) {
+        this.calculation = calculation;
+    }
+
+    @JsonProperty("TimePeriod")
+    public String getTimePeriod() {
+        return timePeriod;
+    }
+
+    public void setTimePeriod(String timePeriod) {
+        this.timePeriod = timePeriod;
     }
 
     @JsonProperty("Conditions")
