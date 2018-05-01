@@ -242,18 +242,18 @@ public final class RuleApiModel {
         CalculationType calculation = null;
         Long timePeriod = null;
         try {
-            severity = SeverityType.valueOf(this.severity);
+            severity = SeverityType.valueOf(this.severity.toUpperCase());
         } catch (Exception e) {
             throw new CompletionException(
                 new InvalidInputException("The value of 'Severity' - '" + this.severity + "' is not valid"));
         }
         try {
-            calculation = CalculationType.valueOf(this.calculation);
+            calculation = CalculationType.valueOf(this.calculation.toUpperCase());
         } catch (Exception e) {
             throw new CompletionException(
                 new InvalidInputException("The value of 'Calculation' - '" + this.calculation + "' is not valid"));
         }
-        if (calculation == CalculationType.Average && (this.timePeriod.isEmpty() || this.timePeriod == null)) {
+        if (calculation == CalculationType.AVERAGE && (this.timePeriod.isEmpty() || this.timePeriod == null)) {
             throw new CompletionException(
                 new InvalidInputException("The value of 'TimePeriod' - '" + this.timePeriod + "' for 'Calculation' - " + this.calculation + " is not valid"));
         }

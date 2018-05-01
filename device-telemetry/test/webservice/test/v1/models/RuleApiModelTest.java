@@ -38,8 +38,8 @@ public class RuleApiModelTest {
             false,
             "test description",
             "test-group",
-            SeverityType.Warning.toString(),
-            CalculationType.Average.toString(),
+            SeverityType.WARNING.toString(),
+            CalculationType.AVERAGE.toString(),
             String.valueOf(600000),
             conditionList);
     }

@@ -38,7 +38,7 @@ public class RulesControllerTest {
 
         ConditionServiceModel sampleCondition = new ConditionServiceModel(
             "TestField",
-            OperatorType.Equals,
+            OperatorType.EQUALS,
             "TestValue"
         );
         ArrayList<ConditionServiceModel> sampleConditions = new ArrayList<>();
@@ -49,8 +49,8 @@ public class RulesControllerTest {
             true,
             "Test Description",
             "TestGroup",
-            SeverityType.Critical,
-            CalculationType.Instant,
+            SeverityType.CRITICAL,
+            CalculationType.INSTANT,
             Long.valueOf(60000),
             sampleConditions
         );

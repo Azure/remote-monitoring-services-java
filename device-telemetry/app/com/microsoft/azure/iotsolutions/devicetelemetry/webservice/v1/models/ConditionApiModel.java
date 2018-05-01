@@ -81,7 +81,7 @@ public final class ConditionApiModel {
     public ConditionServiceModel toServiceModel() {
         OperatorType operator = null;
         try {
-            operator = OperatorType.valueOf(this.operator);
+            operator = OperatorType.valueOf(this.operator.toUpperCase());
         } catch (Exception e) {
             throw new CompletionException(
                 new InvalidInputException("The value of 'Operator' - '" + this.operator + "' is not valid"));
