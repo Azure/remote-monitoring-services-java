@@ -5,7 +5,11 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.ConditionServiceModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.OperatorType;
+
+import java.util.concurrent.CompletionException;
 
 /**
  * Public model used by the web service.
@@ -45,7 +49,7 @@ public final class ConditionApiModel {
     public ConditionApiModel(final ConditionServiceModel condition) {
         if (condition != null) {
             this.field = condition.getField();
-            this.operator = condition.getOperator();
+            this.operator = condition.getOperator().toString();
             this.value = condition.getValue();
         }
     }
@@ -75,9 +79,16 @@ public final class ConditionApiModel {
     }
 
     public ConditionServiceModel toServiceModel() {
+        OperatorType operator = null;
+        try {
+            operator = OperatorType.valueOf(this.operator);
+        } catch (Exception e) {
+            throw new CompletionException(
+                new InvalidInputException("The value of 'Operator' - '" + this.operator + "' is not valid"));
+        }
         return new ConditionServiceModel(
             this.getField(),
-            this.getOperator(),
+            operator,
             this.getValue()
         );
     }

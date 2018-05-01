@@ -7,13 +7,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidInputException;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.CalculationType;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.ConditionServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.RuleServiceModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.SeverityType;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.Version;
 
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.concurrent.CompletionException;
 
 /**
  * Public model used by the web service.
@@ -31,6 +35,8 @@ public final class RuleApiModel {
     private String description;
     private String groupId;
     private String severity;
+    private String calculation;
+    private String timePeriod;
     private ArrayList<ConditionApiModel> conditions;
 
     public RuleApiModel() {
@@ -49,6 +55,8 @@ public final class RuleApiModel {
      * @param description
      * @param groupId
      * @param severity
+     * @param calculation
+     * @param timePeriod
      * @param conditions
      */
     public RuleApiModel(
@@ -61,6 +69,8 @@ public final class RuleApiModel {
         String description,
         String groupId,
         String severity,
+        String calculation,
+        String timePeriod,
         ArrayList<ConditionApiModel> conditions
     ) {
         this.eTag = eTag;
@@ -72,6 +82,8 @@ public final class RuleApiModel {
         this.description = description;
         this.groupId = groupId;
         this.severity = severity;
+        this.calculation = calculation;
+        this.timePeriod = timePeriod;
         this.conditions = conditions;
     }
 
@@ -90,7 +102,9 @@ public final class RuleApiModel {
             this.enabled = rule.getEnabled();
             this.description = rule.getDescription();
             this.groupId = rule.getGroupId();
-            this.severity = rule.getSeverity();
+            this.severity = rule.getSeverity().toString();
+            this.calculation = rule.getCalculation().toString();
+            this.timePeriod = rule.getTimePeriod().toString();
 
             // create listAsync of ConditionApiModel from ConditionServiceModel listAsync
             this.conditions = new ArrayList<>();
@@ -102,7 +116,8 @@ public final class RuleApiModel {
         }
     }
 
-    @JsonProperty("ETag") //because UpperCamelCaseStrategy will make this Etag instead of the desired ETag
+    @JsonProperty("ETag")
+    //because UpperCamelCaseStrategy will make this Etag instead of the desired ETag
     public String getETag() {
         return this.eTag;
     }
@@ -175,6 +190,22 @@ public final class RuleApiModel {
         this.severity = severity;
     }
 
+    public String getCalculation() {
+        return this.calculation;
+    }
+
+    public void setCalculation(String calculation) {
+        this.calculation = calculation;
+    }
+
+    public void setTimePeriod(String timePeriod) {
+        this.timePeriod = timePeriod;
+    }
+
+    public String getTimePeriod() {
+        return this.timePeriod;
+    }
+
     @JsonDeserialize(as = ArrayList.class, contentAs = ConditionApiModel.class)
     public ArrayList<ConditionApiModel> getConditions() {
         return this.conditions;
@@ -207,7 +238,31 @@ public final class RuleApiModel {
                 conditionServiceModels.add(condition.toServiceModel());
             }
         }
-
+        SeverityType severity = null;
+        CalculationType calculation = null;
+        Long timePeriod = null;
+        try {
+            severity = SeverityType.valueOf(this.severity);
+        } catch (Exception e) {
+            throw new CompletionException(
+                new InvalidInputException("The value of 'Severity' - '" + this.severity + "' is not valid"));
+        }
+        try {
+            calculation = CalculationType.valueOf(this.calculation);
+        } catch (Exception e) {
+            throw new CompletionException(
+                new InvalidInputException("The value of 'Calculation' - '" + this.calculation + "' is not valid"));
+        }
+        if (calculation == CalculationType.Average && (this.timePeriod.isEmpty() || this.timePeriod == null)) {
+            throw new CompletionException(
+                new InvalidInputException("The value of 'TimePeriod' - '" + this.timePeriod + "' for 'Calculation' - " + this.calculation + " is not valid"));
+        }
+        try {
+            timePeriod = this.timePeriod.isEmpty() || this.timePeriod == null ? 0 : Long.valueOf(this.timePeriod);
+        } catch (Exception e) {
+            throw new CompletionException(
+                new InvalidInputException("The value of 'TimePeriod' - '" + this.timePeriod + "' is not valid"));
+        }
         return new RuleServiceModel(
             this.eTag,
             idOverride,
@@ -217,7 +272,9 @@ public final class RuleApiModel {
             this.enabled,
             this.description,
             this.groupId,
-            this.severity,
+            severity,
+            calculation,
+            timePeriod,
             conditionServiceModels
         );
     }

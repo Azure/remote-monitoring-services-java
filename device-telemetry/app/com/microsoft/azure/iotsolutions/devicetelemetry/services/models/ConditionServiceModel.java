@@ -14,7 +14,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 public final class ConditionServiceModel {
 
     private String field = null;
-    private String operator = null;
+    private OperatorType operator = null;
     private String value = null;
 
     public ConditionServiceModel() {
@@ -23,7 +23,7 @@ public final class ConditionServiceModel {
 
     public ConditionServiceModel(
         String field,
-        String operator,
+        OperatorType operator,
         String value) {
 
         this.field = field;
@@ -39,11 +39,11 @@ public final class ConditionServiceModel {
         this.field = field;
     }
 
-    public String getOperator() {
+    public OperatorType getOperator() {
         return this.operator;
     }
 
-    public void setOperator(String operator) {
+    public void setOperator(OperatorType operator) {
         this.operator = operator;
     }
 

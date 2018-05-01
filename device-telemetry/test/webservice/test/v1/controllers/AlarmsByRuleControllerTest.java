@@ -7,10 +7,7 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.Alarms;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.IAlarms;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.IRules;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.Rules;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.AlarmCountByRuleServiceModel;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.AlarmServiceModel;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.ConditionServiceModel;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.RuleServiceModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.IStorageClient;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime.Config;
@@ -223,7 +220,7 @@ public class AlarmsByRuleControllerTest {
         // Arrange
         ConditionServiceModel sampleCondition = new ConditionServiceModel(
             "TestField",
-            "Equals",
+            OperatorType.Equals,
             "TestValue"
         );
         ArrayList<ConditionServiceModel> sampleConditions = new ArrayList<>();
@@ -234,7 +231,9 @@ public class AlarmsByRuleControllerTest {
             true,
             "Test Description",
             "TestGroup",
-            "critical",
+            SeverityType.Critical,
+            CalculationType.Instant,
+            Long.valueOf(60000),
             sampleConditions
         );
 

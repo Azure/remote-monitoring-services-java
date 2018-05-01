@@ -4,8 +4,7 @@ package webservice.test.v1.controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.IRules;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.ConditionServiceModel;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.RuleServiceModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.RulesController;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.RuleApiModel;
 import helpers.UnitTest;
@@ -39,7 +38,7 @@ public class RulesControllerTest {
 
         ConditionServiceModel sampleCondition = new ConditionServiceModel(
             "TestField",
-            "Equals",
+            OperatorType.Equals,
             "TestValue"
         );
         ArrayList<ConditionServiceModel> sampleConditions = new ArrayList<>();
@@ -50,7 +49,9 @@ public class RulesControllerTest {
             true,
             "Test Description",
             "TestGroup",
-            "critical",
+            SeverityType.Critical,
+            CalculationType.Instant,
+            Long.valueOf(60000),
             sampleConditions
         );
     }

@@ -2,6 +2,8 @@
 
 package webservice.test.v1.models;
 
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.CalculationType;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.SeverityType;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.ConditionApiModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.RuleApiModel;
 import helpers.UnitTest;
@@ -36,7 +38,9 @@ public class RuleApiModelTest {
             false,
             "test description",
             "test-group",
-            "warning",
+            SeverityType.Warning.toString(),
+            CalculationType.Average.toString(),
+            String.valueOf(600000),
             conditionList);
     }
 

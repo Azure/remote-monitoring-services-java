@@ -26,7 +26,7 @@ public class AlarmRuleApiModel {
 
     public AlarmRuleApiModel(final RuleServiceModel rule) {
         this.id = rule.getId();
-        this.severity = rule.getSeverity();
+        this.severity = rule.getSeverity().toString();
         this.description = rule.getDescription();
     }
 

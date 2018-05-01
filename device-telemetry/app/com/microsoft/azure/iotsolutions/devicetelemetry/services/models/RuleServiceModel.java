@@ -32,7 +32,9 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
     private Boolean enabled = null;
     private String description = null;
     private String groupId = null;
-    private String severity = null;
+    private SeverityType severity = null;
+    private CalculationType calculation = null;
+    private Long timePeriod = null;
 
     private ArrayList<ConditionServiceModel> conditions = null;
 
@@ -44,7 +46,9 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
         final Boolean enabled,
         final String description,
         final String groupId,
-        final String severity,
+        final SeverityType severity,
+        final CalculationType calculation,
+        final Long timePeriod,
         final ArrayList<ConditionServiceModel> conditions) {
 
         this(
@@ -57,6 +61,8 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
             description,
             groupId,
             severity,
+            calculation,
+            timePeriod,
             conditions
         );
     }
@@ -70,7 +76,9 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
         Boolean enabled,
         String description,
         String groupId,
-        String severity,
+        SeverityType severity,
+        CalculationType calculation,
+        Long timePeriod,
         ArrayList<ConditionServiceModel> conditions) {
 
         this.eTag = eTag;
@@ -82,26 +90,31 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
         this.description = description;
         this.groupId = groupId;
         this.severity = severity;
-
+        this.calculation = calculation;
+        this.timePeriod = timePeriod;
         this.conditions = conditions;
     }
 
-    @JsonIgnore //comes from the StorageAdapter document and not the serialized rule
+    @JsonIgnore
+    //comes from the StorageAdapter document and not the serialized rule
     public String getETag() {
         return this.eTag;
     }
 
-    @JsonIgnore //comes from the StorageAdapter document and not the serialized rule
+    @JsonIgnore
+    //comes from the StorageAdapter document and not the serialized rule
     public void setETag(String eTag) {
         this.eTag = eTag;
     }
 
-    @JsonIgnore //comes from the StorageAdapter document and not the serialized rule
+    @JsonIgnore
+    //comes from the StorageAdapter document and not the serialized rule
     public String getId() {
         return this.id;
     }
 
-    @JsonIgnore //comes from the StorageAdapter document and not the serialized rule
+    @JsonIgnore
+    //comes from the StorageAdapter document and not the serialized rule
     public void setId(String id) {
         this.id = id;
     }
@@ -154,12 +167,28 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
         this.groupId = groupId;
     }
 
-    public String getSeverity() {
+    public SeverityType getSeverity() {
         return this.severity;
     }
 
-    public void setSeverity(String severity) {
+    public void setSeverity(SeverityType severity) {
         this.severity = severity;
+    }
+
+    public Long getTimePeriod() {
+        return this.timePeriod;
+    }
+
+    public void setTimePeriod(Long timePeriod) {
+        this.timePeriod = timePeriod;
+    }
+
+    public CalculationType getCalculation() {
+        return this.calculation;
+    }
+
+    public void setCalculation(CalculationType calculation) {
+        this.calculation = calculation;
     }
 
     @JsonDeserialize(as = ArrayList.class, contentAs = ConditionServiceModel.class)
@@ -200,6 +229,8 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
             this.description,
             this.groupId,
             this.severity,
+            this.calculation,
+            this.timePeriod,
             this.conditions);
         return rule;
     }
