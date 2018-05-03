@@ -51,4 +51,8 @@ public class CacheValue {
     public CacheValue(HashSet<String> tags, HashSet<String> reported) {
         this(tags, reported, false);
     }
+
+    public boolean isNullOrEmpty() {
+        return (this.tags == null || this.tags.size() == 0) && (this.reported == null || this.reported.size() == 0);
+    }
 }

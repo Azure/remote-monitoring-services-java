@@ -109,7 +109,7 @@ public class Cache implements ICache {
                 CacheCollectionId,
                 CacheKey,
                 (c, b) -> c.setRebuilding(b),
-                m -> this.needBuild(force, m));
+                m -> this.shouldRebuild(force, m));
 
         while (true) {
             // Try to read non-empty twin data at first before locking cache entry
@@ -120,7 +120,7 @@ public class Cache implements ICache {
             DeviceTwinName twinNames = null;
             try {
                 twinNames = this.getDevicePropertyNames();
-                if(twinNames.isEmpty()) {
+                if (twinNames.isEmpty()) {
                     this.log.info(String.format("There is no property available to be cached. Retry after %d seconds", this.SERVICE_QUERY_INTERVAL_SECS));
                     Thread.sleep(this.SERVICE_QUERY_INTERVAL_SECS * 1000);
                     continue;
@@ -151,19 +151,44 @@ public class Cache implements ICache {
         }
     }
 
-    private boolean needBuild(boolean force, ValueApiModel twin) {
-        boolean needBuild = false;
-        // validate timestamp
-        if (force || twin == null) {
-            needBuild = true;
-        } else {
-            boolean rebuilding = Json.fromJson(Json.parse(twin.getData()), CacheValue.class).isRebuilding();
-            DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
-            DateTime timestamp = formatter.parseDateTime(twin.getMetadata().get("$modified"));
-            needBuild = needBuild || !rebuilding && timestamp.plusSeconds(this.cacheTTL).isBeforeNow();
-            needBuild = needBuild || rebuilding && timestamp.plusSeconds(this.rebuildTimeout).isBeforeNow();
+    private boolean shouldRebuild(boolean force, ValueApiModel twin) {
+        if (force) {
+            this.log.info("Cache will be rebuilt due to the force flag");
+            return true;
         }
-        return needBuild;
+
+        if (twin == null) {
+            this.log.info("Cache will be rebuilt since no cache was found");
+            return true;
+        }
+
+        CacheValue cacheValue;
+        try {
+            cacheValue = Json.fromJson(Json.parse(twin.getData()), CacheValue.class);
+        } catch (Exception e) {
+            this.log.info("Cache will be rebuilt since the last one is broken.");
+            return true;
+        }
+
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
+        DateTime timestamp = formatter.parseDateTime(twin.getMetadata().get("$modified"));
+        if (cacheValue.isRebuilding()) {
+            if (timestamp.plusSeconds(this.rebuildTimeout).isBeforeNow()) {
+                this.log.info("Cache will be rebuilt since last rebuilding timedout");
+                return true;
+            }
+            this.log.info("Cache rebuilding skipped since it was being rebuilt by other instance");
+            return false;
+        } else if (cacheValue.isNullOrEmpty()) {
+            this.log.info("Cache will be rebuilt since it is empty");
+            return true;
+        } else if (timestamp.plusSeconds(this.cacheTTL).isBeforeNow()) {
+            this.log.info("Cache will be rebuilt since it has expired");
+            return true;
+        } else {
+            this.log.info("Cache rebuilding skipped since it has not expired");
+            return false;
+        }
     }
 
     private CompletionStage<DeviceTwinName> getValidNamesAsync() throws ExternalDependencyException {
