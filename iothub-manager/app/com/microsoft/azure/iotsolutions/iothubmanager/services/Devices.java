@@ -134,7 +134,7 @@ public final class Devices implements IDevices {
                     try {
                         DeviceTwinServiceModel twinServiceModel = device.getTwin();
                         DeviceTwinDevice azureTwin = new DeviceTwinDevice(device.getId());
-                        if (twinServiceModel == null) {
+                        if (twinServiceModel == null || twinServiceModel.getETag() == null) {
                             this.deviceTwinClient.getTwin(azureTwin);
                             return new DeviceServiceModel(azureDevice, new DeviceTwinServiceModel(azureTwin), this.iotHubHostName);
                         } else {
