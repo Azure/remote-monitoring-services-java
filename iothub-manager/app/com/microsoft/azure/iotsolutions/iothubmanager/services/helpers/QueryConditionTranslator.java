@@ -30,14 +30,22 @@ public class QueryConditionTranslator {
             ObjectMapper mapper = new ObjectMapper();
             jsonResult = mapper.readTree(conditions);
             for (JsonNode node : jsonResult) {
+                // To make "Key", "Operator" and "Value" case insensitive
+                JsonNode keyNode = getNode(node, "Key", "key");
+                JsonNode operatorNode = getNode(node, "Operator", "operator");
+                JsonNode valueNode = getNode(node, "Value", "value");
+                if (keyNode == null || operatorNode == null || valueNode == null) {
+                    break;
+                }
                 QueryConditionClause clause = new QueryConditionClause(
-                    node.findValue("Key").asText(),
-                    node.findValue("Operator").asText(),
-                    node.findValue("Value"));
-                clause.setTextual(node.findValue("Value").isTextual());
+                    keyNode.asText(),
+                    operatorNode.asText(),
+                    valueNode);
+                clause.setTextual(valueNode.isTextual());
                 clauses.add(clause);
             }
         } catch (Exception e) {
+            // Any exception raised in deserializing will be ignored
         }
 
         if (clauses.size() == 0) {
@@ -62,5 +70,9 @@ public class QueryConditionTranslator {
             }
             return sb.toString().replaceFirst(" and ", "");
         }
+    }
+
+    private static JsonNode getNode(JsonNode node, String key1, String key2) {
+        return node.findValue(key1) != null ? node.findValue(key1) : node.findValue(key2) != null ? node.findValue(key2) : null;
     }
 }
