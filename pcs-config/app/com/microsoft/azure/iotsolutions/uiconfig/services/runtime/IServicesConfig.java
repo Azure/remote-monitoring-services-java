@@ -14,13 +14,5 @@ public interface IServicesConfig {
 
     String getDeviceSimulationApiUrl();
 
-    String getHubManagerApiUrl();
-
     String getTelemetryApiUrl();
-
-    int getCacheTTL();
-
-    int getCacheRebuildTimeout();
-
-    List<String> getCacheWhiteList();
 }

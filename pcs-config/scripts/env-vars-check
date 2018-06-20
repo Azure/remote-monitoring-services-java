@@ -27,11 +27,6 @@ if [[ -z "$PCS_TELEMETRY_WEBSERVICE_URL" ]]; then
     exit -1
 fi
 
-if [[ -z "$PCS_IOTHUBMANAGER_WEBSERVICE_URL" ]]; then
-    echo "Error: the PCS_IOTHUBMANAGER_WEBSERVICE_URL environment variable is not defined."
-    exit -1
-fi
-
 if [[ -z "$PCS_AZUREMAPS_KEY" && "$SECRETS_AVAILABLE" = "true" ]]; then
     echo "Error: the PCS_AZUREMAPS_KEY environment variable is not defined."
     exit -1

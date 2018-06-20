@@ -55,7 +55,6 @@ Run those services from the instructions in their READMEs in the following order
 
 1. [Storage Adapter Microservice](https://github.com/Azure/pcs-storage-adapter-java)
 1. [Telemetry Microservice](https://github.com/Azure/device-telemetry-java)
-1. [IoTHub Manager Microservice](https://github.com/Azure/iothub-manager-java)
 1. [Device Simulation Microservice](https://github.com/Azure/device-simulation-dotnet)
 
 ### 3. Environment variables required to run the service
@@ -72,9 +71,6 @@ variables [here](#configuration-and-environment-variables).
   used for key value storage
 * `PCS_DEVICESIMULATION_WEBSERVICE_URL` - the url for
   the [Device Simulation Webservice](https://github.com/Azure/device-simulation-dotnet)
-  used for key value storage
-* `PCS_IOTHUBMANAGER_WEBSERVICE_URL` - the url for
-  the [IOT Hub Manager Webservice](https://github.com/Azure/iothub-manager-java)
   used for key value storage
 * `PCS_AZUREMAPS_KEY` - the [Azure Maps](https://azure.microsoft.com/services/azure-maps/) 
   API Key. This can be set to "static" if you do not have one.
@@ -140,7 +136,6 @@ More information on environment variables
 [here](#configuration-and-environment-variables).
    1. `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
    1. `PCS_DEVICESIMULATION_WEBSERVICE_URL` = http://localhost:9003/v1
-   1. `PCS_IOTHUBMANAGER_WEBSERVICE_URL` = http://localhost:9002/v1
    1. `PCS_TELEMETRY_WEBSERVICE_URL` = http://localhost:9004/v1
    1. `PCS_AZUREMAPS_KEY` = static
 1. Use the scripts in the [scripts](scripts) folder for many frequent tasks:

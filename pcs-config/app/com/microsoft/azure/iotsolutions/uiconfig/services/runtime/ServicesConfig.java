@@ -14,10 +14,6 @@ public class ServicesConfig implements IServicesConfig {
     private String storageAdapterApiUrl;
     private String deviceSimulationApiUrl;
     private String telemetryApiUrl;
-    private String hubManagerApiUrl;
-    private int cacheTTL;
-    private int cacheRebuildTimeout;
-    private List<String> cacheWhiteList;
 
     public String getAzureMapsKey() {
         return azureMapsKey;
@@ -41,16 +37,12 @@ public class ServicesConfig implements IServicesConfig {
     }
 
     public ServicesConfig(String telemetryApiUrl, String storageAdapterApiUrl, String deviceSimulationApiUrl,
-                          String hubManagerApiUrl, int cacheTTL, int cacheRebuildTimeout, String seedTemplate, String azureMapsKey, List<String> cacheWhiteList) {
+                         String seedTemplate, String azureMapsKey) {
         this.storageAdapterApiUrl = storageAdapterApiUrl;
         this.deviceSimulationApiUrl = deviceSimulationApiUrl;
-        this.hubManagerApiUrl = hubManagerApiUrl;
-        this.cacheTTL = cacheTTL;
-        this.cacheRebuildTimeout = cacheRebuildTimeout;
         this.seedTemplate = seedTemplate;
         this.telemetryApiUrl = telemetryApiUrl;
         this.azureMapsKey = azureMapsKey;
-        this.cacheWhiteList=cacheWhiteList;
     }
 
     @Override
@@ -68,43 +60,11 @@ public class ServicesConfig implements IServicesConfig {
         return this.deviceSimulationApiUrl;
     }
 
-    @Override
-    public String getHubManagerApiUrl() {
-        return hubManagerApiUrl;
-    }
-
-    @Override
-    public int getCacheTTL() {
-        return cacheTTL;
-    }
-
-    @Override
-    public int getCacheRebuildTimeout() {
-        return cacheRebuildTimeout;
-    }
-
-    @Override
-    public List<String> getCacheWhiteList() {
-        return cacheWhiteList;
-    }
-
     public void setStorageAdapterApiUrl(String storageAdapterApiUrl) {
         this.storageAdapterApiUrl = storageAdapterApiUrl;
     }
 
     public void setDeviceSimulationApiUrl(String deviceSimulationApiUrl) {
         this.deviceSimulationApiUrl = deviceSimulationApiUrl;
-    }
-
-    public void setHubManagerApiUrl(String hubManagerApiUrl) {
-        this.hubManagerApiUrl = hubManagerApiUrl;
-    }
-
-    public void setCacheTTL(int cacheTTL) {
-        this.cacheTTL = cacheTTL;
-    }
-
-    public void setCacheRebuildTimeout(int cacheRebuildTimeout) {
-        this.cacheRebuildTimeout = cacheRebuildTimeout;
     }
 }

@@ -30,14 +30,5 @@ GET           /v1/user-settings/:id                 @com.microsoft.azure.iotsolu
 
 PUT           /v1/user-settings/:id                 @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.UserSettingsController.setUserSettingAsync(id)
 
-GET           /v1/devicegroupfilters                @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.DeviceGroupFiltersController.getAllAsync()
-GET           /v1/devicegroupfilters/               @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.DeviceGroupFiltersController.getAllAsync()
-
-POST          /v1/devicegroupfilters                @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.DeviceGroupFiltersController.setAsync()
-POST          /v1/devicegroupfilters/               @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.DeviceGroupFiltersController.setAsync()
-
-POST          /v1/devicegroupfilters/rebuild        @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.DeviceGroupFiltersController.rebuildAsync
-POST          /v1/devicegroupfilters/rebuild/       @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.DeviceGroupFiltersController.rebuildAsync
-
 POST          /v1/seed                              @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.SeedController.postAsync
 POST          /v1/seed/                             @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.SeedController.postAsync

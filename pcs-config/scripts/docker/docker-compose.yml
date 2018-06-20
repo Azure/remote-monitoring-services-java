@@ -16,14 +16,12 @@ services:
       - storageadapter
       - telemetry
       - devicesimulation
-      - iothubmanager
     ports:
       - "9005:9005"
     environment:
       - PCS_STORAGEADAPTER_WEBSERVICE_URL=http://storageadapter:9022/v1
       - PCS_TELEMETRY_WEBSERVICE_URL=http://telemetry:9004/v1
       - PCS_DEVICESIMULATION_WEBSERVICE_URL=http://devicesimlation:9003/v1
-      - PCS_IOTHUBMANAGER_WEBSERVICE_URL=http://iothubmanager:9002/v1
       - PCS_AZUREMAPS_KEY
 
   storageadapter:
@@ -48,10 +46,3 @@ services:
     environment:
       - PCS_IOTHUB_CONNSTRING
       - PCS_STORAGEADAPTER_WEBSERVICE_URL=http://storageadapter:9022:/v1
-      
-  iothubmanager:
-    image: azureiotpcs/iothub-manager-java:testing
-    ports:
-      - "9002:9002"
-    environment:
-      - PCS_IOTHUB_CONNSTRING
