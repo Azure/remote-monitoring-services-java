@@ -13,7 +13,7 @@ public final class DeviceTwinServiceModel {
     private String eTag;
     private String deviceId;
     private DeviceTwinProperties properties;
-    private HashMap tags;
+    private HashMap<String, Object> tags;
     private Boolean isSimulated;
     private static final String SIMULATED_KEY = "IsSimulated";
 
@@ -66,7 +66,7 @@ public final class DeviceTwinServiceModel {
     }
 
     @JsonProperty("Tags")
-    public HashMap getTags() {
+    public HashMap<String, Object> getTags() {
         return this.tags;
     }
 

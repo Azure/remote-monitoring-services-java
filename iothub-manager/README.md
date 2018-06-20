@@ -77,6 +77,7 @@ Intellij IDEA lets you open the application without using a command
 prompt, without configuring anything outside of the IDE. The SBT build tool
 takes care of downloading appropriate libraries, resolving dependencies and
 building the project (more info [here](https://www.playframework.com/documentation/2.6.x/IDE)).
+   `PCS_IOTHUB_CONNSTRING` storing your Azure IoT Hub connection string and `PCS_STORAGEADAPTER_WEBSERVICE_URL` for the URL of the storage adapter webservice.
 
 Steps using IntelliJ IDEA Community 2017, with SBT plugin enabled:
 
@@ -180,7 +181,7 @@ format in [application.conf](conf/application.conf).
 The HOCON format is a human readable format, very close to JSON, with some
 useful features:
 
-* Ability to write comments
+**REQUIRED** - `PCS_STORAGEADAPTER_WEBSERVICE_URL={your storage adapter webservice URL}`
 * Support for substitutions, e.g. referencing environment variables
 * Supports JSON notation
 

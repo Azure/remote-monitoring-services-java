@@ -3,10 +3,12 @@
 package com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions;
 
 /**
+ * Checked exception for request errors.
+ *
  * This exception is thrown when a client is requesting a resource that
  * doesn't exist yet.
  */
-public class ResourceNotFoundException extends Exception {
+public class ResourceNotFoundException extends BaseException {
     public ResourceNotFoundException() {
     }
 

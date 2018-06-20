@@ -4,19 +4,20 @@ package com.microsoft.azure.iotsolutions.iothubmanager.services;
 
 import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.*;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.external.IConfigService;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.external.IStorageAdapterClient;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.helpers.QueryConditionTranslator;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.*;
-import com.microsoft.azure.sdk.iot.service.*;
+import com.microsoft.azure.sdk.iot.service.Device;
+import com.microsoft.azure.sdk.iot.service.RegistryManager;
 import com.microsoft.azure.sdk.iot.service.devicetwin.*;
-import com.microsoft.azure.sdk.iot.service.exceptions.*;
+import com.microsoft.azure.sdk.iot.service.exceptions.IotHubException;
+import com.microsoft.azure.sdk.iot.service.exceptions.IotHubNotFoundException;
+import play.Logger;
+import play.libs.Json;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
-
-import play.Logger;
-import play.libs.Json;
 
 public final class Devices implements IDevices {
 
@@ -30,16 +31,40 @@ public final class Devices implements IDevices {
     private final DeviceMethod deviceMethodClient;
     private final String iotHubHostName;
     IIoTHubWrapper _ioTHubService;
-    private final IConfigService configService;
+    private final IStorageAdapterClient storageAdapterClient;
 
     @Inject
-    public Devices(final IIoTHubWrapper ioTHubService, final IConfigService configService) throws Exception {
+    public Devices(final IIoTHubWrapper ioTHubService, final IStorageAdapterClient storageAdapterClient) throws Exception {
         _ioTHubService = ioTHubService;
-        this.configService = configService;
+        this.storageAdapterClient = storageAdapterClient;
         this.registry = ioTHubService.getRegistryManagerClient();
         this.deviceTwinClient = ioTHubService.getDeviceTwinClient();
         this.deviceMethodClient = ioTHubService.getDeviceMethodClient();
         this.iotHubHostName = ioTHubService.getIotHubHostName();
+    }
+
+    public DeviceTwinName GetDeviceTwinNames() {
+        DeviceTwinName twinNames = new DeviceTwinName();
+        try {
+            CompletableFuture<DeviceServiceListModel> twinNamesTask = this.queryAsync("", "").toCompletableFuture();
+            DeviceServiceListModel model = twinNamesTask.get();
+            twinNames = model.toDeviceTwinNames();
+        } catch (ExternalDependencyException | ExecutionException | InterruptedException e) {
+            String message = String.format("Unable to convert DeviceServiceListModel to DeviceTwinName");
+            if (e instanceof ExternalDependencyException)
+                throw new CompletionException(
+                    new ExternalDependencyException(message, e));
+            else if (e instanceof ExecutionException)
+                throw new CompletionException(
+                    new ExecutionException(message, e));
+            else if (e instanceof InterruptedException)
+                throw new CompletionException(
+                    new InterruptedException(message));
+            else
+                throw new CompletionException(
+                    new BaseException(message, e));
+        }
+        return twinNames;
     }
 
     public CompletionStage<DeviceServiceModel> getAsync(final String id) throws ExternalDependencyException {
@@ -160,8 +185,21 @@ public final class Devices implements IDevices {
         }
     }
 
+    /**
+     * Returns a CompletableFuture of DeviceServiceModel after a  DeviceServiceModel
+     * has been added or updated to IOT hub.
+     * <p>
+     * This method also adds deviceProperties to the cache in comosDB using a callback
+     * method, after the deviceModel has been created or updated.
+     *
+     * @param id                     device id of type string
+     * @param device                 device of type DeviceServiceModel
+     * @param devicePropertyCallBack devicePropertyCallBack of type DevicePropertyCallBack
+     *
+     * @return a CompletableFuture of DeviceServiceModel
+     */
     public CompletionStage<DeviceServiceModel> createOrUpdateAsync(
-        final String id, final DeviceServiceModel device)
+        final String id, final DeviceServiceModel device, DevicePropertyCallBack devicePropertyCallBack)
         throws InvalidInputException, ExternalDependencyException {
         if (device.getId() == null || device.getId().isEmpty()) {
             throw new InvalidInputException("Device id is empty");
@@ -191,8 +229,11 @@ public final class Devices implements IDevices {
                             return new DeviceServiceModel(azureDevice, new DeviceTwinServiceModel(twin), this.iotHubHostName);
                         } else {
                             this.deviceTwinClient.updateTwin(device.getTwin().toDeviceTwinDevice());
-                            // Update the deviceGroupFilter cache, no need to wait
-                            this.configService.updateDeviceGroupFiltersAsync(device.getTwin());
+                            DevicePropertyServiceModel model = new DevicePropertyServiceModel();
+                            model.setTags(new HashSet<String>(device.getTwin().getTags().keySet()));
+                            model.setReported(new HashSet<String>(device.getTwin().getProperties().getReported().keySet()));
+                            // Update the deviceProperties cache, no need to wait
+                            CompletionStage unused = devicePropertyCallBack.updateCache(model);
                             return new DeviceServiceModel(azureDevice, device.getTwin(), this.iotHubHostName);
                         }
                     } catch (IOException | IotHubException e) {
@@ -200,6 +241,14 @@ public final class Devices implements IDevices {
                         log.error(message, e);
                         throw new CompletionException(
                             new ExternalDependencyException(message, e));
+                    } catch (BaseException | ExecutionException | InterruptedException e) {
+                        String message = String.format("Unable to update cache");
+                        if (e instanceof ExecutionException)
+                            throw new CompletionException(new ExecutionException(message, e));
+                        else if (e instanceof InterruptedException)
+                            throw new CompletionException(new InterruptedException(message));
+                        else
+                            throw new CompletionException(new BaseException(message, e));
                     }
                 });
         } catch (IOException | IotHubException e) {

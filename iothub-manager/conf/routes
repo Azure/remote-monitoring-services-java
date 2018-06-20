@@ -30,3 +30,6 @@ GET    /v1/jobs/:id             @com.microsoft.azure.iotsolutions.iothubmanager.
 
 POST   /v1/jobs                 @com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.JobsController.scheduleJobAsync
 POST   /v1/jobs/                @com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.JobsController.scheduleJobAsync
+
+GET     /v1/deviceproperties    @com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicePropertiesController.getAllAsync()
+GET     /v1/deviceproperties/   @com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicePropertiesController.getAllAsync()

@@ -3,37 +3,49 @@
 package com.microsoft.azure.iotsolutions.iothubmanager.services;
 
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.*;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.external.ConfigService;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.external.IConfigService;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.external.IStorageAdapterClient;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.external.StorageAdapterClient;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.http.IHttpClient;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.*;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.runtime.IServicesConfig;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.runtime.ServicesConfig;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.runtime.Config;
-import com.microsoft.azure.sdk.iot.device.*;
+import com.microsoft.azure.sdk.iot.device.DeviceClient;
+import com.microsoft.azure.sdk.iot.device.IotHubClientProtocol;
 import com.microsoft.azure.sdk.iot.service.auth.SymmetricKey;
-import helpers.IntegrationTest;
 import helpers.DeviceMethodEmulator;
+import helpers.IntegrationTest;
 import org.junit.*;
 import org.junit.experimental.categories.Category;
-import play.test.WSTestClient;
+import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 public class DevicesTest {
 
     private static Config config;
     private static IServicesConfig servicesConfig;
-    private static IConfigService configService;
+    private static IStorageAdapterClient storageAdapterClient;
+    private static IHttpClient mockHttpClient;
+    private static String MockServiceUri = "http://mockstorageadapter";
     private static IIoTHubWrapper ioTHubWrapper;
     private static IDevices deviceService;
     private static ArrayList<DeviceServiceModel> testDevices = new ArrayList<>();
     private static ArrayList<DeviceClient> testDeviceEmulators = new ArrayList<>();
     private static String batchId = UUID.randomUUID().toString().replace("-", "");
     private static final String MALFORMED_JSON_EXCEED_5_LEVELS = "Malformed Json: exceed 5 levels";
+    private static DevicePropertyCallBack cacheUpdateCallBack;
 
     private static boolean setUpIsDone = false;
+
+    @Before
+    public void setUp() {
+        mockHttpClient = Mockito.mock(IHttpClient.class);
+    }
 
     @BeforeClass
     public static void setUpOnce() throws Exception {
@@ -43,11 +55,17 @@ public class DevicesTest {
 
         config = new Config();
         servicesConfig = config.getServicesConfig();
-        configService = new ConfigService(servicesConfig, WSTestClient.newClient(9005));
+        storageAdapterClient = new StorageAdapterClient(
+            mockHttpClient,
+            new ServicesConfig(null, MockServiceUri, 0, 0, null));
         ioTHubWrapper = new IoTHubWrapper(servicesConfig);
-        deviceService = new Devices(ioTHubWrapper, configService);
+        deviceService = new Devices(ioTHubWrapper, storageAdapterClient);
 
         createTestDevices(2, batchId);
+        cacheUpdateCallBack = devices -> {
+            //mock callback - does nothing
+            return new CompletableFuture();
+        };
 
         setUpIsDone = true;
     }
@@ -251,10 +269,19 @@ public class DevicesTest {
                 });
             }
         };
-        DeviceTwinProperties properties = new DeviceTwinProperties(desired, null);
+        HashMap reported = new HashMap() {
+            {
+                put("Config", new HashMap<String, Object>() {
+                    {
+                        put("Test", 2);
+                    }
+                });
+            }
+        };
+        DeviceTwinProperties properties = new DeviceTwinProperties(desired, reported);
         DeviceTwinServiceModel twin = new DeviceTwinServiceModel(eTag, deviceId, properties, tags, true);
         DeviceServiceModel device = new DeviceServiceModel(eTag, deviceId, 0, null, false, true, null, twin, null, null);
-        DeviceServiceModel newDevice = deviceService.createOrUpdateAsync(device.getId(), device).toCompletableFuture().get();
+        DeviceServiceModel newDevice = deviceService.createOrUpdateAsync(device.getId(), device, cacheUpdateCallBack).toCompletableFuture().get();
         DeviceTwinServiceModel newTwin = newDevice.getTwin();
         HashMap<String, Object> configMap = (HashMap) newTwin.getProperties().getDesired().get("Config");
         Assert.assertEquals(deviceId, newDevice.getId());
@@ -270,7 +297,7 @@ public class DevicesTest {
         String eTag = "etagxx==";
         DeviceTwinServiceModel twin = new DeviceTwinServiceModel(eTag, "MismatchedDeviceID", null, null, true);
         DeviceServiceModel device = new DeviceServiceModel(eTag, "MismatchedDeviceID", 0, null, false, true, null, twin, null, null);
-        deviceService.createOrUpdateAsync(deviceId, device).toCompletableFuture().get();
+        deviceService.createOrUpdateAsync(deviceId, device, cacheUpdateCallBack).toCompletableFuture().get();
     }
 
     @Test(timeout = 100000, expected = InvalidInputException.class)
@@ -280,7 +307,7 @@ public class DevicesTest {
         String eTag = "etagxx==";
         DeviceTwinServiceModel twin = new DeviceTwinServiceModel(eTag, "", null, null, true);
         DeviceServiceModel device = new DeviceServiceModel(eTag, "", 0, null, false, true, null, twin, null, null);
-        deviceService.createOrUpdateAsync(deviceId, device).toCompletableFuture().get();
+        deviceService.createOrUpdateAsync(deviceId, device, cacheUpdateCallBack).toCompletableFuture().get();
     }
 
     @Test(timeout = 10000)

@@ -12,8 +12,16 @@ version: "3"
 services:
   iothubmanager:
     image: azureiotpcs/iothub-manager-java:testing
+    depends_on:
+      - storageadapter
     ports:
       - "9002:9002"
     environment:
       - PCS_IOTHUB_CONNSTRING
-      - PCS_CONFIG_WEBSERVICE_URL
+      - PCS_STORAGEADAPTER_WEBSERVICE_URL
+  storageadapter:
+    image: azureiotpcs/pcs-storage-adapter-java:testing
+    ports:
+      - "9022:9022"
+    environment:
+      - PCS_STORAGEADAPTER_DOCUMENTDB_CONNSTRING

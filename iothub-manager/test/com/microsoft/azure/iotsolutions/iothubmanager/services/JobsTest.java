@@ -2,33 +2,46 @@
 
 package com.microsoft.azure.iotsolutions.iothubmanager.services;
 
-import com.microsoft.azure.iotsolutions.iothubmanager.services.external.ConfigService;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.external.IConfigService;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.external.IStorageAdapterClient;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.external.StorageAdapterClient;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.http.IHttpClient;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.*;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.runtime.IServicesConfig;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.runtime.ServicesConfig;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.runtime.Config;
 import com.microsoft.azure.sdk.iot.service.exceptions.IotHubTooManyRequestsException;
 import helpers.IntegrationTest;
 import org.junit.*;
 import org.junit.experimental.categories.Category;
-import play.test.WSTestClient;
+import org.mockito.Mockito;
 
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 public class JobsTest {
 
     private static Config config;
     private static IServicesConfig servicesConfig;
-    private static IConfigService configService;
+    private static IStorageAdapterClient storageAdapterClient;
+    private static IHttpClient mockHttpClient;
+    private static String MockServiceUri = "http://mockstorageadapter";
     private static IIoTHubWrapper ioTHubWrapper;
     private static IDevices deviceService;
+    private static IDeviceProperties mockDeviceProperties;
     private static IJobs jobService;
     private static ArrayList<DeviceServiceModel> testDevices = new ArrayList<>();
     private static String batchId = UUID.randomUUID().toString().replace("-", "");
     public static final int MAX_RETRIES = 10;
+    private static DevicePropertyCallBack cacheUpdateCallBack;
 
     private static boolean setUpIsDone = false;
+
+    @Before
+    public void setUp() {
+        mockDeviceProperties = Mockito.mock(IDeviceProperties.class);
+        mockHttpClient = Mockito.mock(IHttpClient.class);
+    }
 
     @BeforeClass
     public static void setUpOnce() throws Exception {
@@ -38,10 +51,13 @@ public class JobsTest {
 
         config = new Config();
         servicesConfig = config.getServicesConfig();
-        configService = new ConfigService(servicesConfig, WSTestClient.newClient(9005));
+        storageAdapterClient = new StorageAdapterClient(
+            mockHttpClient,
+            new ServicesConfig(null, MockServiceUri, 0, 0, null));
         ioTHubWrapper = new IoTHubWrapper(servicesConfig);
-        deviceService = new Devices(ioTHubWrapper, configService);
-        jobService = new Jobs(ioTHubWrapper, configService);
+        deviceService = new Devices(ioTHubWrapper, storageAdapterClient);
+        mockDeviceProperties = new DeviceProperties(storageAdapterClient, servicesConfig, deviceService);
+        jobService = new Jobs(ioTHubWrapper, storageAdapterClient, mockDeviceProperties);
 
         createTestDevices(2, batchId);
 
@@ -62,7 +78,7 @@ public class JobsTest {
 
     @Test(timeout = 100000)
     @Category({IntegrationTest.class})
-    public void getJobsAsyncTest() throws Exception {
+    public void GetListAsyncTest() throws Exception {
         long from = 0;
         long to = new Date().getTime();
         List<JobServiceModel> jobs = jobService.getJobsAsync(
@@ -98,9 +114,30 @@ public class JobsTest {
             put("Building", "Building40");
             put("Floor", "1F");
         }};
-        DeviceTwinServiceModel twin = new DeviceTwinServiceModel("*", "", null, tags, true);
+        HashMap desired = new HashMap() {
+            {
+                put("Config", new HashMap<String, Object>() {
+                    {
+                        put("Test", 1);
+                    }
+                });
+            }
+        };
+        HashMap reported = new HashMap() {
+            {
+                put("Config", new HashMap<String, Object>() {
+                    {
+                        put("Test", 2);
+                    }
+                });
+            }
+        };
+        DeviceTwinProperties properties = new DeviceTwinProperties(desired, reported);
+        DeviceTwinServiceModel twin = new DeviceTwinServiceModel("*", "", properties, tags, true);
 
-        IJobs twinJobService = new Jobs(ioTHubWrapper, configService);
+        IJobs twinJobService = new Jobs(ioTHubWrapper, storageAdapterClient, mockDeviceProperties);
+        Mockito.when(mockDeviceProperties.UpdateListAsync(new DevicePropertyServiceModel()))
+            .thenReturn(CompletableFuture.supplyAsync(() -> new DevicePropertyServiceModel()));
         // retry scheduling job with back off time when throttled by IotHub
         for (int i = 1; i <= MAX_RETRIES; i++) {
             try {
@@ -125,7 +162,7 @@ public class JobsTest {
                     System.out.println(String.format("Warning: job scheduling is throttled and will be retried(%d) after 30s", i));
                     Thread.sleep(30000);
                     // reconnect to IotHub
-                    twinJobService = new Jobs(ioTHubWrapper, configService);
+                    twinJobService = new Jobs(ioTHubWrapper, storageAdapterClient, mockDeviceProperties);
                     continue;
                 } else {
                     Assert.fail(String.format("failed to schedule twin job due to %s", e.getCause().getMessage()));
@@ -171,7 +208,7 @@ public class JobsTest {
                     System.out.println(String.format("Warning: job scheduling is throttled and will be retried(%d) after 30s", i));
                     Thread.sleep(30000);
                     // reconnect to IotHub
-                    jobService = new Jobs(ioTHubWrapper, configService);
+                    jobService = new Jobs(ioTHubWrapper, storageAdapterClient, mockDeviceProperties);
                     continue;
                 } else {
                     Assert.fail("failed to schedule method job");

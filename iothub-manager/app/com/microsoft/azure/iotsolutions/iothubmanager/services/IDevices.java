@@ -15,11 +15,13 @@ public interface IDevices {
 
     CompletionStage<DeviceServiceListModel> queryAsync(String query, String continuationToken) throws ExternalDependencyException;
 
+    DeviceTwinName GetDeviceTwinNames();
+
     CompletionStage<DeviceServiceModel> getAsync(String id) throws ExternalDependencyException;
 
     CompletionStage<DeviceServiceModel> createAsync(DeviceServiceModel device) throws InvalidInputException, ExternalDependencyException;
 
-    CompletionStage<DeviceServiceModel> createOrUpdateAsync(String id, DeviceServiceModel device) throws InvalidInputException, ExternalDependencyException;
+    CompletionStage<DeviceServiceModel> createOrUpdateAsync(String id, DeviceServiceModel device, DevicePropertyCallBack devicePropertyCallBack) throws InvalidInputException, ExternalDependencyException;
 
     CompletionStage<Boolean> deleteAsync(String id) throws ExternalDependencyException;
 

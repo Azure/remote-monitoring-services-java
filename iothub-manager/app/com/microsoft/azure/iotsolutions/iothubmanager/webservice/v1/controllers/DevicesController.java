@@ -4,13 +4,13 @@ package com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.IDevices;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.*;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.*;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models.*;
 import play.libs.Json;
 import play.mvc.*;
 
-import java.util.concurrent.CompletionStage;
+import java.util.concurrent.*;
 
 import static play.libs.Json.fromJson;
 import static play.libs.Json.toJson;
@@ -18,12 +18,13 @@ import static play.libs.Json.toJson;
 public final class DevicesController extends Controller {
 
     private final IDevices deviceService;
-
+    private final IDeviceProperties deviceProperties;
     final String ContinuationTokenName = "x-ms-continuation";
 
     @Inject
-    public DevicesController(final IDevices deviceService) {
+    public DevicesController(final IDevices deviceService, final IDeviceProperties deviceProperties) {
         this.deviceService = deviceService;
+        this.deviceProperties = deviceProperties;
     }
 
     public CompletionStage<Result> getDevicesAsync(String query) throws ExternalDependencyException {
@@ -67,7 +68,12 @@ public final class DevicesController extends Controller {
     public CompletionStage<Result> putAsync(final String id) throws InvalidInputException, ExternalDependencyException {
         JsonNode json = request().body().asJson();
         final DeviceRegistryApiModel device = fromJson(json, DeviceRegistryApiModel.class);
-        return deviceService.createOrUpdateAsync(id, device.toServiceModel())
+        IDeviceProperties deviceProperties = this.deviceProperties;
+
+        DevicePropertyCallBack devicePropertyCallBack = devices -> {
+                return deviceProperties.UpdateListAsync(devices);
+        };
+        return deviceService.createOrUpdateAsync(id, device.toServiceModel(), devicePropertyCallBack)
             .thenApply(newDevice -> ok(toJson(new DeviceRegistryApiModel(newDevice))));
     }
 

@@ -2,6 +2,8 @@
 
 package com.microsoft.azure.iotsolutions.iothubmanager.services.runtime;
 
+import java.util.List;
+
 public interface IServicesConfig {
 
     /**
@@ -12,9 +14,13 @@ public interface IServicesConfig {
     String getHubConnString();
 
     /**
-     * Get Config service URL.
+     * Get Storage Adapter service URL.
      *
-     * @return Config service URL
+     * @return Storage Adapter service URL
      */
-    String getConfigServiceUrl();
+    String getStorageAdapterServiceUrl();
+
+    int getDevicePropertiesTTL();
+    int getDevicePropertiesRebuildTimeout();
+    List<String> getDevicePropertiesWhiteList();
 }
