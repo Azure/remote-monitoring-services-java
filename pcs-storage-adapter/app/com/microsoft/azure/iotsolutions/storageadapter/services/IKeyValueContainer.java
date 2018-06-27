@@ -5,6 +5,7 @@ package com.microsoft.azure.iotsolutions.storageadapter.services;
 import com.google.inject.ImplementedBy;
 import com.microsoft.azure.documentdb.DocumentClientException;
 import com.microsoft.azure.iotsolutions.storageadapter.services.exceptions.CreateResourceException;
+import com.microsoft.azure.iotsolutions.storageadapter.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.storageadapter.services.models.ValueServiceModel;
 
 import java.util.Iterator;
@@ -24,7 +25,7 @@ public interface IKeyValueContainer {
      *
      * @return List of key-value pairs
      */
-    Iterator<ValueServiceModel> list(String collectionId) throws CreateResourceException;
+    Iterator<ValueServiceModel> list(String collectionId) throws CreateResourceException, InvalidInputException;
 
     /**
      * create key-value pair

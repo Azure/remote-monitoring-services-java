@@ -7,6 +7,7 @@ import com.microsoft.azure.iotsolutions.storageadapter.services.DocDBKeyValueCon
 import com.microsoft.azure.iotsolutions.storageadapter.services.IKeyValueContainer;
 import com.microsoft.azure.iotsolutions.storageadapter.services.exceptions.CreateResourceException;
 import com.microsoft.azure.iotsolutions.storageadapter.services.exceptions.InvalidConfigurationException;
+import com.microsoft.azure.iotsolutions.storageadapter.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.storageadapter.services.models.ValueServiceModel;
 import com.microsoft.azure.iotsolutions.storageadapter.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.storageadapter.services.wrappers.DocumentClientFactory;
@@ -56,7 +57,7 @@ public class DocDBKeyValueContainerTest {
 
     @Test(timeout = 5000)
     @Category({UnitTest.class})
-    public void listTest() throws DocumentClientException, CreateResourceException {
+    public void listTest() throws InvalidInputException, CreateResourceException {
         Iterator<ValueServiceModel> value = container.list(collectionId);
         assertNotNull(value);
     }

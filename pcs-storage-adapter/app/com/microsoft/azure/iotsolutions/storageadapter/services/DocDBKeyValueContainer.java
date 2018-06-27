@@ -5,6 +5,7 @@ package com.microsoft.azure.iotsolutions.storageadapter.services;
 import com.google.inject.Inject;
 import com.microsoft.azure.documentdb.*;
 import com.microsoft.azure.iotsolutions.storageadapter.services.exceptions.CreateResourceException;
+import com.microsoft.azure.iotsolutions.storageadapter.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.storageadapter.services.helpers.DocumentIdHelper;
 import com.microsoft.azure.iotsolutions.storageadapter.services.helpers.QueryBuilder;
 import com.microsoft.azure.iotsolutions.storageadapter.services.models.ValueServiceModel;
@@ -22,41 +23,40 @@ public class DocDBKeyValueContainer implements IKeyValueContainer {
     private static final Logger.ALogger log = Logger.of(DocDBKeyValueContainer.class);
     private DocumentClient client;
     private IFactory<DocumentClient> clientFactory;
-    // Todo: Rename colUrl
-    private String colUrl;
+    private String collectionLink;
 
     @Inject
-    public DocDBKeyValueContainer(IFactory<DocumentClient> clientFactory,
-                                  final IServicesConfig config) throws DocumentClientException, CreateResourceException {
+    public DocDBKeyValueContainer(IFactory<DocumentClient> clientFactory, final IServicesConfig config) {
         this.clientFactory = clientFactory;
-        this.colUrl = config.getContainerName();
+        this.collectionLink = config.getContainerName();
     }
 
     private void createDocumentClientLazily() throws CreateResourceException {
-        if(client==null)
+        if (client == null) {
             this.client = this.clientFactory.create();
+        }
     }
 
     public ValueServiceModel get(String collectionId, String key) throws DocumentClientException, CreateResourceException {
         createDocumentClientLazily();
-        String docUrl = colUrl + "/docs/" + DocumentIdHelper.GenerateId(collectionId, key);
+        String documentLink = collectionLink + "/docs/" + DocumentIdHelper.GenerateId(collectionId, key);
         try {
-            Document response = this.client.readDocument(docUrl, new RequestOptions()).getResource();
+            Document response = this.client.readDocument(documentLink, new RequestOptions()).getResource();
             return new ValueServiceModel(response);
         } catch (DocumentClientException ex) {
-            log.error("Error reading document: " + docUrl);
+            log.error("Error reading document: " + documentLink);
             throw ex;
         }
     }
 
 
-    public java.util.Iterator<ValueServiceModel> list(String collectionId) throws CreateResourceException {
+    public java.util.Iterator<ValueServiceModel> list(String collectionId) throws CreateResourceException, InvalidInputException {
         createDocumentClientLazily();
-        String sqlQuery = QueryBuilder.buildSQL(collectionId);
+        SqlQuerySpec sqlQuerySpec = QueryBuilder.buildQuerySpec(collectionId);
         FeedOptions queryOptions = new FeedOptions();
         queryOptions.setPageSize(-1);
         queryOptions.setEnableCrossPartitionQuery(true);
-        Iterator<Document> response = this.client.queryDocuments(colUrl, sqlQuery, queryOptions).getQueryIterator();
+        Iterator<Document> response = this.client.queryDocuments(collectionLink, sqlQuerySpec, queryOptions).getQueryIterator();
         List<ValueServiceModel> result = new ArrayList<>();
         while (response.hasNext()) {
             Document element = response.next();
@@ -70,10 +70,10 @@ public class DocDBKeyValueContainer implements IKeyValueContainer {
         KeyValueDocument document = new KeyValueDocument(collectionId, key, input.Data);
         try {
             createDocumentClientLazily();
-            Document response = this.client.createDocument(colUrl, document, new RequestOptions(), true).getResource();
+            Document response = this.client.createDocument(collectionLink, document, new RequestOptions(), true).getResource();
             return new ValueServiceModel(response);
         } catch (DocumentClientException ex) {
-            log.error("Error creating document: " + colUrl + ", Key=" + key);
+            log.error("Error creating document: " + collectionLink + ", Key=" + key);
             throw ex;
         }
     }
@@ -87,21 +87,21 @@ public class DocDBKeyValueContainer implements IKeyValueContainer {
             condition.setCondition(input.ETag);
             option.setAccessCondition(condition);
             createDocumentClientLazily();
-            Document response = this.client.upsertDocument(colUrl, document, option, false).getResource();
+            Document response = this.client.upsertDocument(collectionLink, document, option, false).getResource();
             return new ValueServiceModel(response);
         } catch (DocumentClientException ex) {
-            log.error("Error upsert document: " + colUrl + ", Key=" + key);
+            log.error("Error upsert document: " + collectionLink + ", Key=" + key);
             throw ex;
         }
     }
 
     public void delete(String collectionId, String key) throws DocumentClientException, CreateResourceException {
-        String docUrl = colUrl + "/docs/" + DocumentIdHelper.GenerateId(collectionId, key);
+        String documentLink = collectionLink + "/docs/" + DocumentIdHelper.GenerateId(collectionId, key);
         try {
             createDocumentClientLazily();
-            this.client.deleteDocument(docUrl, new RequestOptions());
+            this.client.deleteDocument(documentLink, new RequestOptions());
         } catch (DocumentClientException ex) {
-            log.error("Error deleting document: " + docUrl);
+            log.error("Error deleting document: " + documentLink);
             throw ex;
         }
     }
@@ -116,7 +116,7 @@ public class DocDBKeyValueContainer implements IKeyValueContainer {
         if (response != null) {
             return new Status(true, "Alive and Well!");
         } else {
-            return new Status(false, "Could not connect to DocumentDb." + colUrl);
+            return new Status(false, "Could not connect to DocumentDb." + collectionLink);
         }
     }
 
