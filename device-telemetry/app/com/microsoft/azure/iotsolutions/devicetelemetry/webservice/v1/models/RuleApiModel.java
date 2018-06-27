@@ -3,6 +3,7 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -38,6 +39,7 @@ public final class RuleApiModel {
     private String calculation;
     private String timePeriod;
     private ArrayList<ConditionApiModel> conditions;
+    private Boolean deleted;
 
     public RuleApiModel() {
 
@@ -71,7 +73,8 @@ public final class RuleApiModel {
         String severity,
         String calculation,
         String timePeriod,
-        ArrayList<ConditionApiModel> conditions
+        ArrayList<ConditionApiModel> conditions,
+        Boolean deleted
     ) {
         this.eTag = eTag;
         this.id = id;
@@ -85,6 +88,7 @@ public final class RuleApiModel {
         this.calculation = calculation;
         this.timePeriod = timePeriod;
         this.conditions = conditions;
+        this.deleted = deleted;
     }
 
     /**
@@ -92,7 +96,7 @@ public final class RuleApiModel {
      *
      * @param rule service model
      */
-    public RuleApiModel(RuleServiceModel rule) {
+    public RuleApiModel(RuleServiceModel rule, boolean includeDeleted) {
         if (rule != null) {
             this.eTag = rule.getETag();
             this.id = rule.getId();
@@ -105,7 +109,9 @@ public final class RuleApiModel {
             this.severity = rule.getSeverity().toString();
             this.calculation = rule.getCalculation().toString();
             this.timePeriod = rule.getTimePeriod().toString();
-
+            if (includeDeleted) {
+                this.deleted = rule.getDeleted();
+            }
             // create listAsync of ConditionApiModel from ConditionServiceModel listAsync
             this.conditions = new ArrayList<>();
             if (rule.getConditions() != null) {
@@ -215,6 +221,16 @@ public final class RuleApiModel {
         this.conditions = conditions;
     }
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public Boolean isDeleted() {
+        return this.deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+
     @JsonProperty("$metadata")
     public Dictionary<String, String> getMetadata() {
         return new Hashtable<String, String>() {{
@@ -275,7 +291,8 @@ public final class RuleApiModel {
             severity,
             calculation,
             timePeriod,
-            conditionServiceModels
+            conditionServiceModels,
+            this.deleted == null ? false : this.deleted
         );
     }
 

@@ -41,7 +41,8 @@ public class RuleApiModelTest {
             SeverityType.WARNING.toString(),
             CalculationType.AVERAGE.toString(),
             String.valueOf(600000),
-            conditionList);
+            conditionList,
+            false);
     }
 
     @After

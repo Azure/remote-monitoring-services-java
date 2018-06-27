@@ -75,7 +75,8 @@ public class RulesControllerTest {
             "asc",
             0,
             1000,
-            null))
+            null,
+            false))
             .thenReturn(ruleListResult);
 
         // Act
@@ -83,7 +84,8 @@ public class RulesControllerTest {
             "asc",
             0,
             1000,
-            null)
+            null,
+            false)
             .thenApply(response -> {
                 // Assert
                 assertThat(response.body().isKnownEmpty(), is(false));
@@ -144,7 +146,7 @@ public class RulesControllerTest {
         RulesController controller = new RulesController(rules);
         when(rules.postAsync(any())).thenReturn(ruleResult);
 
-        mockHttpContext(new RuleApiModel(this.sampleNewRuleServiceModel));
+        mockHttpContext(new RuleApiModel(this.sampleNewRuleServiceModel, false));
 
         // Act
         controller.postAsync().thenApply(response -> {
@@ -179,7 +181,7 @@ public class RulesControllerTest {
         RulesController controller = new RulesController(rules);
         when(rules.putAsync(any())).thenReturn(ruleResult);
 
-        mockHttpContext(new RuleApiModel(this.sampleNewRuleServiceModel));
+        mockHttpContext(new RuleApiModel(this.sampleNewRuleServiceModel, false));
 
         // Act
         controller.putAsync(this.sampleNewRuleServiceModel.getId()).thenApply(response -> {
