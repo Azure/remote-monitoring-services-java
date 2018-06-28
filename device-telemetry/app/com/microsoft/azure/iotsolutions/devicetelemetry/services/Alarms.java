@@ -4,6 +4,7 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.services;
 
 import com.google.inject.Inject;
 import com.microsoft.azure.documentdb.Document;
+import com.microsoft.azure.documentdb.DocumentClientException;
 import com.microsoft.azure.documentdb.FeedOptions;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ExternalDependencyException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.helpers.QueryBuilder;
@@ -14,13 +15,16 @@ import org.joda.time.DateTime;
 import play.Logger;
 
 import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutionException;
 
 public class Alarms implements IAlarms {
 
     private final IStorageClient storageClient;
     private String databaseName;
     private String collectionId;
+    private final int maxDeleteRetryCount;
 
     private static final Logger.ALogger log = Logger.of(Alarms.class);
 
@@ -38,8 +42,9 @@ public class Alarms implements IAlarms {
     @Inject
     public Alarms(IServicesConfig servicesConfig, IStorageClient storageClient) {
         this.storageClient = storageClient;
-        this.databaseName = servicesConfig.getAlarmsStorageConfig().getDocumentDbDatabase();
-        this.collectionId = servicesConfig.getAlarmsStorageConfig().getDocumentDbCollection();
+        this.databaseName = servicesConfig.getAlarmsStorageConfig().getStorageConfig().getDocumentDbDatabase();
+        this.collectionId = servicesConfig.getAlarmsStorageConfig().getStorageConfig().getDocumentDbCollection();
+        this.maxDeleteRetryCount = servicesConfig.getAlarmsStorageConfig().getMaxDeleteRetries();
     }
 
     @Override
@@ -168,6 +173,68 @@ public class Alarms implements IAlarms {
         return new AlarmServiceModel(document);
     }
 
+    /**
+     * Delete list of alarms by id
+     * @param ids
+     * @throws Throwable
+     */
+    @Override
+    public void delete(ArrayList<String> ids) throws Throwable {
+        CompletableFuture[] tasks = new CompletableFuture[ids.size()];
+        for (int i = 0; i < ids.size(); i++) {
+            String id = ids.get(i);
+            tasks[i] = CompletableFuture.runAsync(() -> {
+                try {
+                    this.delete(id);
+                } catch (Exception e) {
+                    throw new CompletionException(e);
+                }
+            });
+        }
+
+        CompletableFuture result = CompletableFuture.allOf(tasks);
+        try {
+            result.get();
+        } catch (ExecutionException ex) {
+            throw ex.getCause();
+        }
+    }
+
+    /**
+     * Delete single alarm by id
+     * @param id
+     * @throws Exception
+     */
+    @Override
+    public void delete(String id) throws Exception {
+        int retryCount = 0;
+        while (retryCount < this.maxDeleteRetryCount) {
+            try {
+                this.storageClient.deleteDocument(this.databaseName, this.collectionId, id);
+                return;
+            } catch (Exception e) {
+                long timeout = 0;
+                if (e instanceof DocumentClientException)
+                {
+                    DocumentClientException clientException = (DocumentClientException)e;
+                    if (clientException.getStatusCode() == 404) {
+                        return;
+                    }
+                    timeout = clientException.getRetryAfterInMilliseconds();
+                }
+
+                retryCount++;
+                if (retryCount >= this.maxDeleteRetryCount) {
+                    this.log.error("Failed to delete alarm " + id, e);
+                    throw new ExternalDependencyException(e.getMessage(), e);
+                }
+
+                this.log.warn("Exception on delete alarm " + id + ", retrying", e);
+                Thread.sleep(timeout);
+            }
+        }
+    }
+
     private Document getDocumentById(String id) throws Exception {
         // Retrieve the document using the DocumentClient.
         ArrayList<Document> documentList = this.storageClient.queryDocuments(
@@ -183,5 +250,4 @@ public class Alarms implements IAlarms {
             return null;
         }
     }
-
 }

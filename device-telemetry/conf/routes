@@ -22,6 +22,10 @@ GET    /v1/alarms/:id          @com.microsoft.azure.iotsolutions.devicetelemetry
 
 PATCH  /v1/alarms/:id          @com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsController.patch(id)
 
+DELETE /v1/alarms/:id          @com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsController.delete(id)
+
+POST /v1/alarms!delete         @com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsController.deleteMultiple()
+
 # Alarms aggregation by rule
 
 GET    /v1/alarmsbyrule        @com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsByRuleController.listAsync(from ?= null, to ?= null, order: String ?= "asc", skip: Int ?= 0, limit: Int ?= 1000, devices ?= null)
