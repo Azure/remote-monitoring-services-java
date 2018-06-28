@@ -4,18 +4,15 @@ package com.microsoft.azure.iotsolutions.iothubmanager.services.external;
 
 import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.*;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.http.*;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.runtime.IServicesConfig;
-import org.apache.http.HttpStatus;
 import play.Logger;
 import play.libs.Json;
+import play.libs.ws.*;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
 import java.util.concurrent.*;
 
 public class StorageAdapterClient implements IStorageAdapterClient {
-    private final IHttpClient httpClient;
+    private WSClient wsClient;
     private static final Logger.ALogger log = Logger.of(StorageAdapterClient.class);
     private final String serviceUri;
 
@@ -28,18 +25,18 @@ public class StorageAdapterClient implements IStorageAdapterClient {
     }
 
     @Inject
-    public StorageAdapterClient(IHttpClient httpClient, IServicesConfig config) {
-        this.httpClient = httpClient;
+    public StorageAdapterClient(WSClient wsClient, IServicesConfig config) {
+        this.wsClient = wsClient;
         this.serviceUri = config.getStorageAdapterServiceUrl();
     }
 
     @Override
     public CompletionStage<ValueApiModel> getAsync(String collectionId, String key) throws ResourceNotFoundException {
         try {
-            HttpRequest request = CreateRequest(String.format("collections/%s/values/%s", collectionId, key));
-            IHttpResponse response = httpClient.getAsync(request).toCompletableFuture().get();
+            WSRequest request = wsClient.url(String.format("collections/%s/values/%s", collectionId, key));
+            WSResponse response = request.get().toCompletableFuture().get();
             CheckStatusCode(response, request);
-            return CompletableFuture.supplyAsync(() -> fromJson(response.getContent(), ValueApiModel.class));
+            return CompletableFuture.supplyAsync(() -> fromJson(response.getBody(), ValueApiModel.class));
         } catch (ResourceNotFoundException e) {
             throw e;
         } catch (Exception e) {
@@ -49,13 +46,13 @@ public class StorageAdapterClient implements IStorageAdapterClient {
 
     @Override
     public CompletionStage<ValueListApiModel> getAllAsync(String collectionId) throws BaseException {
-        HttpRequest request = CreateRequest(String.format("collections/%s/values", collectionId));
-        return httpClient.getAsync(request).thenApplyAsync(m -> {
+        WSRequest request = wsClient.url(String.format("collections/%s/values", collectionId));
+        return request.get().thenApplyAsync(m -> {
             try {
                 CheckStatusCode(m, request);
-                return fromJson(m.getContent(), ValueListApiModel.class);
+                return fromJson(m.getBody(), ValueListApiModel.class);
             } catch (Exception e) {
-                throw new CompletionException("Unable to retrieve " + request.getUri(), e);
+                throw new CompletionException("Unable to retrieve " + request.getUrl(), e);
             }
         });
     }
@@ -64,13 +61,13 @@ public class StorageAdapterClient implements IStorageAdapterClient {
     public CompletionStage<ValueApiModel> createAsync(String collectionId, String value) throws BaseException {
         ValueApiModel model = new ValueApiModel();
         model.setData(value);
-        HttpRequest request = CreateRequest(String.format("collections/%s/values", collectionId), model);
-        return httpClient.postAsync(request).thenApplyAsync(m -> {
+        WSRequest request = wsClient.url(String.format("collections/%s/values", collectionId));
+        return request.post(toJson(model)).thenApplyAsync(m -> {
             try {
                 CheckStatusCode(m, request);
-                return fromJson(m.getContent(), ValueApiModel.class);
+                return fromJson(m.getBody(), ValueApiModel.class);
             } catch (Exception e) {
-                throw new CompletionException("Unable to create resource " + request.getUri(), e);
+                throw new CompletionException("Unable to create resource " + request.getUrl(), e);
             }
         });
     }
@@ -80,65 +77,47 @@ public class StorageAdapterClient implements IStorageAdapterClient {
         ValueApiModel model = new ValueApiModel();
         model.setData(value);
         model.setETag(etag);
-        HttpRequest request = CreateRequest(String.format("collections/%s/values/%s", collectionId, key), model);
-        return httpClient.putAsync(request).thenApplyAsync(m -> {
+        WSRequest request = wsClient.url(String.format("collections/%s/values/%s", collectionId, key));
+        return request.put(toJson(model)).thenApplyAsync(m -> {
             try {
                 CheckStatusCode(m, request);
-                return fromJson(m.getContent(), ValueApiModel.class);
+                return fromJson(m.getBody(), ValueApiModel.class);
             } catch (Exception e) {
-                throw new CompletionException("Unable to update resource " + request.getUri(), e);
+                throw new CompletionException("Unable to update resource " + request.getUrl(), e);
             }
         });
     }
 
     @Override
     public CompletionStage deleteAsync(String collectionId, String key) throws BaseException {
-        HttpRequest request = CreateRequest(String.format("collections/%s/values/%s", collectionId, key));
-        return httpClient.deleteAsync(request).thenAcceptAsync(m -> {
+        WSRequest request = wsClient.url(String.format("collections/%s/values/%s", collectionId, key));
+        return request.delete().thenAcceptAsync(m -> {
             try {
                 CheckStatusCode(m, request);
             } catch (Exception e) {
-                throw new CompletionException("Unable to delete resource " + request.getUri(), e);
+                throw new CompletionException("Unable to delete resource " + request.getUrl(), e);
             }
         });
     }
 
-    private HttpRequest CreateRequest(String path, ValueApiModel content) throws InvalidConfigurationException {
-        try {
-            HttpRequest request = new HttpRequest();
-            request.setUriFromString(serviceUri + "/" + path);
-            request.getOptions().setAllowInsecureSSLServer(true);
-            if (content != null) {
-                request.setContent(content);
-            }
-            return request;
-        } catch (UnsupportedEncodingException | URISyntaxException e) {
-            throw new InvalidConfigurationException("Unable to create http request", e);
-        }
-    }
-
-    private HttpRequest CreateRequest(String path) throws InvalidConfigurationException {
-        return CreateRequest(path, null);
-    }
-
-    private void CheckStatusCode(IHttpResponse response, IHttpRequest request) throws BaseException {
-        if (response.isSuccessStatusCode()) {
+    private void CheckStatusCode(WSResponse response, WSRequest request) throws BaseException {
+        if (response.getStatus() == 200) {
             return;
         }
         log.info(String.format("StorageAdapter returns %s for request %s",
-                response.getStatusCode(), request.getUri().toString()));
-        switch (response.getStatusCode()) {
-            case HttpStatus.SC_NOT_FOUND:
+            response.getStatus(), request.getUrl().toString()));
+        switch (response.getStatus()) {
+            case 404:
                 throw new ResourceNotFoundException(
-                        response.getContent() + ", request URL = " + request.getUri().toString());
+                    response.getBody() + ", request URL = " + request.getUrl());
 
-            case HttpStatus.SC_CONFLICT:
+            case 409:
                 throw new ConflictingResourceException(
-                        response.getContent() + ", request URL = " + request.getUri().toString());
+                    response.getBody() + ", request URL = " + request.getUrl());
 
             default:
                 throw new ExternalDependencyException(
-                        String.format("Http request failed, status code = %s, content = %s, request URL = %s", response.getStatusCode(), response.getContent(), request.getUri().toString()));
+                    String.format("WS-request failed, status code = %s, content = %s, request URL = %s", response.getStatus(), response.getBody(), request.getUrl()));
         }
     }
 }

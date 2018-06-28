@@ -4,7 +4,6 @@ package com.microsoft.azure.iotsolutions.iothubmanager.services;
 
 import com.microsoft.azure.iotsolutions.iothubmanager.services.external.IStorageAdapterClient;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.external.StorageAdapterClient;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.http.IHttpClient;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.*;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.runtime.ServicesConfig;
@@ -14,6 +13,7 @@ import helpers.IntegrationTest;
 import org.junit.*;
 import org.junit.experimental.categories.Category;
 import org.mockito.Mockito;
+import play.libs.ws.WSClient;
 
 import java.time.Duration;
 import java.util.*;
@@ -24,7 +24,7 @@ public class JobsTest {
     private static Config config;
     private static IServicesConfig servicesConfig;
     private static IStorageAdapterClient storageAdapterClient;
-    private static IHttpClient mockHttpClient;
+    private static WSClient mockWsClient;
     private static String MockServiceUri = "http://mockstorageadapter";
     private static IIoTHubWrapper ioTHubWrapper;
     private static IDevices deviceService;
@@ -40,7 +40,7 @@ public class JobsTest {
     @Before
     public void setUp() {
         mockDeviceProperties = Mockito.mock(IDeviceProperties.class);
-        mockHttpClient = Mockito.mock(IHttpClient.class);
+        mockWsClient = Mockito.mock(WSClient.class);
     }
 
     @BeforeClass
@@ -52,7 +52,7 @@ public class JobsTest {
         config = new Config();
         servicesConfig = config.getServicesConfig();
         storageAdapterClient = new StorageAdapterClient(
-            mockHttpClient,
+            mockWsClient,
             new ServicesConfig(null, MockServiceUri, 0, 0, null));
         ioTHubWrapper = new IoTHubWrapper(servicesConfig);
         deviceService = new Devices(ioTHubWrapper, storageAdapterClient);
