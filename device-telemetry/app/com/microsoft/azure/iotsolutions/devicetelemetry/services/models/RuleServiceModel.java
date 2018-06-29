@@ -36,6 +36,7 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
     private CalculationType calculation = null;
     private Long timePeriod = null;
 
+    private ArrayList<IActionServiceModel> actions = null;
     private ArrayList<ConditionServiceModel> conditions = null;
 
     public RuleServiceModel() {
@@ -49,6 +50,7 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
         final SeverityType severity,
         final CalculationType calculation,
         final Long timePeriod,
+        final ArrayList<IActionServiceModel> actions,
         final ArrayList<ConditionServiceModel> conditions) {
 
         this(
@@ -63,6 +65,7 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
             severity,
             calculation,
             timePeriod,
+            actions,
             conditions
         );
     }
@@ -79,6 +82,7 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
         SeverityType severity,
         CalculationType calculation,
         Long timePeriod,
+        ArrayList<IActionServiceModel> actions,
         ArrayList<ConditionServiceModel> conditions) {
 
         this.eTag = eTag;
@@ -92,6 +96,7 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
         this.severity = severity;
         this.calculation = calculation;
         this.timePeriod = timePeriod;
+        this.actions = actions;
         this.conditions = conditions;
     }
 
@@ -191,6 +196,11 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
         this.calculation = calculation;
     }
 
+    @JsonDeserialize(as = ArrayList.class, contentAs = IActionServiceModel.class)
+    public ArrayList<IActionServiceModel> getActions() { return this.actions; }
+
+    public void setActions(ArrayList<IActionServiceModel> actions) { this.actions = actions; }
+
     @JsonDeserialize(as = ArrayList.class, contentAs = ConditionServiceModel.class)
     public ArrayList<ConditionServiceModel> getConditions() {
         return this.conditions;
@@ -231,6 +241,7 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
             this.severity,
             this.calculation,
             this.timePeriod,
+            this.actions,
             this.conditions);
         return rule;
     }

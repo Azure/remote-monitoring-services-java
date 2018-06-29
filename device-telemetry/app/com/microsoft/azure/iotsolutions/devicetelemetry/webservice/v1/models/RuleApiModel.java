@@ -8,10 +8,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidInputException;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.CalculationType;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.ConditionServiceModel;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.RuleServiceModel;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.SeverityType;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.Version;
 
 import java.util.ArrayList;
@@ -37,6 +34,7 @@ public final class RuleApiModel {
     private String severity;
     private String calculation;
     private String timePeriod;
+    private ArrayList<ActionApiModel> actions;
     private ArrayList<ConditionApiModel> conditions;
 
     public RuleApiModel() {
@@ -57,6 +55,7 @@ public final class RuleApiModel {
      * @param severity
      * @param calculation
      * @param timePeriod
+     * @param actions
      * @param conditions
      */
     public RuleApiModel(
@@ -71,6 +70,7 @@ public final class RuleApiModel {
         String severity,
         String calculation,
         String timePeriod,
+        ArrayList<ActionApiModel> actions,
         ArrayList<ConditionApiModel> conditions
     ) {
         this.eTag = eTag;
@@ -84,6 +84,7 @@ public final class RuleApiModel {
         this.severity = severity;
         this.calculation = calculation;
         this.timePeriod = timePeriod;
+        this.actions = actions;
         this.conditions = conditions;
     }
 
@@ -105,6 +106,14 @@ public final class RuleApiModel {
             this.severity = rule.getSeverity().toString();
             this.calculation = rule.getCalculation().toString();
             this.timePeriod = rule.getTimePeriod().toString();
+
+            // create listAsync of ActionApiModel from  IActionServiceModel listAsync
+            this.actions = new ArrayList<>();
+            if(rule.getActions() != null){
+                for(IActionServiceModel action : rule.getActions()){
+                    this.actions.add(new ActionApiModel(action));
+                }
+            }
 
             // create listAsync of ConditionApiModel from ConditionServiceModel listAsync
             this.conditions = new ArrayList<>();
@@ -206,6 +215,15 @@ public final class RuleApiModel {
         return this.timePeriod;
     }
 
+    @JsonDeserialize(as = ArrayList.class, contentAs = ActionApiModel.class)
+    public ArrayList<ActionApiModel> getActions(){
+        return this.actions;
+    }
+
+    public void setActions(ArrayList<ActionApiModel> actions){
+        this.actions = actions;
+    }
+
     @JsonDeserialize(as = ArrayList.class, contentAs = ConditionApiModel.class)
     public ArrayList<ConditionApiModel> getConditions() {
         return this.conditions;
@@ -231,6 +249,16 @@ public final class RuleApiModel {
      * @return
      */
     public RuleServiceModel toServiceModel(String idOverride) {
+        ArrayList<IActionServiceModel> actionServiceModels = new ArrayList<IActionServiceModel>();
+        if(actions != null){
+            for(ActionApiModel action : actions){
+                try {
+                    actionServiceModels.add(action.toServiceModel());
+                } catch (Exception e) {
+                    throw new CompletionException(new InvalidInputException("Invalid action"));
+                }
+            }
+        }
         ArrayList<ConditionServiceModel> conditionServiceModels = new ArrayList<ConditionServiceModel>();
         if (conditions != null) {
             for (ConditionApiModel condition :
@@ -275,6 +303,7 @@ public final class RuleApiModel {
             severity,
             calculation,
             timePeriod,
+            actionServiceModels,
             conditionServiceModels
         );
     }
