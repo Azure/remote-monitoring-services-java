@@ -24,7 +24,7 @@ public class DevicePropertiesController extends Controller {
     }
 
     public CompletionStage<Result> getAllAsync() throws BaseException {
-        return this.deviceProperties.GetListAsync().thenApplyAsync(m
+        return this.deviceProperties.getListAsync().thenApplyAsync(m
             -> ok(toJson(new DevicePropertiesApiModel(m))));
     }
 }

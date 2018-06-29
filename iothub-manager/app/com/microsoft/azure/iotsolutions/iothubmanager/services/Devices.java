@@ -43,7 +43,7 @@ public final class Devices implements IDevices {
         this.iotHubHostName = ioTHubService.getIotHubHostName();
     }
 
-    public DeviceTwinName GetDeviceTwinNames() {
+    public DeviceTwinName getDeviceTwinNames() {
         DeviceTwinName twinNames = new DeviceTwinName();
         try {
             CompletableFuture<DeviceServiceListModel> twinNamesTask = this.queryAsync("", "").toCompletableFuture();
@@ -113,7 +113,7 @@ public final class Devices implements IDevices {
                     }
 
                     try {
-                        HashMap<String, DeviceTwinServiceModel> twins = GetTwinByQueryAsync(
+                        HashMap<String, DeviceTwinServiceModel> twins = getTwinByQueryAsync(
                             QueryConditionTranslator.ToQueryString(query),
                             continuationToken,
                             MAX_GET_LIST);
@@ -294,7 +294,7 @@ public final class Devices implements IDevices {
         }
     }
 
-    private HashMap<String, DeviceTwinServiceModel> GetTwinByQueryAsync(
+    private HashMap<String, DeviceTwinServiceModel> getTwinByQueryAsync(
         final String query, String continuationToken, int nubmerOfResult)
         throws ExternalDependencyException {
         String fullQuery = query.isEmpty() ? QueryPrefix : String.format("%s where %s", QueryPrefix, query);

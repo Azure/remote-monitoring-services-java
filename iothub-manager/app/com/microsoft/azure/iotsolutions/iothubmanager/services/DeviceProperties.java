@@ -65,7 +65,7 @@ public class DeviceProperties implements IDeviceProperties {
      * @summary Get List of deviceProperties from cache
      */
     @Override
-    public CompletionStage<TreeSet<String>> GetListAsync() {
+    public CompletionStage<TreeSet<String>> getListAsync() {
         try {
             ValueApiModel valueApiModel = storageClient.getAsync(CacheCollectionId, CacheKey).
                 toCompletableFuture().get();
@@ -90,7 +90,7 @@ public class DeviceProperties implements IDeviceProperties {
      * @summary Update Cache when devices are modified/created
      */
     @Override
-    public CompletionStage<DevicePropertyServiceModel> UpdateListAsync(
+    public CompletionStage<DevicePropertyServiceModel> updateListAsync(
         DevicePropertyServiceModel devicePropertyServiceModel) throws BaseException {
         if (devicePropertyServiceModel.getReported() == null) {
             devicePropertyServiceModel.setReported(new HashSet<>());
@@ -100,12 +100,12 @@ public class DeviceProperties implements IDeviceProperties {
         }
         String etag = null;
         while (true) {
-            ValueApiModel model = this.GetCurrentDevicePropertiesFromStorage();
+            ValueApiModel model = this.getCurrentDevicePropertiesFromStorage();
             if (model != null) {
                 etag = model.getETag();
                 DevicePropertyServiceModel devicePropertiesFromStorage = Json.fromJson(
                     Json.parse(model.getData()), DevicePropertyServiceModel.class);
-                this.UpdateDevicePropertyValues(model, devicePropertyServiceModel);
+                this.updateDevicePropertyValues(model, devicePropertyServiceModel);
                 // If the new set of deviceProperties are already there in cache, return
                 if (devicePropertyServiceModel.getTags().size() == devicePropertiesFromStorage.getTags().size() &&
                     devicePropertyServiceModel.getReported().size() == devicePropertiesFromStorage.getReported().size()) {
@@ -119,10 +119,10 @@ public class DeviceProperties implements IDeviceProperties {
                     Json.fromJson(Json.parse(m.getData()), DevicePropertyServiceModel.class)
                 );
             } catch (ConflictingResourceException e) {
-                log.info("UpdateListAsync: Access to deviceProperties in CosmosDB conflicted with another process.");
+                log.info("updateListAsync: Access to deviceProperties in CosmosDB conflicted with another process.");
                 continue;
             } catch (Exception e) {
-                log.error("UpdateListAsync : Could not update deviceProperties in CosmosDB.", e.getMessage());
+                log.error("updateListAsync : Could not update deviceProperties in CosmosDB.", e.getMessage());
                 throw new CompletionException(e);
             }
         }
@@ -132,14 +132,14 @@ public class DeviceProperties implements IDeviceProperties {
      * @summary Try to create cache of deviceProperties if lock failed retry after 10 seconds
      */
     @Override
-    public CompletionStage TryRecreateListAsync(boolean force) throws Exception {
+    public CompletionStage tryRecreateListAsync(boolean force) throws Exception {
         StorageWriteLock<DevicePropertyServiceModel> lock = new StorageWriteLock<>(
             DevicePropertyServiceModel.class,
             this.storageClient,
             CacheCollectionId,
             CacheKey,
             (c, b) -> c.setRebuilding(b),
-            m -> this.ShouldCacheRebuild(force, m));
+            m -> this.shouldCacheRebuild(force, m));
 
         while (true) {
             // Try to read non-empty twin data at first before locking cache entry
@@ -149,7 +149,7 @@ public class DeviceProperties implements IDeviceProperties {
             // update twin data into the cache entry.
             DeviceTwinName twinNames = null;
             try {
-                twinNames = this.GetDevicePropertyNames();
+                twinNames = this.getDevicePropertyNames();
                 if (twinNames.isEmpty()) {
                     this.log.info(String.format("There is no property available to be cached. Retry after %d seconds",
                         this.SERVICE_QUERY_INTERVAL_SECS));
@@ -162,7 +162,7 @@ public class DeviceProperties implements IDeviceProperties {
                 continue;
             }
 
-            Optional<Boolean> locked = this.LockCache(lock);
+            Optional<Boolean> locked = this.lockCache(lock);
             if (locked == null) {
                 this.log.warn(
                     String.format("DeviceProperties rebuilding: lock failed due to conflict. Retry after %d seconds",
@@ -173,7 +173,7 @@ public class DeviceProperties implements IDeviceProperties {
             if (!locked.get()) {
                 return CompletableFuture.completedFuture(false);
             }
-            Boolean updated = this.WriteAndUnlockCache(lock, twinNames);
+            Boolean updated = this.writeAndUnlockCache(lock, twinNames);
 
             if (updated) {
                 return CompletableFuture.completedFuture(true);
@@ -190,7 +190,7 @@ public class DeviceProperties implements IDeviceProperties {
      * @summary A function to decide whether or not cache needs to be rebuilt based on force flag and existing
      * cache's validity
      */
-    private boolean ShouldCacheRebuild(boolean force, ValueApiModel valueApiModel) {
+    private boolean shouldCacheRebuild(boolean force, ValueApiModel valueApiModel) {
         if (force) {
             this.log.info("DeviceProperties will be rebuilt due to the force flag");
             return true;
@@ -239,16 +239,16 @@ public class DeviceProperties implements IDeviceProperties {
      * @summary Get list of DeviceTwinNames from IOT-hub and whitelist it.
      * @remarks List of Twin Names to be whitelisted is hardcoded in application.conf
      */
-    private CompletionStage<DeviceTwinName> GetValidNamesAsync() throws ExternalDependencyException {
+    private CompletionStage<DeviceTwinName> getValidNamesAsync() throws ExternalDependencyException {
         DeviceTwinName fullNameWhitelist = new DeviceTwinName(), prefixWhitelist = new DeviceTwinName();
-        this.ParseWhitelist(this.whitelist, fullNameWhitelist, prefixWhitelist);
+        this.parseWhitelist(this.whitelist, fullNameWhitelist, prefixWhitelist);
 
         DeviceTwinName validNames = new DeviceTwinName(
             fullNameWhitelist.getTags(),
             fullNameWhitelist.getReportedProperties());
 
         if (!prefixWhitelist.getTags().isEmpty() || !prefixWhitelist.getReportedProperties().isEmpty()) {
-            DeviceTwinName allNames = devices.GetDeviceTwinNames();
+            DeviceTwinName allNames = devices.getDeviceTwinNames();
             validNames.getTags().addAll(allNames.getTags().stream().
                 filter(m -> prefixWhitelist.getTags().stream().anyMatch(m::startsWith)).collect(Collectors.toSet()));
 
@@ -269,7 +269,7 @@ public class DeviceProperties implements IDeviceProperties {
      * @summary Parse the comma separated string "whitelist" and create two separate list One with regex(*) and one
      * without regex(*)
      */
-    private void ParseWhitelist(List<String> whitelist,
+    private void parseWhitelist(List<String> whitelist,
                                 DeviceTwinName fullNameWhitelist,
                                 DeviceTwinName prefixWhitelist) {
 
@@ -296,15 +296,15 @@ public class DeviceProperties implements IDeviceProperties {
     /**
      * @summary Get current device properties saved in cosmosDB cache
      */
-    private ValueApiModel GetCurrentDevicePropertiesFromStorage() throws ExternalDependencyException {
+    private ValueApiModel getCurrentDevicePropertiesFromStorage() throws ExternalDependencyException {
         try {
             return this.storageClient.getAsync(CacheCollectionId, CacheKey).toCompletableFuture().get();
         } catch (ResourceNotFoundException e) {
-            log.info(String.format("UpdateListAsync %s:%s not found.", CacheCollectionId, CacheKey));
+            log.info(String.format("updateListAsync %s:%s not found.", CacheCollectionId, CacheKey));
         } catch (InterruptedException | ExecutionException | BaseException e) {
-            log.error(String.format("UpdateListAsync InterruptedException occurred in storageClient.getAsync(%s, %s).",
+            log.error(String.format("updateListAsync InterruptedException occurred in storageClient.getAsync(%s, %s).",
                 CacheCollectionId, CacheKey));
-            throw new ExternalDependencyException("UpdateListAsync failed");
+            throw new ExternalDependencyException("updateListAsync failed");
         }
         return null;
     }
@@ -312,7 +312,7 @@ public class DeviceProperties implements IDeviceProperties {
     /**
      * @summary Get List of deviceProperties from cache
      */
-    private void UpdateDevicePropertyValues(ValueApiModel valueApiModel, DevicePropertyServiceModel devicePropertiesToAdd) {
+    private void updateDevicePropertyValues(ValueApiModel valueApiModel, DevicePropertyServiceModel devicePropertiesToAdd) {
         if (valueApiModel != null) {
             DevicePropertyServiceModel devicePropertiesFromStorage;
             try {
@@ -337,7 +337,7 @@ public class DeviceProperties implements IDeviceProperties {
      *
      * @summary Lock cache in cosmosDB to avoid conflicts
      */
-    private Optional<Boolean> LockCache(StorageWriteLock<DevicePropertyServiceModel> lock)
+    private Optional<Boolean> lockCache(StorageWriteLock<DevicePropertyServiceModel> lock)
         throws ExternalDependencyException, ResourceOutOfDateException {
         try {
             return lock.tryLockAsync().toCompletableFuture().get();
@@ -349,9 +349,9 @@ public class DeviceProperties implements IDeviceProperties {
     /**
      * @summary Get List of deviceProperties from cache
      */
-    private DeviceTwinName GetDevicePropertyNames()
+    private DeviceTwinName getDevicePropertyNames()
         throws ExternalDependencyException, URISyntaxException, ExecutionException, InterruptedException {
-        CompletableFuture<DeviceTwinName> twinNamesTask = this.GetValidNamesAsync().toCompletableFuture();
+        CompletableFuture<DeviceTwinName> twinNamesTask = this.getValidNamesAsync().toCompletableFuture();
         DeviceTwinName twinNames = twinNamesTask.get();
         return twinNames;
     }
@@ -362,7 +362,7 @@ public class DeviceProperties implements IDeviceProperties {
      *
      * @summary Write device twin properties and tags to cache in cosmosDB and release lock
      */
-    private Boolean WriteAndUnlockCache(StorageWriteLock<DevicePropertyServiceModel> lock, DeviceTwinName twinPropertiesAndTags)
+    private Boolean writeAndUnlockCache(StorageWriteLock<DevicePropertyServiceModel> lock, DeviceTwinName twinPropertiesAndTags)
         throws ExternalDependencyException, ResourceOutOfDateException {
         try {
             return lock.writeAndReleaseAsync(

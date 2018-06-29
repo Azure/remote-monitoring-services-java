@@ -49,7 +49,7 @@ public class DevicePropertiesTest {
         Mockito.when(mockStorageAdapterClient.getAsync(Mockito.any(String.class), Mockito.any(String.class)))
             .thenReturn(CompletableFuture.supplyAsync(() -> new ValueApiModel("", this.cacheModel, "", metadata)));
         deviceProperties = new DeviceProperties(mockStorageAdapterClient, config, mockDevices);
-        TreeSet<String> result = this.deviceProperties.GetListAsync().toCompletableFuture().get();
+        TreeSet<String> result = this.deviceProperties.getListAsync().toCompletableFuture().get();
         assertEquals(String.join(",", result), "Tags.z,Tags.y,Tags.c,Tags.a,Properties.Reported.9,Properties.Reported.3,Properties.Reported.2,Properties.Reported.1");
     }
 
@@ -66,7 +66,7 @@ public class DevicePropertiesTest {
             Mockito.any(String.class), Mockito.any(String.class)))
             .thenReturn(CompletableFuture.supplyAsync(() -> new ValueApiModel("", Json.stringify(Json.toJson(resultModel)), "", null)));
         deviceProperties = new DeviceProperties(mockStorageAdapterClient, config, mockDevices);
-        DevicePropertyServiceModel result = this.deviceProperties.UpdateListAsync(model).toCompletableFuture().get();
+        DevicePropertyServiceModel result = this.deviceProperties.updateListAsync(model).toCompletableFuture().get();
         assertEquals(String.join(",", new TreeSet<String>(result.getTags())), "#,@,a,c,y,z");
         assertEquals(String.join(",", new TreeSet<String>(result.getReported())), "1,11,12,2,3,9");
     }
@@ -74,7 +74,7 @@ public class DevicePropertiesTest {
     @Test(timeout = 300000)
     @Category({UnitTest.class})
     public void TryRecreateListAsyncSuccessTestAsync() throws Exception {
-        Mockito.when(mockDevices.GetDeviceTwinNames())
+        Mockito.when(mockDevices.getDeviceTwinNames())
             .thenReturn(new DeviceTwinName(new HashSet<>(), new HashSet<>()))
             .thenReturn(new DeviceTwinName(new HashSet<>(Arrays.asList("tags.FieldService")), new HashSet<>()));
 
@@ -89,20 +89,20 @@ public class DevicePropertiesTest {
             .thenReturn(CompletableFuture.supplyAsync(() -> new ValueApiModel("", Json.stringify(Json.toJson(noneEmptyDevicePropertyServiceModel)), "", null)));
 
         deviceProperties = new DeviceProperties(mockStorageAdapterClient, config, mockDevices);
-        Boolean result = (Boolean) this.deviceProperties.TryRecreateListAsync(false).toCompletableFuture().get();
+        Boolean result = (Boolean) this.deviceProperties.tryRecreateListAsync(false).toCompletableFuture().get();
         assertTrue(result);
     }
 
     @Test(timeout = 100000)
     @Category({UnitTest.class})
     public void TryRecreateListAsyncFailureTestAsync() throws Exception {
-        Mockito.when(mockDevices.GetDeviceTwinNames())
+        Mockito.when(mockDevices.getDeviceTwinNames())
             .thenReturn(new DeviceTwinName(new HashSet<>(Arrays.asList("tags.FieldService")), new HashSet<>()));
         String rebuildingCacheModel = "{\"Rebuilding\": true,\"Tags\": null,\"Reported\": null }";
         Mockito.when(mockStorageAdapterClient.getAsync(Mockito.any(String.class), Mockito.any(String.class)))
             .thenReturn(CompletableFuture.supplyAsync(() -> new ValueApiModel("", rebuildingCacheModel, "", metadata)));
         deviceProperties = new DeviceProperties(mockStorageAdapterClient, config, mockDevices);
-        Boolean result = (Boolean) this.deviceProperties.TryRecreateListAsync(false).toCompletableFuture().get();
+        Boolean result = (Boolean) this.deviceProperties.tryRecreateListAsync(false).toCompletableFuture().get();
         assertFalse(result);
     }
 }

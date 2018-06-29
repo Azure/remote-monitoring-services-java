@@ -138,7 +138,7 @@ public class Jobs implements IJobs {
             model.setTags(new HashSet<String>(twin.getTags().keySet()));
             model.setReported(new HashSet<String>(twin.getProperties().getReported().keySet()));
             // Update the deviceProperties cache, no need to wait
-            CompletionStage unused = this.deviceProperties.UpdateListAsync(model);
+            CompletionStage unused = this.deviceProperties.updateListAsync(model);
 
             JobResult result = this.jobClient.scheduleUpdateTwin(
                 jobId,

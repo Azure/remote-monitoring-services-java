@@ -2,8 +2,8 @@
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.IRecurringTasks;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.RecurringTasks;
+import com.microsoft.azure.iotsolutions.iothubmanager.RecurringTasksAgent.IRecurringTasks;
+import com.microsoft.azure.iotsolutions.iothubmanager.RecurringTasksAgent.RecurringTasks;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.auth.IClientAuthConfig;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.runtime.IConfig;

@@ -136,7 +136,7 @@ public class JobsTest {
         DeviceTwinServiceModel twin = new DeviceTwinServiceModel("*", "", properties, tags, true);
 
         IJobs twinJobService = new Jobs(ioTHubWrapper, storageAdapterClient, mockDeviceProperties);
-        Mockito.when(mockDeviceProperties.UpdateListAsync(new DevicePropertyServiceModel()))
+        Mockito.when(mockDeviceProperties.updateListAsync(new DevicePropertyServiceModel()))
             .thenReturn(CompletableFuture.supplyAsync(() -> new DevicePropertyServiceModel()));
         // retry scheduling job with back off time when throttled by IotHub
         for (int i = 1; i <= MAX_RETRIES; i++) {
