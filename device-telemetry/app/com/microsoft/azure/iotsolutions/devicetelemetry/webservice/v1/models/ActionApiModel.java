@@ -1,6 +1,7 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models;
 
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidInputException;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.EmailServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.IActionServiceModel;
 
 import java.lang.reflect.Constructor;
@@ -29,11 +30,12 @@ public final class ActionApiModel {
         IActionServiceModel.Type retType;
         try{
             retType = IActionServiceModel.Type.valueOf(ActionType); // parse to enum
-            Object[] obj = {retType, Parameters}; // wrap parameters for constructor
+            /*Object[] obj = {retType, Parameters}; // wrap parameters for constructor
             Class[] type = {IActionServiceModel.Type.class, java.util.Map.class}; // define type of constructor
             Class classDef = Class.forName(ActionType + "ServiceModel"); // get class definition
             Constructor cons = classDef.getConstructor(type); // get constructor for class
-            return (IActionServiceModel) cons.newInstance(obj); // return IActionServiceModel reflectively
+            return (IActionServiceModel) cons.newInstance(obj); // return IActionServiceModel reflectively*/
+            return new EmailServiceModel(retType, Parameters);
         } catch (Exception e){
             throw new InvalidInputException(String.format("The action type %s is not valid", ActionType));
         }

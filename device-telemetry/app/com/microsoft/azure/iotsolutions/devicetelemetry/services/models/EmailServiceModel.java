@@ -1,6 +1,7 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.services.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidInputException;
 
 import javax.mail.internet.AddressException;
@@ -10,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonDeserialize(as = EmailServiceModel.class)
 public final class EmailServiceModel implements IActionServiceModel {
 
     private Type ActionType = Type.Email;

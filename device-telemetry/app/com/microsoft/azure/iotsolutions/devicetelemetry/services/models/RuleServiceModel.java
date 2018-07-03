@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.Rules;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ExternalDependencyException;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.serialization.ActionConverter;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import play.Logger;
@@ -196,7 +197,7 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
         this.calculation = calculation;
     }
 
-    @JsonDeserialize(as = ArrayList.class, contentAs = IActionServiceModel.class)
+    @JsonDeserialize(using = ActionConverter.class)
     public ArrayList<IActionServiceModel> getActions() { return this.actions; }
 
     public void setActions(ArrayList<IActionServiceModel> actions) { this.actions = actions; }
