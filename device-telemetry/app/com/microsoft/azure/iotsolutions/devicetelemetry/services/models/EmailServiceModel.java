@@ -1,6 +1,5 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.services.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -17,7 +16,7 @@ import java.util.Map;
 @JsonNaming(PropertyNamingStrategy.UpperCamelCaseStrategy.class)
 public final class EmailServiceModel implements IActionServiceModel {
 
-    private Type ActionType = Type.Email;
+    private Type Type = IActionServiceModel.Type.Email;
     public String Subject = "";
     public String Body = "";
     public List<String> Email = new ArrayList<>();
@@ -26,16 +25,16 @@ public final class EmailServiceModel implements IActionServiceModel {
         //empty constructor
     }
 
-    public Type getActionType() {
-        return ActionType;
+    public Type getType() {
+        return Type;
     }
 
-    public void setActionType(Type actionType) {
-        ActionType = actionType;
+    public void setType(Type Type) {
+        this.Type = Type;
     }
 
     public EmailServiceModel(Type type, Map<String, Object> parameters) throws InvalidInputException {
-        ActionType = type;
+        Type = type;
         if (parameters.containsKey("Subject")) {
             Subject = (String) parameters.get("Subject");
         }

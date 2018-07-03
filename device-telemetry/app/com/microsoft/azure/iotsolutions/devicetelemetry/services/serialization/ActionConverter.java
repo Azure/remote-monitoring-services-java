@@ -24,8 +24,8 @@ public class ActionConverter extends JsonDeserializer<ArrayList<IActionServiceMo
         ArrayList<IActionServiceModel> arr = new ArrayList<>();
         if(arrNode.isArray() && arrNode.hasNonNull(0)){
             for(final JsonNode node : arrNode){
-                final IActionServiceModel.Type ActionType = IActionServiceModel.Type.valueOf(node.get("ActionType").asText());
-                if(ActionType.equals(IActionServiceModel.Type.Email)){
+                final IActionServiceModel.Type Type = IActionServiceModel.Type.valueOf(node.get("Type").asText());
+                if(Type.equals(IActionServiceModel.Type.Email)){
                     final String Subject = node.get("Parameters").has("Subject") ? node.get("Parameters").get("Subject").asText() : "";
                     final String Body = node.get("Parameters").get("Template").asText();
                     final ArrayList<String> Email = new ArrayList<>();
@@ -41,7 +41,7 @@ public class ActionConverter extends JsonDeserializer<ArrayList<IActionServiceMo
                     map.put("Email", Email);
 
                     try {
-                        EmailServiceModel mod = new EmailServiceModel(ActionType, map);
+                        EmailServiceModel mod = new EmailServiceModel(Type, map);
                         arr.add(mod);
                     } catch (InvalidInputException e) {
                         e.printStackTrace();

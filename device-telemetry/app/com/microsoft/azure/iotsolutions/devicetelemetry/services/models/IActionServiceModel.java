@@ -13,9 +13,9 @@ public interface IActionServiceModel {
         Email
     }
 
-    Type getActionType();
+    Type getType();
 
-    void setActionType(Type actionType);
+    void setType(IActionServiceModel.Type Type);
 
     Map<String, Object> getParameters();
 }
