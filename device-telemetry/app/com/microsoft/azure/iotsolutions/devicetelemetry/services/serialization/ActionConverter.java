@@ -25,25 +25,27 @@ public class ActionConverter extends JsonDeserializer<ArrayList<IActionServiceMo
         if(arrNode.isArray() && arrNode.hasNonNull(0)){
             for(final JsonNode node : arrNode){
                 final IActionServiceModel.Type ActionType = IActionServiceModel.Type.valueOf(node.get("ActionType").asText());
-                final String Subject = node.get("Parameters").has("Subject") ? node.get("Parameters").get("Subject").asText() : "";
-                final String Body = node.get("Parameters").get("Template").asText();
-                final ArrayList<String> Email = new ArrayList<>();
-                if(node.get("Parameters").get("Email").isArray()){
-                    for(final JsonNode subNode : node.get("Parameters").get("Email")){
-                        Email.add(subNode.asText());
+                if(ActionType.equals(IActionServiceModel.Type.Email)){
+                    final String Subject = node.get("Parameters").has("Subject") ? node.get("Parameters").get("Subject").asText() : "";
+                    final String Body = node.get("Parameters").get("Template").asText();
+                    final ArrayList<String> Email = new ArrayList<>();
+                    if(node.get("Parameters").get("Email").isArray()){
+                        for(final JsonNode subNode : node.get("Parameters").get("Email")){
+                            Email.add(subNode.asText());
+                        }
                     }
-                }
 
-                Map<String, Object> map = new HashMap<>();
-                map.put("Subject", Subject);
-                map.put("Template", Body);
-                map.put("Email", Email);
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("Subject", Subject);
+                    map.put("Template", Body);
+                    map.put("Email", Email);
 
-                try {
-                    EmailServiceModel mod = new EmailServiceModel(ActionType, map);
-                    arr.add(mod);
-                } catch (InvalidInputException e) {
-                    e.printStackTrace();
+                    try {
+                        EmailServiceModel mod = new EmailServiceModel(ActionType, map);
+                        arr.add(mod);
+                    } catch (InvalidInputException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }

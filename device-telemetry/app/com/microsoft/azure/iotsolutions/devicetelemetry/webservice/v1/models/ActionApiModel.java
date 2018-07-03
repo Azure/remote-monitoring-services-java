@@ -35,7 +35,6 @@ public final class ActionApiModel {
             Class classDef = Class.forName("com.microsoft.azure.iotsolutions.devicetelemetry.services.models." + ActionType + "ServiceModel"); // get class definition
             Constructor cons = classDef.getConstructor(type); // get constructor for class
             return (IActionServiceModel) cons.newInstance(obj); // return IActionServiceModel reflectively
-            //return new EmailServiceModel(retType, Parameters);
         } catch (Exception e){
             throw new InvalidInputException(String.format("The action type %s is not valid", ActionType));
         }
