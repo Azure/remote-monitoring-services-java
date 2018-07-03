@@ -27,7 +27,7 @@ public final class ActionApiModel {
 
     public IActionServiceModel toServiceModel() throws InvalidInputException {
         IActionServiceModel.Type retType;
-        try{
+        try {
             retType = IActionServiceModel.Type.valueOf(Type); // parse to enum
             Object[] obj = {retType, Parameters}; // wrap parameters for constructor
             Class[] type = {IActionServiceModel.Type.class, java.util.Map.class}; // define type of constructor
