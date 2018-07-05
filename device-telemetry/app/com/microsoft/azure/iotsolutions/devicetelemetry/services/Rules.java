@@ -55,7 +55,6 @@ public final class Rules implements IRules {
     }
 
     public CompletionStage<RuleServiceModel> getAsync(String id) {
-
         return this.prepareRequest(id)
             .get()
             .handle((result, error) -> {
@@ -88,7 +87,8 @@ public final class Rules implements IRules {
         String order,
         int skip,
         int limit,
-        String groupId) {
+        String groupId,
+        boolean includeDeleted) {
 
         if (skip < 0 || limit <= 0) {
             log.error("Key value storage parameter bounds error");
@@ -120,8 +120,9 @@ public final class Rules implements IRules {
                         RuleServiceModel rule =
                             getServiceModelFromJson(resultItem);
 
-                        if (groupId == null ||
-                            groupId.equalsIgnoreCase(rule.getGroupId())) {
+                        if ((groupId == null ||
+                            groupId.equalsIgnoreCase(rule.getGroupId()))
+                            && (!rule.getDeleted() || includeDeleted)) {
                             ruleList.add(rule);
                         }
                     }
@@ -167,7 +168,7 @@ public final class Rules implements IRules {
         ArrayList<AlarmCountByRuleServiceModel> alarmByRuleList = new ArrayList<>();
 
         // get list of rules
-        return this.getListAsync(order, skip, limit, null)
+        return this.getListAsync(order, skip, limit, null, true)
             .thenApply(rulesList -> {
 
                 // get open alarm count and most recent alarm for each rule
@@ -273,7 +274,7 @@ public final class Rules implements IRules {
         try {
             CompletableFuture<RuleServiceModel> savedRuleFuture = getAsync(ruleServiceModel.getId()).toCompletableFuture();
             RuleServiceModel savedRule = savedRuleFuture.get();
-            if (savedRule == null) {
+            if (savedRule == null || savedRule.getDeleted()) {
                 throw new CompletionException(
                     new ResourceNotFoundException(ruleServiceModel.getId()));
             }
@@ -331,20 +332,44 @@ public final class Rules implements IRules {
     }
 
     public CompletionStage deleteAsync(String id) {
+        RuleServiceModel savedRule;
+        try {
+            CompletableFuture<RuleServiceModel> savedRuleFuture = getAsync(id).toCompletableFuture();
+            savedRule = savedRuleFuture.get();
+            if (savedRule == null || savedRule.getDeleted()) {
+                return CompletableFuture.completedFuture(true);
+            }
 
-        return this.prepareRequest(id)
-            .delete()
-            .handle((result, error) -> {
-                if (error != null) {
-                    log.error("Key value storage request error: {}",
-                        error.getMessage());
-                    throw new CompletionException(
-                        new ExternalDependencyException(error.getMessage()));
-                }
+        } catch (Exception e) {
+            log.error("Could not get existing rule from Key Value Storage: {}", e.getMessage());
+            throw new CompletionException(e);
+        }
 
-                log.info("Successfully deleted rule id " + id);
-                return true;
-            });
+        savedRule.setDeleted(true);
+
+        ObjectNode jsonData = new ObjectMapper().createObjectNode();
+        jsonData.put("Data", savedRule.toJsonString());
+        jsonData.put("ETag", savedRule.getETag());
+        return this.prepareRequest(savedRule.getId())
+                .put(jsonData.toString())
+                .handle((result, error) -> {
+
+                    if (error != null) {
+                        log.error("Key value storage request error: {}",
+                                error.getMessage());
+                        throw new CompletionException(
+                                new ExternalDependencyException(error.getMessage()));
+                    }
+
+                    if (result.getStatus() != OK) {
+                        log.error("Key value storage error code {}",
+                                result.getStatusText());
+                        throw new CompletionException(
+                                new ExternalDependencyException(result.getStatusText()));
+                    }
+                    log.info("Successfully deleted rule id " + id);
+                    return true;
+                });
     }
 
     private WSRequest prepareRequest(String id) {

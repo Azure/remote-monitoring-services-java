@@ -18,7 +18,8 @@ public interface IRules {
         String order,
         int skip,
         int limit,
-        String groupId);
+        String groupId,
+        boolean includeDeleted);
 
     CompletionStage<List<AlarmCountByRuleServiceModel>> getAlarmCountForList(
         DateTime from,

@@ -13,13 +13,13 @@ public class ServicesConfig implements IServicesConfig {
 
     private final StorageConfig messagesConfig;
 
-    private final StorageConfig alarmsConfig;
+    private final AlarmsConfig alarmsConfig;
 
     public ServicesConfig(
         final String storageConnectionString,
         final String keyValueStorageUrl,
         StorageConfig messagesConfig,
-        StorageConfig alarmsConfig) {
+        AlarmsConfig alarmsConfig) {
         this.storageConnectionString = storageConnectionString;
         this.keyValueStorageUrl = keyValueStorageUrl;
         this.messagesConfig = messagesConfig;
@@ -48,7 +48,7 @@ public class ServicesConfig implements IServicesConfig {
         return this.messagesConfig;
     }
 
-    public StorageConfig getAlarmsStorageConfig() {
+    public AlarmsConfig getAlarmsStorageConfig() {
         return this.alarmsConfig;
     }
 }

@@ -38,4 +38,8 @@ public interface IAlarms {
     ) throws Exception;
 
     AlarmServiceModel update(String id, String status) throws Exception;
+
+    void delete(ArrayList<String> ids) throws Throwable;
+
+    void delete(String id) throws Exception;
 }

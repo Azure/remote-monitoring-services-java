@@ -14,11 +14,11 @@ import java.util.List;
 public class RuleListApiModel {
     private final ArrayList<RuleApiModel> items;
 
-    public RuleListApiModel(final List<RuleServiceModel> rules) {
+    public RuleListApiModel(final List<RuleServiceModel> rules, boolean includeDeleted) {
         this.items = new ArrayList<>();
         if (rules != null) {
             for (RuleServiceModel rule : rules) {
-                this.items.add(new RuleApiModel(rule));
+                this.items.add(new RuleApiModel(rule, includeDeleted));
             }
         }
     }

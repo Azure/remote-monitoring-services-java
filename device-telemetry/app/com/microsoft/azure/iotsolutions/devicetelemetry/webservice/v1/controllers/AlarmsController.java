@@ -6,6 +6,7 @@ import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.IAlarms;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.helpers.DateHelper;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.AlarmApiModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.AlarmIdListApiModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.AlarmListApiModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.AlarmStatus;
 import play.Logger;
@@ -13,12 +14,16 @@ import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
 
+import java.util.ArrayList;
+
 import static play.libs.Json.toJson;
 
 public class AlarmsController extends Controller {
     private static final Logger.ALogger log = Logger.of(AlarmsController.class);
 
     private final IAlarms alarms;
+
+    private static final int DELETE_LIMIT = 1000;
 
     @Inject
     public AlarmsController(IAlarms alarms) {
@@ -75,5 +80,41 @@ public class AlarmsController extends Controller {
         }
 
         return ok(toJson(new AlarmApiModel(this.alarms.update(id, alarm.status))));
+    }
+
+    /**
+     * Delete alarm by id
+     * DELETE /alarms/{id}
+     * @param id
+     * @return
+     * @throws Exception
+     */
+    public Result delete(String id) throws Exception {
+        if (id == null) {
+            return badRequest("no id given to delete");
+        }
+
+        this.alarms.delete(id);
+        return ok();
+    }
+
+    /**
+     * Delete list of alarms by id. API call is:
+     * POST /alarms!delete
+     * Body:
+     * {
+     *     "Items": ["id1", "id2", "id3"]
+     * }
+     * @return
+     * @throws Throwable
+     */
+    public Result deleteMultiple() throws Throwable {
+        AlarmIdListApiModel alarmList = Json.fromJson(request().body().asJson(), AlarmIdListApiModel.class);
+        ArrayList<String> items = alarmList.getItems();
+        if (items == null || items.size() == 0 || items.size() > DELETE_LIMIT) {
+            return badRequest("Items must exist and contain between 1 and " + DELETE_LIMIT + " ids");
+        }
+        this.alarms.delete(items);
+        return ok();
     }
 }

@@ -18,5 +18,5 @@ public interface IServicesConfig {
 
     StorageConfig getMessagesStorageConfig();
 
-    StorageConfig getAlarmsStorageConfig();
+    AlarmsConfig getAlarmsStorageConfig();
 }

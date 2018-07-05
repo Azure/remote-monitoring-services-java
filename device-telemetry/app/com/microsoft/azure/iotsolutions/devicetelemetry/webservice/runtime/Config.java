@@ -2,6 +2,7 @@
 
 package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime;
 
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.AlarmsConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.ServicesConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.StorageConfig;
@@ -41,6 +42,8 @@ public class Config implements IConfig {
     private final String ALARMS_DOCDB_CONN_STRING_KEY = APPLICATION_KEY + "alarms.documentDb.connString";
     private final String ALARMS_DOCDB_DATABASE_KEY = APPLICATION_KEY + "alarms.documentDb.database";
     private final String ALARMS_DOCDB_COLLECTION_KEY = APPLICATION_KEY + "alarms.documentDb.collection";
+    private final String ALARMS_DOCDB_DELETE_RETRIES = APPLICATION_KEY + "alarms.documentDb.maxDeleteRetries";
+
 
     private final String CLIENT_AUTH_KEY = APPLICATION_KEY + "client-auth.";
     private final String AUTH_REQUIRED_KEY = CLIENT_AUTH_KEY + "auth_required";
@@ -76,11 +79,12 @@ public class Config implements IConfig {
             data.getString(MESSAGES_DOCDB_DATABASE_KEY),
             data.getString(MESSAGES_DOCDB_COLLECTION_KEY));
 
-        StorageConfig alarmsConfig = new StorageConfig(
+        AlarmsConfig alarmsConfig = new AlarmsConfig(
             data.getString(ALARMS_STORAGE_TYPE_KEY).toLowerCase(),
             data.getString(ALARMS_DOCDB_CONN_STRING_KEY),
             data.getString(ALARMS_DOCDB_DATABASE_KEY),
-            data.getString(ALARMS_DOCDB_COLLECTION_KEY));
+            data.getString(ALARMS_DOCDB_COLLECTION_KEY),
+            data.getInt(ALARMS_DOCDB_DELETE_RETRIES));
 
         this.servicesConfig = new ServicesConfig(
             storageConnectionString,

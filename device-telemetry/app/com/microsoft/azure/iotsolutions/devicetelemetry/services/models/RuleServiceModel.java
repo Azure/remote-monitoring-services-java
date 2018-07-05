@@ -36,6 +36,7 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
     private SeverityType severity = null;
     private CalculationType calculation = null;
     private Long timePeriod = null;
+    private boolean deleted = false;
 
     private ArrayList<IActionServiceModel> actions = null;
     private ArrayList<ConditionServiceModel> conditions = null;
@@ -99,6 +100,7 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
         this.timePeriod = timePeriod;
         this.actions = actions;
         this.conditions = conditions;
+        this.deleted = deleted;
     }
 
     @JsonIgnore
@@ -210,6 +212,10 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
     public void setConditions(ArrayList<ConditionServiceModel> conditions) {
         this.conditions = conditions;
     }
+
+    public boolean getDeleted() { return this.deleted; }
+
+    public void setDeleted(boolean deleted) { this.deleted = deleted; }
 
     @Override
     public int compareTo(RuleServiceModel rule) {

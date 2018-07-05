@@ -41,24 +41,28 @@ public class RulesController extends Controller {
         String order,
         Integer skip,
         Integer limit,
-        String groupId) {
+        String groupId,
+        Boolean includeDeleted) {
 
         if (order == null) order = "asc";
         if (skip == null) skip = 0;
         if (limit == null) limit = 1000;
+        if (includeDeleted == null) includeDeleted = false;
 
         log.info("Trying to list rules with parameters: " + "order: " + order +
             ", skip: " + skip + ", limit: " + limit + ", groupId: " + groupId);
+        boolean showDeletedStatus = includeDeleted;
 
         return this.rules.getListAsync(
             order,
             skip,
             limit,
-            groupId)
+            groupId,
+            includeDeleted)
             .thenApply(
                 ruleServiceModelList -> {
                     log.info("Successfully retrieved rules list.");
-                    return ok(toJson(new RuleListApiModel(ruleServiceModelList)));
+                    return ok(toJson(new RuleListApiModel(ruleServiceModelList, showDeletedStatus)));
                 });
     }
 
@@ -75,7 +79,7 @@ public class RulesController extends Controller {
                     rule -> {
                         if (rule != null) {
                             log.info("Successfully retrieved rule id " + id);
-                            return ok(toJson(new RuleApiModel(rule)));
+                            return ok(toJson(new RuleApiModel(rule, rule.getDeleted())));
                         } else {
                             log.info("Rule id " + id + " not found.");
                             return notFound();
@@ -95,7 +99,7 @@ public class RulesController extends Controller {
             badRequest(request().body().asText());
         }
         return rules.postAsync(ruleApiModel.toServiceModel())
-            .thenApply(newRule -> ok(toJson(new RuleApiModel(newRule))));
+            .thenApply(newRule -> ok(toJson(new RuleApiModel(newRule, false))));
     }
 
     /**
@@ -111,7 +115,7 @@ public class RulesController extends Controller {
             badRequest(request().body().asText());
         }
         return rules.putAsync(ruleApiModel.toServiceModel(id))
-            .thenApply(newRule -> ok(toJson(new RuleApiModel(newRule))))
+            .thenApply(newRule -> ok(toJson(new RuleApiModel(newRule, false))))
             .exceptionally(e -> {
                 if (e.getCause() instanceof ResourceOutOfDateException) {
                     log.info("Etag conflict, could not update rule. Error Msg: "
