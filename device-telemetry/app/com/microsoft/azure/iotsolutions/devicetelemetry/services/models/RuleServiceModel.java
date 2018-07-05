@@ -68,7 +68,8 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
             calculation,
             timePeriod,
             actions,
-            conditions
+            conditions,
+    false
         );
     }
 
@@ -85,7 +86,8 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
         CalculationType calculation,
         Long timePeriod,
         ArrayList<IActionServiceModel> actions,
-        ArrayList<ConditionServiceModel> conditions) {
+        ArrayList<ConditionServiceModel> conditions,
+        boolean deleted) {
 
         this.eTag = eTag;
         this.id = id;
@@ -249,7 +251,8 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
             this.calculation,
             this.timePeriod,
             this.actions,
-            this.conditions);
+            this.conditions,
+            this.deleted);
         return rule;
     }
 }

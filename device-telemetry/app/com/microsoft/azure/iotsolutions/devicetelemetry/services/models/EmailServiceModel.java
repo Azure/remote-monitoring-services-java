@@ -16,13 +16,16 @@ import java.util.Map;
 @JsonNaming(PropertyNamingStrategy.UpperCamelCaseStrategy.class)
 public final class EmailServiceModel implements IActionServiceModel {
 
-    private Type Type = IActionServiceModel.Type.Email;
-    public String Subject = "";
-    public String Body = "";
-    public List<String> Email = new ArrayList<>();
+    private Type Type;
+    public String Subject;
+    public String Body;
+    public List<String> Email;
 
     public EmailServiceModel() {
-        //empty constructor
+        Type = IActionServiceModel.Type.Email;
+        Subject = "";
+        Body = "";
+        Email = new ArrayList<>();
     }
 
     public Type getType() {
@@ -34,6 +37,7 @@ public final class EmailServiceModel implements IActionServiceModel {
     }
 
     public EmailServiceModel(IActionServiceModel.Type type, Map<String, Object> parameters) throws InvalidInputException {
+        this();
         Type = type;
         if (parameters.containsKey("Subject")) {
             Subject = (String) parameters.get("Subject");
@@ -42,17 +46,7 @@ public final class EmailServiceModel implements IActionServiceModel {
             Body = (String) parameters.get("Template");
         }
 
-        try {
-            if (parameters.containsKey("Email")) {
-                try {
-                    Email = (ArrayList<String>) parameters.get("Email");
-                } catch (ClassCastException e) {
-                    throw new InvalidInputException("Email field is a list of string");
-                }
-            }
-        } catch (Exception e) {
-            throw new InvalidInputException("Invalid input");
-        }
+        Email = (ArrayList<String>) parameters.get("Email");
 
         if (!isValid()) {
             throw new InvalidInputException("Improperly formatted email");

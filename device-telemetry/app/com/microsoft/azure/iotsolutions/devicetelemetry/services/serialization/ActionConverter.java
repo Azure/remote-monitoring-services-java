@@ -17,20 +17,20 @@ import java.util.Map;
 
 public class ActionConverter extends JsonDeserializer<ArrayList<IActionServiceModel>> {
     @Override
-    public ArrayList<IActionServiceModel> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-        ObjectCodec oc = p.getCodec();
-        JsonNode arrNode = oc.readTree(p);
+    public ArrayList<IActionServiceModel> deserialize(JsonParser parser, DeserializationContext context) throws IOException, JsonProcessingException {
+        ObjectCodec oc = parser.getCodec();
+        JsonNode arrNode = oc.readTree(parser);
 
         ArrayList<IActionServiceModel> arr = new ArrayList<>();
-        if(arrNode.isArray() && arrNode.hasNonNull(0)){
-            for(final JsonNode node : arrNode){
+        if (arrNode.isArray() && arrNode.hasNonNull(0)) {
+            for (final JsonNode node : arrNode) {
                 final IActionServiceModel.Type Type = IActionServiceModel.Type.valueOf(node.get("Type").asText());
-                if(Type.equals(IActionServiceModel.Type.Email)){
+                if (Type.equals(IActionServiceModel.Type.Email)) {
                     final String Subject = node.get("Parameters").has("Subject") ? node.get("Parameters").get("Subject").asText() : "";
                     final String Body = node.get("Parameters").get("Template").asText();
                     final ArrayList<String> Email = new ArrayList<>();
-                    if(node.get("Parameters").get("Email").isArray()){
-                        for(final JsonNode subNode : node.get("Parameters").get("Email")){
+                    if (node.get("Parameters").get("Email").isArray()) {
+                        for (final JsonNode subNode : node.get("Parameters").get("Email")) {
                             Email.add(subNode.asText());
                         }
                     }
@@ -41,8 +41,8 @@ public class ActionConverter extends JsonDeserializer<ArrayList<IActionServiceMo
                     map.put("Email", Email);
 
                     try {
-                        EmailServiceModel mod = new EmailServiceModel(Type, map);
-                        arr.add(mod);
+                        EmailServiceModel model = new EmailServiceModel(Type, map);
+                        arr.add(model);
                     } catch (InvalidInputException e) {
                         e.printStackTrace();
                     }

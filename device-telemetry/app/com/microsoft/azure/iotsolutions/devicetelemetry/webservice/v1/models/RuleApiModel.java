@@ -73,7 +73,8 @@ public final class RuleApiModel {
         String calculation,
         String timePeriod,
         ArrayList<ActionApiModel> actions,
-        ArrayList<ConditionApiModel> conditions
+        ArrayList<ConditionApiModel> conditions,
+        Boolean deleted
     ) {
         this.eTag = eTag;
         this.id = id;
@@ -109,6 +110,9 @@ public final class RuleApiModel {
             this.severity = rule.getSeverity().toString();
             this.calculation = rule.getCalculation().toString();
             this.timePeriod = rule.getTimePeriod().toString();
+            if(includeDeleted){
+                this.deleted = rule.getDeleted();
+            }
 
             // create listAsync of ActionApiModel from  IActionServiceModel listAsync
             this.actions = new ArrayList<>();
@@ -317,7 +321,8 @@ public final class RuleApiModel {
             calculation,
             timePeriod,
             actionServiceModels,
-            conditionServiceModels
+            conditionServiceModels,
+            this.deleted == null ? false : this.deleted
         );
     }
 

@@ -11,17 +11,17 @@ public final class ActionApiModel {
     public String Type = "";
     public Map<String, Object> Parameters = new HashMap<>();
 
-    public ActionApiModel(String action, Map<String, Object> parameters){
+    public ActionApiModel(String action, Map<String, Object> parameters) {
         Type = action;
         Parameters = parameters;
     }
 
-    public ActionApiModel(IActionServiceModel action){
+    public ActionApiModel(IActionServiceModel action) {
         Type = action.getType().toString();
         Parameters = action.getParameters();
     }
 
-    public ActionApiModel(){
+    public ActionApiModel() {
         // empty constructor
     }
 
@@ -34,7 +34,7 @@ public final class ActionApiModel {
             Class classDef = Class.forName("com.microsoft.azure.iotsolutions.devicetelemetry.services.models." + Type + "ServiceModel"); // get class definition
             Constructor cons = classDef.getConstructor(type); // get constructor for class
             return (IActionServiceModel) cons.newInstance(obj); // return IActionServiceModel reflectively
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new InvalidInputException(String.format("The action type %s is not valid", Type));
         }
     }

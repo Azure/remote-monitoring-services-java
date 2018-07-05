@@ -9,7 +9,7 @@ import java.util.Map;
 @JsonSerialize(as=IActionServiceModel.class)
 @JsonNaming(PropertyNamingStrategy.UpperCamelCaseStrategy.class)
 public interface IActionServiceModel {
-    enum Type{
+    enum Type {
         Email
     }
 

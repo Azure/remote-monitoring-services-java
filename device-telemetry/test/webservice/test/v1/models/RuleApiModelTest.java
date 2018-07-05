@@ -58,7 +58,8 @@ public class RuleApiModelTest {
             CalculationType.AVERAGE.toString(),
             String.valueOf(600000),
             actionList,
-            conditionList);
+            conditionList,
+                false);
     }
 
     @After
