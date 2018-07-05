@@ -69,7 +69,7 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
             timePeriod,
             actions,
             conditions,
-    false
+                false
         );
     }
 

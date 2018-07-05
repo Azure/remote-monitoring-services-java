@@ -59,7 +59,7 @@ public class RuleApiModelTest {
             String.valueOf(600000),
             actionList,
             conditionList,
-                false);
+            false);
     }
 
     @After

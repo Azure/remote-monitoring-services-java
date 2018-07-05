@@ -61,20 +61,20 @@ public final class RuleApiModel {
      * @param conditions
      */
     public RuleApiModel(
-        String eTag,
-        String id,
-        String name,
-        String dateCreated,
-        String dateModified,
-        boolean enabled,
-        String description,
-        String groupId,
-        String severity,
-        String calculation,
-        String timePeriod,
-        ArrayList<ActionApiModel> actions,
-        ArrayList<ConditionApiModel> conditions,
-        Boolean deleted
+            String eTag,
+            String id,
+            String name,
+            String dateCreated,
+            String dateModified,
+            boolean enabled,
+            String description,
+            String groupId,
+            String severity,
+            String calculation,
+            String timePeriod,
+            ArrayList<ActionApiModel> actions,
+            ArrayList<ConditionApiModel> conditions,
+            Boolean deleted
     ) {
         this.eTag = eTag;
         this.id = id;
@@ -110,14 +110,14 @@ public final class RuleApiModel {
             this.severity = rule.getSeverity().toString();
             this.calculation = rule.getCalculation().toString();
             this.timePeriod = rule.getTimePeriod().toString();
-            if(includeDeleted){
+            if (includeDeleted) {
                 this.deleted = rule.getDeleted();
             }
 
             // create listAsync of ActionApiModel from  IActionServiceModel listAsync
             this.actions = new ArrayList<>();
-            if(rule.getActions() != null){
-                for(IActionServiceModel action : rule.getActions()){
+            if (rule.getActions() != null) {
+                for (IActionServiceModel action : rule.getActions()) {
                     this.actions.add(new ActionApiModel(action));
                 }
             }
@@ -223,11 +223,11 @@ public final class RuleApiModel {
     }
 
     @JsonDeserialize(as = ArrayList.class, contentAs = ActionApiModel.class)
-    public ArrayList<ActionApiModel> getActions(){
+    public ArrayList<ActionApiModel> getActions() {
         return this.actions;
     }
 
-    public void setActions(ArrayList<ActionApiModel> actions){
+    public void setActions(ArrayList<ActionApiModel> actions) {
         this.actions = actions;
     }
 
@@ -262,13 +262,12 @@ public final class RuleApiModel {
      * Convert to the service model
      *
      * @param idOverride Allows for overriding the Id when doing an update to ensure the Id from the route matches the one in the item being updated.
-     *
      * @return
      */
     public RuleServiceModel toServiceModel(String idOverride) {
         ArrayList<IActionServiceModel> actionServiceModels = new ArrayList<IActionServiceModel>();
-        if(actions != null){
-            for(ActionApiModel action : actions){
+        if (actions != null) {
+            for (ActionApiModel action : actions) {
                 try {
                     actionServiceModels.add(action.toServiceModel());
                 } catch (Exception e) {
@@ -279,7 +278,7 @@ public final class RuleApiModel {
         ArrayList<ConditionServiceModel> conditionServiceModels = new ArrayList<ConditionServiceModel>();
         if (conditions != null) {
             for (ConditionApiModel condition :
-                conditions) {
+                    conditions) {
                 conditionServiceModels.add(condition.toServiceModel());
             }
         }
@@ -290,39 +289,39 @@ public final class RuleApiModel {
             severity = SeverityType.valueOf(this.severity.toUpperCase());
         } catch (Exception e) {
             throw new CompletionException(
-                new InvalidInputException("The value of 'Severity' - '" + this.severity + "' is not valid"));
+                    new InvalidInputException("The value of 'Severity' - '" + this.severity + "' is not valid"));
         }
         try {
             calculation = CalculationType.valueOf(this.calculation.toUpperCase());
         } catch (Exception e) {
             throw new CompletionException(
-                new InvalidInputException("The value of 'Calculation' - '" + this.calculation + "' is not valid"));
+                    new InvalidInputException("The value of 'Calculation' - '" + this.calculation + "' is not valid"));
         }
         if (calculation == CalculationType.AVERAGE && (this.timePeriod.isEmpty() || this.timePeriod == null)) {
             throw new CompletionException(
-                new InvalidInputException("The value of 'TimePeriod' - '" + this.timePeriod + "' for 'Calculation' - " + this.calculation + " is not valid"));
+                    new InvalidInputException("The value of 'TimePeriod' - '" + this.timePeriod + "' for 'Calculation' - " + this.calculation + " is not valid"));
         }
         try {
             timePeriod = this.timePeriod.isEmpty() || this.timePeriod == null ? 0 : Long.valueOf(this.timePeriod);
         } catch (Exception e) {
             throw new CompletionException(
-                new InvalidInputException("The value of 'TimePeriod' - '" + this.timePeriod + "' is not valid"));
+                    new InvalidInputException("The value of 'TimePeriod' - '" + this.timePeriod + "' is not valid"));
         }
         return new RuleServiceModel(
-            this.eTag,
-            idOverride,
-            this.name,
-            this.dateCreated,
-            this.dateModified,
-            this.enabled,
-            this.description,
-            this.groupId,
-            severity,
-            calculation,
-            timePeriod,
-            actionServiceModels,
-            conditionServiceModels,
-            this.deleted == null ? false : this.deleted
+                this.eTag,
+                idOverride,
+                this.name,
+                this.dateCreated,
+                this.dateModified,
+                this.enabled,
+                this.description,
+                this.groupId,
+                severity,
+                calculation,
+                timePeriod,
+                actionServiceModels,
+                conditionServiceModels,
+                this.deleted == null ? false : this.deleted
         );
     }
 

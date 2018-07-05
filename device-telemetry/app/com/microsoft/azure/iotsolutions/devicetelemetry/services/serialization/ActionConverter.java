@@ -16,6 +16,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ActionConverter extends JsonDeserializer<ArrayList<IActionServiceModel>> {
+    public static final String TYPE = "Type";
+    public static final String PARAMETERS = "Parameters";
+    public static final String SUBJECT = "Subject";
+    public static final String TEMPLATE = "Template";
+    public static final String EMAIL = "Email";
     private String Subject;
     private String Body;
     private ArrayList<String> Email;
@@ -30,21 +35,21 @@ public class ActionConverter extends JsonDeserializer<ArrayList<IActionServiceMo
         ArrayList<IActionServiceModel> arr = new ArrayList<>();
         if (arrNode.isArray() && arrNode.hasNonNull(0)) {
             for (final JsonNode node : arrNode) {
-                Type = IActionServiceModel.Type.valueOf(node.get("Type").asText());
+                Type = IActionServiceModel.Type.valueOf(node.get(TYPE).asText());
                 if (Type == IActionServiceModel.Type.Email) {
-                    Subject = node.get("Parameters").has("Subject") ? node.get("Parameters").get("Subject").asText() : "";
-                    Body = node.get("Parameters").get("Template").asText();
+                    Subject = node.get(PARAMETERS).has(SUBJECT) ? node.get(PARAMETERS).get(SUBJECT).asText() : "";
+                    Body = node.get(PARAMETERS).get(TEMPLATE).asText();
                     Email = new ArrayList<>();
-                    if (node.get("Parameters").get("Email").isArray()) {
-                        for (final JsonNode subNode : node.get("Parameters").get("Email")) {
+                    if (node.get(PARAMETERS).get(EMAIL).isArray()) {
+                        for (final JsonNode subNode : node.get(PARAMETERS).get(EMAIL)) {
                             Email.add(subNode.asText());
                         }
                     }
 
                     Parameters = new HashMap<>();
-                    Parameters.put("Subject", Subject);
-                    Parameters.put("Template", Body);
-                    Parameters.put("Email", Email);
+                    Parameters.put(SUBJECT, Subject);
+                    Parameters.put(TEMPLATE, Body);
+                    Parameters.put(EMAIL, Email);
 
                     try {
                         EmailServiceModel model = new EmailServiceModel(Type, Parameters);
