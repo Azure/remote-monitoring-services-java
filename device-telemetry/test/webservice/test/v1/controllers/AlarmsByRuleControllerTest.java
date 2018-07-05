@@ -7,6 +7,7 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.Alarms;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.IAlarms;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.IRules;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.Rules;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.IStorageClient;
@@ -26,9 +27,7 @@ import play.libs.ws.WSRequest;
 import play.libs.ws.WSResponse;
 import play.mvc.Result;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Future;
 
@@ -226,6 +225,22 @@ public class AlarmsByRuleControllerTest {
         ArrayList<ConditionServiceModel> sampleConditions = new ArrayList<>();
         sampleConditions.add(sampleCondition);
 
+        ArrayList<IActionServiceModel> sampleActions = new ArrayList<>();
+
+        List<String> emails = new ArrayList<>();
+        emails.add("test@testing.com");
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("Subject", "Blank");
+        map.put("Template", "BlankTemplate");
+        map.put("Email", emails);
+
+        try {
+            sampleActions.add(new EmailServiceModel(IActionServiceModel.Type.Email, map));
+        } catch (InvalidInputException e) {
+            e.printStackTrace();
+        }
+
         RuleServiceModel sampleRule = new RuleServiceModel(
             "TestName",
             true,
@@ -234,6 +249,7 @@ public class AlarmsByRuleControllerTest {
             SeverityType.CRITICAL,
             CalculationType.INSTANT,
             Long.valueOf(60000),
+            sampleActions,
             sampleConditions
         );
 

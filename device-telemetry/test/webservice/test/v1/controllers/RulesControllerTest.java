@@ -4,8 +4,11 @@ package webservice.test.v1.controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.IRules;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.RulesController;
+import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.ActionApiModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.ConditionApiModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.RuleApiModel;
 import helpers.UnitTest;
 import org.eclipse.jetty.util.Callback;
@@ -17,7 +20,9 @@ import play.libs.Json;
 import play.mvc.Http;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletionStage;
 
 import static org.hamcrest.core.Is.is;
@@ -44,6 +49,22 @@ public class RulesControllerTest {
         ArrayList<ConditionServiceModel> sampleConditions = new ArrayList<>();
         sampleConditions.add(sampleCondition);
 
+        ArrayList<IActionServiceModel> sampleActions = new ArrayList<>();
+
+        List<String> emails = new ArrayList<>();
+        emails.add("test@testing.com");
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("Subject", "Blank");
+        map.put("Template", "BlankTemplate");
+        map.put("Email", emails);
+
+        try {
+            sampleActions.add(new EmailServiceModel(IActionServiceModel.Type.Email, map));
+        } catch (InvalidInputException e) {
+            e.printStackTrace();
+        }
+
         this.sampleNewRuleServiceModel = new RuleServiceModel(
             "TestName",
             true,
@@ -52,6 +73,7 @@ public class RulesControllerTest {
             SeverityType.CRITICAL,
             CalculationType.INSTANT,
             Long.valueOf(60000),
+            sampleActions,
             sampleConditions
         );
     }

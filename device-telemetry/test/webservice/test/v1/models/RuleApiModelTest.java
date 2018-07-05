@@ -4,6 +4,7 @@ package webservice.test.v1.models;
 
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.CalculationType;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.SeverityType;
+import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.ActionApiModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.ConditionApiModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.RuleApiModel;
 import helpers.UnitTest;
@@ -13,7 +14,11 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import static com.microsoft.azure.iotsolutions.devicetelemetry.services.models.IActionServiceModel.Type.Email;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -23,11 +28,22 @@ public class RuleApiModelTest {
     @Before
     public void setUp() {
         ArrayList<ConditionApiModel> conditionList = new ArrayList<>();
+        ArrayList<ActionApiModel> actionList = new ArrayList<>();
 
         conditionList.add(new ConditionApiModel(
             "test-value",
             "GreaterThan",
             "7"));
+
+        List<String> emails = new ArrayList<>();
+        emails.add("test@testing.com");
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("Subject", "Blank");
+        map.put("Template", "BlankTemplate");
+        map.put("Email", emails);
+
+        actionList.add(new ActionApiModel("Email", map));
 
         ruleApiModel = new RuleApiModel(
             "kkru1d1ouqahpmg",
@@ -41,6 +57,7 @@ public class RuleApiModelTest {
             SeverityType.WARNING.toString(),
             CalculationType.AVERAGE.toString(),
             String.valueOf(600000),
+            actionList,
             conditionList);
     }
 
