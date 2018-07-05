@@ -33,7 +33,7 @@ public final class EmailServiceModel implements IActionServiceModel {
         this.Type = Type;
     }
 
-    public EmailServiceModel(Type type, Map<String, Object> parameters) throws InvalidInputException {
+    public EmailServiceModel(IActionServiceModel.Type type, Map<String, Object> parameters) throws InvalidInputException {
         Type = type;
         if (parameters.containsKey("Subject")) {
             Subject = (String) parameters.get("Subject");
