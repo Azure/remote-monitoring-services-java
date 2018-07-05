@@ -16,6 +16,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ActionConverter extends JsonDeserializer<ArrayList<IActionServiceModel>> {
+    private String Subject;
+    private String Body;
+    private ArrayList<String> Email;
+    private IActionServiceModel.Type Type;
+    private Map<String, Object> Parameters;
+
     @Override
     public ArrayList<IActionServiceModel> deserialize(JsonParser parser, DeserializationContext context) throws IOException, JsonProcessingException {
         ObjectCodec oc = parser.getCodec();
@@ -24,24 +30,24 @@ public class ActionConverter extends JsonDeserializer<ArrayList<IActionServiceMo
         ArrayList<IActionServiceModel> arr = new ArrayList<>();
         if (arrNode.isArray() && arrNode.hasNonNull(0)) {
             for (final JsonNode node : arrNode) {
-                final IActionServiceModel.Type Type = IActionServiceModel.Type.valueOf(node.get("Type").asText());
-                if (Type.equals(IActionServiceModel.Type.Email)) {
-                    final String Subject = node.get("Parameters").has("Subject") ? node.get("Parameters").get("Subject").asText() : "";
-                    final String Body = node.get("Parameters").get("Template").asText();
-                    final ArrayList<String> Email = new ArrayList<>();
+                Type = IActionServiceModel.Type.valueOf(node.get("Type").asText());
+                if (Type == IActionServiceModel.Type.Email) {
+                    Subject = node.get("Parameters").has("Subject") ? node.get("Parameters").get("Subject").asText() : "";
+                    Body = node.get("Parameters").get("Template").asText();
+                    Email = new ArrayList<>();
                     if (node.get("Parameters").get("Email").isArray()) {
                         for (final JsonNode subNode : node.get("Parameters").get("Email")) {
                             Email.add(subNode.asText());
                         }
                     }
 
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("Subject", Subject);
-                    map.put("Template", Body);
-                    map.put("Email", Email);
+                    Parameters = new HashMap<>();
+                    Parameters.put("Subject", Subject);
+                    Parameters.put("Template", Body);
+                    Parameters.put("Email", Email);
 
                     try {
-                        EmailServiceModel model = new EmailServiceModel(Type, map);
+                        EmailServiceModel model = new EmailServiceModel(Type, Parameters);
                         arr.add(model);
                     } catch (InvalidInputException e) {
                         e.printStackTrace();
