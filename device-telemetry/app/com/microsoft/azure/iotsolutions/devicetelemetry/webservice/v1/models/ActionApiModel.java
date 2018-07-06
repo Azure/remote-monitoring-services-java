@@ -1,5 +1,6 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.IActionServiceModel;
 
@@ -8,8 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public final class ActionApiModel {
-    public String Type = "";
-    public Map<String, Object> Parameters = new HashMap<>();
+    public String Type;
+    public Map<String, Object> Parameters;
 
     public ActionApiModel(String action, Map<String, Object> parameters) {
         Type = action;
@@ -22,7 +23,8 @@ public final class ActionApiModel {
     }
 
     public ActionApiModel() {
-        // empty constructor
+        Type = "";
+        Parameters = new HashMap<>();
     }
 
     public IActionServiceModel toServiceModel() throws InvalidInputException {

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import java.util.Map;
 
-@JsonSerialize(as=IActionServiceModel.class)
+@JsonSerialize(as = IActionServiceModel.class)
 @JsonNaming(PropertyNamingStrategy.UpperCamelCaseStrategy.class)
 public interface IActionServiceModel {
     enum Type {

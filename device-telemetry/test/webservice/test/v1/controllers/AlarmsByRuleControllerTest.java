@@ -108,17 +108,17 @@ public class AlarmsByRuleControllerTest {
      */
     private AlarmServiceModel getSampleAlarm() {
         return new AlarmServiceModel(
-            "6l1log0f7h2yt6p",
-            "1234",
-            DateTime.parse("2017-02-22T22:22:22-08:00").toInstant().getMillis(),
-            DateTime.parse("2017-02-22T22:22:22-08:00").toInstant().getMillis(),
-            "Temperature on device x > 75 deg F",
-            "group-Id",
-            "device-id",
-            "open",
-            "1234",
-            "critical",
-            "HVAC temp > 75"
+                "6l1log0f7h2yt6p",
+                "1234",
+                DateTime.parse("2017-02-22T22:22:22-08:00").toInstant().getMillis(),
+                DateTime.parse("2017-02-22T22:22:22-08:00").toInstant().getMillis(),
+                "Temperature on device x > 75 deg F",
+                "group-Id",
+                "device-id",
+                "open",
+                "1234",
+                "critical",
+                "HVAC temp > 75"
         );
     }
 
@@ -130,54 +130,54 @@ public class AlarmsByRuleControllerTest {
     private ArrayList<AlarmServiceModel> getSampleAlarms() {
         ArrayList<AlarmServiceModel> list = new ArrayList<AlarmServiceModel>();
         AlarmServiceModel alarm1 = new AlarmServiceModel(
-            null,
-            "1",
-            DateTime.parse("2017-07-22T22:22:22-08:00").toInstant().getMillis(),
-            DateTime.parse("2017-07-22T22:22:22-08:00").toInstant().getMillis(),
-            "Temperature on device x > 75 deg F",
-            "group-Id",
-            "device-id",
-            "open",
-            "1",
-            "critical",
-            "HVAC temp > 50"
+                null,
+                "1",
+                DateTime.parse("2017-07-22T22:22:22-08:00").toInstant().getMillis(),
+                DateTime.parse("2017-07-22T22:22:22-08:00").toInstant().getMillis(),
+                "Temperature on device x > 75 deg F",
+                "group-Id",
+                "device-id",
+                "open",
+                "1",
+                "critical",
+                "HVAC temp > 50"
         );
         AlarmServiceModel alarm2 = new AlarmServiceModel(
-            null,
-            "2",
-            DateTime.parse("2017-06-22T22:22:22-08:00").toInstant().getMillis(),
-            DateTime.parse("2017-07-22T22:22:22-08:00").toInstant().getMillis(),
-            "Temperature on device x > 75 deg F",
-            "group-Id",
-            "device-id",
-            "acknowledged",
-            "2",
-            "critical",
-            "HVAC temp > 60");
+                null,
+                "2",
+                DateTime.parse("2017-06-22T22:22:22-08:00").toInstant().getMillis(),
+                DateTime.parse("2017-07-22T22:22:22-08:00").toInstant().getMillis(),
+                "Temperature on device x > 75 deg F",
+                "group-Id",
+                "device-id",
+                "acknowledged",
+                "2",
+                "critical",
+                "HVAC temp > 60");
         AlarmServiceModel alarm3 = new AlarmServiceModel(
-            null,
-            "3",
-            DateTime.parse("2017-05-22T22:22:22-08:00").toInstant().getMillis(),
-            DateTime.parse("2017-06-22T22:22:22-08:00").toInstant().getMillis(),
-            "Temperature on device x > 75 deg F",
-            "group-Id",
-            "device-id",
-            "open",
-            "3",
-            "info",
-            "HVAC temp > 70");
+                null,
+                "3",
+                DateTime.parse("2017-05-22T22:22:22-08:00").toInstant().getMillis(),
+                DateTime.parse("2017-06-22T22:22:22-08:00").toInstant().getMillis(),
+                "Temperature on device x > 75 deg F",
+                "group-Id",
+                "device-id",
+                "open",
+                "3",
+                "info",
+                "HVAC temp > 70");
         AlarmServiceModel alarm4 = new AlarmServiceModel(
-            null,
-            "4",
-            DateTime.parse("2017-04-22T22:22:22-08:00").toInstant().getMillis(),
-            DateTime.parse("2017-06-22T22:22:22-08:00").toInstant().getMillis(),
-            "Temperature on device x > 75 deg F",
-            "group-Id",
-            "device-id",
-            "closed",
-            "4",
-            "warning",
-            "HVAC temp > 80");
+                null,
+                "4",
+                DateTime.parse("2017-04-22T22:22:22-08:00").toInstant().getMillis(),
+                DateTime.parse("2017-06-22T22:22:22-08:00").toInstant().getMillis(),
+                "Temperature on device x > 75 deg F",
+                "group-Id",
+                "device-id",
+                "closed",
+                "4",
+                "warning",
+                "HVAC temp > 80");
         list.add(alarm1);
         list.add(alarm2);
         list.add(alarm3);
@@ -202,8 +202,8 @@ public class AlarmsByRuleControllerTest {
         IRules rules = mock(IRules.class);
         AlarmsByRuleController controller = new AlarmsByRuleController(alarms, rules);
         when(alarms.getListByRuleId(
-            "1", DateTime.now(), DateTime.now(), "asc", 0, 100, new String[0]))
-            .thenReturn(alarmResult);
+                "1", DateTime.now(), DateTime.now(), "asc", 0, 100, new String[0]))
+                .thenReturn(alarmResult);
 
         // Act
         Result response = controller.get("", null, null, null, 0, 0, null);
@@ -218,9 +218,9 @@ public class AlarmsByRuleControllerTest {
 
         // Arrange
         ConditionServiceModel sampleCondition = new ConditionServiceModel(
-            "TestField",
-            OperatorType.EQUALS,
-            "TestValue"
+                "TestField",
+                OperatorType.EQUALS,
+                "TestValue"
         );
         ArrayList<ConditionServiceModel> sampleConditions = new ArrayList<>();
         sampleConditions.add(sampleCondition);
@@ -242,15 +242,15 @@ public class AlarmsByRuleControllerTest {
         }
 
         RuleServiceModel sampleRule = new RuleServiceModel(
-            "TestName",
-            true,
-            "Test Description",
-            "TestGroup",
-            SeverityType.CRITICAL,
-            CalculationType.INSTANT,
-            Long.valueOf(60000),
-            sampleActions,
-            sampleConditions
+                "TestName",
+                true,
+                "Test Description",
+                "TestGroup",
+                SeverityType.CRITICAL,
+                CalculationType.INSTANT,
+                Long.valueOf(60000),
+                sampleActions,
+                sampleConditions
         );
 
         // TODO Fix Tests https://github.com/Azure/device-telemetry-java/issues/99

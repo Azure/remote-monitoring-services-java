@@ -17,9 +17,9 @@ import java.util.Map;
 public final class EmailServiceModel implements IActionServiceModel {
 
     private Type Type;
-    public String Subject;
-    public String Body;
-    public List<String> Email;
+    private String Subject;
+    private String Body;
+    private List<String> Email;
 
     public EmailServiceModel() {
         Type = IActionServiceModel.Type.Email;

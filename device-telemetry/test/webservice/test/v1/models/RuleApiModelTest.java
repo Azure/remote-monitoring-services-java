@@ -31,9 +31,9 @@ public class RuleApiModelTest {
         ArrayList<ActionApiModel> actionList = new ArrayList<>();
 
         conditionList.add(new ConditionApiModel(
-            "test-value",
-            "GreaterThan",
-            "7"));
+                "test-value",
+                "GreaterThan",
+                "7"));
 
         List<String> emails = new ArrayList<>();
         emails.add("test@testing.com");
@@ -46,20 +46,20 @@ public class RuleApiModelTest {
         actionList.add(new ActionApiModel("Email", map));
 
         ruleApiModel = new RuleApiModel(
-            "kkru1d1ouqahpmg",
-            "5e503de7-0c57-4902-8654-dc82357360d1",
-            "test-rule",
-            "2017-01-11T11:11:11-08:00",
-            "2017-04-11T01:14:26-08:00",
-            false,
-            "test description",
-            "test-group",
-            SeverityType.WARNING.toString(),
-            CalculationType.AVERAGE.toString(),
-            String.valueOf(600000),
-            actionList,
-            conditionList,
-            false);
+                "kkru1d1ouqahpmg",
+                "5e503de7-0c57-4902-8654-dc82357360d1",
+                "test-rule",
+                "2017-01-11T11:11:11-08:00",
+                "2017-04-11T01:14:26-08:00",
+                false,
+                "test description",
+                "test-group",
+                SeverityType.WARNING.toString(),
+                CalculationType.AVERAGE.toString(),
+                String.valueOf(600000),
+                actionList,
+                conditionList,
+                false);
     }
 
     @After

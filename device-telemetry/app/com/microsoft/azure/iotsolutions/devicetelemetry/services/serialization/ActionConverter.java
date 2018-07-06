@@ -16,11 +16,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ActionConverter extends JsonDeserializer<ArrayList<IActionServiceModel>> {
-    public static final String TYPE = "Type";
-    public static final String PARAMETERS = "Parameters";
-    public static final String SUBJECT = "Subject";
-    public static final String TEMPLATE = "Template";
-    public static final String EMAIL = "Email";
+    private static final String TYPE = "Type";
+    private static final String PARAMETERS = "Parameters";
+    private static final String SUBJECT = "Subject";
+    private static final String TEMPLATE = "Template";
+    private static final String EMAIL = "Email";
     private String Subject;
     private String Body;
     private ArrayList<String> Email;

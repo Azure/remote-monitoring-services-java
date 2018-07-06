@@ -42,9 +42,9 @@ public class RulesControllerTest {
         // something before every test
 
         ConditionServiceModel sampleCondition = new ConditionServiceModel(
-            "TestField",
-            OperatorType.EQUALS,
-            "TestValue"
+                "TestField",
+                OperatorType.EQUALS,
+                "TestValue"
         );
         ArrayList<ConditionServiceModel> sampleConditions = new ArrayList<>();
         sampleConditions.add(sampleCondition);
@@ -66,15 +66,15 @@ public class RulesControllerTest {
         }
 
         this.sampleNewRuleServiceModel = new RuleServiceModel(
-            "TestName",
-            true,
-            "Test Description",
-            "TestGroup",
-            SeverityType.CRITICAL,
-            CalculationType.INSTANT,
-            Long.valueOf(60000),
-            sampleActions,
-            sampleConditions
+                "TestName",
+                true,
+                "Test Description",
+                "TestGroup",
+                SeverityType.CRITICAL,
+                CalculationType.INSTANT,
+                Long.valueOf(60000),
+                sampleActions,
+                sampleConditions
         );
     }
 
@@ -89,30 +89,30 @@ public class RulesControllerTest {
 
         // Arrange
         CompletionStage<List<RuleServiceModel>> ruleListResult =
-            Callback.Completable.completedFuture(null);
+                Callback.Completable.completedFuture(null);
 
         IRules rules = mock(IRules.class);
         RulesController controller = new RulesController(rules);
         when(rules.getListAsync(
-            "asc",
-            0,
-            1000,
-            null,
-            false))
-            .thenReturn(ruleListResult);
+                "asc",
+                0,
+                1000,
+                null,
+                false))
+                .thenReturn(ruleListResult);
 
         // Act
         controller.listAsync(
-            "asc",
-            0,
-            1000,
-            null,
-            false)
-            .thenApply(response -> {
-                // Assert
-                assertThat(response.body().isKnownEmpty(), is(false));
-                return null;
-            });
+                "asc",
+                0,
+                1000,
+                null,
+                false)
+                .thenApply(response -> {
+                    // Assert
+                    assertThat(response.body().isKnownEmpty(), is(false));
+                    return null;
+                });
     }
 
     @Test(timeout = 5000)
@@ -121,12 +121,12 @@ public class RulesControllerTest {
 
         // Arrange
         CompletionStage<RuleServiceModel> ruleResult =
-            Callback.Completable.completedFuture(null);
+                Callback.Completable.completedFuture(null);
 
         IRules rules = mock(IRules.class);
         RulesController controller = new RulesController(rules);
         when(rules.getAsync(
-            "1")).thenReturn(ruleResult);
+                "1")).thenReturn(ruleResult);
 
         // Act
         controller.getAsync("1").thenApply(response -> {
@@ -142,12 +142,12 @@ public class RulesControllerTest {
 
         // Arrange
         CompletionStage<Boolean> result =
-            Callback.Completable.completedFuture(null);
+                Callback.Completable.completedFuture(null);
 
         IRules rules = mock(IRules.class);
         RulesController controller = new RulesController(rules);
         when(rules.deleteAsync(
-            "1")).thenReturn(result);
+                "1")).thenReturn(result);
 
         // Act
         controller.deleteAsync("1").thenApply(response -> {
@@ -161,7 +161,7 @@ public class RulesControllerTest {
     @Category({UnitTest.class})
     public void itPostNewRuleWithNoEtagResultHasAllFields() throws Exception {
         CompletionStage<RuleServiceModel> ruleResult =
-            Callback.Completable.completedFuture(null);
+                Callback.Completable.completedFuture(null);
 
         IRules rules = mock(IRules.class);
 
@@ -196,7 +196,7 @@ public class RulesControllerTest {
     @Category({UnitTest.class})
     public void itPutNewRuleWithNoEtagResultHasAllFields() throws Exception {
         CompletionStage<RuleServiceModel> ruleResult =
-            Callback.Completable.completedFuture(null);
+                Callback.Completable.completedFuture(null);
 
         IRules rules = mock(IRules.class);
 
