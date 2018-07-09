@@ -2,6 +2,8 @@
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+import com.microsoft.azure.iotsolutions.devicetelemetry.RecurringTasksAgent.IRecurringTasks;
+import com.microsoft.azure.iotsolutions.devicetelemetry.RecurringTasksAgent.RecurringTasks;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.IClientAuthConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime.IConfig;
@@ -22,6 +24,7 @@ public class Module extends AbstractModule {
     public void configure() {
         // Note: this method should be empty
         // Try to use use JIT binding and @ImplementedBy instead
+        bind(IRecurringTasks.class).to(RecurringTasks.class).asEagerSingleton();
     }
 
     @Provides
