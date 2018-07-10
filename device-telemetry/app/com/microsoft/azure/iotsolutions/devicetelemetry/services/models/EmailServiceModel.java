@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft. All rights reserved.
+
 package com.microsoft.azure.iotsolutions.devicetelemetry.services.models;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
@@ -16,57 +18,62 @@ import java.util.Map;
 @JsonNaming(PropertyNamingStrategy.UpperCamelCaseStrategy.class)
 public final class EmailServiceModel implements IActionServiceModel {
 
-    private Type Type;
-    private String Subject;
-    private String Body;
-    private List<String> Email;
+    private Type type;
+    private String subject;
+    private String body;
+    private List<String> email;
+    private static final String SUBJECT = "Subject";
+    private static final String TEMPLATE = "Template";
+    private static final String EMAIL = "Email";
+    private static final String IMPROPER_EMAIL = "Improperly formatted email";
+    private static final String EMPTY_EMAIL = "Empty email list provided for actionType email";
 
     public EmailServiceModel() {
-        Type = IActionServiceModel.Type.Email;
-        Subject = "";
-        Body = "";
-        Email = new ArrayList<>();
-    }
-
-    public Type getType() {
-        return Type;
-    }
-
-    public void setType(Type Type) {
-        this.Type = Type;
+        type = IActionServiceModel.Type.Email;
+        subject = "";
+        body = "";
+        email = new ArrayList<>();
     }
 
     public EmailServiceModel(IActionServiceModel.Type type, Map<String, Object> parameters) throws InvalidInputException {
         this();
-        Type = type;
-        if (parameters.containsKey("Subject")) {
-            Subject = (String) parameters.get("Subject");
+        this.type = type;
+        if (parameters.containsKey(SUBJECT)) {
+            subject = (String) parameters.get(SUBJECT);
         }
-        if (parameters.containsKey("Template")) {
-            Body = (String) parameters.get("Template");
+        if (parameters.containsKey(TEMPLATE)) {
+            body = (String) parameters.get(TEMPLATE);
         }
 
-        Email = (ArrayList<String>) parameters.get("Email");
+        email = (ArrayList<String>) parameters.get(EMAIL);
 
-        if (!isValid()) {
-            throw new InvalidInputException("Improperly formatted email");
+        if (!this.isValid()) {
+            throw new InvalidInputException(IMPROPER_EMAIL);
         }
     }
 
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type Type) {
+        this.type = Type;
+    }
+
     public Map<String, Object> getParameters() {
-        Map<String, Object> ret = new HashMap<>();
-        ret.put("Subject", Subject);
-        ret.put("Template", Body);
-        ret.put("Email", Email);
-        return ret;
+        Map<String, Object> result = new HashMap<>();
+        result.put(SUBJECT, subject);
+        result.put(TEMPLATE, body);
+        result.put(EMAIL, email);
+        return result;
     }
 
     private Boolean isValid() throws InvalidInputException {
         try {
-            if (Email == null) {
-                throw new InvalidInputException("Empty email list provided for actionType email");
+            if (this.email == null) {
+                throw new InvalidInputException(EMPTY_EMAIL);
             }
-            for (String email : Email) {
+            for (String email : email) {
                 try {
                     InternetAddress mail = new InternetAddress(email);
                     mail.validate();
@@ -75,7 +82,7 @@ public final class EmailServiceModel implements IActionServiceModel {
                 }
             }
         } catch (Exception e) {
-            throw new InvalidInputException("Improperly formatted email");
+            return false;
         }
         return true;
     }

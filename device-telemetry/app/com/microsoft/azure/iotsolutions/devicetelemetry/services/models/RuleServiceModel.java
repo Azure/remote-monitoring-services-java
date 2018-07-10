@@ -45,49 +45,49 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
     }
 
     public RuleServiceModel(
-            final String name,
-            final Boolean enabled,
-            final String description,
-            final String groupId,
-            final SeverityType severity,
-            final CalculationType calculation,
-            final Long timePeriod,
-            final ArrayList<IActionServiceModel> actions,
-            final ArrayList<ConditionServiceModel> conditions) {
+        final String name,
+        final Boolean enabled,
+        final String description,
+        final String groupId,
+        final SeverityType severity,
+        final CalculationType calculation,
+        final Long timePeriod,
+        final ArrayList<IActionServiceModel> actions,
+        final ArrayList<ConditionServiceModel> conditions) {
 
         this(
-                "",
-                "",
-                name,
-                DateTime.now(DateTimeZone.UTC).toString(DATE_FORMAT),
-                DateTime.now(DateTimeZone.UTC).toString(DATE_FORMAT),
-                enabled,
-                description,
-                groupId,
-                severity,
-                calculation,
-                timePeriod,
-                actions,
-                conditions,
-                false
+            "",
+            "",
+            name,
+            DateTime.now(DateTimeZone.UTC).toString(DATE_FORMAT),
+            DateTime.now(DateTimeZone.UTC).toString(DATE_FORMAT),
+            enabled,
+            description,
+            groupId,
+            severity,
+            calculation,
+            timePeriod,
+            actions,
+            conditions,
+            false
         );
     }
 
     public RuleServiceModel(
-            String eTag,
-            String id,
-            String name,
-            String dateCreated,
-            String dateModified,
-            Boolean enabled,
-            String description,
-            String groupId,
-            SeverityType severity,
-            CalculationType calculation,
-            Long timePeriod,
-            ArrayList<IActionServiceModel> actions,
-            ArrayList<ConditionServiceModel> conditions,
-            boolean deleted) {
+        String eTag,
+        String id,
+        String name,
+        String dateCreated,
+        String dateModified,
+        Boolean enabled,
+        String description,
+        String groupId,
+        SeverityType severity,
+        CalculationType calculation,
+        Long timePeriod,
+        ArrayList<IActionServiceModel> actions,
+        ArrayList<ConditionServiceModel> conditions,
+        boolean deleted) {
 
         this.eTag = eTag;
         this.id = id;
@@ -202,13 +202,9 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
     }
 
     @JsonDeserialize(using = ActionConverter.class)
-    public ArrayList<IActionServiceModel> getActions() {
-        return this.actions;
-    }
+    public ArrayList<IActionServiceModel> getActions() { return this.actions; }
 
-    public void setActions(ArrayList<IActionServiceModel> actions) {
-        this.actions = actions;
-    }
+    public void setActions(ArrayList<IActionServiceModel> actions) { this.actions = actions; }
 
     @JsonDeserialize(as = ArrayList.class, contentAs = ConditionServiceModel.class)
     public ArrayList<ConditionServiceModel> getConditions() {
@@ -219,13 +215,9 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
         this.conditions = conditions;
     }
 
-    public boolean getDeleted() {
-        return this.deleted;
-    }
+    public boolean getDeleted() { return this.deleted; }
 
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
-    }
+    public void setDeleted(boolean deleted) { this.deleted = deleted; }
 
     @Override
     public int compareTo(RuleServiceModel rule) {
@@ -238,29 +230,30 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
             return new ObjectMapper().writeValueAsString(this);
         } catch (Exception e) {
             log.error("Could not write object as json string: {}",
-                    e.getMessage());
+                e.getMessage());
             throw new CompletionException(
-                    new ExternalDependencyException(
-                            "Could not write object as json string"));
+                new ExternalDependencyException(
+                    "Could not write object as json string"));
         }
     }
 
     public RuleServiceModel overrideEtagAndId(String eTag, String id) {
         RuleServiceModel rule = new RuleServiceModel(
-                eTag,
-                id,
-                this.name,
-                this.dateCreated,
-                this.dateModified,
-                this.enabled,
-                this.description,
-                this.groupId,
-                this.severity,
-                this.calculation,
-                this.timePeriod,
-                this.actions,
-                this.conditions,
-                this.deleted);
+            eTag,
+            id,
+            this.name,
+            this.dateCreated,
+            this.dateModified,
+            this.enabled,
+            this.description,
+            this.groupId,
+            this.severity,
+            this.calculation,
+            this.timePeriod,
+            this.actions,
+            this.conditions,
+            this.deleted);
+
         return rule;
     }
 }
