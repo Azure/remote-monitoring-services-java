@@ -33,10 +33,16 @@ public class Agent {
         this.notificationEventProcessorFactory = notificationEventProcessorFactory;
     }
 
-   /* public CompletionStage runAsync(){
+    public CompletionStage runAsync(){
         this.logger.info("Notification system running");
+        try{
+            setUpEventHubAsync(); // how to make this call await? .get() doesn't work
+            return CompletableFuture.completedFuture(true);
+        } catch (Exception e){
+            throw new CompletionException(e);
+        }
         //setUpEventHubAsync().thenApply((Void v) -> this.logger.info("Notification system exiting"));
-    }*/
+    }
 
     private CompletionStage setUpEventHubAsync(){
         try{
@@ -47,10 +53,8 @@ public class Agent {
             host.registerEventProcessorFactory(this.notificationEventProcessorFactory, eventProcessorOptions).get();
             return CompletableFuture.completedFuture(true);
         } catch (Exception e) {
+            this.logger.error("Received error setting up event hub. Will not receive updates from devices");
             throw new CompletionException(e);
         }
-
     }
-
-
 }
