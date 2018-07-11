@@ -97,24 +97,24 @@ public class ActionsTest {
         IActionServiceModel returnedModel = model.toServiceModel();
     }
 
-    private Boolean doesEmailServiceModelCorrespondToApiModel(ActionApiModel apiModel, IActionServiceModel serviceModel){
+    private Boolean doesEmailServiceModelCorrespondToApiModel(ActionApiModel apiModel, IActionServiceModel serviceModel) {
         Boolean equalTemplate = apiModel.getParameters().get(PARAM_TEMPLATE_KEY).equals(serviceModel.getParameters().get(PARAM_TEMPLATE_KEY));
         Boolean equalSubject = apiModel.getParameters().get(PARAM_SUBJECT_KEY).equals(serviceModel.getParameters().get(PARAM_SUBJECT_KEY));
         Boolean correctType = serviceModel.getType().toString().equals(PARAM_EMAIL_KEY);
         return equalTemplate && equalSubject && correctType;
     }
 
-    private Boolean isEmailServiceModelReadProperly(EmailServiceModel emailServiceModel){
+    private Boolean isEmailServiceModelReadProperly(EmailServiceModel emailServiceModel) {
         return emailServiceModel.getType() == IActionServiceModel.Type.Email
                 && emailServiceModel.getParameters().get(PARAM_TEMPLATE_KEY).equals(PARAM_TEMPLATE)
                 && this.isListOfEmailEqual((List<String>) emailServiceModel.getParameters().get(PARAM_EMAIL_KEY));
     }
 
-    private Boolean isListOfEmailEqual(List<String> emailList){
+    private Boolean isListOfEmailEqual(List<String> emailList) {
         ArrayList<String> checkList = new ArrayList<>();
         checkList.add(PARAM_EMAIL);
-        for(String email : checkList){
-            if(!emailList.contains(email)){
+        for (String email : checkList) {
+            if (!emailList.contains(email)) {
                 return false;
             }
         }
