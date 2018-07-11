@@ -111,7 +111,7 @@ public class StorageClient implements IStorageClient {
     }
 
     @Override
-    public ArrayList<Document> queryDocuments(String databaseName, String colId, FeedOptions queryOptions, String queryString, int skip) throws Exception {
+    public ArrayList<Document> queryDocuments(String databaseName, String colId, FeedOptions queryOptions, SqlQuerySpec querySpec, int skip) throws Exception {
         if (queryOptions == null) {
             queryOptions = new FeedOptions();
             queryOptions.setEnableCrossPartitionQuery(true);
@@ -124,7 +124,7 @@ public class StorageClient implements IStorageClient {
         do {
             FeedResponse<Document> queryResults = this.client.queryDocuments(
                 collectionLink,
-                queryString,
+                querySpec,
                 queryOptions);
 
             for (Document doc : queryResults.getQueryIterable()) {
