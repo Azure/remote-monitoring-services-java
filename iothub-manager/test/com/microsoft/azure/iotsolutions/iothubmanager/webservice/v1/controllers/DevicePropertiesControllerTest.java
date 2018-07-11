@@ -19,7 +19,7 @@ import static play.libs.Json.toJson;
 public class DevicePropertiesControllerTest {
     private DevicePropertiesController devicePropertiesController;
     private IDeviceProperties devicePropertiesMock;
-    private static final int TIMEOUT = 100000;
+    private static final int TIMEOUT_MSEC = 100000;
 
     @Before
     public void setUp() {
@@ -27,7 +27,7 @@ public class DevicePropertiesControllerTest {
         this.devicePropertiesController = new DevicePropertiesController(this.devicePropertiesMock);
     }
 
-    @Test(timeout = TIMEOUT)
+    @Test(timeout = TIMEOUT_MSEC)
     public void GetPropertiesReturnsExceptedResponse() throws BaseException {
         // Arrange
         TreeSet<String> fakeList = new TreeSet<>();
