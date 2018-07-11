@@ -277,8 +277,7 @@ public final class RuleApiModel {
         }
         ArrayList<ConditionServiceModel> conditionServiceModels = new ArrayList<ConditionServiceModel>();
         if (conditions != null) {
-            for (ConditionApiModel condition :
-                    conditions) {
+            for (ConditionApiModel condition : conditions) {
                 conditionServiceModels.add(condition.toServiceModel());
             }
         }
