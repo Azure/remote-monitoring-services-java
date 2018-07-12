@@ -2,8 +2,8 @@
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
-import com.microsoft.azure.iotsolutions.iothubmanager.RecurringTasksAgent.IRecurringTasks;
-import com.microsoft.azure.iotsolutions.iothubmanager.RecurringTasksAgent.RecurringTasks;
+import com.microsoft.azure.iotsolutions.iothubmanager.RecurringTasksAgent.IRecurringTasksAgent;
+import com.microsoft.azure.iotsolutions.iothubmanager.RecurringTasksAgent.Agent;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.auth.IClientAuthConfig;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.runtime.IConfig;
@@ -25,7 +25,7 @@ public class Module extends AbstractModule {
         // Note: this method should be empty
         // Try to use use JIT binding and @ImplementedBy instead
         // global setting is not recommend for application_onStart event, PLS refer here for details :https://www.playframework.com/documentation/2.6.x/GlobalSettings
-        bind(IRecurringTasks.class).to(RecurringTasks.class).asEagerSingleton();
+        bind(IRecurringTasksAgent.class).to(Agent.class).asEagerSingleton();
     }
 
     @Provides

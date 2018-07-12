@@ -13,7 +13,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 @Singleton
-public class RecurringTasks implements IRecurringTasks {
+public class Agent implements IRecurringTasksAgent {
 
     // When DeviceProperties cache initialization fails, retry in few seconds
     private static final int CACHE_INIT_RETRY_SECS = 10;
@@ -25,10 +25,10 @@ public class RecurringTasks implements IRecurringTasks {
     private static final int CACHE_TIMEOUT_SECS = 90;
 
     private final IDeviceProperties cache;
-    private static final Logger.ALogger log = Logger.of(RecurringTasks.class);
+    private static final Logger.ALogger log = Logger.of(Agent.class);
 
     @Inject
-    public RecurringTasks(IDeviceProperties cache) {
+    public Agent(IDeviceProperties cache) {
         this.cache = cache;
         CompletableFuture.runAsync(() -> this.run());
     }
@@ -47,7 +47,7 @@ public class RecurringTasks implements IRecurringTasks {
                 this.log.info("DeviceProperties cache created");
                 return;
             } catch (Exception e) {
-                this.log.warn("DeviceProperties creation failed, will retry in few seconds", e);
+                this.log.debug("DeviceProperties creation failed, will retry in few seconds");
             }
 
             this.log.warn("Pausing thread before retrying cache creation");
