@@ -14,8 +14,6 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 
 public class Notification {
-    private INotification.EmailImplementationTypes EMAIL_IMPLEMENTATION_TYPE = INotification.EmailImplementationTypes.LogicApp;
-
     public List<ActionAsaModel> actionList;
     public INotification implementation;
 
@@ -37,7 +35,7 @@ public class Notification {
         this.ruleDescription = ruleDescription;
     }
 
-    public CompletionStage execute() {
+    public CompletionStage executeAsync() {
         try {
             for(ActionAsaModel action : this.actionList){
                 if(action.getActionType().equals("Email")){

@@ -1,7 +1,5 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.services.notification;
-import com.microsoft.azure.eventhubs.ConnectionStringBuilder;
 import com.microsoft.azure.eventhubs.EventPosition;
-import com.microsoft.azure.eventhubs.PartitionReceiver;
 import com.microsoft.azure.eventprocessorhost.EventProcessorHost;
 import com.microsoft.azure.eventprocessorhost.EventProcessorOptions;
 import com.microsoft.azure.eventprocessorhost.IEventProcessorFactory;
@@ -13,7 +11,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 
-public class Agent {
+public class Agent implements IAgent {
     private String EhConnectionString = "Endpoint=sb://eventhubnamespace-f3pvd.servicebus.windows.net/;SharedAccessKeyName=NotificationSystem;SharedAccessKey=W8C1Y/ZoBglooXxc1O1r2y5QBl7sa0nIwrYRl5h5YhA=;EntityPath=notificationsystem";
     private String EhEntityPath = "notificationsystem";
     private String StorageContainerName = "anothersystem";
@@ -33,6 +31,7 @@ public class Agent {
         this.notificationEventProcessorFactory = notificationEventProcessorFactory;
     }
 
+    @Override
     public CompletionStage runAsync(){
         this.logger.info("Notification system running");
         try{
@@ -41,7 +40,7 @@ public class Agent {
         } catch (Exception e){
             throw new CompletionException(e);
         }
-        //setUpEventHubAsync().thenApply((Void v) -> this.logger.info("Notification system exiting"));
+        //.thenApply((Void v) -> this.logger.info("Notification system exiting"));
     }
 
     private CompletionStage setUpEventHubAsync(){
