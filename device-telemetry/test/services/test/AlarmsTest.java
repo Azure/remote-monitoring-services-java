@@ -41,7 +41,7 @@ public class AlarmsTest {
                 "database",
                 "collection",
                 3
-            ));
+            ), eventHubName, eventHubConnectionString, eventHubOffsetTimeInMinutes, logicAppEndPointUrl);
         this.storageClientMock = Mockito.mock(IStorageClient.class);
         this.alarms = new Alarms(servicesConfig, this.storageClientMock);
     }

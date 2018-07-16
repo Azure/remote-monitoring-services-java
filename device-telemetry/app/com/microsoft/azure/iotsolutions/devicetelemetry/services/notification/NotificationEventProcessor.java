@@ -4,15 +4,17 @@ import com.microsoft.azure.eventhubs.EventData;
 import com.microsoft.azure.eventprocessorhost.CloseReason;
 import com.microsoft.azure.eventprocessorhost.IEventProcessor;
 import com.microsoft.azure.eventprocessorhost.PartitionContext;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import play.Logger;
 
 public class NotificationEventProcessor implements IEventProcessor {
     private Logger logger;
+    private IServicesConfig servicesConfig;
 
-    public NotificationEventProcessor(Logger logger){
+    public NotificationEventProcessor(Logger logger, IServicesConfig servicesConfig){
         this.logger = logger;
+        this.servicesConfig = servicesConfig;
     }
-
 
     @Override
     public void onOpen(PartitionContext context) throws Exception {

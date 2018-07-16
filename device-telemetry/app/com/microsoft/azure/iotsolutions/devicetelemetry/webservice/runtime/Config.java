@@ -2,10 +2,7 @@
 
 package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime;
 
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.AlarmsConfig;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.ServicesConfig;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.StorageConfig;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.ClientAuthConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.IClientAuthConfig;
 import com.typesafe.config.ConfigFactory;
@@ -57,6 +54,7 @@ public class Config implements IConfig {
 
     private com.typesafe.config.Config data;
     private IServicesConfig servicesConfig;
+    private IBlobStorageConfig blobStorageConfig;
     private IClientAuthConfig clientAuthConfig;
 
     public Config() {
@@ -86,13 +84,44 @@ public class Config implements IConfig {
             data.getString(ALARMS_DOCDB_COLLECTION_KEY),
             data.getInt(ALARMS_DOCDB_DELETE_RETRIES));
 
+        // temporary solution: fill in manually
+        String eventHubName = "notificationsystem";
+        String logicAppEndPointUrl = "https://prod-00.southeastasia.logic.azure.com:443/workflows/1f2493004aea43e1ac661f071a15f330/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=DIfPL17M7qydXwHxD7g-_K-P3mE6dqYuv7aDfbQji94";
+        String eventHubConnectionString = "sb://eventhubnamespace-f3pvd.servicebus.windows.net/;SharedAccessKeyName=NotificationSystem;SharedAccessKey=W8C1Y/ZoBglooXxc1O1r2y5QBl7sa0nIwrYRl5h5YhA=;EntityPath=notificationsystem";
+        int eventHubOffsetTimeInMinutes = 0;
+
         this.servicesConfig = new ServicesConfig(
             storageConnectionString,
             keyValueStorageUrl,
             messagesConfig,
-            alarmsConfig);
+            alarmsConfig,
+            eventHubName,
+            eventHubConnectionString,
+            eventHubOffsetTimeInMinutes,
+            logicAppEndPointUrl);
 
         return this.servicesConfig;
+    }
+
+    @Override
+    public IBlobStorageConfig getBlobStorageConfig(){
+        if (this.blobStorageConfig != null) return this.blobStorageConfig;
+        // temp fill manually
+
+         /*private String EhConnectionString = "Endpoint=sb://eventhubnamespace-f3pvd.servicebus.windows.net/;SharedAccessKeyName=NotificationSystem;SharedAccessKey=W8C1Y/ZoBglooXxc1O1r2y5QBl7sa0nIwrYRl5h5YhA=;EntityPath=notificationsystem";
+        private String EhEntityPath = "notificationsystem";
+        private String StorageContainerName = "anothersystem";
+        private String StorageAccountName = "aayushdemo";
+        private String StorageAccountKey = "qIFS9KOWkR+GUymNElgeGGQhwvATW5SNRii4R4OTWYi0aiT/JrIFnnLyJlUVigyIoNzr5TR9utGwZoK2ffioAw==";
+        private String StorageConnectionString = String.format("DefaultEndpointsProtocol=https;AccountName=%s;AccountKey=%s", StorageAccountName, StorageAccountKey);*/
+
+         String accountKey = "qIFS9KOWkR+GUymNElgeGGQhwvATW5SNRii4R4OTWYi0aiT/JrIFnnLyJlUVigyIoNzr5TR9utGwZoK2ffioAw==";
+         String accountName = "anothersystem";
+         String endpointSuffix = "NEED FROM AAYUSH";
+         String eventHubContainer = "NEED FROM AAYUSH";
+
+         this.blobStorageConfig = new BlobStorageConfig(accountKey, accountName, endpointSuffix, eventHubContainer);
+         return this.blobStorageConfig;
     }
 
     /**

@@ -4,6 +4,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.microsoft.azure.iotsolutions.devicetelemetry.RecurringTasksAgent.IRecurringTasks;
 import com.microsoft.azure.iotsolutions.devicetelemetry.RecurringTasksAgent.RecurringTasks;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IBlobStorageConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.IClientAuthConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime.IConfig;
@@ -30,6 +31,11 @@ public class Module extends AbstractModule {
     @Provides
     IServicesConfig provideIServicesConfig(IConfig config) {
         return config.getServicesConfig();
+    }
+
+    @Provides
+    IBlobStorageConfig provideIBlobStorageConfig(IConfig config){
+        return config.getBlobStorageConfig();
     }
 
     @Provides

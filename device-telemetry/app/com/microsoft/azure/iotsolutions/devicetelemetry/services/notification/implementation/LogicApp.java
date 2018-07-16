@@ -94,7 +94,7 @@ public class LogicApp implements INotification {
 
     private WSRequest prepareRequest(){
         String url = this.endpointURL;
-        play.libs.ws.WSRequest wsRequest = this.wsClient
+        WSRequest wsRequest = this.wsClient
                 .url(url)
                 .addHeader("Content-Type", "application/json");
 

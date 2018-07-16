@@ -19,4 +19,12 @@ public interface IServicesConfig {
     StorageConfig getMessagesStorageConfig();
 
     AlarmsConfig getAlarmsStorageConfig();
+
+    String getEventHubName();
+
+    String getEventHubConnectionString();
+
+    int getEventHubOffsetTimeInMinutes();
+
+    String getLogicAppEndPointUrl();
 }
