@@ -233,7 +233,9 @@ public final class Rules implements IRules {
         ruleServiceModel.setDateCreated(DateTime.now(DateTimeZone.UTC).toString(DATE_FORMAT));
         ruleServiceModel.setDateModified(ruleServiceModel.getDateCreated());
 
-        ObjectNode jsonData = new ObjectMapper().setPropertyNamingStrategy(new PropertyNamingStrategy.UpperCamelCaseStrategy()).createObjectNode();
+        ObjectNode jsonData = new ObjectMapper()
+                .setPropertyNamingStrategy(new PropertyNamingStrategy.UpperCamelCaseStrategy())
+                .createObjectNode();
         jsonData.put("Data", ruleServiceModel.toJsonString());
 
         return this.prepareRequest(null)

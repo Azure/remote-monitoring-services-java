@@ -21,7 +21,7 @@ public class RecurringTasks implements IRecurringTasks {
     }
 
     private void tryMethod(){
-        this.notificationAgent = new Agent();
+        //this.notificationAgent = new Agent();
         /*while(true){
             log.info("Testing...");
             try {

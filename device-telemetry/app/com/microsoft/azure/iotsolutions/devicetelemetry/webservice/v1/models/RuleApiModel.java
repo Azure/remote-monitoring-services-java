@@ -289,23 +289,23 @@ public final class RuleApiModel {
             severity = SeverityType.valueOf(this.severity.toUpperCase());
         } catch (Exception e) {
             throw new CompletionException(
-                    new InvalidInputException("The value of 'Severity' - '" + this.severity + "' is not valid"));
+                new InvalidInputException("The value of 'Severity' - '" + this.severity + "' is not valid"));
         }
         try {
             calculation = CalculationType.valueOf(this.calculation.toUpperCase());
         } catch (Exception e) {
             throw new CompletionException(
-                    new InvalidInputException("The value of 'Calculation' - '" + this.calculation + "' is not valid"));
+                new InvalidInputException("The value of 'Calculation' - '" + this.calculation + "' is not valid"));
         }
         if (calculation == CalculationType.AVERAGE && (this.timePeriod.isEmpty() || this.timePeriod == null)) {
             throw new CompletionException(
-                    new InvalidInputException("The value of 'TimePeriod' - '" + this.timePeriod + "' for 'Calculation' - " + this.calculation + " is not valid"));
+                new InvalidInputException("The value of 'TimePeriod' - '" + this.timePeriod + "' for 'Calculation' - " + this.calculation + " is not valid"));
         }
         try {
             timePeriod = this.timePeriod.isEmpty() || this.timePeriod == null ? 0 : Long.valueOf(this.timePeriod);
         } catch (Exception e) {
             throw new CompletionException(
-                    new InvalidInputException("The value of 'TimePeriod' - '" + this.timePeriod + "' is not valid"));
+                new InvalidInputException("The value of 'TimePeriod' - '" + this.timePeriod + "' is not valid"));
         }
         return new RuleServiceModel(
                 this.eTag,
