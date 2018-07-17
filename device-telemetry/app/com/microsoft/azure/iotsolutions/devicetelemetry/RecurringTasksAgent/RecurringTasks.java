@@ -9,6 +9,7 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.IE
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IBlobStorageConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import play.Logger;
+import play.libs.ws.WSClient;
 
 import java.util.concurrent.CompletableFuture;
 

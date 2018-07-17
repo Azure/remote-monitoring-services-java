@@ -61,7 +61,7 @@ public class LogicApp implements INotification {
     @Override
     public Boolean setCredentials(Map<String, String> credentials) {
         try {
-            this.endpointURL = credentials.get("endpointURL");
+            this.endpointURL = credentials.get("endPointURL");
         } catch (Exception e) {
             return false;
         }

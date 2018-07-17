@@ -1,20 +1,32 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.services.notification;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.inject.Inject;
 import com.microsoft.azure.eventhubs.EventData;
 import com.microsoft.azure.eventprocessorhost.CloseReason;
 import com.microsoft.azure.eventprocessorhost.IEventProcessor;
 import com.microsoft.azure.eventprocessorhost.PartitionContext;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.Rules;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.models.AlarmNotificationAsaModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import play.Logger;
+import play.libs.ws.WSClient;
+import views.html.defaultpages.error;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class NotificationEventProcessor implements IEventProcessor {
     private static final Logger.ALogger logger = Logger.of(NotificationEventProcessor.class);
     private IServicesConfig servicesConfig;
+    private WSClient client;
 
     @Inject
-    public NotificationEventProcessor(IServicesConfig servicesConfig){
+    public NotificationEventProcessor(WSClient client, IServicesConfig servicesConfig){
+        this.client = client;
         this.servicesConfig = servicesConfig;
     }
 
@@ -34,6 +46,17 @@ public class NotificationEventProcessor implements IEventProcessor {
             String data = new String(eventData.getBytes(), "UTF8");
             Logger.info(data);
             Logger.info("this was one data string");
+
+           /* JsonParser parser = new JsonParser();
+            JsonObject json = (JsonObject) parser.parse(data);*/
+
+            AlarmNotificationAsaModel model = new ObjectMapper().readValue(data, AlarmNotificationAsaModel.class);
+            Notification notification = new Notification(this.client, this.servicesConfig);
+            notification.setAlarmInformation(model.getRule_id(), model.getRule_description());
+            notification.setActionList(model.getActions());
+            notification.executeAsync();
+
+            //notification.setAlarmInformation(json.get("rule.id").toString(), );
         }
     }
 

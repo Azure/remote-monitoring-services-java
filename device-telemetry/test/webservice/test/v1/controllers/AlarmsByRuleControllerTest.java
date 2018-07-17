@@ -2,6 +2,7 @@
 
 package webservice.test.v1.controllers;
 
+import com.google.inject.Inject;
 import com.microsoft.azure.documentdb.Document;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.Alarms;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.IAlarms;
@@ -61,11 +62,11 @@ public class AlarmsByRuleControllerTest {
     private final String ruleSeverityKey = "rule.severity";
     private final String ruleDescriptionKey = "rule.description";
 
-    @Before
-    public void setUp() {
+    @Before @Inject
+    public void setUp(WSClient wsClient) {
         // setup before every test
         try {
-            IServicesConfig servicesConfig = new Config().getServicesConfig();
+            IServicesConfig servicesConfig = new Config(wsClient).getServicesConfig();
             IStorageClient client = mock(IStorageClient.class);
             this.wsClient = mock(WSClient.class);
             this.alarms = new Alarms(servicesConfig, client);
