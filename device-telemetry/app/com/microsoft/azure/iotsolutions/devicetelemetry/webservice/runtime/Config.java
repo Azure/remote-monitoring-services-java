@@ -2,11 +2,17 @@
 
 package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime;
 
+import com.microsoft.azure.eventprocessorhost.IEventProcessorFactory;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.EventProcessorHostWrapper;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.IEventProcessorHostWrapper;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.NotificationEventProcessorFactory;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.ClientAuthConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.IClientAuthConfig;
 import com.typesafe.config.ConfigFactory;
+import play.api.Logger;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.HashSet;
@@ -56,6 +62,8 @@ public class Config implements IConfig {
     private IServicesConfig servicesConfig;
     private IBlobStorageConfig blobStorageConfig;
     private IClientAuthConfig clientAuthConfig;
+    private IEventProcessorHostWrapper eventProcessorHostWrapper;
+    private IEventProcessorFactory eventProcessorFactory;
 
     public Config() {
         this.data = ConfigFactory.load();
@@ -87,7 +95,7 @@ public class Config implements IConfig {
         // temporary solution: fill in manually
         String eventHubName = "notificationsystem";
         String logicAppEndPointUrl = "https://prod-00.southeastasia.logic.azure.com:443/workflows/1f2493004aea43e1ac661f071a15f330/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=DIfPL17M7qydXwHxD7g-_K-P3mE6dqYuv7aDfbQji94";
-        String eventHubConnectionString = "sb://eventhubnamespace-f3pvd.servicebus.windows.net/;SharedAccessKeyName=NotificationSystem;SharedAccessKey=W8C1Y/ZoBglooXxc1O1r2y5QBl7sa0nIwrYRl5h5YhA=;EntityPath=notificationsystem";
+        String eventHubConnectionString = "Endpoint=sb://eventhubnamespace-f3pvd.servicebus.windows.net/;SharedAccessKeyName=NotificationSystem;SharedAccessKey=W8C1Y/ZoBglooXxc1O1r2y5QBl7sa0nIwrYRl5h5YhA=;EntityPath=notificationsystem";
         int eventHubOffsetTimeInMinutes = 0;
 
         this.servicesConfig = new ServicesConfig(
@@ -116,12 +124,28 @@ public class Config implements IConfig {
         private String StorageConnectionString = String.format("DefaultEndpointsProtocol=https;AccountName=%s;AccountKey=%s", StorageAccountName, StorageAccountKey);*/
 
          String accountKey = "qIFS9KOWkR+GUymNElgeGGQhwvATW5SNRii4R4OTWYi0aiT/JrIFnnLyJlUVigyIoNzr5TR9utGwZoK2ffioAw==";
-         String accountName = "anothersystem";
-         String endpointSuffix = "NEED FROM AAYUSH";
-         String eventHubContainer = "NEED FROM AAYUSH";
+         String accountName = "aayushdemo";
+         String endpointSuffix = "core.windows.net";
+         String eventHubContainer = "notification-sstem";
 
-         this.blobStorageConfig = new BlobStorageConfig(accountKey, accountName, endpointSuffix, eventHubContainer);
+         this.blobStorageConfig = new BlobStorageConfig(accountName, accountKey, endpointSuffix, eventHubContainer);
          return this.blobStorageConfig;
+    }
+
+    @Override
+    public IEventProcessorHostWrapper getEventProcessorHostWrapper() {
+        if (this.eventProcessorHostWrapper != null) return this.eventProcessorHostWrapper;
+
+        this.eventProcessorHostWrapper = new EventProcessorHostWrapper();
+        return this.eventProcessorHostWrapper;
+    }
+
+    @Override
+    public IEventProcessorFactory getEventProcessorFactory() {
+        if (this.eventProcessorFactory != null) return this.eventProcessorFactory;
+
+        this.eventProcessorFactory = new NotificationEventProcessorFactory(this.getServicesConfig());
+        return this.eventProcessorFactory;
     }
 
     /**

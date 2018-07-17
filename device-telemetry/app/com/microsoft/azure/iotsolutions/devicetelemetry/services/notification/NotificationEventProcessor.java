@@ -1,18 +1,20 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.services.notification;
 
+import com.google.inject.Inject;
 import com.microsoft.azure.eventhubs.EventData;
 import com.microsoft.azure.eventprocessorhost.CloseReason;
 import com.microsoft.azure.eventprocessorhost.IEventProcessor;
 import com.microsoft.azure.eventprocessorhost.PartitionContext;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.Rules;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import play.Logger;
 
 public class NotificationEventProcessor implements IEventProcessor {
-    private Logger logger;
+    private static final Logger.ALogger logger = Logger.of(NotificationEventProcessor.class);
     private IServicesConfig servicesConfig;
 
-    public NotificationEventProcessor(Logger logger, IServicesConfig servicesConfig){
-        this.logger = logger;
+    @Inject
+    public NotificationEventProcessor(IServicesConfig servicesConfig){
         this.servicesConfig = servicesConfig;
     }
 

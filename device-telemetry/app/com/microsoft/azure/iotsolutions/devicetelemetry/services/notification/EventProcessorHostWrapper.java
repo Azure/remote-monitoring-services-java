@@ -10,6 +10,10 @@ import java.util.concurrent.CompletionStage;
 
 public class EventProcessorHostWrapper implements IEventProcessorHostWrapper{
 
+    public EventProcessorHostWrapper() {
+        // empty constructor
+    }
+
     @Override
     public EventProcessorHost createEventProcessorHost(String eventHubPath, String consumerGroupName, String eventHubConnectionString, String storageConnectionString, String leaseContainerName) {
         return new EventProcessorHost(EventProcessorHost.createHostName("defaultString"), eventHubPath, consumerGroupName, eventHubConnectionString, storageConnectionString, leaseContainerName);

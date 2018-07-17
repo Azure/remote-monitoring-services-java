@@ -1,8 +1,10 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.services.notification;
+import com.google.inject.Inject;
 import com.microsoft.azure.eventhubs.EventPosition;
 import com.microsoft.azure.eventprocessorhost.EventProcessorHost;
 import com.microsoft.azure.eventprocessorhost.EventProcessorOptions;
 import com.microsoft.azure.eventprocessorhost.IEventProcessorFactory;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.Rules;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IBlobStorageConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import play.Logger;
@@ -21,21 +23,20 @@ public class Agent implements IAgent {
     private String StorageAccountKey = "qIFS9KOWkR+GUymNElgeGGQhwvATW5SNRii4R4OTWYi0aiT/JrIFnnLyJlUVigyIoNzr5TR9utGwZoK2ffioAw==";
     private String StorageConnectionString = String.format("DefaultEndpointsProtocol=https;AccountName=%s;AccountKey=%s", StorageAccountName, StorageAccountKey);*/
 
-    private Logger logger;
+    private static final Logger.ALogger logger = Logger.of(Agent.class);
     private IServicesConfig servicesConfig;
     private IBlobStorageConfig blobStorageConfig;
     private IEventProcessorFactory notificationEventProcessorFactory;
     private IEventProcessorHostWrapper eventProcessorHostWrapper;
     private EventProcessorOptions eventProcessorOptions;
 
+    @Inject
     public Agent(
-            Logger logger,
             IServicesConfig servicesConfig,
             IBlobStorageConfig blobStorageConfig,
             IEventProcessorHostWrapper eventProcessorHostWrapper,
             IEventProcessorFactory notificationEventProcessorFactory
     ){
-        this.logger = logger;
         this.servicesConfig = servicesConfig;
         this.blobStorageConfig = blobStorageConfig;
         this.eventProcessorHostWrapper = eventProcessorHostWrapper;
@@ -47,10 +48,11 @@ public class Agent implements IAgent {
         this.logger.info("Notification system running");
         try{
             this.logger.info("Notification system running");
-            setUpEventHubAsync(); // how to make this call await? .get() doesn't work, add logging before and after async, not sure if this will work rn if not completely timed async
+            setUpEventHubAsync().thenRun(() -> this.logger.info("Set up eventhub complete")); // how to make this call await? .get() doesn't work, add logging before and after async, not sure if this will work rn if not completely timed async
             this.logger.info("Notification system exiting");
             return CompletableFuture.completedFuture(true);
         } catch (Exception e){
+            this.logger.error(e.getMessage());
             throw new CompletionException(e);
         }
         //.thenApply((Void v) -> this.logger.info("Notification system exiting"));
@@ -76,13 +78,13 @@ public class Agent implements IAgent {
                             this.blobStorageConfig.getEndpointSuffix());
             EventProcessorHost host = this.eventProcessorHostWrapper.createEventProcessorHost(
                     this.servicesConfig.getEventHubName(),
-                    "default-consumer-group-name",
+                    "$Default",
                     this.servicesConfig.getEventHubConnectionString(),
                     storageConnectionString,
                     this.blobStorageConfig.getEventHubContainer()
             );
             eventProcessorOptions = new EventProcessorOptions();
-            eventProcessorOptions.setInitialPositionProvider(partitionId -> EventPosition.fromEnqueuedTime(Instant.now()));
+            eventProcessorOptions.setInitialPositionProvider((partitionId) -> EventPosition.fromEnqueuedTime(Instant.now()));
 
             this.eventProcessorHostWrapper.registerEventProcessorFactoryAsync(host, this.notificationEventProcessorFactory, eventProcessorOptions);
             return CompletableFuture.completedFuture(true);

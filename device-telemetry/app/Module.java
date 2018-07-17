@@ -2,8 +2,10 @@
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+import com.microsoft.azure.eventprocessorhost.IEventProcessorFactory;
 import com.microsoft.azure.iotsolutions.devicetelemetry.RecurringTasksAgent.IRecurringTasks;
 import com.microsoft.azure.iotsolutions.devicetelemetry.RecurringTasksAgent.RecurringTasks;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.IEventProcessorHostWrapper;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IBlobStorageConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.IClientAuthConfig;
@@ -42,4 +44,10 @@ public class Module extends AbstractModule {
     IClientAuthConfig provideIClientAuthConfig(IConfig config) {
         return config.getClientAuthConfig();
     }
+
+    @Provides
+    IEventProcessorHostWrapper provideEventProcessorHostWrapper(IConfig config) { return config.getEventProcessorHostWrapper(); }
+
+    @Provides
+    IEventProcessorFactory provideEventProcessorFactory(IConfig config) { return config.getEventProcessorFactory(); }
 }

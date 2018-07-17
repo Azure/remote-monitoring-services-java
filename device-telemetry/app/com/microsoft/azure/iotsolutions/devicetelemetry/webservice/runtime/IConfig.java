@@ -3,6 +3,8 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime;
 
 import com.google.inject.ImplementedBy;
+import com.microsoft.azure.eventprocessorhost.IEventProcessorFactory;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.IEventProcessorHostWrapper;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IBlobStorageConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.IClientAuthConfig;
@@ -24,4 +26,14 @@ public interface IConfig {
      * Storage configuration
      */
     IBlobStorageConfig getBlobStorageConfig();
+
+    /**
+     * Event processor host wrapper
+     */
+    IEventProcessorHostWrapper getEventProcessorHostWrapper();
+
+    /**
+     * Event processor factory
+     */
+    IEventProcessorFactory getEventProcessorFactory();
 }

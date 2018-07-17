@@ -74,9 +74,7 @@ public class ServicesConfig implements IServicesConfig {
     }
 
     @Override
-    public String getEventHubConnectionString() {
-        return this.eventHubConnectionString;
-    }
+    public String getEventHubConnectionString() { return this.eventHubConnectionString; }
 
     @Override
     public int getEventHubOffsetTimeInMinutes() {
