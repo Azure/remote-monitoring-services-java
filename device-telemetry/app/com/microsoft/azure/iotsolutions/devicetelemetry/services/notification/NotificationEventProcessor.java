@@ -44,19 +44,11 @@ public class NotificationEventProcessor implements IEventProcessor {
     public void onEvents(PartitionContext context, Iterable<EventData> events) throws Exception {
         for(EventData eventData : events){
             String data = new String(eventData.getBytes(), "UTF8");
-            Logger.info(data);
-            Logger.info("this was one data string");
-
-           /* JsonParser parser = new JsonParser();
-            JsonObject json = (JsonObject) parser.parse(data);*/
-
             AlarmNotificationAsaModel model = new ObjectMapper().readValue(data, AlarmNotificationAsaModel.class);
             Notification notification = new Notification(this.client, this.servicesConfig);
             notification.setAlarmInformation(model.getRule_id(), model.getRule_description());
             notification.setActionList(model.getActions());
             notification.executeAsync();
-
-            //notification.setAlarmInformation(json.get("rule.id").toString(), );
         }
     }
 

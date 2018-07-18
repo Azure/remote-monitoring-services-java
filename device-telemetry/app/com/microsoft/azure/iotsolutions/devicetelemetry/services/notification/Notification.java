@@ -72,13 +72,12 @@ public class Notification {
                 switch (action.getActionType()){
                     case "Email":
                         implementation = new LogicApp(wsClient);
-                        Map<String, String> credentialMap = new HashMap<String, String>();
-                        // credentialMap.put("endPointURL", "https://prod-00.southeastasia.logic.azure.com:443/workflows/1f2493004aea43e1ac661f071a15f330/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=DIfPL17M7qydXwHxD7g-_K-P3mE6dqYuv7aDfbQji94");
+                        Map<String, String> credentialMap = new HashMap<>();
                         credentialMap.put("endPointURL", this.servicesConfig.getLogicAppEndPointUrl()); // figure out where this lies and replace
                         implementation.setCredentials(credentialMap);
                 }
                 implementation.setMessage((String) action.getParameters().get("Template"), this.ruleId, this.ruleDescription);
-                implementation.setReceiver(((ArrayList<String>) action.getParameters().get("Email")).get(0));
+                implementation.setReceiver(((ArrayList<String>) action.getParameters().get("Email")));
                 implementation.execute(); // how to make it await
             }
             return CompletableFuture.completedFuture(true);
