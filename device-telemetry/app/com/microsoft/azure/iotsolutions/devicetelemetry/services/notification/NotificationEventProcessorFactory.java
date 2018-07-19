@@ -9,18 +9,19 @@ import play.Logger;
 import play.libs.ws.WSClient;
 
 public class NotificationEventProcessorFactory implements IEventProcessorFactory {
-    // private static final Logger.ALogger logger = Logger.of(NotificationEventProcessorFactory.class);
     private IServicesConfig servicesConfig;
+    private INotification notification;
     private WSClient client;
 
     @Inject
-    public NotificationEventProcessorFactory(WSClient client, IServicesConfig servicesConfig){
+    public NotificationEventProcessorFactory(WSClient client, IServicesConfig servicesConfig, INotification notification){
         this.client = client;
         this.servicesConfig = servicesConfig;
+        this.notification = notification;
     }
 
     @Override
     public IEventProcessor createEventProcessor(PartitionContext context) throws Exception {
-        return new NotificationEventProcessor(this.client, this.servicesConfig);
+        return new NotificationEventProcessor(this.client, this.servicesConfig, this.notification);
     }
 }

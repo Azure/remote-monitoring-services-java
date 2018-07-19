@@ -23,15 +23,18 @@ public class ServicesConfig implements IServicesConfig {
 
     private final String logicAppEndPointUrl;
 
+    private final String solutionName;
+
     public ServicesConfig(
             final String storageConnectionString,
             final String keyValueStorageUrl,
-            StorageConfig messagesConfig,
-            AlarmsConfig alarmsConfig,
-            String eventHubName,
-            String eventHubConnectionString,
-            int eventHubOffsetTimeInMinutes,
-            String logicAppEndPointUrl) {
+            final StorageConfig messagesConfig,
+            final AlarmsConfig alarmsConfig,
+            final String eventHubName,
+            final String eventHubConnectionString,
+            final int eventHubOffsetTimeInMinutes,
+            final String logicAppEndPointUrl,
+            final String solutionName) {
         this.storageConnectionString = storageConnectionString;
         this.keyValueStorageUrl = keyValueStorageUrl;
         this.messagesConfig = messagesConfig;
@@ -40,6 +43,7 @@ public class ServicesConfig implements IServicesConfig {
         this.eventHubConnectionString = eventHubConnectionString;
         this.eventHubOffsetTimeInMinutes = eventHubOffsetTimeInMinutes;
         this.logicAppEndPointUrl = logicAppEndPointUrl;
+        this.solutionName = solutionName;
     }
 
     /**
@@ -85,4 +89,7 @@ public class ServicesConfig implements IServicesConfig {
     public String getLogicAppEndPointUrl() {
         return this.logicAppEndPointUrl;
     }
+
+    @Override
+    public String getSolutionName() { return this.solutionName; }
 }

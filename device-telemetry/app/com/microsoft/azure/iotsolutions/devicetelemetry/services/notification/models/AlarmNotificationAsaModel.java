@@ -6,28 +6,28 @@ import java.util.List;
 
 public class AlarmNotificationAsaModel {
     @JsonProperty("created")
-    public String DateCreated;
+    private String DateCreated;
 
     @JsonProperty("modified")
-    public String DateModified;
+    private String DateModified;
 
     @JsonProperty("rule.description")
-    public String Rule_description;
+    private String Rule_description;
 
     @JsonProperty("rule.severity")
-    public String Rule_severity;
+    private String Rule_severity;
 
     @JsonProperty("rule.id")
-    public String Rule_id;
+    private String Rule_id;
 
     @JsonProperty("rule.actions")
-    public List<ActionAsaModel> Actions;
+    private List<ActionAsaModel> Actions;
 
     @JsonProperty("device.id")
-    public String Device_id;
+    private String Device_id;
 
     @JsonProperty("device.msg.received")
-    public String Message_received;
+    private String Message_received;
 
     @JsonProperty("created")
     public String getDateCreated() {

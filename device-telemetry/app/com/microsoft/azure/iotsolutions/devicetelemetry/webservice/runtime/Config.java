@@ -4,9 +4,7 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime;
 
 import com.google.inject.Inject;
 import com.microsoft.azure.eventprocessorhost.IEventProcessorFactory;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.EventProcessorHostWrapper;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.IEventProcessorHostWrapper;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.NotificationEventProcessorFactory;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.ClientAuthConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.IClientAuthConfig;
@@ -57,6 +55,7 @@ public class Config implements IConfig {
     private final String ACTIONS_ACCOUNT_NAME = APPLICATION_KEY + "actions.accountName";
     private final String ACTIONS_ENDPOINT_SUFFIX = APPLICATION_KEY + "actions.endpointSuffix";
     private final String ACTIONS_EVENTHUB_CONTAINER = APPLICATION_KEY + "actions.eventHubContainer";
+    private final String ACTIONS_SOLUTION_NAME = APPLICATION_KEY + "actions.solutionName";
 
     private final String CLIENT_AUTH_KEY = APPLICATION_KEY + "client-auth.";
     private final String AUTH_REQUIRED_KEY = CLIENT_AUTH_KEY + "auth_required";
@@ -113,7 +112,8 @@ public class Config implements IConfig {
             data.getString(ACTIONS_EVENTHUB_NAME),
             data.getString(ACTIONS_EVENTHUB_CONNECTION_STRING),
             data.getInt(ACTIONS_EVENTHUB_OFFSET_TIME_IN_MINUTES),
-            data.getString(ACTIONS_LOGIC_APP_ENDPOINT_URL));
+            data.getString(ACTIONS_LOGIC_APP_ENDPOINT_URL),
+            data.getString(ACTIONS_SOLUTION_NAME));
 
         return this.servicesConfig;
     }
@@ -142,7 +142,9 @@ public class Config implements IConfig {
     public IEventProcessorFactory getEventProcessorFactory() {
         if (this.eventProcessorFactory != null) return this.eventProcessorFactory;
 
-        this.eventProcessorFactory = new NotificationEventProcessorFactory(this.client, this.getServicesConfig());
+        IImplementationWrapper wrapper = new ImplementationWrapper(this.getServicesConfig(), this.client);
+        INotification notification = new Notification(this.client, wrapper);
+        this.eventProcessorFactory = new NotificationEventProcessorFactory(this.client, this.getServicesConfig(), notification);
         return this.eventProcessorFactory;
     }
 

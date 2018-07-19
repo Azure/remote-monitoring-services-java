@@ -15,20 +15,13 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 
 public class Agent implements IAgent {
-    /* Will be removed eventually when replaced in config file */
-    /*private String EhConnectionString = "Endpoint=sb://eventhubnamespace-f3pvd.servicebus.windows.net/;SharedAccessKeyName=NotificationSystem;SharedAccessKey=W8C1Y/ZoBglooXxc1O1r2y5QBl7sa0nIwrYRl5h5YhA=;EntityPath=notificationsystem";
-    private String EhEntityPath = "notificationsystem";
-    private String StorageContainerName = "anothersystem";
-    private String StorageAccountName = "aayushdemo";
-    private String StorageAccountKey = "qIFS9KOWkR+GUymNElgeGGQhwvATW5SNRii4R4OTWYi0aiT/JrIFnnLyJlUVigyIoNzr5TR9utGwZoK2ffioAw==";
-    private String StorageConnectionString = String.format("DefaultEndpointsProtocol=https;AccountName=%s;AccountKey=%s", StorageAccountName, StorageAccountKey);*/
-
     private static final Logger.ALogger logger = Logger.of(Agent.class);
     private IServicesConfig servicesConfig;
     private IBlobStorageConfig blobStorageConfig;
     private IEventProcessorFactory notificationEventProcessorFactory;
     private IEventProcessorHostWrapper eventProcessorHostWrapper;
     private EventProcessorOptions eventProcessorOptions;
+    private static final String DEFAULT = "$Default";
 
     @Inject
     public Agent(
@@ -48,28 +41,16 @@ public class Agent implements IAgent {
         this.logger.info("Notification system running");
         try{
             this.logger.info("Notification system running");
-            setUpEventHubAsync().thenRun(() -> this.logger.info("Set up eventhub complete")); // how to make this call await? .get() doesn't work, add logging before and after async, not sure if this will work rn if not completely timed async
+            setUpEventHubAsync().thenRun(() -> this.logger.info("Set up eventhub complete"));
             this.logger.info("Notification system exiting");
             return CompletableFuture.completedFuture(true);
         } catch (Exception e){
             this.logger.error(e.getMessage());
             throw new CompletionException(e);
         }
-        //.thenApply((Void v) -> this.logger.info("Notification system exiting"));
     }
 
     private CompletionStage setUpEventHubAsync(){
-        /*try {
-            EventProcessorHost host = new EventProcessorHost(EventProcessorHost.createHostName("defaultString"), EhEntityPath, "default", EhConnectionString, StorageConnectionString, StorageContainerName);
-            eventProcessorOptions = new EventProcessorOptions();
-            eventProcessorOptions.setInitialPositionProvider(partitionId -> EventPosition.fromEnqueuedTime(Instant.now()));
-
-            host.registerEventProcessorFactory(this.notificationEventProcessorFactory, eventProcessorOptions).get();
-            return CompletableFuture.completedFuture(true);
-        } catch (Exception e) {
-            this.logger.error("Received error setting up event hub. Will not receive updates from devices");
-            throw new CompletionException(e);
-        }*/
         try {
             String storageConnectionString = String
                     .format("DefaultEndpointsProtocol=https;AccountName=%s;AccountKey=%s;EndpointSuffix=%s",
@@ -78,7 +59,7 @@ public class Agent implements IAgent {
                             this.blobStorageConfig.getEndpointSuffix());
             EventProcessorHost host = this.eventProcessorHostWrapper.createEventProcessorHost(
                     this.servicesConfig.getEventHubName(),
-                    "$Default",
+                    DEFAULT,
                     this.servicesConfig.getEventHubConnectionString(),
                     storageConnectionString,
                     this.blobStorageConfig.getEventHubContainer()

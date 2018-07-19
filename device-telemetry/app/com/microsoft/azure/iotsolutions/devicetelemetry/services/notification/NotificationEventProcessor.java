@@ -1,33 +1,27 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.services.notification;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.google.inject.Inject;
 import com.microsoft.azure.eventhubs.EventData;
 import com.microsoft.azure.eventprocessorhost.CloseReason;
 import com.microsoft.azure.eventprocessorhost.IEventProcessor;
 import com.microsoft.azure.eventprocessorhost.PartitionContext;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.Rules;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.models.AlarmNotificationAsaModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import play.Logger;
 import play.libs.ws.WSClient;
-import views.html.defaultpages.error;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class NotificationEventProcessor implements IEventProcessor {
     private static final Logger.ALogger logger = Logger.of(NotificationEventProcessor.class);
     private IServicesConfig servicesConfig;
+    private INotification notification;
     private WSClient client;
 
     @Inject
-    public NotificationEventProcessor(WSClient client, IServicesConfig servicesConfig){
+    public NotificationEventProcessor(WSClient client, IServicesConfig servicesConfig, INotification notification){
         this.client = client;
         this.servicesConfig = servicesConfig;
+        this.notification = notification;
     }
 
     @Override
@@ -37,7 +31,7 @@ public class NotificationEventProcessor implements IEventProcessor {
 
     @Override
     public void onClose(PartitionContext context, CloseReason reason) throws Exception {
-        this.logger.info(String.format("Notification EventProcessor shutting down. Partition: %s", context.getPartitionId()));
+        this.logger.info(String.format("Notification EventProcessor shutting down. Parition %s, Reason: %s", context.getPartitionId(), reason.toString()));
     }
 
     @Override
@@ -45,9 +39,7 @@ public class NotificationEventProcessor implements IEventProcessor {
         for(EventData eventData : events){
             String data = new String(eventData.getBytes(), "UTF8");
             AlarmNotificationAsaModel model = new ObjectMapper().readValue(data, AlarmNotificationAsaModel.class);
-            Notification notification = new Notification(this.client, this.servicesConfig);
-            notification.setAlarmInformation(model.getRule_id(), model.getRule_description());
-            notification.setActionList(model.getActions());
+            this.notification.setAlarm(model);
             notification.executeAsync();
         }
     }

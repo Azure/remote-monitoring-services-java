@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ActionAsaModel {
+public class ActionAsaModel implements IActionAsaModel{
     @JsonProperty("Type")
     private String ActionType = "";
 
@@ -17,19 +17,23 @@ public class ActionAsaModel {
     }
 
     @JsonProperty("Type")
+    @Override
     public String getActionType() {
         return ActionType;
     }
 
+    @Override
     public void setActionType(String actionType) {
         ActionType = actionType;
     }
 
     @JsonProperty("Parameters")
+    @Override
     public Map<String, Object> getParameters() {
         return Parameters;
     }
 
+    @Override
     public void setParameters(Map<String, Object> parameters) {
         Parameters = parameters;
     }

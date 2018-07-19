@@ -1,8 +1,10 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.services.notification;
 
 import com.google.inject.Inject;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.implementation.IImplementation;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.implementation.LogicApp;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.models.ActionAsaModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.models.AlarmNotificationAsaModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import play.libs.ws.WSClient;
 
@@ -14,70 +16,40 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 
-public class Notification {
-    private INotification implementation;
-    private List<ActionAsaModel> actionList;
-    private IServicesConfig servicesConfig;
-    private String ruleId;
-    private String ruleName;
-    private String ruleDescription;
+public class Notification implements INotification {
+    private INotification.EmailImplementationTypes EMAIL_IMPLEMENTATION_TYPE = INotification.EmailImplementationTypes.LogicApp;
+    private IImplementationWrapper implementationWrapper;
+    private IImplementation implementation;
+    private AlarmNotificationAsaModel alarm;
     private WSClient wsClient;
 
     @Inject
-    public Notification(WSClient wsClient, IServicesConfig servicesConfig) {
+    public Notification(WSClient wsClient, IImplementationWrapper implementationWrapper) {
         this.wsClient = wsClient;
-        this.servicesConfig = servicesConfig;
+        this.implementationWrapper = implementationWrapper;
     }
 
-    public void setAlarmInformation(String ruleId, String ruleDescription) {
-        this.ruleId = ruleId;
-        this.ruleDescription = ruleDescription;
+    @Override
+    public AlarmNotificationAsaModel getAlarm() {
+        return this.alarm;
     }
 
-    public List<ActionAsaModel> getActionList() {
-        return actionList;
-    }
-
-    public void setActionList(List<ActionAsaModel> actionList) {
-        this.actionList = actionList;
-    }
-
-    public String getRuleId() {
-        return ruleId;
-    }
-
-    public void setRuleId(String ruleId) {
-        this.ruleId = ruleId;
-    }
-
-    public String getRuleName() {
-        return ruleName;
-    }
-
-    public void setRuleName(String ruleName) {
-        this.ruleName = ruleName;
-    }
-
-    public String getRuleDescription() {
-        return ruleDescription;
-    }
-
-    public void setRuleDescription(String ruleDescription) {
-        this.ruleDescription = ruleDescription;
+    @Override
+    public void setAlarm(AlarmNotificationAsaModel model){
+        this.alarm = model;
     }
 
     public CompletionStage executeAsync() {
         try {
-            for(ActionAsaModel action : this.actionList){
+            for(ActionAsaModel action : this.alarm.getActions()){
                 switch (action.getActionType()){
                     case "Email":
-                        implementation = new LogicApp(wsClient);
-                        Map<String, String> credentialMap = new HashMap<>();
-                        credentialMap.put("endPointURL", this.servicesConfig.getLogicAppEndPointUrl()); // figure out where this lies and replace
-                        implementation.setCredentials(credentialMap);
+                        implementation = this.implementationWrapper.getImplementationType(EMAIL_IMPLEMENTATION_TYPE);
                 }
-                implementation.setMessage((String) action.getParameters().get("Template"), this.ruleId, this.ruleDescription);
-                implementation.setReceiver(((ArrayList<String>) action.getParameters().get("Email")));
+                implementation.setMessage((String) action.getParameters().get("Template"), this.alarm.getRule_id(), this.alarm.getRule_description());
+                if(action.getParameters().get("Email") != null) {
+                    implementation.setReceiver(((ArrayList<String>) action.getParameters().get("Email")));
+                }
                 implementation.execute(); // how to make it await
             }
             return CompletableFuture.completedFuture(true);
