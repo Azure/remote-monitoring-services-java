@@ -5,7 +5,6 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.IN
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.implementation.IImplementation;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.implementation.LogicApp;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
-import play.Logger;
 import play.libs.ws.WSClient;
 
 public class ImplementationWrapper implements IImplementationWrapper{

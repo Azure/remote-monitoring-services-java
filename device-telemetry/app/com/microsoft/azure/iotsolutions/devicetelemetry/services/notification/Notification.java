@@ -2,16 +2,10 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.services.notification;
 
 import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.implementation.IImplementation;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.implementation.LogicApp;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.models.ActionAsaModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.models.AlarmNotificationAsaModel;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
-import play.libs.ws.WSClient;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
@@ -21,11 +15,9 @@ public class Notification implements INotification {
     private IImplementationWrapper implementationWrapper;
     private IImplementation implementation;
     private AlarmNotificationAsaModel alarm;
-    private WSClient wsClient;
 
     @Inject
-    public Notification(WSClient wsClient, IImplementationWrapper implementationWrapper) {
-        this.wsClient = wsClient;
+    public Notification(IImplementationWrapper implementationWrapper) {
         this.implementationWrapper = implementationWrapper;
     }
 
@@ -50,7 +42,7 @@ public class Notification implements INotification {
                 if(action.getParameters().get("Email") != null) {
                     implementation.setReceiver(((ArrayList<String>) action.getParameters().get("Email")));
                 }
-                implementation.execute(); // how to make it await
+                implementation.execute();
             }
             return CompletableFuture.completedFuture(true);
         } catch (Exception e) {

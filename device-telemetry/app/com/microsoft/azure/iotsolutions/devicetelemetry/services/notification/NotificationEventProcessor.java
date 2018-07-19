@@ -7,20 +7,14 @@ import com.microsoft.azure.eventprocessorhost.CloseReason;
 import com.microsoft.azure.eventprocessorhost.IEventProcessor;
 import com.microsoft.azure.eventprocessorhost.PartitionContext;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.models.AlarmNotificationAsaModel;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import play.Logger;
-import play.libs.ws.WSClient;
 
 public class NotificationEventProcessor implements IEventProcessor {
     private static final Logger.ALogger logger = Logger.of(NotificationEventProcessor.class);
-    private IServicesConfig servicesConfig;
     private INotification notification;
-    private WSClient client;
 
     @Inject
-    public NotificationEventProcessor(WSClient client, IServicesConfig servicesConfig, INotification notification){
-        this.client = client;
-        this.servicesConfig = servicesConfig;
+    public NotificationEventProcessor(INotification notification){
         this.notification = notification;
     }
 

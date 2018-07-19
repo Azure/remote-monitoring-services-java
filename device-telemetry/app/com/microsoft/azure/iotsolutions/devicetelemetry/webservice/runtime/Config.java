@@ -9,10 +9,8 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.ClientAuthConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.IClientAuthConfig;
 import com.typesafe.config.ConfigFactory;
-import play.api.Logger;
 import play.libs.ws.WSClient;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.HashSet;
@@ -143,8 +141,8 @@ public class Config implements IConfig {
         if (this.eventProcessorFactory != null) return this.eventProcessorFactory;
 
         IImplementationWrapper wrapper = new ImplementationWrapper(this.getServicesConfig(), this.client);
-        INotification notification = new Notification(this.client, wrapper);
-        this.eventProcessorFactory = new NotificationEventProcessorFactory(this.client, this.getServicesConfig(), notification);
+        INotification notification = new Notification(wrapper);
+        this.eventProcessorFactory = new NotificationEventProcessorFactory(notification);
         return this.eventProcessorFactory;
     }
 

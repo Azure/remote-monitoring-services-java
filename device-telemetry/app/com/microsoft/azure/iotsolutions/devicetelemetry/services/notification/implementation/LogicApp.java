@@ -21,9 +21,7 @@ public class LogicApp implements IImplementation {
     private List<String> email;
     private String ruleId;
     private String ruleDescription;
-    private static final int CONFLICT = 409;
-    private static final int NOT_FOUND = 404;
-    private static final int OK = 200;
+    private static final int LOGIC_OK = 202;
     private static final Logger.ALogger log = Logger.of(LogicApp.class);
 
     private WSClient wsClient;
@@ -60,7 +58,7 @@ public class LogicApp implements IImplementation {
         return this.prepareRequest()
             .post(jsonData.toString())
                 .handle((result, error) -> {
-                    if (result.getStatus() != OK) {
+                    if (result.getStatus() != LOGIC_OK) {
                         log.error("Logic app error code {}",
                             result.getStatusText());
                         throw new CompletionException(
@@ -82,7 +80,6 @@ public class LogicApp implements IImplementation {
 
     private WSRequest prepareRequest() {
         String url = this.endpointURL;
-                //"https://prod-14.southeastasia.logic.azure.com:443/workflows/49567a8fac3e49aa8ac72a6472a1da64/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=1gmlRlfj0h-z2iJ6Q4nEkw68WaaN6DQj3iknrboJddg";
         WSRequest wsRequest = this.wsClient
                 .url(url)
                 .addHeader("Csrf-Token", "no-check")
