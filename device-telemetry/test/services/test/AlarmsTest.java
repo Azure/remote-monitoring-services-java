@@ -26,12 +26,6 @@ public class AlarmsTest {
 
     @Before
     public void setUp() {
-        // temporary fix
-        String eventHubName = "notificationsystem";
-        String logicAppEndPointUrl = "https://prod-00.southeastasia.logic.azure.com:443/workflows/1f2493004aea43e1ac661f071a15f330/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=DIfPL17M7qydXwHxD7g-_K-P3mE6dqYuv7aDfbQji94";
-        String eventHubConnectionString = "sb://eventhubnamespace-f3pvd.servicebus.windows.net/;SharedAccessKeyName=NotificationSystem;SharedAccessKey=W8C1Y/ZoBglooXxc1O1r2y5QBl7sa0nIwrYRl5h5YhA=;EntityPath=notificationsystem";
-        int eventHubOffsetTimeInMinutes = 0;
-        String solutionName = "aayushdemo";
         // setup before every test
         ServicesConfig servicesConfig = new ServicesConfig(
             "storageConnection",
@@ -47,7 +41,12 @@ public class AlarmsTest {
                 "database",
                 "collection",
                 3
-            ), eventHubName, eventHubConnectionString, eventHubOffsetTimeInMinutes, logicAppEndPointUrl, solutionName);
+            ),
+            "eventHubName",
+            "eventHubConnectionString",
+            0,
+            "logicAppEndPointUrl",
+            "solutionName");
         this.storageClientMock = Mockito.mock(IStorageClient.class);
         this.alarms = new Alarms(servicesConfig, this.storageClientMock);
     }

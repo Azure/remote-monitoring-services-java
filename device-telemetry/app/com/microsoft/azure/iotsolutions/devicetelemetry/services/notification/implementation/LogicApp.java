@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft. All rights reserved.
+
 package com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.implementation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,6 +27,7 @@ public class LogicApp implements IImplementation {
     private String ruleDescription;
     private static final int LOGIC_OK = 202;
     private static final Logger.ALogger log = Logger.of(LogicApp.class);
+    private CloseableHttpClient client;
 
     public LogicApp(String endpointURL, String solutionName) {
         this();
@@ -33,6 +36,7 @@ public class LogicApp implements IImplementation {
     }
 
     public LogicApp() {
+        this.client = HttpClients.createDefault();
         this.content = "";
         this.ruleId = "";
         this.ruleDescription = "";
@@ -52,7 +56,6 @@ public class LogicApp implements IImplementation {
 
     @Override
     public void execute(){
-        CloseableHttpClient client = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost(this.endpointURL);
 
         String json = this.generatePayLoad().toString();
@@ -67,7 +70,7 @@ public class LogicApp implements IImplementation {
         httpPost.setHeader("Content-type", "application/json");
 
         try {
-            CloseableHttpResponse response = client.execute(httpPost);
+            CloseableHttpResponse response = this.client.execute(httpPost);
             int responseCode = response.getStatusLine().getStatusCode();
             if(responseCode != LOGIC_OK){
                 log.error(String.format("Logic app error code %d", response.getStatusLine().getStatusCode()));
