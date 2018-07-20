@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# Usage: source ./scripts/env-vars-setup
+#
+# IMPORTANT NOTES:
+# * use "source" in front of the script path, so that variables are exported in your shell
+# * the variables are set only in the current shell, run this script every time, or automate
+#   the setup using your `~/.bash_profile`.
+
+#  Prepare the environment variables used by the application.
+
+# Connection information for Azure DocumentDb
+export PCS_TELEMETRY_DOCUMENTDB_CONNSTRING="..."
+
+# Url for the PCS Storage Adapter Webservice
+export PCS_STORAGEADAPTER_WEBSERVICE_URL="..."
