@@ -3,16 +3,18 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.i
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ExternalDependencyException;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import play.Logger;
-import play.libs.ws.WSClient;
-import play.libs.ws.WSRequest;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
-import java.util.concurrent.CompletionStage;
 
 public class LogicApp implements IImplementation {
     private String endpointURL;
@@ -24,14 +26,10 @@ public class LogicApp implements IImplementation {
     private static final int LOGIC_OK = 202;
     private static final Logger.ALogger log = Logger.of(LogicApp.class);
 
-    private WSClient wsClient;
-
-    @Inject
-    public LogicApp(String endpointURL, String solutionName, final WSClient wsClient) {
+    public LogicApp(String endpointURL, String solutionName) {
         this();
         this.endpointURL = endpointURL;
         this.solutionName = solutionName;
-        this.wsClient = wsClient;
     }
 
     public LogicApp() {
@@ -53,39 +51,32 @@ public class LogicApp implements IImplementation {
     }
 
     @Override
-    public CompletionStage execute() {
-        ObjectNode jsonData = this.generatePayLoad();
-        return this.prepareRequest()
-            .post(jsonData.toString())
-                .handle((result, error) -> {
-                    if (result.getStatus() != LOGIC_OK) {
-                        log.error("Logic app error code {}",
-                            result.getStatusText());
-                        throw new CompletionException(
-                            new ExternalDependencyException(result.getStatusText()));
-                    }
+    public void execute(){
+        CloseableHttpClient client = HttpClients.createDefault();
+        HttpPost httpPost = new HttpPost(this.endpointURL);
 
-                    if (error != null) {
-                        log.error("Logic app request error: {}",
-                            error.getMessage());
-                        throw new CompletionException(
-                            new ExternalDependencyException(
-                                "Could not connect to logic app " +
-                                    error.getMessage()));
-                    }
+        String json = this.generatePayLoad().toString();
+        StringEntity entity;
+        try {
+            entity = new StringEntity(json);
+        } catch (UnsupportedEncodingException e) {
+            throw new CompletionException(
+                    new ExternalDependencyException(e.getMessage()));
+        }
+        httpPost.setEntity(entity);
+        httpPost.setHeader("Content-type", "application/json");
 
-                    return CompletableFuture.completedFuture(true);
-                });
-    }
+        try {
+            CloseableHttpResponse response = client.execute(httpPost);
+            int responseCode = response.getStatusLine().getStatusCode();
+            if(responseCode != LOGIC_OK){
+                log.error(String.format("Logic app error code %d", response.getStatusLine().getStatusCode()));
+            }
+        } catch (IOException e) {
+            throw new CompletionException(
+                    new ExternalDependencyException(e.getMessage()));
 
-    private WSRequest prepareRequest() {
-        String url = this.endpointURL;
-        WSRequest wsRequest = this.wsClient
-                .url(url)
-                .addHeader("Csrf-Token", "no-check")
-                .addHeader("Content-Type", "application/json");
-
-        return wsRequest;
+        }
     }
 
     private String generateRuleDetailUrl() {

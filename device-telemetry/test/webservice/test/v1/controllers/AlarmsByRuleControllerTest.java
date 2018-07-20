@@ -15,7 +15,6 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.IStorag
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime.Config;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsByRuleController;
 import helpers.UnitTest;
-import org.eclipse.jetty.util.Callback;
 import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Assert;
@@ -24,18 +23,12 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import play.Logger;
 import play.libs.ws.WSClient;
-import play.libs.ws.WSRequest;
-import play.libs.ws.WSResponse;
 import play.mvc.Result;
 
 import java.util.*;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.Future;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -66,7 +59,7 @@ public class AlarmsByRuleControllerTest {
     public void setUp(WSClient wsClient) {
         // setup before every test
         try {
-            IServicesConfig servicesConfig = new Config(wsClient).getServicesConfig();
+            IServicesConfig servicesConfig = new Config().getServicesConfig();
             IStorageClient client = mock(IStorageClient.class);
             this.wsClient = mock(WSClient.class);
             this.alarms = new Alarms(servicesConfig, client);

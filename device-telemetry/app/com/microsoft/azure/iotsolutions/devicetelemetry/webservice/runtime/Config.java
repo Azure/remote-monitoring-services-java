@@ -9,7 +9,6 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.ClientAuthConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.IClientAuthConfig;
 import com.typesafe.config.ConfigFactory;
-import play.libs.ws.WSClient;
 
 import java.time.Duration;
 import java.util.Collections;
@@ -71,11 +70,9 @@ public class Config implements IConfig {
     private IClientAuthConfig clientAuthConfig;
     private IEventProcessorHostWrapper eventProcessorHostWrapper;
     private IEventProcessorFactory eventProcessorFactory;
-    private WSClient client;
 
     @Inject
-    public Config(WSClient client) {
-        this.client = client;
+    public Config() {
         this.data = ConfigFactory.load();
     }
 
@@ -140,7 +137,7 @@ public class Config implements IConfig {
     public IEventProcessorFactory getEventProcessorFactory() {
         if (this.eventProcessorFactory != null) return this.eventProcessorFactory;
 
-        IImplementationWrapper wrapper = new ImplementationWrapper(this.getServicesConfig(), this.client);
+        IImplementationWrapper wrapper = new ImplementationWrapper(this.getServicesConfig());
         INotification notification = new Notification(wrapper);
         this.eventProcessorFactory = new NotificationEventProcessorFactory(notification);
         return this.eventProcessorFactory;
