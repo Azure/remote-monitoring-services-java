@@ -1,0 +1,17 @@
+language: java
+jdk:
+- oraclejdk8
+cache:
+  directories:
+  - "$HOME/.ivy2/cache"
+before_cache:
+- rm -rf $HOME/.ivy2/cache/com.typesafe.play/*
+- rm -rf $HOME/.ivy2/cache/scala_*/sbt_*/com.typesafe.play/*
+- find $HOME/.ivy2/cache -name "ivydata-*.properties" -print0 | xargs -n10 -0 rm
+before_install:
+- set -e
+script:
+- bash ./$CODEBASE/scripts/build
+notifications:
+  slack:
+    secure: kFQfVb7aoJa/VODo4yUBZGxvQ8hK4yiALJqmBo14FFqrgcaXBnPYlNF/RckIMRN1idJwF84qqMFn7TZlSQ0fmfUvc1z8YpjU9cpsIHmo0gNsBCXr27KrKe/VhEq+f0FbhDFDrR3XCzjP6cqxN1EvJ7dGcUNAweG/3ggjhYONYKIz6TYQj32tNMOYaB6k7lJ8jewEvWnNrRtYoRDT/4Gi+10RMwODfMOXdCfJhCoTQTCrUY1w+sxtb3nJBtT8pp6FWrsvVnxmhg92hINBnyx7bnTWIUdrWeQ6CMQMS1ueq4WMuMpeBdnkceKjl1cwiuh8+zgRgmdxgZgcW34wOgR1Vsqy0Kk+qupP/2+cetnPeCDrtZD9Y/HCut2Z6enSongIksjGUKLiKnIKGDuCyfKqApohpsmCrWIvAzLzc52G9GTf/3ID2ZqMam0n1xAcWk7EIl+keVIqQRtbNvCATtECD3gK0rU+9upVP+JMcaEyEmpcUsjG587/a2Hx5TWIXr5iDhOM2QxHnGj+755bFHhI45ZX0cVFiWadBWcGvaX8UaJUZIl4hr3YrXFiEpicK7gcUKtni09MqhLRBhgVLW2uEVPh7R9zgW+sitHyjWtyuUq19tSbhhzgGs8K9iC25t3LG5eRMkuyLTQcLQEGcGuJcno+0Vvacw5AyDjOVyqP3EM=
