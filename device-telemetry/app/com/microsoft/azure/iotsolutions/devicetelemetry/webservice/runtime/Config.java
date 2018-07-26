@@ -9,6 +9,7 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.ClientAuthConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.IClientAuthConfig;
 import com.typesafe.config.ConfigFactory;
+import play.libs.ws.WSClient;
 
 import java.time.Duration;
 import java.util.Collections;
@@ -70,9 +71,11 @@ public class Config implements IConfig {
     private IClientAuthConfig clientAuthConfig;
     private IEventProcessorHostWrapper eventProcessorHostWrapper;
     private IEventProcessorFactory eventProcessorFactory;
+    private WSClient client;
 
     @Inject
-    public Config() {
+    public Config(WSClient client) {
+        this.client = client;
         this.data = ConfigFactory.load();
     }
 
@@ -87,28 +90,28 @@ public class Config implements IConfig {
         String keyValueStorageUrl = this.data.getString(KEY_VALUE_STORAGE_URL_KEY);
 
         StorageConfig messagesConfig = new StorageConfig(
-            data.getString(MESSAGES_STORAGE_TYPE_KEY).toLowerCase(),
-            data.getString(MESSAGES_DOCDB_CONN_STRING_KEY),
-            data.getString(MESSAGES_DOCDB_DATABASE_KEY),
-            data.getString(MESSAGES_DOCDB_COLLECTION_KEY));
+                data.getString(MESSAGES_STORAGE_TYPE_KEY).toLowerCase(),
+                data.getString(MESSAGES_DOCDB_CONN_STRING_KEY),
+                data.getString(MESSAGES_DOCDB_DATABASE_KEY),
+                data.getString(MESSAGES_DOCDB_COLLECTION_KEY));
 
         AlarmsConfig alarmsConfig = new AlarmsConfig(
-            data.getString(ALARMS_STORAGE_TYPE_KEY).toLowerCase(),
-            data.getString(ALARMS_DOCDB_CONN_STRING_KEY),
-            data.getString(ALARMS_DOCDB_DATABASE_KEY),
-            data.getString(ALARMS_DOCDB_COLLECTION_KEY),
-            data.getInt(ALARMS_DOCDB_DELETE_RETRIES));
+                data.getString(ALARMS_STORAGE_TYPE_KEY).toLowerCase(),
+                data.getString(ALARMS_DOCDB_CONN_STRING_KEY),
+                data.getString(ALARMS_DOCDB_DATABASE_KEY),
+                data.getString(ALARMS_DOCDB_COLLECTION_KEY),
+                data.getInt(ALARMS_DOCDB_DELETE_RETRIES));
 
         this.servicesConfig = new ServicesConfig(
-            storageConnectionString,
-            keyValueStorageUrl,
-            messagesConfig,
-            alarmsConfig,
-            data.getString(ACTIONS_EVENTHUB_NAME),
-            data.getString(ACTIONS_EVENTHUB_CONNECTION_STRING),
-            data.getInt(ACTIONS_EVENTHUB_OFFSET_TIME_IN_MINUTES),
-            data.getString(ACTIONS_LOGIC_APP_ENDPOINT_URL),
-            data.getString(ACTIONS_SOLUTION_NAME));
+                storageConnectionString,
+                keyValueStorageUrl,
+                messagesConfig,
+                alarmsConfig,
+                data.getString(ACTIONS_EVENTHUB_NAME),
+                data.getString(ACTIONS_EVENTHUB_CONNECTION_STRING),
+                data.getInt(ACTIONS_EVENTHUB_OFFSET_TIME_IN_MINUTES),
+                data.getString(ACTIONS_LOGIC_APP_ENDPOINT_URL),
+                data.getString(ACTIONS_SOLUTION_NAME));
 
         return this.servicesConfig;
     }
@@ -118,10 +121,10 @@ public class Config implements IConfig {
         if (this.blobStorageConfig != null) return this.blobStorageConfig;
 
         this.blobStorageConfig = new BlobStorageConfig(
-            data.getString(ACTIONS_ACCOUNT_NAME),
-            data.getString(ACTIONS_ACCOUNT_KEY),
-            data.getString(ACTIONS_ENDPOINT_SUFFIX),
-            data.getString(ACTIONS_EVENTHUB_CONTAINER));
+                data.getString(ACTIONS_ACCOUNT_NAME),
+                data.getString(ACTIONS_ACCOUNT_KEY),
+                data.getString(ACTIONS_ENDPOINT_SUFFIX),
+                data.getString(ACTIONS_EVENTHUB_CONTAINER));
         return this.blobStorageConfig;
     }
 
@@ -137,7 +140,7 @@ public class Config implements IConfig {
     public IEventProcessorFactory getEventProcessorFactory() {
         if (this.eventProcessorFactory != null) return this.eventProcessorFactory;
 
-        IImplementationWrapper wrapper = new ImplementationWrapper(this.getServicesConfig());
+        IImplementationWrapper wrapper = new ImplementationWrapper(this.client, this.getServicesConfig());
         INotification notification = new Notification(wrapper);
         this.eventProcessorFactory = new NotificationEventProcessorFactory(notification);
         return this.eventProcessorFactory;
@@ -151,8 +154,8 @@ public class Config implements IConfig {
 
         // Default to True unless explicitly disabled
         Boolean authRequired = !data.hasPath(AUTH_REQUIRED_KEY)
-            || data.getString(AUTH_REQUIRED_KEY).isEmpty()
-            || data.getBoolean(AUTH_REQUIRED_KEY);
+                || data.getString(AUTH_REQUIRED_KEY).isEmpty()
+                || data.getBoolean(AUTH_REQUIRED_KEY);
 
         // Default to JWT
         String authType = "JWT";
@@ -168,8 +171,8 @@ public class Config implements IConfig {
         if (data.hasPath(JWT_ALGOS_KEY)) {
             jwtAllowedAlgos.clear();
             Collections.addAll(
-                jwtAllowedAlgos,
-                data.getString(JWT_ALGOS_KEY).split(","));
+                    jwtAllowedAlgos,
+                    data.getString(JWT_ALGOS_KEY).split(","));
         }
 
         // Default to empty, no issuer
@@ -191,7 +194,7 @@ public class Config implements IConfig {
         }
 
         this.clientAuthConfig = new ClientAuthConfig(
-            authRequired, authType, jwtAllowedAlgos, jwtIssuer, jwtAudience, jwtClockSkew);
+                authRequired, authType, jwtAllowedAlgos, jwtIssuer, jwtAudience, jwtClockSkew);
 
         return this.clientAuthConfig;
     }

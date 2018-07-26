@@ -24,6 +24,7 @@ import org.junit.experimental.categories.Category;
 import play.Logger;
 import play.libs.ws.WSClient;
 import play.mvc.Result;
+import play.test.WSTestClient;
 
 import java.util.*;
 
@@ -54,12 +55,14 @@ public class AlarmsByRuleControllerTest {
     private final String ruleIdKey = "rule.id";
     private final String ruleSeverityKey = "rule.severity";
     private final String ruleDescriptionKey = "rule.description";
+    private WSClient client;
 
     @Before @Inject
-    public void setUp(WSClient wsClient) {
+    public void setUp() {
         // setup before every test
+        this.client = WSTestClient.newClient(8080);
         try {
-            IServicesConfig servicesConfig = new Config().getServicesConfig();
+            IServicesConfig servicesConfig = new Config(this.client).getServicesConfig();
             IStorageClient client = mock(IStorageClient.class);
             this.wsClient = mock(WSClient.class);
             this.alarms = new Alarms(servicesConfig, client);
