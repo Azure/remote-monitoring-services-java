@@ -7,7 +7,7 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.mo
 import java.util.concurrent.CompletionStage;
 
 public interface INotification {
-    public enum EmailImplementationTypes{
+    public enum EmailImplementationTypes {
         LogicApp
     }
     public AlarmNotificationAsaModel getAlarm();

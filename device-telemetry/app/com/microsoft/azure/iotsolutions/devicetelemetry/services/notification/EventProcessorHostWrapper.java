@@ -10,7 +10,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 
-public class EventProcessorHostWrapper implements IEventProcessorHostWrapper{
+public class EventProcessorHostWrapper implements IEventProcessorHostWrapper {
     private static final String DEFAULT_STRING = "defaultString";
 
     public EventProcessorHostWrapper() {
@@ -45,8 +45,10 @@ public class EventProcessorHostWrapper implements IEventProcessorHostWrapper{
     }
 
     @Override
-    public CompletionStage registerEventProcessorFactoryAsync(EventProcessorHost host, IEventProcessorFactory factory, EventProcessorOptions
-        options) {
+    public CompletionStage registerEventProcessorFactoryAsync(
+            EventProcessorHost host,
+            IEventProcessorFactory factory,
+            EventProcessorOptions options) {
         try {
             host.registerEventProcessorFactory(factory, options);
             return CompletableFuture.completedFuture(true);

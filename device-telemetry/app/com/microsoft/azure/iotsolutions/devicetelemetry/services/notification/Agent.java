@@ -38,20 +38,20 @@ public class Agent implements IAgent {
     }
 
     @Override
-    public CompletionStage runAsync(){
+    public CompletionStage runAsync() {
         this.logger.info("Notification system running");
-        try{
+        try {
             this.logger.info("Notification system running");
             setUpEventHubAsync().thenRun(() -> this.logger.info("Set up eventhub complete"));
             this.logger.info("Notification system exiting");
             return CompletableFuture.completedFuture(true);
-        } catch (Exception e){
+        } catch (Exception e) {
             this.logger.error(e.getMessage());
             throw new CompletionException(e);
         }
     }
 
-    private CompletionStage setUpEventHubAsync(){
+    private CompletionStage setUpEventHubAsync() {
         try {
             String storageConnectionString = String
                     .format("DefaultEndpointsProtocol=https;AccountName=%s;AccountKey=%s;EndpointSuffix=%s",

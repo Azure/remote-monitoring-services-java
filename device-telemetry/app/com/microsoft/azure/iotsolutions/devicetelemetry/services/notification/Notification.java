@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft. All rights reserved.
+
 package com.microsoft.azure.iotsolutions.devicetelemetry.services.notification;
 
 import com.google.inject.Inject;
@@ -27,13 +29,13 @@ public class Notification implements INotification {
     }
 
     @Override
-    public void setAlarm(AlarmNotificationAsaModel model){
+    public void setAlarm(AlarmNotificationAsaModel model) {
         this.alarm = model;
     }
 
     public CompletionStage executeAsync() {
         try {
-            for(ActionAsaModel action : this.alarm.getActions()){
+            for(ActionAsaModel action : this.alarm.getActions()) {
                 switch (action.getActionType()){
                     case "Email":
                         implementation = this.implementationWrapper.getImplementationType(EMAIL_IMPLEMENTATION_TYPE);

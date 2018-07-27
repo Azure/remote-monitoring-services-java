@@ -9,7 +9,7 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.im
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import play.libs.ws.WSClient;
 
-public class ImplementationWrapper implements IImplementationWrapper{
+public class ImplementationWrapper implements IImplementationWrapper {
     private IServicesConfig servicesConfig;
     private WSClient client;
 

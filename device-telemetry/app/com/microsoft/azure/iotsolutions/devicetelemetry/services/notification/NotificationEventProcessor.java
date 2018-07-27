@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft. All rights reserved.
+
 package com.microsoft.azure.iotsolutions.devicetelemetry.services.notification;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,7 +16,7 @@ public class NotificationEventProcessor implements IEventProcessor {
     private INotification notification;
 
     @Inject
-    public NotificationEventProcessor(INotification notification){
+    public NotificationEventProcessor(INotification notification) {
         this.notification = notification;
     }
 
@@ -30,7 +32,7 @@ public class NotificationEventProcessor implements IEventProcessor {
 
     @Override
     public void onEvents(PartitionContext context, Iterable<EventData> events) throws Exception {
-        for(EventData eventData : events){
+        for(EventData eventData : events) {
             String data = new String(eventData.getBytes(), "UTF8");
             AlarmNotificationAsaModel model = new ObjectMapper().readValue(data, AlarmNotificationAsaModel.class);
             this.notification.setAlarm(model);

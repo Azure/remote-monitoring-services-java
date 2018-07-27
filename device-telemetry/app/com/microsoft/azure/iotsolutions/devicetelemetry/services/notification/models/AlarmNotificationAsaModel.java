@@ -103,7 +103,7 @@ public class AlarmNotificationAsaModel {
         Message_received = message_received;
     }
 
-    public AlarmNotificationAsaModel(){
+    public AlarmNotificationAsaModel() {
         // empty constructor
     }
 }

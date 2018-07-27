@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft. All rights reserved.
+
 package com.microsoft.azure.iotsolutions.devicetelemetry.services.notification;
 
 import com.google.inject.Inject;
@@ -9,7 +11,7 @@ public class NotificationEventProcessorFactory implements IEventProcessorFactory
     private INotification notification;
 
     @Inject
-    public NotificationEventProcessorFactory(INotification notification){
+    public NotificationEventProcessorFactory(INotification notification) {
         this.notification = notification;
     }
 
