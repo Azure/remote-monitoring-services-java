@@ -266,8 +266,8 @@ public final class RuleApiModel {
      */
     public RuleServiceModel toServiceModel(String idOverride) {
         ArrayList<IActionServiceModel> actionServiceModels = new ArrayList<IActionServiceModel>();
-        if (actions != null) {
-            for (ActionApiModel action : actions) {
+        if (this.actions != null) {
+            for (ActionApiModel action : this.actions) {
                 try {
                     actionServiceModels.add(action.toServiceModel());
                 } catch (Exception e) {
@@ -276,9 +276,8 @@ public final class RuleApiModel {
             }
         }
         ArrayList<ConditionServiceModel> conditionServiceModels = new ArrayList<ConditionServiceModel>();
-        if (conditions != null) {
-            for (ConditionApiModel condition :
-                    conditions) {
+        if (this.conditions != null) {
+            for (ConditionApiModel condition : this.conditions) {
                 conditionServiceModels.add(condition.toServiceModel());
             }
         }
