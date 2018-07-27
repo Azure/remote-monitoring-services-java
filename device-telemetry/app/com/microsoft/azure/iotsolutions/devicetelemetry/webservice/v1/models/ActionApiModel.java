@@ -5,7 +5,6 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.Inva
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.EmailServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.IActionServiceModel;
 
-import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,24 +27,6 @@ public final class ActionApiModel {
         Parameters = new HashMap<>();
     }
     
-    @JsonProperty("Type")
-    public String getType() {
-        return Type;
-    }
-
-    public void setType(String type) {
-        Type = type;
-    }
-
-    @JsonProperty("Parameters")
-    public Map<String, Object> getParameters() {
-        return Parameters;
-    }
-
-    public void setParameters(Map<String, Object> parameters) {
-        Parameters = parameters;
-    }
-
     @JsonProperty("Type")
     public String getType() {
         return Type;
