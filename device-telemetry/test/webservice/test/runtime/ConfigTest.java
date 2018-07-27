@@ -9,8 +9,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.mockito.Mockito;
 import play.libs.ws.WSClient;
-import play.test.WSTestClient;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -19,7 +19,7 @@ public class ConfigTest {
 
     @Before @Inject
     public void setUp() {
-        this.client = WSTestClient.newClient(8080);
+        this.client = Mockito.mock(WSClient.class);
         // something before every test
     }
 
