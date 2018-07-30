@@ -4,11 +4,13 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth;
 
 import akka.stream.Materializer;
 import com.google.inject.Inject;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.NotAuthorizedException;
 import play.Logger;
 import play.libs.Json;
 import play.mvc.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
