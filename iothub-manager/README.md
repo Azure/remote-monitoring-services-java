@@ -53,7 +53,7 @@ This service has a dependency on the following Azure resources. Follow the instr
 This service has a dependency on the following Azure resources. Follow the instructions
 for [Deploy the Azure services](https://docs.microsoft.com/azure/iot-suite/iot-suite-remote-monitoring-deploy-local#deploy-the-azure-services) to deploy the required resources.
 
-* [Config microservice](https://github.com/Azure/pcs-config-java)
+* [Storage adapter microservice](https://github.com/Azure/pcs-storage-adapter-java)
 
 > Note: you can also use a [deployed endpoint][deploy-rm] with [Authentication disabled][disable-auth] (e.g. https://{your-resource-group}.azurewebsites.net/config/v1)
 
@@ -65,7 +65,7 @@ In order to run the service, some environment variables need to be created at le
 * `PCS_IOTHUB_CONNSTRING` = {your Azure IoT Hub connection string from [Deploy Azure Services](#deploy-azure-services)}
     *  More information on where to find your IoT Hub connection string [here][iothub-connstring-blog].
 * `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
-    * The url for the [Config microservice](https://github.com/Azure/pcs-storage-adapter-java) from [Setup Dependencies](#setup-dependencies)
+    * The url for the [Storage adapter microservice](https://github.com/Azure/pcs-storage-adapter-java) from [Setup Dependencies](#setup-dependencies)
 
 # Running the service in an IDE
 
