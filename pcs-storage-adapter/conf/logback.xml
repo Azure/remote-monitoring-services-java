@@ -1,0 +1,41 @@
+<!-- Copyright (c) Microsoft. All rights reserved. -->
+
+<!-- https://www.playframework.com/documentation/latest/SettingsLogger -->
+<configuration>
+
+  <conversionRule conversionWord="coloredLevel" converterClass="play.api.libs.logback.ColoredLevel" />
+
+  <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+    <file>${application.home:-.}/logs/application.log</file>
+    <encoder>
+      <!-- Output 20 lines of exception stack traces -->
+      <pattern>%date [%level] from %logger in %thread - %message%n%xException{20}</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%coloredLevel %logger{15} - %message%n%xException{10}</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="ASYNCSTDOUT" class="ch.qos.logback.classic.AsyncAppender">
+    <queueSize>500</queueSize>
+    <discardingThreshold>0</discardingThreshold>
+    <appender-ref ref="STDOUT" />
+  </appender>
+
+  <!-- Production: INFO, Development: DEBUG -->
+  <logger name="play" level="INFO" />
+  <logger name="akka" level="INFO" />
+  <logger name="application" level="INFO" />
+
+  <root level="INFO">
+    <!--
+    Use async for better performance
+    see http://blog.takipi.com/how-to-instantly-improve-your-java-logging-with-7-logback-tweaks
+    -->
+    <appender-ref ref="ASYNCSTDOUT" />
+  </root>
+
+</configuration>

@@ -205,7 +205,7 @@ Please enter issues, bugs, or suggestions as
 Copyright (c) Microsoft Corporation. All rights reserved.
 Licensed under the [MIT](LICENSE) License.
 
-[build-badge]: https://img.shields.io/travis/Azure/device-telemetry-java.svg
+[build-badge]: https://solutionaccelerators.visualstudio.com/RemoteMonitoring/_apis/build/status/Consolidated%20Repo%20-%20Java
 [build-url]: https://travis-ci.org/Azure/device-telemetry-java
 [issues-badge]: https://img.shields.io/github/issues/azure/device-telemetry-java.svg
 [issues-url]: https://github.com/azure/device-telemetry-java/issues
