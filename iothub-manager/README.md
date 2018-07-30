@@ -115,7 +115,7 @@ Steps using Eclipse Oxygen ("Eclipse for Java Developers" package):
   navigating to the root folder of the project.
 * From the console run `sbt -jvm-debug 9999 "run 9002"` to start the project
 * Test that the service is up and running pointing your browser to
-  http://127.0.0.1:900/v1/status
+  http://127.0.0.1:9002/v1/status
 * In Eclipse, select "Run -> Debug Configurations" and add a "Remote Java
   Application", using "localhost" and port "9999".
 * After saving this configuration, you can click "Debug" to connect to the
