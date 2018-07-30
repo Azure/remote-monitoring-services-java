@@ -4,6 +4,7 @@ package com.microsoft.azure.iotsolutions.uiconfig.webservice.auth;
 
 import akka.stream.Materializer;
 import com.google.inject.Inject;
+import com.microsoft.azure.iotsolutions.uiconfig.services.external.IUserManagementClient;
 import play.Logger;
 import play.libs.Json;
 import play.mvc.*;
@@ -36,14 +37,18 @@ public class AuthorizationFilter extends Filter {
 
     private Boolean authRequired;
 
+    private final IUserManagementClient userManagementClient;
+
     @Inject
     public AuthorizationFilter(
         Materializer mat,
         IClientAuthConfig config,
-        IJwtValidation jwtValidation) {
+        IJwtValidation jwtValidation,
+        IUserManagementClient userManagementClient) {
         super(mat);
         this.authRequired = config.isAuthRequired();
         this.jwtValidation = jwtValidation;
+        this.userManagementClient = userManagementClient;
     }
 
     @Override
