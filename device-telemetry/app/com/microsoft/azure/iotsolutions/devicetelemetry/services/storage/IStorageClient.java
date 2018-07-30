@@ -19,7 +19,7 @@ public interface IStorageClient {
 
     Document deleteDocument(String databaseName, String colId, String docId) throws Exception;
 
-    ArrayList<Document> queryDocuments(String databaseName, String colId, FeedOptions queryOptions, String queryString, int skip) throws Exception;
+    ArrayList<Document> queryDocuments(String databaseName, String colId, FeedOptions queryOptions, SqlQuerySpec querySpec, int skip) throws Exception;
 
     Status ping();
 }

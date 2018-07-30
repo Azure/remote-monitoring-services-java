@@ -1,0 +1,35 @@
+# Notes:
+# * duplicate routes pointing to a "collection" adding an extra rule with a trailing slash
+#   so that collections can be retrieved with and without the trailing "/"
+# * prefix every action with `@` to avoid caching exceptions occurring in controllers constructors
+#   (see https://www.playframework.com/documentation/2.6.x/JavaDependencyInjection for more info)
+
+GET    /v1/status               @com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.StatusController.get
+
+GET    /v1/devices              @com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.getDevicesAsync(query: String ?= "")
+GET    /v1/devices/             @com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.getDevicesAsync(query: String ?= "")
+
+POST   /v1/devices/query        @com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.queryDevicesAsync
+
+GET    /v1/devices/:id          @com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.getDeviceAsync(id)
+
+POST   /v1/devices              @com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.postAsync
+POST   /v1/devices/             @com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.postAsync
+
+PUT    /v1/devices/:id          @com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.putAsync(id)
+
+DELETE /v1/devices/:id          @com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.deleteAsync(id)
+
+POST /v1/devices/:id/methods    @com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.invokeDeviceMethodAsync(id)
+POST /v1/devices/:id/methods/   @com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.invokeDeviceMethodAsync(id)
+
+GET    /v1/jobs                 @com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.JobsController.getJobsAsync
+GET    /v1/jobs/                @com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.JobsController.getJobsAsync
+
+GET    /v1/jobs/:id             @com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.JobsController.getJobAsync(id)
+
+POST   /v1/jobs                 @com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.JobsController.scheduleJobAsync
+POST   /v1/jobs/                @com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.JobsController.scheduleJobAsync
+
+GET     /v1/deviceproperties    @com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicePropertiesController.getAllAsync()
+GET     /v1/deviceproperties/   @com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicePropertiesController.getAllAsync()

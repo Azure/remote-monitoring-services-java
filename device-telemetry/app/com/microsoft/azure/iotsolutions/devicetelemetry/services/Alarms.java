@@ -3,9 +3,7 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.services;
 
 import com.google.inject.Inject;
-import com.microsoft.azure.documentdb.Document;
-import com.microsoft.azure.documentdb.DocumentClientException;
-import com.microsoft.azure.documentdb.FeedOptions;
+import com.microsoft.azure.documentdb.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ExternalDependencyException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.helpers.QueryBuilder;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.AlarmServiceModel;
@@ -55,7 +53,7 @@ public class Alarms implements IAlarms {
     @Override
     public ArrayList<AlarmServiceModel> getListByRuleId(String id, DateTime from, DateTime to, String order, int skip,
                                                         int limit, String[] devices) throws Exception {
-        String sqlQuery = QueryBuilder.getDocumentsSQL(
+        SqlQuerySpec querySpec = QueryBuilder.getDocumentsSQL(
             ALARM_SCHEMA_KEY,
             id, RULE_ID_KEY,
             from, MESSAGE_RECEIVED_KEY,
@@ -68,7 +66,7 @@ public class Alarms implements IAlarms {
             this.databaseName,
             this.collectionId,
             null,
-            sqlQuery,
+            querySpec,
             skip);
 
         ArrayList<AlarmServiceModel> alarms = new ArrayList<>();
@@ -92,7 +90,7 @@ public class Alarms implements IAlarms {
 
         // build sql query to get open/acknowledged alarm count for rule
         String[] statusList = {ALARM_STATUS_OPEN, ALARM_STATUS_ACKNOWLEDGED};
-        String sqlQuery = QueryBuilder.getCountSQL(
+        SqlQuerySpec querySpec = QueryBuilder.getCountSQL(
             ALARM_SCHEMA_KEY,
             ruleId, RULE_ID_KEY,
             from, MESSAGE_RECEIVED_KEY,
@@ -113,7 +111,7 @@ public class Alarms implements IAlarms {
                 this.databaseName,
                 this.collectionId,
                 queryOptions,
-                sqlQuery,
+                querySpec,
                 0);
             if (resultList.size() > 0) {
                 doc = resultList.get(0);
@@ -136,7 +134,7 @@ public class Alarms implements IAlarms {
     @Override
     public ArrayList<AlarmServiceModel> getList(DateTime from, DateTime to, String order, int skip,
                                                 int limit, String[] devices) throws Exception {
-        String sqlQuery = QueryBuilder.getDocumentsSQL(
+        SqlQuerySpec querySpec = QueryBuilder.getDocumentsSQL(
             ALARM_SCHEMA_KEY,
             null, null,
             from, MESSAGE_RECEIVED_KEY,
@@ -149,7 +147,7 @@ public class Alarms implements IAlarms {
             this.databaseName,
             this.collectionId,
             null,
-            sqlQuery,
+            querySpec,
             skip);
 
         ArrayList<AlarmServiceModel> alarms = new ArrayList<>();
@@ -237,11 +235,13 @@ public class Alarms implements IAlarms {
 
     private Document getDocumentById(String id) throws Exception {
         // Retrieve the document using the DocumentClient.
+        SqlParameterCollection parameterCollection = new SqlParameterCollection(new SqlParameter("@id", id));
+        SqlQuerySpec querySpec = new SqlQuerySpec("SELECT * FROM c WHERE c.id=@id", parameterCollection);
         ArrayList<Document> documentList = this.storageClient.queryDocuments(
             this.databaseName,
             this.collectionId,
             null,
-            "SELECT * FROM c WHERE c.id='" + id + "'",
+            querySpec,
             0);
 
         if (documentList.size() > 0) {

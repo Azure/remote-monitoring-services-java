@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 import com.microsoft.azure.documentdb.*;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.helpers.QueryBuilder;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.MessageListServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.MessageServiceModel;
@@ -48,11 +49,11 @@ public final class Messages implements IMessages {
         String order,
         int skip,
         int limit,
-        String[] devices) {
+        String[] devices) throws InvalidInputException {
 
         int dataPrefixLen = dataPrefix.length();
 
-        String sql = QueryBuilder.getDocumentsSQL(
+        SqlQuerySpec querySpec = QueryBuilder.getDocumentsSQL(
             "d2cmessage",
             null, null,
             from, "device.msg.received",
@@ -61,7 +62,7 @@ public final class Messages implements IMessages {
             skip,
             limit,
             devices, "device.id");
-        ArrayList<Document> docs = query(sql, skip);
+        ArrayList<Document> docs = query(querySpec, skip);
 
         // Messages to return
         ArrayList<MessageServiceModel> messages = new ArrayList<>();
@@ -96,7 +97,7 @@ public final class Messages implements IMessages {
         return new MessageListServiceModel(messages, new ArrayList<>(properties));
     }
 
-    private ArrayList<Document> query(String sql, int skip) {
+    private ArrayList<Document> query(SqlQuerySpec querySpec, int skip) {
 
         FeedOptions queryOptions = new FeedOptions();
         queryOptions.setEnableCrossPartitionQuery(true);
@@ -107,7 +108,7 @@ public final class Messages implements IMessages {
         do {
             FeedResponse<Document> queryResults = this.docDbConnection.queryDocuments(
                 this.docDbCollectionLink,
-                sql,
+                querySpec,
                 queryOptions);
 
             for (Document doc : queryResults.getQueryIterable()) {
