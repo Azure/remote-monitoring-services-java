@@ -60,10 +60,12 @@ for [Deploy the Azure services](https://docs.microsoft.com/azure/iot-suite/iot-s
 ### 3. Environment variables required to run the service
 In order to run the service, some environment variables need to be created at least once. See specific instructions for IDE or command line setup below for more information. More information on environment variables [here](#configuration-and-environment-variables).
 
+* `PCS_AUTH_WEBSERVICE_URL` = http://localhost:9001/v1
+    * The url for the [Authentication microservice](https://github.com/Azure/pcs-auth-dotnet) from [Setup Dependencies](#setup-dependencies)
 * `PCS_IOTHUB_CONNSTRING` = {your Azure IoT Hub connection string from [Deploy Azure Services](#deploy-azure-services)}
     *  More information on where to find your IoT Hub connection string [here][iothub-connstring-blog].
-* `PCS_CONFIG_WEBSERVICE_URL` = http://localhost:9005/v1
-    * The url for the [Config microservice](https://github.com/Azure/pcs-config-java) from [Setup Dependencies](#setup-dependencies)
+* `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
+    * The url for the [Config microservice](https://github.com/Azure/pcs-storage-adapter-java) from [Setup Dependencies](#setup-dependencies)
 
 # Running the service in an IDE
 
@@ -77,7 +79,7 @@ Intellij IDEA lets you open the application without using a command
 prompt, without configuring anything outside of the IDE. The SBT build tool
 takes care of downloading appropriate libraries, resolving dependencies and
 building the project (more info [here](https://www.playframework.com/documentation/2.6.x/IDE)).
-   `PCS_IOTHUB_CONNSTRING` storing your Azure IoT Hub connection string and `PCS_STORAGEADAPTER_WEBSERVICE_URL` for the URL of the storage adapter webservice.
+   `PCS_AUTH_WEBSERVICE_URL` for the URL of the authentication webservice, `PCS_IOTHUB_CONNSTRING` storing your Azure IoT Hub connection string and `PCS_STORAGEADAPTER_WEBSERVICE_URL` for the URL of the storage adapter webservice.
 
 Steps using IntelliJ IDEA Community 2017, with SBT plugin enabled:
 
@@ -86,16 +88,18 @@ Steps using IntelliJ IDEA Community 2017, with SBT plugin enabled:
   the SBT structure. Wait for the IDE to download some dependencies
   (see IntelliJ status bar). This may take a while, hang in there!
 * Create a new Run Configuration, of type "SBT Task", with any name.
-  * Enter "run 9005" (including the double quotes) in Tasks. This ensures that
-   the service starts using the TCP port 9005.  If you desire to use a
+  * Enter "run 9002" (including the double quotes) in Tasks. This ensures that
+   the service starts using the TCP port 9002.  If you desire to use a
     different port, feel free to change it.
   * Define the following environment variable:
+    * `PCS_AUTH_WEBSERVICE_URL` = http://localhost:9001/v1
     * `PCS_IOTHUB_CONNSTRING` = {your Azure IoT Hub connection string}
-    * `PCS_CONFIG_WEBSERVICE_URL` = http://localhost:9005/v1
+    * `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
 * Either from the toolbar or the Run menu, execute the configuration just
   created, using the Debug command/button
 * Test that the service is up and running pointing your browser to
-  http://127.0.0.1:9005/v1/status
+  * http://127.0.0.1:9001/v1/status
+  * http://127.0.0.1:9022/v1/status
 
 ## Running the service with Eclipse
 The integration with Eclipse requires the [sbteclipse plugin](https://github.com/typesafehub/sbteclipse), already
@@ -109,9 +113,9 @@ Steps using Eclipse Oxygen ("Eclipse for Java Developers" package):
   required by Eclipse to recognize the project.
 * Open Eclipse, and from the Welcome screen "Import" an existing project,
   navigating to the root folder of the project.
-* From the console run `sbt -jvm-debug 9999 "run 9005"` to start the project
+* From the console run `sbt -jvm-debug 9999 "run 9002"` to start the project
 * Test that the service is up and running pointing your browser to
-  http://127.0.0.1:9005/v1/status
+  http://127.0.0.1:900/v1/status
 * In Eclipse, select "Run -> Debug Configurations" and add a "Remote Java
   Application", using "localhost" and port "9999".
 * After saving this configuration, you can click "Debug" to connect to the
@@ -121,8 +125,9 @@ Steps using Eclipse Oxygen ("Eclipse for Java Developers" package):
 
 1. Make sure the [prerequisites](#prerequisites) are set up.
 1. Set the following environment variables in your system. More information on environment variables [here](#configuration-and-environment-variables).
+    * `PCS_AUTH_WEBSERVICE_URL` = http://localhost:9001/v1
     * `PCS_IOTHUB_CONNSTRING` = {your Azure IoT Hub connection string}
-    * `PCS_CONFIG_WEBSERVICE_URL` = http://localhost:9005/v1
+    * `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
 1. Use the scripts in the [scripts](scripts) folder for many frequent tasks:
 
 * `build`: compile all the projects and run the tests.

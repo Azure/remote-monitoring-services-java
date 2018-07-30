@@ -32,11 +32,11 @@ public class UserManagementClient implements IUserManagementClient {
             .post(Json.toJson(roles))
             .handle((response, error) -> {
                 if (error != null) {
-                    String message = String.format("Fail to get allowed actions: %s", url);
+                    String message = String.format("Failed to get allowed actions: %s", url);
                     log.error(message, error.getCause());
                     throw new CompletionException(message, error.getCause());
                 } else if (response.getStatus() != Http.Status.OK) {
-                    String message = String.format("Fail to get allowed actions: %s", url);
+                    String message = String.format("Failed to get allowed actions: %s", url);
                     log.error(message);
                     throw new CompletionException(new ExternalDependencyException(message));
                 } else {

@@ -2,11 +2,13 @@
 
 package com.microsoft.azure.iotsolutions.iothubmanager.webservice.auth;
 
+import play.libs.Json;
 import play.libs.typedmap.TypedKey;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Results;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -49,6 +51,8 @@ public class Authorizer extends Results {
      * @return a <code>403 Forbidden</code> result
      */
     public Result onUnauthorized(Http.Context ctx, String action) {
-        return forbidden(String.format("The current user is not allowed to perform this action: `%s`", action));
+        return forbidden(Json.toJson(new HashMap<String, String>() {{
+            put("Error", String.format("The current user is not allowed to perform this action: `%s`", action));
+        }}));
     }
 }

@@ -17,7 +17,7 @@ public class ClientAuthConfig implements IClientAuthConfig {
 
     public ClientAuthConfig(
         Boolean authRequired,
-        String authServiceurl,
+        String authServiceUrl,
         String authType,
         HashSet<String> jwtAllowedAlgos,
         String jwtIssuer,
@@ -25,7 +25,7 @@ public class ClientAuthConfig implements IClientAuthConfig {
         Duration jwtClockSkew
     ) {
         this.authRequired = authRequired;
-        this.authServiceurl = authServiceurl;
+        this.authServiceurl = authServiceUrl;
         this.authType = authType;
         this.jwtAllowedAlgos = jwtAllowedAlgos;
         this.jwtIssuer = jwtIssuer;

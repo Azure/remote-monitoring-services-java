@@ -2,11 +2,13 @@
 
 package com.microsoft.azure.iotsolutions.iothubmanager.webservice.auth;
 
+import play.libs.Json;
 import play.mvc.Action;
 import play.mvc.Http;
 import play.mvc.Result;
 
 import javax.inject.Inject;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -44,7 +46,10 @@ public class AuthorizeAction extends Action<Authorize> {
             isAuthRequired = Authorizer.isAuthRequired(ctx);
             isExternal = Authorizer.isExternalRequest(ctx);
         } catch (Exception e) {
-            return CompletableFuture.completedFuture(internalServerError("Failed to get context of authorization"));
+            Result internalServerError = internalServerError(Json.toJson(new HashMap<String, String>() {{
+                put("Error", "Failed to get context of authorization from request");
+            }}));
+            return CompletableFuture.completedFuture(internalServerError);
         }
 
         List<String> lowerCasedActions = allowedActions.stream()

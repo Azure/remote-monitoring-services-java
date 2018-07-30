@@ -49,7 +49,7 @@ build_in_sandbox() {
         ./scripts/env-vars-check
 
         docker run -it \
-            -e PCS_IOTHUBMANAGER_WEBSERVICE_URL \
+            -e PCS_AUTH_WEBSERVICE_URL \
             -e PCS_IOTHUB_CONNSTRING \
             -e PCS_STORAGEADAPTER_WEBSERVICE_URL \
             -v "$PCS_CACHE/sandbox/.ivy2:/root/.ivy2" \

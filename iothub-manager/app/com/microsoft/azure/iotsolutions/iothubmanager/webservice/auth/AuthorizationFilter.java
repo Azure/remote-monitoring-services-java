@@ -120,7 +120,7 @@ public class AuthorizationFilter extends Filter {
         return nextFilter.apply(requestHeader).thenApply(result -> result);
     }
 
-    private UserClaims getUserClaims(String s) throws NoAuthorizationException {
+    private UserClaims getUserClaims(String s) throws NotAuthorizedException {
         if (!s.startsWith(AUTH_HEADER_PREFIX)) {
             log.error(AUTH_HEADER + " header prefix not found");
             return null;

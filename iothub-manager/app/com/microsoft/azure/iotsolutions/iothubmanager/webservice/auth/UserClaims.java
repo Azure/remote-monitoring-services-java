@@ -5,6 +5,7 @@ package com.microsoft.azure.iotsolutions.iothubmanager.webservice.auth;
 import java.util.List;
 
 public class UserClaims {
+
     private String userObjectId;
     private List<String> Roles;
 
