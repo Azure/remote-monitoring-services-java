@@ -4,12 +4,13 @@ package com.microsoft.azure.iotsolutions.uiconfig.webservice.auth;
 
 import akka.stream.Materializer;
 import com.google.inject.Inject;
-import com.microsoft.azure.iotsolutions.uiconfig.services.external.IUserManagementClient;
+import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.NotAuthorizedException;
 import play.Logger;
 import play.libs.Json;
 import play.mvc.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -56,6 +57,8 @@ public class AuthorizationFilter extends Filter {
         Function<Http.RequestHeader, CompletionStage<Result>> nextFilter,
         Http.RequestHeader requestHeader) {
 
+        requestHeader = requestHeader.addAttr(Authorizer.AUTH_REQUIRED_TYPED_KEY, this.authRequired);
+
         // If auth is disabled, proceed with the request
         if (!this.authRequired) {
             log.debug("Skipping auth (auth disabled)");
@@ -70,12 +73,16 @@ public class AuthorizationFilter extends Filter {
 
             // Skip auth and proceed
             log.debug("Skipping auth for service to service request");
+            requestHeader = requestHeader.addAttr(Authorizer.EXTERNAL_REQUEST_TYPED_KEY, false);
             return nextFilter.apply(requestHeader).thenApply(result -> result);
         }
+
+        requestHeader = requestHeader.addAttr(Authorizer.EXTERNAL_REQUEST_TYPED_KEY, true);
 
         // Validate the authorization header
         Boolean authorized = false;
         Optional<String> authHeader = requestHeader.header(AUTH_HEADER);
+        UserClaims userClaims;
         if (authHeader.isPresent()) {
             try {
                 authorized = this.validateHeader(authHeader.get());
@@ -96,9 +103,31 @@ public class AuthorizationFilter extends Filter {
             return CompletableFuture.completedFuture(unauthorizedResponse());
         }
 
+        // Extract user id and role claims from token and use it to get allowed actions
+        // from authentication service
+        try {
+            userClaims = this.getUserClaims(authHeader.get());
+            List<String> allowedActions = this.userManagementClient.getAllowedActions(
+                    userClaims.getUserObjectId(),
+                    userClaims.getRoles())
+                    .toCompletableFuture().get();
+            requestHeader = requestHeader.addAttr(Authorizer.ALLOWED_ACTIONS_TYPED_KEY, allowedActions);
+        } catch (Exception e) {
+            return CompletableFuture.completedFuture(internalServerErrorResponse(e));
+        }
+
         // Proceed with the request
-        log.debug("The authorization was succesful");
+        log.debug("The authorization was successful");
         return nextFilter.apply(requestHeader).thenApply(result -> result);
+    }
+
+    private UserClaims getUserClaims(String s) throws NotAuthorizedException {
+        if (!s.startsWith(AUTH_HEADER_PREFIX)) {
+            log.error(AUTH_HEADER + " header prefix not found");
+            return null;
+        }
+        String token = s.substring(AUTH_HEADER_PREFIX.length());
+        return this.jwtValidation.getUserClaims(token);
     }
 
     /**
