@@ -75,17 +75,17 @@ public class Config implements IConfig {
         String keyValueStorageUrl = this.data.getString(KEY_VALUE_STORAGE_URL_KEY);
 
         StorageConfig messagesConfig = new StorageConfig(
-                data.getString(MESSAGES_STORAGE_TYPE_KEY).toLowerCase(),
-                data.getString(MESSAGES_DOCDB_CONN_STRING_KEY),
-                data.getString(MESSAGES_DOCDB_DATABASE_KEY),
-                data.getString(MESSAGES_DOCDB_COLLECTION_KEY));
+            data.getString(MESSAGES_STORAGE_TYPE_KEY).toLowerCase(),
+            data.getString(MESSAGES_DOCDB_CONN_STRING_KEY),
+            data.getString(MESSAGES_DOCDB_DATABASE_KEY),
+            data.getString(MESSAGES_DOCDB_COLLECTION_KEY));
 
         AlarmsConfig alarmsConfig = new AlarmsConfig(
-                data.getString(ALARMS_STORAGE_TYPE_KEY).toLowerCase(),
-                data.getString(ALARMS_DOCDB_CONN_STRING_KEY),
-                data.getString(ALARMS_DOCDB_DATABASE_KEY),
-                data.getString(ALARMS_DOCDB_COLLECTION_KEY),
-                data.getInt(ALARMS_DOCDB_DELETE_RETRIES));
+            data.getString(ALARMS_STORAGE_TYPE_KEY).toLowerCase(),
+            data.getString(ALARMS_DOCDB_CONN_STRING_KEY),
+            data.getString(ALARMS_DOCDB_DATABASE_KEY),
+            data.getString(ALARMS_DOCDB_COLLECTION_KEY),
+            data.getInt(ALARMS_DOCDB_DELETE_RETRIES));
 
         this.servicesConfig = new ServicesConfig(
                 storageConnectionString,
@@ -104,8 +104,8 @@ public class Config implements IConfig {
 
         // Default to True unless explicitly disabled
         Boolean authRequired = !data.hasPath(AUTH_REQUIRED_KEY)
-                || data.getString(AUTH_REQUIRED_KEY).isEmpty()
-                || data.getBoolean(AUTH_REQUIRED_KEY);
+            || data.getString(AUTH_REQUIRED_KEY).isEmpty()
+            || data.getBoolean(AUTH_REQUIRED_KEY);
 
         String authServiceUrl = data.getString(AUTH_WEB_SERVICE_URL_KEY);
 
@@ -146,13 +146,13 @@ public class Config implements IConfig {
         }
 
         this.clientAuthConfig = new ClientAuthConfig(
-                authRequired,
-                authServiceUrl,
-                authType,
-                jwtAllowedAlgos,
-                jwtIssuer,
-                jwtAudience,
-                jwtClockSkew);
+            authRequired,
+            authServiceUrl,
+            authType,
+            jwtAllowedAlgos,
+            jwtIssuer,
+            jwtAudience,
+            jwtClockSkew);
 
         return this.clientAuthConfig;
     }

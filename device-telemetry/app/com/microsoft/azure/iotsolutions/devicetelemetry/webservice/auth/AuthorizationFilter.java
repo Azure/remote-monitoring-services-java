@@ -46,10 +46,10 @@ public class AuthorizationFilter extends Filter {
 
     @Inject
     public AuthorizationFilter(
-            Materializer mat,
-            IClientAuthConfig config,
-            IJwtValidation jwtValidation,
-            IUserManagementClient userManagementClient) {
+        Materializer mat,
+        IClientAuthConfig config,
+        IJwtValidation jwtValidation,
+        IUserManagementClient userManagementClient) {
         super(mat);
         this.authRequired = config.isAuthRequired();
         this.jwtValidation = jwtValidation;
@@ -58,8 +58,8 @@ public class AuthorizationFilter extends Filter {
 
     @Override
     public CompletionStage<Result> apply(
-            Function<Http.RequestHeader, CompletionStage<Result>> nextFilter,
-            Http.RequestHeader requestHeader) {
+        Function<Http.RequestHeader, CompletionStage<Result>> nextFilter,
+        Http.RequestHeader requestHeader) {
 
         requestHeader = requestHeader.addAttr(Authorizer.AUTH_REQUIRED_TYPED_KEY, this.authRequired);
 
@@ -138,7 +138,7 @@ public class AuthorizationFilter extends Filter {
      * Validate the JWT token in the authorization header
      */
     private Boolean validateHeader(String s)
-            throws InvalidConfigurationException, ExternalDependencyException {
+        throws InvalidConfigurationException, ExternalDependencyException {
 
         if (!s.startsWith(AUTH_HEADER_PREFIX)) {
             log.error(AUTH_HEADER + " header prefix not found");
