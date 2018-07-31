@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft. All rights reserved.
 
-package com.microsoft.azure.iotsolutions.uiconfig.services.exceptions;
+package com.microsoft.azure.iotsolutions.uiconfig.webservice.auth.exceptions;
+
+import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.BaseException;
 
 public class NotAuthorizedException extends BaseException {
 

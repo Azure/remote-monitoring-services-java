@@ -4,7 +4,7 @@ package com.microsoft.azure.iotsolutions.uiconfig.webservice.auth;
 
 import akka.stream.Materializer;
 import com.google.inject.Inject;
-import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.NotAuthorizedException;
+import com.microsoft.azure.iotsolutions.uiconfig.webservice.auth.exceptions.*;
 import play.Logger;
 import play.libs.Json;
 import play.mvc.*;

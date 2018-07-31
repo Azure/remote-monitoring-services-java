@@ -3,7 +3,7 @@
 package com.microsoft.azure.iotsolutions.uiconfig.webservice.auth;
 
 import com.google.inject.ImplementedBy;
-import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.NotAuthorizedException;
+import com.microsoft.azure.iotsolutions.uiconfig.webservice.auth.exceptions.*;
 
 @ImplementedBy(OpenIdConnectJwtValidation.class)
 public interface IJwtValidation {
