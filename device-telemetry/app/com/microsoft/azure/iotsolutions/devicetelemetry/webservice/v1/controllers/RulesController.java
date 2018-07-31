@@ -4,6 +4,7 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controlle
 
 import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.IRules;
+import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.Authorize;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ResourceOutOfDateException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.RuleApiModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.RuleListApiModel;
@@ -92,6 +93,7 @@ public class RulesController extends Controller {
      *
      * @return newly created rule
      */
+    @Authorize("CreateRules")
     public CompletionStage<Result> postAsync() {
         log.info("Trying to create a new rule.");
         RuleApiModel ruleApiModel = fromJson(request().body().asJson(), RuleApiModel.class);
@@ -108,6 +110,7 @@ public class RulesController extends Controller {
      *
      * @return updated rule
      */
+    @Authorize("UpdateRules")
     public CompletionStage<Result> putAsync(String id) {
         log.info("Trying to update rule id " + id + ".");
         RuleApiModel ruleApiModel = fromJson(request().body().asJson(), RuleApiModel.class);
@@ -137,6 +140,7 @@ public class RulesController extends Controller {
      *
      * @return OK
      */
+    @Authorize("DeleteRules")
     public CompletionStage<Result> deleteAsync(String id) {
         log.info("Trying to delete rule id " + id + ".");
         return rules.deleteAsync(id).thenApply(success -> ok());
