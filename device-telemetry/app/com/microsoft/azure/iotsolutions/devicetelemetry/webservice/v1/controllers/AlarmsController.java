@@ -4,6 +4,7 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controlle
 
 import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.IAlarms;
+import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.Authorize;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.helpers.DateHelper;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.AlarmApiModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.AlarmIdListApiModel;
@@ -65,6 +66,7 @@ public class AlarmsController extends Controller {
     /**
      * @return One alert.
      */
+    @Authorize("UpdateAlarms")
     public Result patch(String id) throws Exception {
 
         AlarmStatus alarm = Json.fromJson(request().body().asJson(), AlarmStatus.class);
@@ -89,6 +91,7 @@ public class AlarmsController extends Controller {
      * @return
      * @throws Exception
      */
+    @Authorize("DeleteAlarms")
     public Result delete(String id) throws Exception {
         if (id == null) {
             return badRequest("no id given to delete");
@@ -108,6 +111,7 @@ public class AlarmsController extends Controller {
      * @return
      * @throws Throwable
      */
+    @Authorize("DeleteAlarms")
     public Result deleteMultiple() throws Throwable {
         AlarmIdListApiModel alarmList = Json.fromJson(request().body().asJson(), AlarmIdListApiModel.class);
         ArrayList<String> items = alarmList.getItems();

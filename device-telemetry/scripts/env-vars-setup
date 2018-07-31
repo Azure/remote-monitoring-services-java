@@ -9,6 +9,9 @@
 
 #  Prepare the environment variables used by the application.
 
+# Url for the PCS Auth Webservice
+export PCS_AUTH_WEBSERVICE_URL="..."
+
 # Connection information for Azure DocumentDb
 export PCS_TELEMETRY_DOCUMENTDB_CONNSTRING="..."
 
