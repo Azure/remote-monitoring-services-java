@@ -15,4 +15,6 @@ public interface IServicesConfig {
     String getDeviceSimulationApiUrl();
 
     String getTelemetryApiUrl();
+
+    String getUserManagementApiUrl();
 }
