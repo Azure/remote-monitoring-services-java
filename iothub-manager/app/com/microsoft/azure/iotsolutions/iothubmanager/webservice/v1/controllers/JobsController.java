@@ -4,9 +4,10 @@ package com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.*;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.IJobs;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.*;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.*;
+import com.microsoft.azure.iotsolutions.iothubmanager.webservice.auth.Authorize;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.helpers.DateHelper;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models.JobApiModel;
 import org.joda.time.DateTime;
@@ -17,7 +18,7 @@ import play.mvc.Result;
 
 import javax.transaction.NotSupportedException;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletionStage;
 
 import static play.libs.Json.fromJson;
 import static play.libs.Json.toJson;
@@ -89,6 +90,7 @@ public final class JobsController extends Controller {
             .thenApply(job -> ok(toJson(new JobApiModel(job))));
     }
 
+    @Authorize("CreateJobs")
     public CompletionStage<Result> scheduleJobAsync()
         throws NotSupportedException, ExternalDependencyException {
         JsonNode json = request().body().asJson();

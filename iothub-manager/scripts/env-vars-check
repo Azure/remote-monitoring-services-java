@@ -15,6 +15,11 @@ detect_secrets() {
 
 detect_secrets
 
+if [[ -z "PCS_AUTH_WEBSERVICE_URL" ]]; then
+    echo "Error: the PCS_AUTH_WEBSERVICE_URL environment variable is not defined."
+    exit -1
+fi
+
 if [[ -z "$PCS_IOTHUB_CONNSTRING" && "$SECRETS_AVAILABLE" = "true" ]]; then
     echo "Error: the PCS_IOTHUB_CONNSTRING environment variable is not defined."
     exit -1

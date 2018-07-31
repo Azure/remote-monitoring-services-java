@@ -21,6 +21,7 @@ IF %ERRORLEVEL% NEQ 0 GOTO FAIL
 :: Depending on which settings and which dependencies are needed, edit the list of variables
 echo Starting telemetry service...
 docker run -it -p 9004:9004 ^
+    -e PCS_AUTH_WEBSERVICE_URL ^
     -e PCS_TELEMETRY_DOCUMENTDB_CONNSTRING ^
     -e PCS_STORAGEADAPTER_WEBSERVICE_URL ^
     %DOCKER_IMAGE%:testing

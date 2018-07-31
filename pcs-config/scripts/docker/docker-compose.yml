@@ -23,6 +23,17 @@ services:
       - PCS_TELEMETRY_WEBSERVICE_URL=http://telemetry:9004/v1
       - PCS_DEVICESIMULATION_WEBSERVICE_URL=http://devicesimlation:9003/v1
       - PCS_AZUREMAPS_KEY
+      - PCS_AUTH_WEBSERVICE_URL=http://auth:9001/v1
+
+  auth:
+    image: azureiotpcs/pcs-auth-dotnet:testing
+    ports:
+      - "9001:9001"
+    environment:
+      - PCS_AUTH_REQUIRED
+      - PCS_AUTH_ISSUER
+      - PCS_AUTH_AUDIENCE
+      - PCS_CORS_WHITELIST
 
   storageadapter:
     image: azureiotpcs/pcs-storage-adapter-java:testing
@@ -38,6 +49,7 @@ services:
     environment:
       - PCS_TELEMETRY_DOCUMENTDB_CONNSTRING
       - PCS_STORAGEADAPTER_WEBSERVICE_URL=http://storageadapter:9022:/v1
+      - PCS_AUTH_WEBSERVICE_URL=http://auth:9001/v1
       
   devicesimulation:
     image: azureiotpcs/pcs-device-simulation-java:testing
