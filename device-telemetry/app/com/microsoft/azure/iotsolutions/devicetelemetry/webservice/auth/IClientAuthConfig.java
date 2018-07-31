@@ -14,6 +14,8 @@ public interface IClientAuthConfig {
     // Default: true
     Boolean isAuthRequired();
 
+    String getAuthServiceUrl();
+
     // Auth type: currently supports only "JWT"
     // Default: JWT
     String getAuthType();

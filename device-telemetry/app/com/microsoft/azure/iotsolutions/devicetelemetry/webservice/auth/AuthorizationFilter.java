@@ -4,10 +4,11 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth;
 
 import akka.stream.Materializer;
 import com.google.inject.Inject;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.NotAuthorizedException;
 import play.Logger;
 import play.libs.Json;
-import play.mvc.*;
+import play.mvc.Filter;
+import play.mvc.Http;
+import play.mvc.Result;
 
 import java.util.HashMap;
 import java.util.List;
@@ -38,20 +39,26 @@ public class AuthorizationFilter extends Filter {
 
     private Boolean authRequired;
 
+    private final IUserManagementClient userManagementClient;
+
     @Inject
     public AuthorizationFilter(
-        Materializer mat,
-        IClientAuthConfig config,
-        IJwtValidation jwtValidation) {
+            Materializer mat,
+            IClientAuthConfig config,
+            IJwtValidation jwtValidation,
+            IUserManagementClient userManagementClient) {
         super(mat);
         this.authRequired = config.isAuthRequired();
         this.jwtValidation = jwtValidation;
+        this.userManagementClient = userManagementClient;
     }
 
     @Override
     public CompletionStage<Result> apply(
-        Function<Http.RequestHeader, CompletionStage<Result>> nextFilter,
-        Http.RequestHeader requestHeader) {
+            Function<Http.RequestHeader, CompletionStage<Result>> nextFilter,
+            Http.RequestHeader requestHeader) {
+
+        requestHeader = requestHeader.addAttr(Authorizer.AUTH_REQUIRED_TYPED_KEY, this.authRequired);
 
         // If auth is disabled, proceed with the request
         if (!this.authRequired) {
@@ -67,12 +74,16 @@ public class AuthorizationFilter extends Filter {
 
             // Skip auth and proceed
             log.debug("Skipping auth for service to service request");
+            requestHeader = requestHeader.addAttr(Authorizer.EXTERNAL_REQUEST_TYPED_KEY, false);
             return nextFilter.apply(requestHeader).thenApply(result -> result);
         }
+
+        requestHeader = requestHeader.addAttr(Authorizer.EXTERNAL_REQUEST_TYPED_KEY, true);
 
         // Validate the authorization header
         Boolean authorized = false;
         Optional<String> authHeader = requestHeader.header(AUTH_HEADER);
+        UserClaims userClaims;
         if (authHeader.isPresent()) {
             try {
                 authorized = this.validateHeader(authHeader.get());
@@ -93,16 +104,38 @@ public class AuthorizationFilter extends Filter {
             return CompletableFuture.completedFuture(unauthorizedResponse());
         }
 
+        // Extract user id and role claims from token and use it to get allowed actions
+        // from authentication service
+        try {
+            userClaims = this.getUserClaims(authHeader.get());
+            List<String> allowedActions = this.userManagementClient
+                    .getAllowedActions(userClaims.getUserObjectId(), userClaims.getRoles())
+                    .toCompletableFuture()
+                    .get();
+            requestHeader = requestHeader.addAttr(Authorizer.ALLOWED_ACTIONS_TYPED_KEY, allowedActions);
+        } catch (Exception e) {
+            return CompletableFuture.completedFuture(internalServerErrorResponse(e));
+        }
+
         // Proceed with the request
-        log.debug("The authorization was succesful");
+        log.debug("The authorization was successful");
         return nextFilter.apply(requestHeader).thenApply(result -> result);
+    }
+
+    private UserClaims getUserClaims(String s) throws NotAuthorizedException {
+        if (!s.startsWith(AUTH_HEADER_PREFIX)) {
+            log.error(AUTH_HEADER + " header prefix not found");
+            return null;
+        }
+        String token = s.substring(AUTH_HEADER_PREFIX.length());
+        return this.jwtValidation.getUserClaims(token);
     }
 
     /**
      * Validate the JWT token in the authorization header
      */
     private Boolean validateHeader(String s)
-        throws InvalidConfigurationException, ExternalDependencyException {
+            throws InvalidConfigurationException, ExternalDependencyException {
 
         if (!s.startsWith(AUTH_HEADER_PREFIX)) {
             log.error(AUTH_HEADER + " header prefix not found");

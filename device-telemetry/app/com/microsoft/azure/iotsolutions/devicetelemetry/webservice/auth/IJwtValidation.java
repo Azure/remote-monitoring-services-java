@@ -7,4 +7,5 @@ import com.google.inject.ImplementedBy;
 @ImplementedBy(OpenIdConnectJwtValidation.class)
 public interface IJwtValidation {
     Boolean validateToken(String token) throws InvalidConfigurationException, ExternalDependencyException;
+    UserClaims getUserClaims(String token) throws NotAuthorizedException;
 }

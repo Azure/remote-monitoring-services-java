@@ -54,6 +54,7 @@ IF "%1"=="--in-sandbox" GOTO :RunInSandbox
     :: Start the sandbox and run the service
     docker run -it ^
         -p 9004:9004 ^
+        -e PCS_AUTH_WEBSERVICE_URL ^
         -e PCS_TELEMETRY_DOCUMENTDB_CONNSTRING ^
         -e PCS_STORAGEADAPTER_WEBSERVICE_URL ^
         -v %PCS_CACHE%\sandbox\.ivy2:/root/.ivy2 ^

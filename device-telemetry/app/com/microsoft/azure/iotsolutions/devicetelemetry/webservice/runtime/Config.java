@@ -46,6 +46,7 @@ public class Config implements IConfig {
 
 
     private final String CLIENT_AUTH_KEY = APPLICATION_KEY + "client-auth.";
+    private final String AUTH_WEB_SERVICE_URL_KEY = CLIENT_AUTH_KEY + "auth_webservice_url";
     private final String AUTH_REQUIRED_KEY = CLIENT_AUTH_KEY + "auth_required";
     private final String AUTH_TYPE_KEY = CLIENT_AUTH_KEY + "auth_type";
 
@@ -74,23 +75,23 @@ public class Config implements IConfig {
         String keyValueStorageUrl = this.data.getString(KEY_VALUE_STORAGE_URL_KEY);
 
         StorageConfig messagesConfig = new StorageConfig(
-            data.getString(MESSAGES_STORAGE_TYPE_KEY).toLowerCase(),
-            data.getString(MESSAGES_DOCDB_CONN_STRING_KEY),
-            data.getString(MESSAGES_DOCDB_DATABASE_KEY),
-            data.getString(MESSAGES_DOCDB_COLLECTION_KEY));
+                data.getString(MESSAGES_STORAGE_TYPE_KEY).toLowerCase(),
+                data.getString(MESSAGES_DOCDB_CONN_STRING_KEY),
+                data.getString(MESSAGES_DOCDB_DATABASE_KEY),
+                data.getString(MESSAGES_DOCDB_COLLECTION_KEY));
 
         AlarmsConfig alarmsConfig = new AlarmsConfig(
-            data.getString(ALARMS_STORAGE_TYPE_KEY).toLowerCase(),
-            data.getString(ALARMS_DOCDB_CONN_STRING_KEY),
-            data.getString(ALARMS_DOCDB_DATABASE_KEY),
-            data.getString(ALARMS_DOCDB_COLLECTION_KEY),
-            data.getInt(ALARMS_DOCDB_DELETE_RETRIES));
+                data.getString(ALARMS_STORAGE_TYPE_KEY).toLowerCase(),
+                data.getString(ALARMS_DOCDB_CONN_STRING_KEY),
+                data.getString(ALARMS_DOCDB_DATABASE_KEY),
+                data.getString(ALARMS_DOCDB_COLLECTION_KEY),
+                data.getInt(ALARMS_DOCDB_DELETE_RETRIES));
 
         this.servicesConfig = new ServicesConfig(
-            storageConnectionString,
-            keyValueStorageUrl,
-            messagesConfig,
-            alarmsConfig);
+                storageConnectionString,
+                keyValueStorageUrl,
+                messagesConfig,
+                alarmsConfig);
 
         return this.servicesConfig;
     }
@@ -103,8 +104,10 @@ public class Config implements IConfig {
 
         // Default to True unless explicitly disabled
         Boolean authRequired = !data.hasPath(AUTH_REQUIRED_KEY)
-            || data.getString(AUTH_REQUIRED_KEY).isEmpty()
-            || data.getBoolean(AUTH_REQUIRED_KEY);
+                || data.getString(AUTH_REQUIRED_KEY).isEmpty()
+                || data.getBoolean(AUTH_REQUIRED_KEY);
+
+        String authServiceUrl = data.getString(AUTH_WEB_SERVICE_URL_KEY);
 
         // Default to JWT
         String authType = "JWT";
@@ -120,8 +123,8 @@ public class Config implements IConfig {
         if (data.hasPath(JWT_ALGOS_KEY)) {
             jwtAllowedAlgos.clear();
             Collections.addAll(
-                jwtAllowedAlgos,
-                data.getString(JWT_ALGOS_KEY).split(","));
+                    jwtAllowedAlgos,
+                    data.getString(JWT_ALGOS_KEY).split(","));
         }
 
         // Default to empty, no issuer
@@ -143,7 +146,13 @@ public class Config implements IConfig {
         }
 
         this.clientAuthConfig = new ClientAuthConfig(
-            authRequired, authType, jwtAllowedAlgos, jwtIssuer, jwtAudience, jwtClockSkew);
+                authRequired,
+                authServiceUrl,
+                authType,
+                jwtAllowedAlgos,
+                jwtIssuer,
+                jwtAudience,
+                jwtClockSkew);
 
         return this.clientAuthConfig;
     }
