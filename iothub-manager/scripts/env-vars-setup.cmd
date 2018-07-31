@@ -3,6 +3,8 @@
 :: Some settings are used to connect to an external dependency, e.g. Azure IoT Hub and IoT Hub Manager API
 :: Depending on which settings and which dependencies are needed, edit the list of variables
 
+SETX PCS_AUTH_WEBSERVICE_URL "..."
+
 :: see: Shared access policies => key name => Connection string
 SETX PCS_IOTHUB_CONNSTRING "..."
 

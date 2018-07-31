@@ -30,6 +30,7 @@ public class Config implements IConfig {
 
     private final String CLIENT_AUTH_KEY = APPLICATION_KEY + "client-auth.";
     private final String AUTH_REQUIRED_KEY = CLIENT_AUTH_KEY + "auth_required";
+    private final String AUTH_WEB_SERVICE_URL_KEY = CLIENT_AUTH_KEY + "auth_webservice_url";
     private final String AUTH_TYPE_KEY = CLIENT_AUTH_KEY + "auth_type";
 
     private final String JWT_KEY = APPLICATION_KEY + "client-auth.JWT.";
@@ -75,6 +76,8 @@ public class Config implements IConfig {
             || data.getString(AUTH_REQUIRED_KEY).isEmpty()
             || data.getBoolean(AUTH_REQUIRED_KEY);
 
+        String authServiceUrl = data.getString(AUTH_WEB_SERVICE_URL_KEY);
+
         // Default to JWT
         String authType = "JWT";
         if (data.hasPath(AUTH_REQUIRED_KEY)) {
@@ -112,7 +115,13 @@ public class Config implements IConfig {
         }
 
         this.clientAuthConfig = new ClientAuthConfig(
-            authRequired, authType, jwtAllowedAlgos, jwtIssuer, jwtAudience, jwtClockSkew);
+            authRequired,
+            authServiceUrl,
+            authType,
+            jwtAllowedAlgos,
+            jwtIssuer,
+            jwtAudience,
+            jwtClockSkew);
 
         return this.clientAuthConfig;
     }

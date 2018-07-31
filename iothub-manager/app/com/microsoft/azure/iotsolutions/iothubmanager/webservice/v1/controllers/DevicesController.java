@@ -6,11 +6,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.*;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.*;
+import com.microsoft.azure.iotsolutions.iothubmanager.webservice.auth.Authorize;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models.*;
 import play.libs.Json;
 import play.mvc.*;
 
-import java.util.concurrent.*;
+import java.util.concurrent.CompletionStage;
 
 import static play.libs.Json.fromJson;
 import static play.libs.Json.toJson;
@@ -58,6 +59,7 @@ public final class DevicesController extends Controller {
             .thenApply(device -> ok(toJson(new DeviceRegistryApiModel(device))));
     }
 
+    @Authorize("CreateDevices")
     public CompletionStage<Result> postAsync() throws InvalidInputException, ExternalDependencyException {
         JsonNode json = request().body().asJson();
         final DeviceRegistryApiModel device = fromJson(json, DeviceRegistryApiModel.class);
@@ -65,23 +67,25 @@ public final class DevicesController extends Controller {
             .thenApply(newDevice -> ok(toJson(new DeviceRegistryApiModel(newDevice))));
     }
 
+    @Authorize("UpdateDevices")
     public CompletionStage<Result> putAsync(final String id) throws InvalidInputException, ExternalDependencyException {
         JsonNode json = request().body().asJson();
         final DeviceRegistryApiModel device = fromJson(json, DeviceRegistryApiModel.class);
         IDeviceProperties deviceProperties = this.deviceProperties;
-
         DevicePropertyCallBack devicePropertyCallBack = devices -> {
-                return deviceProperties.updateListAsync(devices);
+            return deviceProperties.updateListAsync(devices);
         };
         return deviceService.createOrUpdateAsync(id, device.toServiceModel(), devicePropertyCallBack)
             .thenApply(newDevice -> ok(toJson(new DeviceRegistryApiModel(newDevice))));
     }
 
+    @Authorize("DeleteDevices")
     public CompletionStage<Result> deleteAsync(final String id) throws ExternalDependencyException {
         return deviceService.deleteAsync(id)
             .thenApply(result -> ok());
     }
 
+    @Authorize("CreateJobs")
     public CompletionStage<Result> invokeDeviceMethodAsync(final String id) throws ExternalDependencyException {
         JsonNode json = request().body().asJson();
         final MethodParameterApiModel parameter = fromJson(json, MethodParameterApiModel.class);

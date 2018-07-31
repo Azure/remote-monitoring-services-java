@@ -7,6 +7,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.microsoft.azure.iotsolutions.uiconfig.services.IStorage;
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.BaseException;
+import com.microsoft.azure.iotsolutions.uiconfig.webservice.auth.Authorize;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.exceptions.BadRequestException;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models.DeviceGroupApiModel;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models.DeviceGroupListApiModel;
@@ -36,6 +37,7 @@ public final class DeviceGroupController extends Controller {
         return storage.getDeviceGroupAsync(id).thenApplyAsync(m -> ok(toJson(new DeviceGroupApiModel(m))));
     }
 
+    @Authorize("CreateDeviceGroups")
     public CompletionStage<Result> createAsync() throws BaseException, BadRequestException {
         JsonNode json = request().body().asJson();
         if (json == null || json.size() == 0) {
@@ -45,6 +47,7 @@ public final class DeviceGroupController extends Controller {
         return storage.createDeviceGroupAsync(input.ToServiceModel()).thenApplyAsync(m -> ok(toJson(new DeviceGroupApiModel(m))));
     }
 
+    @Authorize("UpdateDeviceGroups")
     public CompletionStage<Result> updateAsync(String id) throws BaseException, BadRequestException {
         JsonNode json = request().body().asJson();
         if (json == null || json.size() == 0) {
@@ -54,6 +57,7 @@ public final class DeviceGroupController extends Controller {
         return storage.updateDeviceGroupAsync(id, input.ToServiceModel(), input.getETag()).thenApplyAsync(m -> ok(toJson(new DeviceGroupApiModel(m))));
     }
 
+    @Authorize("DeleteDeviceGroups")
     public CompletionStage<Result> deleteAsync(String id) throws BaseException {
         return storage.deleteDeviceGroupAsync(id).thenApplyAsync(m -> ok());
     }
