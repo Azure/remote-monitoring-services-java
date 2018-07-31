@@ -77,7 +77,6 @@ variables [here](#configuration-and-environment-variables).
   API Key. This can be set to "static" if you do not have one.
 * `PCS_AUTH_WEBSERVICE_URL` = the url for
    the [Auth Webservice](https://github.com/Azure/pcs-auth-dotnet)
-   used for key value storage
 
 # Running the service in an IDE
 
