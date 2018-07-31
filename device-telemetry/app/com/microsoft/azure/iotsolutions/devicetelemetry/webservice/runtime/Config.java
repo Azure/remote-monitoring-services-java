@@ -88,10 +88,10 @@ public class Config implements IConfig {
             data.getInt(ALARMS_DOCDB_DELETE_RETRIES));
 
         this.servicesConfig = new ServicesConfig(
-                storageConnectionString,
-                keyValueStorageUrl,
-                messagesConfig,
-                alarmsConfig);
+            storageConnectionString,
+            keyValueStorageUrl,
+            messagesConfig,
+            alarmsConfig);
 
         return this.servicesConfig;
     }
@@ -123,8 +123,8 @@ public class Config implements IConfig {
         if (data.hasPath(JWT_ALGOS_KEY)) {
             jwtAllowedAlgos.clear();
             Collections.addAll(
-                    jwtAllowedAlgos,
-                    data.getString(JWT_ALGOS_KEY).split(","));
+                jwtAllowedAlgos,
+                data.getString(JWT_ALGOS_KEY).split(","));
         }
 
         // Default to empty, no issuer
