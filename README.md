@@ -95,8 +95,8 @@ License
 Copyright (c) Microsoft Corporation. All rights reserved.
 Licensed under the [MIT](LICENSE) License.
 
-[build-badge]: https://img.shields.io/travis/Azure/azure-iot-pcs-remote-monitoring-java.svg
-[build-url]: https://travis-ci.org/Azure/azure-iot-pcs-remote-monitoring-java
+[build-badge]: https://solutionaccelerators.visualstudio.com/RemoteMonitoring/_apis/build/status/Consolidated%20Repo%20-%20Java
+[build-url]: https://solutionaccelerators.visualstudio.com/RemoteMonitoring/_apis/build/status/Consolidated%20Repo%20-%20Java
 [issues-badge]: https://img.shields.io/github/issues/azure/azure-iot-pcs-remote-monitoring-java.svg
 [issues-url]: https://github.com/azure/azure-iot-pcs-remote-monitoring-java/issues
 [gitter-badge]: https://img.shields.io/gitter/room/azure/iot-solutions.js.svg
