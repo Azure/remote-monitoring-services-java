@@ -5,7 +5,7 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.i
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 
-public interface IImplementation {
+public interface INotificationImplementation {
     public void setReceiver(List<String> receivers);
 
     public void setMessage(String message, String ruleId, String ruleDescription);

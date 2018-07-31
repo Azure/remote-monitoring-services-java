@@ -28,6 +28,7 @@ public class NotificationEventProcessor implements IEventProcessor {
     @Override
     public void onClose(PartitionContext context, CloseReason reason) throws Exception {
         this.logger.info(String.format("Notification EventProcessor shutting down. Parition %s, Reason: %s", context.getPartitionId(), reason.toString()));
+        context.checkpoint();
     }
 
     @Override
@@ -38,6 +39,7 @@ public class NotificationEventProcessor implements IEventProcessor {
             this.notification.setAlarm(model);
             notification.executeAsync();
         }
+        context.checkpoint();
     }
 
     @Override

@@ -2,7 +2,6 @@
 
 package com.microsoft.azure.iotsolutions.devicetelemetry.services.notification;
 import com.google.inject.Inject;
-import com.microsoft.azure.eventhubs.EventPosition;
 import com.microsoft.azure.eventprocessorhost.EventProcessorHost;
 import com.microsoft.azure.eventprocessorhost.EventProcessorOptions;
 import com.microsoft.azure.eventprocessorhost.IEventProcessorFactory;
@@ -10,7 +9,6 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IBlobSt
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import play.Logger;
 
-import java.time.Instant;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
@@ -29,8 +27,8 @@ public class Agent implements IAgent {
             IServicesConfig servicesConfig,
             IBlobStorageConfig blobStorageConfig,
             IEventProcessorHostWrapper eventProcessorHostWrapper,
-            IEventProcessorFactory notificationEventProcessorFactory
-    ){
+            IEventProcessorFactory notificationEventProcessorFactory )
+    {
         this.servicesConfig = servicesConfig;
         this.blobStorageConfig = blobStorageConfig;
         this.eventProcessorHostWrapper = eventProcessorHostWrapper;
@@ -41,9 +39,7 @@ public class Agent implements IAgent {
     public CompletionStage runAsync() {
         this.logger.info("Notification system running");
         try {
-            this.logger.info("Notification system running");
             setUpEventHubAsync().thenRun(() -> this.logger.info("Set up eventhub complete"));
-            this.logger.info("Notification system exiting");
             return CompletableFuture.completedFuture(true);
         } catch (Exception e) {
             this.logger.error(e.getMessage());
@@ -65,10 +61,7 @@ public class Agent implements IAgent {
                     storageConnectionString,
                     this.blobStorageConfig.getEventHubContainer()
             );
-            eventProcessorOptions = new EventProcessorOptions();
-            eventProcessorOptions.setInitialPositionProvider((partitionId) -> EventPosition.fromEnqueuedTime(Instant.now()));
-
-            this.eventProcessorHostWrapper.registerEventProcessorFactoryAsync(host, this.notificationEventProcessorFactory, eventProcessorOptions);
+            this.eventProcessorHostWrapper.registerEventProcessorFactoryAsync(host, this.notificationEventProcessorFactory);
             return CompletableFuture.completedFuture(true);
         } catch (Exception e) {
             throw new CompletionException(e);

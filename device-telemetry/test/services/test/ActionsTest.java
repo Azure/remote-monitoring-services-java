@@ -37,7 +37,7 @@ public class ActionsTest {
     }
 
     @Test(expected = InvalidInputException.class)
-    public void ShouldThrowInvalidInputExceptionWhenActionTypeIsEmailAndInvalidEmail() throws InvalidInputException {
+    public void ShouldThrowInvalidInputException_WhenActionTypeIsEmailAndInvalidEmail() throws InvalidInputException {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put(PARAM_SUBJECT_KEY, PARAM_SUBJECT);
         parameters.put(PARAM_TEMPLATE_KEY, PARAM_TEMPLATE);
@@ -50,7 +50,7 @@ public class ActionsTest {
     }
 
     @Test(expected = InvalidInputException.class)
-    public void ShouldThrowInvalidInputExceptionWhenActionTypeIsEmailandNoEmailField() throws InvalidInputException {
+    public void ShouldThrowInvalidInputException_WhenActionTypeIsEmailandNoEmailField() throws InvalidInputException {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put(PARAM_SUBJECT_KEY, PARAM_SUBJECT);
         parameters.put(PARAM_TEMPLATE_KEY, PARAM_TEMPLATE);
@@ -59,7 +59,7 @@ public class ActionsTest {
     }
 
     @Test(expected = Exception.class)
-    public void ShouldThrowExceptionWhenActionTypeIsEmailandEmailIsString() throws InvalidInputException {
+    public void ShouldThrowException_WhenActionTypeIsEmailandEmailIsString() throws InvalidInputException {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put(PARAM_SUBJECT_KEY, PARAM_SUBJECT);
         parameters.put(PARAM_TEMPLATE_KEY, PARAM_TEMPLATE);
@@ -69,7 +69,7 @@ public class ActionsTest {
     }
 
     @Test
-    public void ShouldReturnProperServiceModelForApiModelToServiceModelCallWhenValidActionType() throws InvalidInputException {
+    public void ShouldReturnProperServiceModelForApiModelToServiceModelCall_WhenValidActionType() throws InvalidInputException {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put(PARAM_SUBJECT_KEY, PARAM_SUBJECT);
         parameters.put(PARAM_TEMPLATE_KEY, PARAM_TEMPLATE);
@@ -84,7 +84,7 @@ public class ActionsTest {
     }
 
     @Test(expected = InvalidInputException.class)
-    public void ShouldThrowInvalidInputExceptionOnToServiceModelWhenInvalidActionType() throws InvalidInputException {
+    public void ShouldThrowInvalidInputExceptionOnToServiceModel_WhenInvalidActionType() throws InvalidInputException {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put(PARAM_SUBJECT_KEY, PARAM_SUBJECT);
         parameters.put(PARAM_TEMPLATE_KEY, PARAM_TEMPLATE);

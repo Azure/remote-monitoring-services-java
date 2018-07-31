@@ -49,9 +49,9 @@ public class Config implements IConfig {
     private final String ACTIONS_LOGIC_APP_ENDPOINT_URL = APPLICATION_KEY + "actions.logicAppEndPointUrl";
     private final String ACTIONS_EVENTHUB_CONNECTION_STRING = APPLICATION_KEY + "actions.eventHubConnectionString";
     private final String ACTIONS_EVENTHUB_OFFSET_TIME_IN_MINUTES = APPLICATION_KEY + "actions.eventHubOffsetTimeInMinutes";
-    private final String ACTIONS_ACCOUNT_KEY = APPLICATION_KEY + "actions.accountKey";
-    private final String ACTIONS_ACCOUNT_NAME = APPLICATION_KEY + "actions.accountName";
-    private final String ACTIONS_ENDPOINT_SUFFIX = APPLICATION_KEY + "actions.endpointSuffix";
+    private final String ACTIONS_BLOB_STORAGE_ACCOUNT_KEY = APPLICATION_KEY + "actions.blobStorageAccountKey";
+    private final String ACTIONS_BLOB_STORAGE_ACCOUNT_NAME = APPLICATION_KEY + "actions.blobStorageAccountName";
+    private final String ACTIONS_BLOB_STORAGE_ENDPOINT_SUFFIX = APPLICATION_KEY + "actions.blobStorageEndpointSuffix";
     private final String ACTIONS_EVENTHUB_CONTAINER = APPLICATION_KEY + "actions.eventHubContainer";
     private final String ACTIONS_SOLUTION_NAME = APPLICATION_KEY + "actions.solutionName";
 
@@ -121,9 +121,9 @@ public class Config implements IConfig {
         if (this.blobStorageConfig != null) return this.blobStorageConfig;
 
         this.blobStorageConfig = new BlobStorageConfig(
-                data.getString(ACTIONS_ACCOUNT_NAME),
-                data.getString(ACTIONS_ACCOUNT_KEY),
-                data.getString(ACTIONS_ENDPOINT_SUFFIX),
+                data.getString(ACTIONS_BLOB_STORAGE_ACCOUNT_NAME),
+                data.getString(ACTIONS_BLOB_STORAGE_ACCOUNT_KEY),
+                data.getString(ACTIONS_BLOB_STORAGE_ENDPOINT_SUFFIX),
                 data.getString(ACTIONS_EVENTHUB_CONTAINER));
         return this.blobStorageConfig;
     }
@@ -140,7 +140,7 @@ public class Config implements IConfig {
     public IEventProcessorFactory getEventProcessorFactory() {
         if (this.eventProcessorFactory != null) return this.eventProcessorFactory;
 
-        IImplementationWrapper wrapper = new ImplementationWrapper(this.client, this.getServicesConfig());
+        INotificationImplementationWrapper wrapper = new NotificationImplementationWrapper(this.client, this.getServicesConfig());
         INotification notification = new Notification(wrapper);
         this.eventProcessorFactory = new NotificationEventProcessorFactory(notification);
         return this.eventProcessorFactory;

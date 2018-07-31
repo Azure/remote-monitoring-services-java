@@ -2,7 +2,6 @@
 
 package services.test.notification.test;
 
-import com.microsoft.azure.eventprocessorhost.EventProcessorOptions;
 import com.microsoft.azure.eventprocessorhost.IEventProcessorFactory;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.Agent;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.IAgent;
@@ -43,7 +42,6 @@ public class AgentTest {
         this.notificationSystemAgent.runAsync();
         Mockito.verify(this.eventProcessorHostWrapperMock, Mockito.times(1)).registerEventProcessorFactoryAsync(
                 Mockito.any(),
-                Mockito.any(IEventProcessorFactory.class),
-                Mockito.any(EventProcessorOptions.class));
+                Mockito.any(IEventProcessorFactory.class));
     }
 }

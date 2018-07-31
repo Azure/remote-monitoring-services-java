@@ -8,14 +8,11 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.IA
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.IEventProcessorHostWrapper;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IBlobStorageConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
-import play.Logger;
-import play.libs.ws.WSClient;
 
 import java.util.concurrent.CompletableFuture;
 
 @Singleton
 public class RecurringTasks implements IRecurringTasks {
-    private static final Logger.ALogger log = Logger.of(RecurringTasks.class);
     private IAgent notificationAgent;
     private IServicesConfig servicesConfig;
     private IBlobStorageConfig blobStorageConfig;
@@ -27,8 +24,8 @@ public class RecurringTasks implements IRecurringTasks {
             IServicesConfig servicesConfig,
             IBlobStorageConfig blobStorageConfig,
             IEventProcessorHostWrapper eventProcessorHostWrapper,
-            IEventProcessorFactory notificationEventProcessorFactory
-    ){
+            IEventProcessorFactory notificationEventProcessorFactory )
+    {
         this.servicesConfig = servicesConfig;
         this.blobStorageConfig = blobStorageConfig;
         this.eventProcessorHostWrapper = eventProcessorHostWrapper;
@@ -44,14 +41,5 @@ public class RecurringTasks implements IRecurringTasks {
     private void tryMethod(){
         this.notificationAgent = new Agent(servicesConfig, blobStorageConfig, eventProcessorHostWrapper, notificationEventProcessorFactory);
         notificationAgent.runAsync();
-        /*while(true){
-            log.info("Testing...");
-            try {
-                Thread.sleep(10 * 1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }*/
-
     }
 }

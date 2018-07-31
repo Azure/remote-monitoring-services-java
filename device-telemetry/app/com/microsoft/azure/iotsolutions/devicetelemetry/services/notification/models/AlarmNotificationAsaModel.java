@@ -8,102 +8,94 @@ import java.util.List;
 
 public class AlarmNotificationAsaModel {
     @JsonProperty("created")
-    private String DateCreated;
+    private String dateCreated;
 
     @JsonProperty("modified")
-    private String DateModified;
+    private String dateModified;
 
     @JsonProperty("rule.description")
-    private String Rule_description;
+    private String ruleDescription;
 
     @JsonProperty("rule.severity")
-    private String Rule_severity;
+    private String ruleSeverity;
 
     @JsonProperty("rule.id")
-    private String Rule_id;
+    private String ruleId;
 
     @JsonProperty("rule.actions")
-    private List<ActionAsaModel> Actions;
+    private List<ActionAsaModel> actions;
 
     @JsonProperty("device.id")
-    private String Device_id;
+    private String deviceId;
 
     @JsonProperty("device.msg.received")
-    private String Message_received;
+    private String messageReceived;
 
     @JsonProperty("created")
     public String getDateCreated() {
-        return DateCreated;
+        return this.dateCreated;
     }
 
     public void setDateCreated(String dateCreated) {
-        DateCreated = dateCreated;
+        this.dateCreated = dateCreated;
     }
 
     @JsonProperty("modified")
     public String getDateModified() {
-        return DateModified;
+        return this.dateModified;
     }
 
     public void setDateModified(String dateModified) {
-        DateModified = dateModified;
+        this.dateModified = dateModified;
     }
 
     @JsonProperty("rule.description")
-    public String getRule_description() {
-        return Rule_description;
-    }
+    public String getRuleDescription() { return this.ruleDescription; }
 
-    public void setRule_description(String rule_description) {
-        Rule_description = rule_description;
+    public void setRuleDescription(String ruleDescription) {
+        this.ruleDescription = ruleDescription;
     }
 
     @JsonProperty("rule.severity")
-    public String getRule_severity() {
-        return Rule_severity;
+    public String getRuleSeverity() {
+        return this.ruleSeverity;
     }
 
-    public void setRule_severity(String rule_severity) {
-        Rule_severity = rule_severity;
+    public void setRuleSeverity(String ruleSeverity) {
+        this.ruleSeverity = ruleSeverity;
     }
 
     @JsonProperty("rule.id")
-    public String getRule_id() {
-        return Rule_id;
+    public String getRuleId() {
+        return this.ruleId;
     }
 
-    public void setRule_id(String rule_id) {
-        Rule_id = rule_id;
+    public void setRuleId(String ruleId) {
+        this.ruleId = ruleId;
     }
 
     @JsonProperty("rule.actions")
     public List<ActionAsaModel> getActions() {
-        return Actions;
+        return this.actions;
     }
 
     public void setActions(List<ActionAsaModel> actions) {
-        Actions = actions;
+        this.actions = actions;
     }
 
     @JsonProperty("device.id")
-    public String getDevice_id() {
-        return Device_id;
+    public String getDeviceId() {
+        return this.deviceId;
     }
 
-    public void setDevice_id(String device_id) {
-        Device_id = device_id;
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
     }
 
     @JsonProperty("device.msg.received")
-    public String getMessage_received() {
-        return Message_received;
+    public String getMessageReceived() {
+        return this.messageReceived;
     }
 
-    public void setMessage_received(String message_received) {
-        Message_received = message_received;
-    }
-
-    public AlarmNotificationAsaModel() {
-        // empty constructor
-    }
+    public void setMessageReceived(String messageReceived) { this.messageReceived = messageReceived; }
 }

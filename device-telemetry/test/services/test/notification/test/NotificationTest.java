@@ -2,10 +2,10 @@
 
 package services.test.notification.test;
 
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.IImplementationWrapper;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.INotificationImplementationWrapper;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.INotification;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.Notification;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.implementation.IImplementation;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.implementation.INotificationImplementation;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.models.ActionAsaModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.models.AlarmNotificationAsaModel;
 import org.junit.Before;
@@ -21,13 +21,13 @@ import java.util.concurrent.CompletableFuture;
 
 public class NotificationTest {
     private static final Logger.ALogger log = Logger.of(NotificationTest.class);
-    private IImplementationWrapper implementationWrapperMock;
-    private IImplementation implementationMock;
+    private INotificationImplementationWrapper implementationWrapperMock;
+    private INotificationImplementation implementationMock;
 
     @Before
     public void setUp(){
-        this.implementationWrapperMock = Mockito.mock(IImplementationWrapper.class);
-        this.implementationMock = Mockito.mock(IImplementation.class);
+        this.implementationWrapperMock = Mockito.mock(INotificationImplementationWrapper.class);
+        this.implementationMock = Mockito.mock(INotificationImplementation.class);
     }
 
     @Test
@@ -83,8 +83,8 @@ public class NotificationTest {
 
         AlarmNotificationAsaModel model = new AlarmNotificationAsaModel();
         model.setActions(actionList);
-        model.setRule_id("12345");
-        model.setRule_description("Sample Description");
+        model.setRuleId("12345");
+        model.setRuleDescription("Sample Description");
 
         return model;
     }

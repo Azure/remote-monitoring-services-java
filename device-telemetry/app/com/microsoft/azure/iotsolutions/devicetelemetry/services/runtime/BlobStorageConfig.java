@@ -17,22 +17,22 @@ public class BlobStorageConfig implements IBlobStorageConfig {
 
     @Override
     public String getAccountName() {
-        return accountName;
+        return this.accountName;
     }
 
     @Override
     public String getAccountKey() {
-        return accountKey;
+        return this.accountKey;
     }
 
     @Override
     public String getEndpointSuffix() {
-        return endpointSuffix;
+        return this.endpointSuffix;
     }
 
     @Override
     public String getEventHubContainer() {
-        return eventHubContainer;
+        return this.eventHubContainer;
     }
 
     public void setAccountName(String accountName) {

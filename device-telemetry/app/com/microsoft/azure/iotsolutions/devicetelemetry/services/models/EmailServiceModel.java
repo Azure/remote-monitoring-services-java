@@ -29,25 +29,27 @@ public final class EmailServiceModel implements IActionServiceModel {
     private static final String EMPTY_EMAIL = "Empty email list provided for actionType email";
 
     public EmailServiceModel() {
-        type = IActionServiceModel.Type.Email;
-        subject = "";
-        body = "";
-        email = new ArrayList<>();
+        this.type = IActionServiceModel.Type.Email;
+        this.subject = "";
+        this.body = "";
+        this.email = new ArrayList<>();
     }
 
     public EmailServiceModel(IActionServiceModel.Type type, Map<String, Object> parameters) throws InvalidInputException {
         this();
         this.type = type;
         if (parameters.containsKey(SUBJECT)) {
-            subject = (String) parameters.get(SUBJECT);
+            this.subject = (String) parameters.get(SUBJECT);
         }
         if (parameters.containsKey(TEMPLATE)) {
-            body = (String) parameters.get(TEMPLATE);
+            this.body = (String) parameters.get(TEMPLATE);
         }
 
-        email = (ArrayList<String>) parameters.get(EMAIL);
+        this.email = (ArrayList<String>) parameters.get(EMAIL);
 
-        if (!this.isValid()) {
+        try {
+            this.isValid();
+        } catch (Exception e) {
             throw new InvalidInputException(IMPROPER_EMAIL);
         }
     }
@@ -68,22 +70,14 @@ public final class EmailServiceModel implements IActionServiceModel {
         return result;
     }
 
-    private Boolean isValid() throws InvalidInputException {
-        try {
-            if (this.email == null) {
-                throw new InvalidInputException(EMPTY_EMAIL);
-            }
-            for (String email : email) {
-                try {
-                    InternetAddress mail = new InternetAddress(email);
-                    mail.validate();
-                } catch (AddressException e) {
-                    return false;
-                }
-            }
-        } catch (Exception e) {
-            return false;
+    private void isValid() throws InvalidInputException, AddressException {
+        // checks for invalid email formatting or null emails
+        if (this.email == null) {
+            throw new InvalidInputException(EMPTY_EMAIL);
         }
-        return true;
+        for (String email : email) {
+            InternetAddress mail = new InternetAddress(email);
+            mail.validate();
+        }
     }
 }

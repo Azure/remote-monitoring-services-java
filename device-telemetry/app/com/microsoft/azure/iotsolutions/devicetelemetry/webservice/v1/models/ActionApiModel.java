@@ -9,54 +9,54 @@ import java.util.HashMap;
 import java.util.Map;
 
 public final class ActionApiModel {
-    private String Type;
-    private Map<String, Object> Parameters;
+    private String type;
+    private Map<String, Object> parameters;
 
     public ActionApiModel(String action, Map<String, Object> parameters) {
-        Type = action;
-        Parameters = parameters;
+        this.type = action;
+        this.parameters = parameters;
     }
 
     public ActionApiModel(IActionServiceModel action) {
-        Type = action.getType().toString();
-        Parameters = action.getParameters();
+        this.type = action.getType().toString();
+        this.parameters = action.getParameters();
     }
 
     public ActionApiModel() {
-        Type = "";
-        Parameters = new HashMap<>();
+        this.type = "";
+        this.parameters = new HashMap<>();
     }
-    
+
     @JsonProperty("Type")
     public String getType() {
-        return Type;
+        return this.type;
     }
 
     public void setType(String type) {
-        Type = type;
+        this.type = type;
     }
 
     @JsonProperty("Parameters")
     public Map<String, Object> getParameters() {
-        return Parameters;
+        return this.parameters;
     }
 
     public void setParameters(Map<String, Object> parameters) {
-        Parameters = parameters;
+        this.parameters = parameters;
     }
 
     public IActionServiceModel toServiceModel() throws InvalidInputException {
         IActionServiceModel.Type retType;
         try {
-            retType = IActionServiceModel.Type.valueOf(Type);
+            retType = IActionServiceModel.Type.valueOf(this.type);
             switch(retType){
                 case Email:
-                    return new EmailServiceModel(retType, Parameters);
+                    return new EmailServiceModel(retType, this.parameters);
                 default:
-                    throw new InvalidInputException(String.format("The action type %s is not valid", Type));
+                    throw new InvalidInputException(String.format("The action type %s is not valid", this.type));
             }
         } catch (Exception e) {
-            throw new InvalidInputException(String.format("The action type %s is not valid", Type));
+            throw new InvalidInputException(String.format("The action type %s is not valid", this.type));
         }
     }
 }

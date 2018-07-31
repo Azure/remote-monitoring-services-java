@@ -18,7 +18,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 
-public class LogicApp implements IImplementation {
+public class LogicApp implements INotificationImplementation {
     private String endpointURL;
     private String solutionName;
     private String content;

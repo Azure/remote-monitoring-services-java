@@ -9,34 +9,30 @@ import java.util.Map;
 
 public class ActionAsaModel implements IActionAsaModel{
     @JsonProperty("Type")
-    private String ActionType = "";
+    private String actionType = "";
 
     @JsonProperty("Parameters")
-    private Map<String, Object> Parameters = new HashMap<>();
-
-    public ActionAsaModel() {
-        // empty constructor
-    }
+    private Map<String, Object> parameters = new HashMap<>();
 
     @JsonProperty("Type")
     @Override
     public String getActionType() {
-        return ActionType;
+        return this.actionType;
     }
 
     @Override
     public void setActionType(String actionType) {
-        ActionType = actionType;
+        this.actionType = actionType;
     }
 
     @JsonProperty("Parameters")
     @Override
     public Map<String, Object> getParameters() {
-        return Parameters;
+        return this.parameters;
     }
 
     @Override
     public void setParameters(Map<String, Object> parameters) {
-        Parameters = parameters;
+        this.parameters = parameters;
     }
 }
