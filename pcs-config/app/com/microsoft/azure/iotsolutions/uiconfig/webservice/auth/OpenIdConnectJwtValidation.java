@@ -4,6 +4,7 @@ package com.microsoft.azure.iotsolutions.uiconfig.webservice.auth;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.microsoft.azure.iotsolutions.uiconfig.webservice.auth.exceptions.*;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.jwk.source.RemoteJWKSet;
@@ -38,6 +39,9 @@ public class OpenIdConnectJwtValidation implements IJwtValidation {
 
     private boolean setupComplete;
 
+    private final String ROLE_CLAIM_TYPE = "roles";
+    private final String USER_OBJECT_ID_CLAIM_TYPE = "oid";
+
     /**
      * A set of JWT processors, one for each trusted signing algorithm
      */
@@ -70,6 +74,35 @@ public class OpenIdConnectJwtValidation implements IJwtValidation {
         // Note, the setup cannot throw exceptions or DI won't complete
         this.setupComplete = false;
         this.trySetup(false);
+    }
+
+    /**
+     * Extract current user id and role information from token for authorization
+     * on the action request.
+     * @param token jwt token string
+     * @return user claims include object id and roles
+     * @throws NotAuthorizedException
+     */
+    public UserClaims getUserClaims(String token) throws NotAuthorizedException {
+        JWSObject jwsToken;
+        try {
+            jwsToken = JWSObject.parse(token);
+        } catch (java.text.ParseException e) {
+            throw new NotAuthorizedException("The authorization token is not valid");
+        }
+        // Check whether the signing algorithm is allowed (from the configuration)
+        String algo = jwsToken.getHeader().getAlgorithm().getName().toUpperCase();
+        DefaultJWTProcessor jwtProcessor = this.jwtProcessors.get(algo);
+        SecurityContext ctx = null;
+        UserClaims userClaims = new UserClaims();
+        try {
+            JWTClaimsSet claims = jwtProcessor.process(token, ctx);
+            userClaims.setUserObjectId((String)claims.getClaims().get(USER_OBJECT_ID_CLAIM_TYPE));
+            userClaims.setRoles((List<String>)claims.getClaim(ROLE_CLAIM_TYPE));
+            return userClaims;
+        } catch (Exception e) {
+            throw new NotAuthorizedException("The authorization token is not valid");
+        }
     }
 
     /**
