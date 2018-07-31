@@ -3,6 +3,7 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth;
 
 import com.google.inject.Inject;
+import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.exceptions.ExternalDependencyException;
 import play.Logger;
 import play.libs.Json;
 import play.libs.ws.WSClient;

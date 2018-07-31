@@ -3,6 +3,7 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth;
 
 import com.google.inject.ImplementedBy;
+import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.exceptions.ExternalDependencyException;
 
 import java.util.List;
 import java.util.concurrent.CompletionStage;

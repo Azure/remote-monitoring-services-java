@@ -4,6 +4,9 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth;
 
 import akka.stream.Materializer;
 import com.google.inject.Inject;
+import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.exceptions.ExternalDependencyException;
+import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.exceptions.InvalidConfigurationException;
+import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.exceptions.NotAuthorizedException;
 import play.Logger;
 import play.libs.Json;
 import play.mvc.Filter;

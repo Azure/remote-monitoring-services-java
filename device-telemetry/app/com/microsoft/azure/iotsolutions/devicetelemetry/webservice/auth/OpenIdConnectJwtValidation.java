@@ -4,6 +4,9 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.exceptions.ExternalDependencyException;
+import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.exceptions.InvalidConfigurationException;
+import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.exceptions.NotAuthorizedException;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.jwk.source.RemoteJWKSet;
