@@ -27,12 +27,12 @@ public class StorageWriteLock<T> {
     private String lastETag;
 
     public StorageWriteLock(
-            Class<T> type,
-            IStorageAdapterClient client,
-            String collectionId,
-            String key,
-            BiConsumer<T, Boolean> setLockFlagAction,
-            Function<ValueApiModel, Boolean> testLockFunc) {
+        Class<T> type,
+        IStorageAdapterClient client,
+        String collectionId,
+        String key,
+        BiConsumer<T, Boolean> setLockFlagAction,
+        Function<ValueApiModel, Boolean> testLockFunc) {
         this.client = client;
         this.collectionId = collectionId;
         this.key = key;
@@ -43,15 +43,17 @@ public class StorageWriteLock<T> {
         log = Logger.of(this.getClass());
     }
 
-    private CompletionStage<String> updateValueAsync(T value, String etag) throws BaseException {
+    private CompletionStage<String> updateValueAsync(T value, String etag) throws
+            ResourceNotFoundException, ExternalDependencyException, ConflictingResourceException {
         return this.client.updateAsync(
-                this.collectionId,
-                this.key,
-                Json.stringify(Json.toJson(value)),
-                etag).thenApplyAsync(m -> m.getETag());
+            this.collectionId,
+            this.key,
+            Json.stringify(Json.toJson(value)),
+            etag).thenApplyAsync(m -> m.getETag());
     }
 
-    public CompletionStage<Optional<Boolean>> tryLockAsync() throws ResourceOutOfDateException, ExternalDependencyException {
+    public CompletionStage<Optional<Boolean>> tryLockAsync() throws
+            ResourceOutOfDateException, ExternalDependencyException, ConflictingResourceException {
         if (this.lastETag != null) {
             throw new ResourceOutOfDateException("Lock has already been acquired");
         }
@@ -105,22 +107,21 @@ public class StorageWriteLock<T> {
                 this.lastETag = null;
                 return true;
             });
-        } catch (BaseException e) {
+        } catch (Exception e) {
             return CompletableFuture.completedFuture(false);
         }
     }
 
-    private ValueApiModel getLock() throws ExternalDependencyException {
+    private ValueApiModel getLock() throws ConflictingResourceException, ExternalDependencyException {
         try {
             return this.client.getAsync(this.collectionId, this.key).toCompletableFuture().get();
         } catch (ResourceNotFoundException e) {
-            // Nothing to do
-        } catch (InterruptedException | ExecutionException | BaseException e) {
+            return null;
+        } catch (ConflictingResourceException | InterruptedException | ExecutionException e) {
             String errorMessage = String.format("Unexpected error while locking %s,%s", this.collectionId, this.key);
             this.log.error(errorMessage, e);
-            throw new ExternalDependencyException(errorMessage);
+            throw new ConflictingResourceException(errorMessage);
         }
-        return null;
     }
 
     private CompletionStage<Optional<Boolean>> updateLock(ValueApiModel lock) {
@@ -128,7 +129,7 @@ public class StorageWriteLock<T> {
             return this.updateValueAsync(this.lastValue, lock == null ? null : lock.getETag()).thenAccept(m -> {
                 this.lastETag = m;
             }).thenApplyAsync((m) -> Optional.of(true));
-        } catch (BaseException e) {
+        } catch (Exception e) {
             return CompletableFuture.completedFuture(null);
         }
     }
