@@ -5,7 +5,7 @@ package services.test.notification.test;
 import com.microsoft.azure.eventprocessorhost.IEventProcessorFactory;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.Agent;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.IAgent;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.IEventProcessorHostWrapper;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.eventhub.IEventProcessorHostWrapper;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IBlobStorageConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.ServicesConfig;

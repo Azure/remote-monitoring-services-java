@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft. All rights reserved.
 
-package com.microsoft.azure.iotsolutions.devicetelemetry.services.notification;
+package com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.eventhub;
 
 import com.microsoft.azure.eventprocessorhost.EventProcessorHost;
 import com.microsoft.azure.eventprocessorhost.EventProcessorOptions;

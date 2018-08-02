@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import com.microsoft.azure.eventprocessorhost.EventProcessorHost;
 import com.microsoft.azure.eventprocessorhost.EventProcessorOptions;
 import com.microsoft.azure.eventprocessorhost.IEventProcessorFactory;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.eventhub.IEventProcessorHostWrapper;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IBlobStorageConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import play.Logger;
