@@ -217,5 +217,3 @@ Licensed under the [MIT](LICENSE) License.
 [gitter-url]: https://gitter.im/azure/iot-solutions
 [run-with-docker-url]:https://docs.microsoft.com/azure/iot-suite/iot-suite-remote-monitoring-deploy-local#run-the-microservices-in-docker
 [rm-arch-url]:https://docs.microsoft.com/azure/iot-suite/iot-suite-remote-monitoring-sample-walkthrough
-
-
