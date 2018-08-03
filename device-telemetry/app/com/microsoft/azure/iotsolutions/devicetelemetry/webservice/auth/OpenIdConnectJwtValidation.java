@@ -81,7 +81,7 @@ public class OpenIdConnectJwtValidation implements IJwtValidation {
      * on the action request.
      * @param token jwt token string
      * @return user claims include object id and roles
-     * @throws NotAuthorizedException
+     * @throws NotAuthorizedException if token is not valid or user claims is not valid
      */
     public UserClaims getUserClaims(String token) throws NotAuthorizedException {
         JWSObject jwsToken;

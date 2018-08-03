@@ -37,14 +37,12 @@ public class AuthorizeAction extends Action<Authorize> {
     public CompletionStage<Result> call(final Http.Context ctx) {
         Authorizer Authorizer = configurator.apply(configuration);
         String allowedAction = configuration.value().toLowerCase().trim();
-        List<String> allowedActions;
-        Boolean isAuthRequired;
-        Boolean isExternal;
 
+        // move forward if authentication is disabled or request come from internal services
         try {
-            allowedActions = Authorizer.getAllowedActions(ctx);
-            isAuthRequired = Authorizer.isAuthRequired(ctx);
-            isExternal = Authorizer.isExternalRequest(ctx);
+            if (!Authorizer.isAuthRequired(ctx) || !Authorizer.isExternalRequest(ctx)) {
+                return delegate.call(ctx);
+            }
         } catch (Exception e) {
             Result internalServerError = internalServerError(Json.toJson(new HashMap<String, String>() {{
                 put("Error", "Failed to get context of authorization from request");
@@ -52,18 +50,28 @@ public class AuthorizeAction extends Action<Authorize> {
             return CompletableFuture.completedFuture(internalServerError);
         }
 
-        List<String> lowerCasedActions = allowedActions.stream()
-                .map(String::toLowerCase)
-                .map(String::trim)
-                .collect(Collectors.toList());
-
-        // move forward if authentication is disabled or no action is required in the controller
-        if (allowedAction == null || allowedAction.isEmpty() || !isExternal || !isAuthRequired) {
+        // move forward if no action is required by the controller
+        if (allowedAction == null || allowedAction.isEmpty()) {
             return delegate.call(ctx);
         }
 
+        List<String> allowedActions;
+        try {
+            allowedActions = Authorizer.getAllowedActions(ctx);
+        } catch (Exception e) {
+            Result internalServerError = internalServerError(Json.toJson(new HashMap<String, String>() {{
+                put("Error", "Failed to get allowed actions context from request");
+            }}));
+            return CompletableFuture.completedFuture(internalServerError);
+        }
+
+        List<String> lowerCasedActions = allowedActions.stream()
+            .map(String::toLowerCase)
+            .map(String::trim)
+            .collect(Collectors.toList());
+
         // fail the request if current user doesn't have correct allowed actions
-        if (allowedActions == null || allowedActions.size() == 0 || !lowerCasedActions.contains(allowedAction)) {
+        if (lowerCasedActions == null || lowerCasedActions.size() == 0 || !lowerCasedActions.contains(allowedAction)) {
             Result unauthorized = Authorizer.onUnauthorized(ctx, allowedAction);
             return CompletableFuture.completedFuture(unauthorized);
         }
