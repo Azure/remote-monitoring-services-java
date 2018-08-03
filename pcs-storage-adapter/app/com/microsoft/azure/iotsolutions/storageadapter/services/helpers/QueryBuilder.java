@@ -2,6 +2,8 @@
 
 package com.microsoft.azure.iotsolutions.storageadapter.services.helpers;
 
+import com.microsoft.azure.documentdb.SqlParameter;
+import com.microsoft.azure.documentdb.SqlParameterCollection;
 import com.microsoft.azure.documentdb.SqlQuerySpec;
 import com.microsoft.azure.iotsolutions.storageadapter.services.exceptions.InvalidInputException;
 
@@ -12,7 +14,9 @@ public class QueryBuilder {
     public static SqlQuerySpec buildQuerySpec(String CollectionId) throws InvalidInputException {
         validate(CollectionId);
         SqlQuerySpec querySpec = new SqlQuerySpec("SELECT * FROM c WHERE c.CollectionId = @collectionId");
-        querySpec.set("@collectionId", CollectionId);
+        SqlParameterCollection sqlParameterCollection = new SqlParameterCollection();
+        sqlParameterCollection.add(new SqlParameter("@collectionId", CollectionId));
+        querySpec.setParameters(sqlParameterCollection);
         return querySpec;
     }
 

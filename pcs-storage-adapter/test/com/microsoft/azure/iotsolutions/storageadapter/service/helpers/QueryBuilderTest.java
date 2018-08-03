@@ -17,7 +17,7 @@ public class QueryBuilderTest {
     @Category({UnitTest.class})
     public void buildQuerySpecTest() throws InvalidInputException {
         SqlQuerySpec querySpec = QueryBuilder.buildQuerySpec("collection:;.,_-1");
-        assertEquals(querySpec.toJson(), "{\"query\":\"SELECT * FROM c WHERE c.CollectionId = @collectionId\",\"@collectionId\":\"collection:;.,_-1\"}");
+        assertEquals(querySpec.toJson(), "{\"query\":\"SELECT * FROM c WHERE c.CollectionId = @collectionId\",\"parameters\":[{\"name\":\"@collectionId\",\"value\":\"collection:;.,_-1\"}]}");
     }
 
     @Test(timeout = 500000, expected = InvalidInputException.class)
