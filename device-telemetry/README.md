@@ -57,7 +57,7 @@ for more information. More information on environment variables
   * `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
   * `PCS_AUTH_WEBSERVICE_URL` = http://localhost:9001/v1
   * `PCS_TELEMETRY_EVENTHUB_NAME` = {the name of your Azure Eventhub for notification-related alert outputs}
-  * `PCS_LOGICAPP_ENDPOINT_URL` = {the POST request of your Azure LogicApp configured for notifications}
+  * `PCS_TELEMETRY_LOGICAPP_ENDPOINT_URL` = {the POST request of your Azure LogicApp configured for notifications}
   * `PCS_TELEMETRY_EVENTHUB_CONNSTRING` = {your Azure Eventhub connection string}
   * `PCS_TELEMETRY_DATA_AZUREBLOB_KEY` = {your Azure Blob Storage key}
   * `PCS_TELEMETRY_DATA_AZUREBLOB_ACCOUNT` = {the name of your Azure Blob Storage account}
