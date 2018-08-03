@@ -16,10 +16,6 @@ public class StorageAdapterClient implements IStorageAdapterClient {
     private static final Logger.ALogger log = Logger.of(StorageAdapterClient.class);
     private final String serviceUri;
 
-    private static <T> String toJson(T o) {
-        return Json.stringify(Json.toJson(o));
-    }
-
     private static <A> A fromJson(String json, Class<A> clazz) {
         return Json.fromJson(Json.parse(json), clazz);
     }
@@ -33,7 +29,7 @@ public class StorageAdapterClient implements IStorageAdapterClient {
     @Override
     public CompletionStage<ValueApiModel> getAsync(String collectionId, String key)
         throws ResourceNotFoundException, ConflictingResourceException, ExternalDependencyException {
-        WSRequest request = wsClient.url(String.format("collections/%s/values/%s", collectionId, key));
+        WSRequest request = wsClient.url(String.format("%s/collections/%s/values/%s", this.serviceUri, collectionId, key));
         WSResponse response;
         try {
             response = request.get().toCompletableFuture().get();
@@ -48,7 +44,7 @@ public class StorageAdapterClient implements IStorageAdapterClient {
     @Override
     public CompletionStage<ValueListApiModel> getAllAsync(String collectionId)
         throws ResourceNotFoundException, ConflictingResourceException, ExternalDependencyException {
-        WSRequest request = wsClient.url(String.format("collections/%s/values", collectionId));
+        WSRequest request = wsClient.url(String.format("%s/collections/%s/values", this.serviceUri, collectionId));
 
         return request.get()
             .thenApplyAsync(m -> {
@@ -66,8 +62,8 @@ public class StorageAdapterClient implements IStorageAdapterClient {
         throws ResourceNotFoundException, ConflictingResourceException, ExternalDependencyException {
         ValueApiModel model = new ValueApiModel();
         model.setData(value);
-        WSRequest request = wsClient.url(String.format("collections/%s/values", collectionId));
-        return request.post(toJson(model)).thenApplyAsync(m -> {
+        WSRequest request = wsClient.url(String.format("%s/collections/%s/values", this.serviceUri, collectionId));
+        return request.post(Json.toJson(model)).thenApplyAsync(m -> {
             try {
                 CheckStatusCode(m, request);
                 return fromJson(m.getBody(), ValueApiModel.class);
@@ -83,8 +79,8 @@ public class StorageAdapterClient implements IStorageAdapterClient {
         ValueApiModel model = new ValueApiModel();
         model.setData(value);
         model.setETag(etag);
-        WSRequest request = wsClient.url(String.format("collections/%s/values/%s", collectionId, key));
-        return request.put(toJson(model)).thenApplyAsync(m -> {
+        WSRequest request = wsClient.url(String.format("%s/collections/%s/values/%s", this.serviceUri, collectionId, key));
+        return request.put(Json.toJson(model)).thenApplyAsync(m -> {
             try {
                 CheckStatusCode(m, request);
                 return fromJson(m.getBody(), ValueApiModel.class);
@@ -97,7 +93,7 @@ public class StorageAdapterClient implements IStorageAdapterClient {
     @Override
     public CompletionStage deleteAsync(String collectionId, String key)
         throws ResourceNotFoundException, ConflictingResourceException, ExternalDependencyException {
-        WSRequest request = wsClient.url(String.format("collections/%s/values/%s", collectionId, key));
+        WSRequest request = wsClient.url(String.format("%s/collections/%s/values/%s", this.serviceUri, collectionId, key));
         return request.delete().thenAcceptAsync(m -> {
             try {
                 CheckStatusCode(m, request);
