@@ -74,6 +74,7 @@ lazy val pcsconfig = project.in(file("."))
 
 // Play framework
 PlayKeys.externalizeResources := false
+PlayKeys.playDefaultPort := 9005
 
 // Docker
 // Note: use lowercase name for the Docker image details

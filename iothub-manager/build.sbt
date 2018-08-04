@@ -1,9 +1,10 @@
 // Copyright (c) Microsoft. All rights reserved.
+import sbt.project
 
-name := "iothub-manager"
-organization := "com.microsoft.azure.iotsolutions"
+  name := "iothub-manager"
+  organization := "com.microsoft.azure.iotsolutions"
 
-scalaVersion := "2.12.4"
+  scalaVersion := "2.12.4"
 
 libraryDependencies ++= {
   Seq(
@@ -75,6 +76,7 @@ lazy val iothubmanager = project.in(file("."))
 
 // Play framework
 PlayKeys.externalizeResources := false
+PlayKeys.playDefaultPort := 9002
 
 // Docker
 // Note: use lowercase name for the Docker image details

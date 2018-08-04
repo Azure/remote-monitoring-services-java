@@ -54,13 +54,14 @@ lazy val commonSettings = Seq(
 )
 
 // Main module
-lazy val storageAdapter = project.in(file("."))
+lazy val pcsstorageadapter = project.in(file("."))
   .enablePlugins(PlayJava)
   .configs(IntegrationTest)
   .settings(commonSettings)
 
 // Play framework
 PlayKeys.externalizeResources := false
+PlayKeys.playDefaultPort := 9022
 
 // Docker
 // Note: use lowercase name for the Docker image details
