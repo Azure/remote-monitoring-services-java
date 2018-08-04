@@ -8,7 +8,6 @@ import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.*;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.external.IStorageAdapterClient;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.external.ValueApiModel;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DevicePropertyServiceModel;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeviceTwinName;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.runtime.IServicesConfig;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -33,8 +32,6 @@ public class DeviceProperties implements IDeviceProperties {
     private static final Logger.ALogger log = Logger.of(DeviceProperties.class);
     // Hardcoded in application.conf
     private final int TTL;
-    // Hardcoded in application.conf
-    private final int rebuildTimeout;
     private final String CacheCollectionId = "cache";
     private final String CacheKey = "device-properties";
     // Hardcoded in application.conf
@@ -56,7 +53,6 @@ public class DeviceProperties implements IDeviceProperties {
                             IDevices devices) throws ExternalDependencyException {
         this.storageClient = storageClient;
         this.TTL = config.getDevicePropertiesTTL();
-        this.rebuildTimeout = config.getDevicePropertiesRebuildTimeout();
         this.whitelist = config.getDevicePropertiesWhiteList();
         this.devices = devices;
     }
@@ -174,10 +170,10 @@ public class DeviceProperties implements IDeviceProperties {
                 return CompletableFuture.completedFuture(true);
             }
 
-            DeviceTwinName twinNames = null;
+            DevicePropertyServiceModel twinNames = null;
             try {
                 twinNames = this.getDevicePropertyNames();
-                if (twinNames.isEmpty()) {
+                if (twinNames.isNullOrEmpty()) {
                     this.log.info(String.format("There is no property available to be cached. Retry after %d seconds",
                         this.SERVICE_QUERY_INTERVAL_SECS));
                     Thread.sleep(this.SERVICE_QUERY_INTERVAL_MS);
@@ -233,26 +229,13 @@ public class DeviceProperties implements IDeviceProperties {
         DevicePropertyServiceModel devicePropertyServiceModel;
         DateTime timestamp;
         try {
-            devicePropertyServiceModel = Json.fromJson(
-                Json.parse(valueApiModel.getData()), DevicePropertyServiceModel.class);
             DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
             timestamp = formatter.parseDateTime(valueApiModel.getMetadata().get("$modified"));
         } catch (Exception e) {
             this.log.info("DeviceProperties will be rebuilt because the last one was broken.");
             return true;
         }
-
-        if (devicePropertyServiceModel.isRebuilding()) {
-            if (timestamp.plusSeconds(this.rebuildTimeout).isBeforeNow()) {
-                this.log.debug("DeviceProperties will be rebuilt because last rebuilding timed-out");
-                return true;
-            }
-            this.log.debug("DeviceProperties rebuilding skipped because it is being rebuilt by other instance");
-            return false;
-        } else if (devicePropertyServiceModel.isNullOrEmpty()) {
-            this.log.info("DeviceProperties will be rebuilt because it is empty");
-            return true;
-        } else if (timestamp.plusSeconds(this.TTL).isBeforeNow()) {
+        if (timestamp.plusSeconds(this.TTL).isBeforeNow()) {
             this.log.info("DeviceProperties will be rebuilt because it has expired");
             return true;
         } else {
@@ -262,27 +245,27 @@ public class DeviceProperties implements IDeviceProperties {
     }
 
     /**
-     * @return DeviceTwinName asynchronously
+     * @return DevicePropertyServiceModel asynchronously
      *
      * @throws ExternalDependencyException
-     * @summary Get list of DeviceTwinNames from IOT-hub and whitelist it.
+     * @summary Get list of DevicePropertyServiceModel from IOT-hub and whitelist it.
      * @remarks List of Twin Names to be whitelisted is hardcoded in application.conf
      */
-    private CompletionStage<DeviceTwinName> getValidNamesAsync() throws
+    private CompletionStage<DevicePropertyServiceModel> getValidNamesAsync() throws
         ExternalDependencyException, InterruptedException, ExecutionException {
-        DeviceTwinName fullNameWhitelist = new DeviceTwinName(), prefixWhitelist = new DeviceTwinName();
+        DevicePropertyServiceModel fullNameWhitelist = new DevicePropertyServiceModel(), prefixWhitelist = new DevicePropertyServiceModel();
         this.parseWhitelist(this.whitelist, fullNameWhitelist, prefixWhitelist);
 
-        DeviceTwinName validNames = new DeviceTwinName(
-            fullNameWhitelist.getTags(), fullNameWhitelist.getReportedProperties());
+        DevicePropertyServiceModel validNames = new DevicePropertyServiceModel(
+            fullNameWhitelist.getTags(), fullNameWhitelist.getReported());
 
-        if (!prefixWhitelist.getTags().isEmpty() || !prefixWhitelist.getReportedProperties().isEmpty()) {
-            DeviceTwinName allNames = devices.getDeviceTwinNames();
+        if (!prefixWhitelist.getTags().isEmpty() || !prefixWhitelist.getReported().isEmpty()) {
+            DevicePropertyServiceModel allNames = devices.getDeviceProperties();
             validNames.getTags().addAll(allNames.getTags().stream().
                 filter(m -> prefixWhitelist.getTags().stream().anyMatch(m::startsWith)).collect(Collectors.toSet()));
 
-            validNames.getReportedProperties().addAll(allNames.getReportedProperties().stream().
-                filter(m -> prefixWhitelist.getReportedProperties().stream().anyMatch(m::startsWith)).
+            validNames.getReported().addAll(allNames.getReported().stream().
+                filter(m -> prefixWhitelist.getReported().stream().anyMatch(m::startsWith)).
                 collect(Collectors.toSet()));
         }
 
@@ -299,8 +282,8 @@ public class DeviceProperties implements IDeviceProperties {
      * without regex(*)
      */
     private void parseWhitelist(List<String> whitelist,
-                                DeviceTwinName fullNameWhitelist,
-                                DeviceTwinName prefixWhitelist) {
+                                DevicePropertyServiceModel fullNameWhitelist,
+                                DevicePropertyServiceModel prefixWhitelist) {
 
         List<String> tags = whitelist.stream().filter(m -> m.toLowerCase().startsWith(WHITELIST_TAG_PREFIX)).
             map(m -> m.substring(WHITELIST_TAG_PREFIX.length())).collect(Collectors.toList());
@@ -317,9 +300,9 @@ public class DeviceProperties implements IDeviceProperties {
             map(m -> m.substring(0, m.length() - 1)).collect(Collectors.toList());
 
         fullNameWhitelist.setTags(new HashSet<>(fixedTags));
-        fullNameWhitelist.setReportedProperties(new HashSet<>(fixedReported));
+        fullNameWhitelist.setReported(new HashSet<>(fixedReported));
         prefixWhitelist.setTags(new HashSet<>(regexTags));
-        prefixWhitelist.setReportedProperties(new HashSet<>(regexReported));
+        prefixWhitelist.setReported(new HashSet<>(regexReported));
     }
 
     /**
@@ -360,10 +343,10 @@ public class DeviceProperties implements IDeviceProperties {
     /**
      * @summary Get List of deviceProperties from cache
      */
-    private DeviceTwinName getDevicePropertyNames()
+    private DevicePropertyServiceModel getDevicePropertyNames()
         throws ExternalDependencyException, ExecutionException, InterruptedException {
-        CompletableFuture<DeviceTwinName> twinNamesTask = this.getValidNamesAsync().toCompletableFuture();
-        DeviceTwinName twinNames = twinNamesTask.get();
+        CompletableFuture<DevicePropertyServiceModel> twinNamesTask = this.getValidNamesAsync().toCompletableFuture();
+        DevicePropertyServiceModel twinNames = twinNamesTask.get();
         return twinNames;
     }
 }

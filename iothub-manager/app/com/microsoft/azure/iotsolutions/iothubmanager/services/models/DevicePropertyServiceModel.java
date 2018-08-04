@@ -8,18 +8,8 @@ import java.util.HashSet;
 
 public class DevicePropertyServiceModel {
 
-    private boolean rebuilding;
     private HashSet<String> tags;
     private HashSet<String> reported;
-
-    @JsonProperty("Rebuilding")
-    public boolean isRebuilding() {
-        return rebuilding;
-    }
-
-    public void setRebuilding(boolean rebuilding) {
-        this.rebuilding = rebuilding;
-    }
 
     @JsonProperty("Tags")
     public HashSet<String> getTags() {
@@ -42,14 +32,9 @@ public class DevicePropertyServiceModel {
     public DevicePropertyServiceModel() {
     }
 
-    public DevicePropertyServiceModel(HashSet<String> tags, HashSet<String> reported, boolean rebuilding) {
+    public DevicePropertyServiceModel(HashSet<String> tags, HashSet<String> reported) {
         this.tags = tags;
         this.reported = reported;
-        this.rebuilding = rebuilding;
-    }
-
-    public DevicePropertyServiceModel(HashSet<String> tags, HashSet<String> reported) {
-        this(tags, reported, false);
     }
 
     public boolean isNullOrEmpty() {

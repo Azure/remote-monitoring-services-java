@@ -44,13 +44,13 @@ public final class Devices implements IDevices {
         this.iotHubHostName = ioTHubService.getIotHubHostName();
     }
 
-    public DeviceTwinName getDeviceTwinNames()
+    public DevicePropertyServiceModel getDeviceProperties()
             throws ExternalDependencyException, ExecutionException, InterruptedException {
         CompletableFuture<DeviceServiceListModel> twinNamesTask = this.queryAsync
             ("", "").toCompletableFuture();
         DeviceServiceListModel model = twinNamesTask.get();
-        DeviceTwinName twinNames = model.toDeviceTwinNames();
-        return twinNames;
+        DevicePropertyServiceModel deviceProperties = model.toDeviceProperties();
+        return deviceProperties;
     }
 
     public CompletionStage<DeviceServiceModel> getAsync(final String id) throws ExternalDependencyException {

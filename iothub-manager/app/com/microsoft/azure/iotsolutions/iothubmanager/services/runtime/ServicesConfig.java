@@ -16,12 +16,11 @@ public class ServicesConfig implements IServicesConfig {
     private List<String> devicePropertiesWhiteList;
 
     public ServicesConfig(final String hubConnString, final String storageAdapterServiceUrl,
-                          int devicePropertiesTTL, int devicePropertiesRebuildTimeout, List<String> devicePropertiesWhiteList) {
+                          int devicePropertiesTTL, List<String> devicePropertiesWhiteList) {
         this.hubConnString = hubConnString;
         this.storageAdapterServiceUrl = storageAdapterServiceUrl;
         this.devicePropertiesWhiteList = devicePropertiesWhiteList;
         this.devicePropertiesTTL = devicePropertiesTTL;
-        this.devicePropertiesRebuildTimeout = devicePropertiesRebuildTimeout;
     }
 
     /**
@@ -46,11 +45,6 @@ public class ServicesConfig implements IServicesConfig {
     @Override
     public int getDevicePropertiesTTL() {
         return devicePropertiesTTL;
-    }
-
-    @Override
-    public int getDevicePropertiesRebuildTimeout() {
-        return devicePropertiesRebuildTimeout;
     }
 
     @Override

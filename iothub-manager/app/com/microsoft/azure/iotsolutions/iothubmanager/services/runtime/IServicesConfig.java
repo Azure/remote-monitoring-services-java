@@ -21,6 +21,5 @@ public interface IServicesConfig {
     String getStorageAdapterServiceUrl();
 
     int getDevicePropertiesTTL();
-    int getDevicePropertiesRebuildTimeout();
     List<String> getDevicePropertiesWhiteList();
 }

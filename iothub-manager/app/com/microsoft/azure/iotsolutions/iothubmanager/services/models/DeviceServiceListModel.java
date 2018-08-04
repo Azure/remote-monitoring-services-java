@@ -28,7 +28,7 @@ public class DeviceServiceListModel {
         return this.continuationToken;
     }
 
-    public DeviceTwinName toDeviceTwinNames() {
+    public DevicePropertyServiceModel toDeviceProperties() {
         HashSet<String> tagSet = new HashSet<>();
         StreamSupport.stream(items.spliterator(), false).forEach(m -> {
             HashSet<String> currentTagSet = HashMapHelper.mapToHashSet("", m.getTwin().getTags());
@@ -41,6 +41,6 @@ public class DeviceServiceListModel {
             reportedSet.addAll(currentTagSet);
         });
 
-        return new DeviceTwinName(tagSet, reportedSet);
+        return new DevicePropertyServiceModel(tagSet, reportedSet);
     }
 }
