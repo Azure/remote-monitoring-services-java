@@ -7,11 +7,16 @@ source $APP_HOME/scripts/local/launch/.env_uris.sh
 
 set -e
 
+echo "Starting Device-Simulation MS ....."
 cd $APP_HOME/device-simulation/scripts/docker
-./run >> $APP_HOME/scripts/local/device-simulation.txt
+./run >> $APP_HOME/scripts/local/device-simulation.txt &
+
+echo "Starting ASA-Manager MS ....."
 cd $APP_HOME/asa-manager/scripts/docker
-./run >> $APP_HOME/scripts/local/asa-manager.txt
+./run >> $APP_HOME/scripts/local/asa-manager.txt &
+
+echo "Starting PCS-Auth MS ....."
 cd $APP_HOME/pcs-auth/scripts/docker
-./run >> $APP_HOME/scripts/local/pcs-auth.txt
+./run >> $APP_HOME/scripts/local/pcs-auth.txt &
 
 set +e
