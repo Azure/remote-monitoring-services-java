@@ -11,7 +11,11 @@ for /f "tokens=*" %%a in ('Type %envFile%') do (
   if "!line:~0,1!"=="#" (
     echo "-"
   ) else (
-    Set !line!
+    if "!line:~0,1!"==" " (
+      echo "-"
+    ) else (
+      Set !line!
+    )
   )
 )
 pause
