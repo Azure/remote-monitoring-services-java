@@ -1,4 +1,4 @@
-[![Build][build-badge]][build-url]
+[![Build status](https://solutionaccelerators.visualstudio.com/RemoteMonitoring/_apis/build/status/Consolidated%20Repo%20-%20Java)](https://solutionaccelerators.visualstudio.com/RemoteMonitoring/_build/latest?definitionId=25)
 [![Issues][issues-badge]][issues-url]
 [![Gitter][gitter-badge]][gitter-url]
 
