@@ -65,10 +65,10 @@ function check_dependencies {
 
 function set_env_vars {
 	while IFS='' read -r line || [[ -n "$line" ]]; do 	
-		line=$(echo $line | sed -e 's/\;/\\\;/g')
-		echo "export $line" >> $log_file
-		echo "SET $line" >> $bat
-  done < $envvars
+                line=$(echo $line | sed -e 's/\;/\\\;/g')
+                echo "export $line" >> $log_file
+                echo "SET $line" >> $bat
+        done < $envvars
 }
 
 truncate -s 0 $log_file
