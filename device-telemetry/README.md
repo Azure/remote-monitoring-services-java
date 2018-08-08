@@ -45,6 +45,7 @@ This service has a dependency on the following Azure resources. Follow the instr
 
 This service depends on the following repository.
 1. [Storage Adapter Microservice](https://github.com/Azure/pcs-storage-adapter-java)
+2. [Auth Microservice](https://github.com/Azure/pcs-auth-dotnet)
 
 ### 3. Environment variables required to run the service
 In order to run the service, some environment variables need to be created
@@ -53,6 +54,7 @@ for more information. More information on environment variables
 [here](#configuration-and-environment-variables).
   * `PCS_TELEMETRY_DOCUMENTDB_CONNSTRING` = {your Azure Cosmos DB connection string}
   * `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
+  * `PCS_AUTH_WEBSERVICE_URL` = http://localhost:9001/v1
 
 # Running the service in an IDE
 
@@ -81,6 +83,7 @@ Steps using IntelliJ IDEA, with SBT plugin enabled:
   * Define the following environment variables:
      * `PCS_TELEMETRY_DOCUMENTDB_CONNSTRING` = {your Azure Cosmos DB connection string}
      * `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
+     * `PCS_AUTH_WEBSERVICE_URL` = http://localhost:9001/v1
 * Either from the toolbar or the Run menu, execute the configuration just
   created, using the Debug command/button
 * Test that the service is up and running pointing your browser to
@@ -114,6 +117,7 @@ Steps using Eclipse Oxygen ("Eclipse for Java Developers" package):
 More information on environment variables [here](#configuration-and-environment-variables).
     1. `PCS_TELEMETRY_DOCUMENTDB_CONNSTRING` = {your Azure Cosmos DB connection string}
     1. `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
+    1. `PCS_AUTH_WEBSERVICE_URL` = http://localhost:9001/v1
 1. Use the scripts in the [scripts](scripts) folder for many frequent tasks:
    * `build`: compile all the projects and run the tests.
    * `compile`: compile all the projects.

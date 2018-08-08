@@ -52,7 +52,7 @@ if [[ "$editor" == "" || "$editor" == "vs" ]]; then
     start $APP_HOME/remote-monitoring.sln
 else
     cd $APP_HOME
-	code .
+	  code .
 fi
 	
 set +e

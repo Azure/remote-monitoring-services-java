@@ -68,7 +68,7 @@ function set_env_vars {
 		line=$(echo $line | sed -e 's/\;/\\\;/g')
 		echo "export $line" >> $log_file
 		echo "SET $line" >> $bat
-    done < $envvars
+  done < $envvars
 }
 
 truncate -s 0 $log_file
