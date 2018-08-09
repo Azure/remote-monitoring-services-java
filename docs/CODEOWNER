@@ -8,7 +8,7 @@
 LICENSE             @timlaverty @dluc @ppathan
 iothub-manager      @molly-moen @sushilraje
 device-telemetry    @molly-moen @jillcary
-pcs-storage-adapter @sushilraje @isaac73
+storage-adapter     @sushilraje @isaac73
 asa-manager         @zhang-hua @molly-moen
 auth                @elvinm @jillcary
 config              @isaac73 @zhang-hua
