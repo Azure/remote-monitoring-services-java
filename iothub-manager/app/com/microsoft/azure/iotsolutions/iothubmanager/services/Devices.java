@@ -218,19 +218,19 @@ public final class Devices implements IDevices {
                         } else {
                             this.deviceTwinClient.updateTwin(device.getTwin().toDeviceTwinDevice());
                             DevicePropertyServiceModel model = new DevicePropertyServiceModel();
-                            model.setTags(new HashSet<String>(
-                                device.getTwin() != null ?
-                                    device.getTwin().getTags() != null ? device.getTwin().getTags().keySet() : null
-                                    : null
-                            ));
-                            model.setReported(
-                                new HashSet<String>(
-                                    device.getTwin() != null ?
-                                        device.getTwin().getProperties() != null ?
-                                            device.getTwin().getProperties().getReported() != null ?
-                                                device.getTwin().getProperties().getReported().keySet() : null
-                                            : null
-                                        : null));
+                            if(device.getTwin() != null){
+                                if(device.getTwin().getTags() != null){
+                                    model.setTags(new HashSet<String>(device.getTwin().getTags().keySet()));
+                                }
+                            }
+                            if(device.getTwin() != null){
+                                if(device.getTwin().getProperties() != null){
+                                    if(device.getTwin().getProperties().getReported() != null){
+                                        model.setReported(
+                                            new HashSet<String>(device.getTwin().getProperties().getReported().keySet()));
+                                    }
+                                }
+                            }
                             // Update the deviceProperties cache, no need to wait
                             CompletionStage unused = devicePropertyCallBack.updateCache(model);
                             return new DeviceServiceModel(azureDevice, device.getTwin(), this.iotHubHostName);
