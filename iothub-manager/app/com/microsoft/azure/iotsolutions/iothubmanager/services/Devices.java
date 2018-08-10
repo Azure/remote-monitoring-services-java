@@ -45,7 +45,7 @@ public final class Devices implements IDevices {
     }
 
     public DeviceTwinName getDeviceTwinNames()
-        throws ExternalDependencyException, ExecutionException, InterruptedException {
+            throws ExternalDependencyException, ExecutionException, InterruptedException {
         CompletableFuture<DeviceServiceListModel> twinNamesTask = this.queryAsync
             ("", "").toCompletableFuture();
         DeviceServiceListModel model = twinNamesTask.get();
