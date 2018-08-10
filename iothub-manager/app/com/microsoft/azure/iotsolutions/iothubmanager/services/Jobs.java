@@ -135,13 +135,11 @@ public class Jobs implements IJobs {
         throws ExternalDependencyException {
         try {
             DevicePropertyServiceModel model = new DevicePropertyServiceModel();
-            if(twin.getTags() != null){
+            if (twin.getTags() != null) {
                 model.setTags(new HashSet<String>(twin.getTags().keySet()));
             }
-            if(twin.getProperties() != null){
-                if(twin.getProperties().getReported() != null){
-                    model.setReported(new HashSet<String>(twin.getProperties().getReported().keySet()));
-                }
+            if (twin.getProperties() != null && twin.getProperties().getReported() != null) {
+                model.setReported(new HashSet<String>(twin.getProperties().getReported().keySet()));
             }
             // Update the deviceProperties cache, no need to wait
             CompletionStage unused = this.deviceProperties.updateListAsync(model);
