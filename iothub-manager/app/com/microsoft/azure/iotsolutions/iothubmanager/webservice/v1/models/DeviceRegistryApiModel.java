@@ -109,7 +109,7 @@ public final class DeviceRegistryApiModel {
         try {
             this.lastActivity = format.parse(value);
         } catch (ParseException e) {
-            throw new InvalidInputException("setLastActivity: Unable to parse LastActivity", e);
+            throw new InvalidInputException("setLastActivity: Unable to parse lastActivity", e);
         }
     }
 
@@ -129,7 +129,7 @@ public final class DeviceRegistryApiModel {
         try {
             this.lastStatusUpdated = format.parse(value);
         } catch (ParseException e) {
-            throw new InvalidInputException("setLastStatusUpdated: Unable to parse LastActivity", e);
+            throw new InvalidInputException("setLastStatusUpdated: Unable to parse lastStatusUpdated", e);
         }
     }
 
