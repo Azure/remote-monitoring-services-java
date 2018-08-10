@@ -73,8 +73,7 @@ public final class DevicesController extends Controller {
         DeviceRegistryApiModel device = null;
         try {
             device = fromJson(json, DeviceRegistryApiModel.class);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new InvalidInputException("Unable to parse device model from Json", e);
         }
         IDeviceProperties deviceProperties = this.deviceProperties;

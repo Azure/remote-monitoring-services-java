@@ -106,14 +106,11 @@ public final class DeviceRegistryApiModel {
 
     public void setLastActivity(String value) throws InvalidInputException {
         DateFormat format = new SimpleDateFormat(dateFormatString);
-        Date date;
         try {
-            date = format.parse(value);
-        }
-        catch (ParseException e){
+            this.lastActivity = format.parse(value);
+        } catch (ParseException e) {
             throw new InvalidInputException("setLastActivity: Unable to parse LastActivity", e);
         }
-        this.lastActivity = date;
     }
 
     @JsonProperty("Connected")
@@ -129,18 +126,16 @@ public final class DeviceRegistryApiModel {
 
     public void setLastStatusUpdated(String value) throws InvalidInputException {
         DateFormat format = new SimpleDateFormat(dateFormatString);
-        Date date;
         try {
-            date = format.parse(value);
-        }
-        catch (ParseException e){
+            this.lastStatusUpdated = format.parse(value);
+        } catch (ParseException e) {
             throw new InvalidInputException("setLastStatusUpdated: Unable to parse LastActivity", e);
         }
-        this.lastStatusUpdated = date;
     }
 
     public void setLastStatusUpdated(Date value) {
-        this.lastStatusUpdated = value; }
+        this.lastStatusUpdated = value;
+    }
 
     @JsonProperty("Authentication")
     public AuthenticationMechanismApiModel getAuthentication() {
