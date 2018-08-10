@@ -136,9 +136,10 @@ public class Jobs implements IJobs {
         try {
             DevicePropertyServiceModel model = new DevicePropertyServiceModel();
             model.setTags(new HashSet<String>(twin.getTags() != null ? twin.getTags().keySet() : null));
-            model.setReported(new HashSet<String>(twin.getProperties() != null ?
-                twin.getProperties().getReported() != null ? twin.getProperties().getReported().keySet() : null :
-                null));
+            model.setReported(new HashSet<String>(
+                twin.getProperties() != null ?
+                    twin.getProperties().getReported() != null ? twin.getProperties().getReported().keySet() : null
+                    : null));
             // Update the deviceProperties cache, no need to wait
             CompletionStage unused = this.deviceProperties.updateListAsync(model);
 
