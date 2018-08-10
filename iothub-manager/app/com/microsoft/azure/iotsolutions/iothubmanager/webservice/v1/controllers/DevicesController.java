@@ -70,7 +70,13 @@ public final class DevicesController extends Controller {
     @Authorize("UpdateDevices")
     public CompletionStage<Result> putAsync(final String id) throws InvalidInputException, ExternalDependencyException {
         JsonNode json = request().body().asJson();
-        final DeviceRegistryApiModel device = fromJson(json, DeviceRegistryApiModel.class);
+        DeviceRegistryApiModel device = null;
+        try {
+            device = fromJson(json, DeviceRegistryApiModel.class);
+        }
+        catch (Exception e){
+            throw new InvalidInputException("Unable to parse device model from Json", e);
+        }
         IDeviceProperties deviceProperties = this.deviceProperties;
         DevicePropertyCallBack devicePropertyCallBack = devices -> {
             return deviceProperties.updateListAsync(devices);

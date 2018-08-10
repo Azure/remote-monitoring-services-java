@@ -3,10 +3,12 @@
 package com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models;
 
 import com.fasterxml.jackson.annotation.*;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.*;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.Version;
 import org.joda.time.DateTime;
 
+import java.text.*;
 import java.util.*;
 
 /**
@@ -28,7 +30,7 @@ public final class DeviceRegistryApiModel {
     private DeviceTwinProperties properties;
     private boolean isSimulated;
 
-    private final String dateFormatString = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+    private final String dateFormatString = "yyyy-MM-dd'T'HH:mm:ss:SSS'Z'";
 
     public DeviceRegistryApiModel() {
     }
@@ -102,6 +104,18 @@ public final class DeviceRegistryApiModel {
         this.lastActivity = value;
     }
 
+    public void setLastActivity(String value) throws InvalidInputException {
+        DateFormat format = new SimpleDateFormat(dateFormatString);
+        Date date;
+        try {
+            date = format.parse(value);
+        }
+        catch (ParseException e){
+            throw new InvalidInputException("setLastActivity: Unable to parse LastActivity", e);
+        }
+        this.lastActivity = date;
+    }
+
     @JsonProperty("Connected")
     public boolean getConnected() {
         return this.connected;
@@ -113,9 +127,20 @@ public final class DeviceRegistryApiModel {
         return this.lastStatusUpdated;
     }
 
-    public void setLastStatusUpdated(Date value) {
-        this.lastActivity = value;
+    public void setLastStatusUpdated(String value) throws InvalidInputException {
+        DateFormat format = new SimpleDateFormat(dateFormatString);
+        Date date;
+        try {
+            date = format.parse(value);
+        }
+        catch (ParseException e){
+            throw new InvalidInputException("setLastStatusUpdated: Unable to parse LastActivity", e);
+        }
+        this.lastStatusUpdated = date;
     }
+
+    public void setLastStatusUpdated(Date value) {
+        this.lastStatusUpdated = value; }
 
     @JsonProperty("Authentication")
     public AuthenticationMechanismApiModel getAuthentication() {
