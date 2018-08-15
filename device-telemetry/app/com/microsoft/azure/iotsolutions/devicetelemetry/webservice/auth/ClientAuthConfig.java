@@ -8,6 +8,7 @@ import java.util.HashSet;
 public class ClientAuthConfig implements IClientAuthConfig {
 
     private Boolean authRequired;
+    private String authServiceUrl;
     private String authType;
     private HashSet<String> jwtAllowedAlgos;
     private String jwtIssuer;
@@ -16,6 +17,7 @@ public class ClientAuthConfig implements IClientAuthConfig {
 
     public ClientAuthConfig(
         Boolean authRequired,
+        String authServiceUrl,
         String authType,
         HashSet<String> jwtAllowedAlgos,
         String jwtIssuer,
@@ -23,6 +25,7 @@ public class ClientAuthConfig implements IClientAuthConfig {
         Duration jwtClockSkew
     ) {
         this.authRequired = authRequired;
+        this.authServiceUrl = authServiceUrl;
         this.authType = authType;
         this.jwtAllowedAlgos = jwtAllowedAlgos;
         this.jwtIssuer = jwtIssuer;
@@ -34,6 +37,9 @@ public class ClientAuthConfig implements IClientAuthConfig {
     public Boolean isAuthRequired() {
         return this.authRequired;
     }
+
+    @Override
+    public String getAuthServiceUrl() { return this.authServiceUrl; }
 
     @Override
     public String getAuthType() {

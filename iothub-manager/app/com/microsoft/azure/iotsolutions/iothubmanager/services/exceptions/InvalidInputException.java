@@ -9,7 +9,7 @@ package com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions;
  * or containing invalid values. The client should fix the request before
  * retrying.
  */
-public class InvalidInputException extends BaseException {
+public class InvalidInputException extends Exception {
     public InvalidInputException() {
     }
 

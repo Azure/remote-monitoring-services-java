@@ -54,6 +54,7 @@ This service depends on the following repositories.
 Run those services from the instructions in their READMEs in the following order.
 
 1. [Storage Adapter Microservice](https://github.com/Azure/pcs-storage-adapter-java)
+1. [Authentication Microservice](https://github.com/Azure/pcs-auth-dotnet)
 1. [Telemetry Microservice](https://github.com/Azure/device-telemetry-java)
 1. [Device Simulation Microservice](https://github.com/Azure/device-simulation-dotnet)
 
@@ -74,6 +75,8 @@ variables [here](#configuration-and-environment-variables).
   used for key value storage
 * `PCS_AZUREMAPS_KEY` - the [Azure Maps](https://azure.microsoft.com/services/azure-maps/) 
   API Key. This can be set to "static" if you do not have one.
+* `PCS_AUTH_WEBSERVICE_URL` = the url for
+   the [Auth Webservice](https://github.com/Azure/pcs-auth-dotnet)
 
 # Running the service in an IDE
 
@@ -100,9 +103,12 @@ Steps using IntelliJ IDEA Community, with SBT plugin enabled:
   * Enter `"run 9004"` (including the double quotes) in Tasks. This ensures that
    the service starts using the TCP port 9004.  If you desire to use a
     different port, feel free to change it.
-  * Define the following environment variable:
-    * `PCS_STORAGEADAPTER_DOCUMENTDB_CONNSTRING` = {your Cosmos DB connection string}
-    * etc.
+  * Define the following environment variables:
+    1. `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
+    1. `PCS_DEVICESIMULATION_WEBSERVICE_URL` = http://localhost:9003/v1
+    1. `PCS_TELEMETRY_WEBSERVICE_URL` = http://localhost:9004/v1
+    1. `PCS_AZUREMAPS_KEY` = static
+    1. `PCS_AUTH_WEBSERVICE_URL` = http://localhost:9001/v1
 * Either from the toolbar or the Run menu, execute the configuration just
   created, using the Debug command/button
 * Test that the service is up and running pointing your browser to
@@ -138,6 +144,7 @@ More information on environment variables
    1. `PCS_DEVICESIMULATION_WEBSERVICE_URL` = http://localhost:9003/v1
    1. `PCS_TELEMETRY_WEBSERVICE_URL` = http://localhost:9004/v1
    1. `PCS_AZUREMAPS_KEY` = static
+   1. `PCS_AUTH_WEBSERVICE_URL` = http://localhost:9001/v1
 1. Use the scripts in the [scripts](scripts) folder for many frequent tasks:
    * `build`: compile all the projects and run the tests.
    * `compile`: compile all the projects.
