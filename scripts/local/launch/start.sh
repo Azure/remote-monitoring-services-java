@@ -32,19 +32,19 @@ if [ $azres -ne 0 ]; then
    echo -e "\n"
 
    case $yn in
-	   "Y") 
-			echo -e "Please set the env variables in .env file.\n The file is located under scripts/local folder.";  
-			exit 0
-		;;
-	   "N") 
-			echo "Setting up Azure resources."; 
-			$APP_HOME/scripts/local/launch/create_azure_resources.sh;
-		;;
-		*)
-			echo "Incorrect option. Please re-run the script."
-			exit 0
-		;;
-   esac
+	"Y") 
+	      echo -e "Please set the env variables in .env file.\n The file is located under scripts/local folder.";  
+	      exit 0
+	      ;;
+	"N") 
+	      echo "Setting up Azure resources."; 
+	      $APP_HOME/scripts/local/launch/create_azure_resources.sh;
+	      ;;
+	*)
+	       echo "Incorrect option. Please re-run the script."
+	       exit 0
+	       ;;
+    esac
 fi
 
 echo "All environment variables set."
