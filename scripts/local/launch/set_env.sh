@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 
 cd scripts/local/launch
+source .env.sh
 
-envFile=".env"
+
+############## TODO: Revisit
+envFile=".env.sh"
 
 while IFS='' read -r line || [[ -n "$line" ]]; do
     line=$(echo $line | sed -e 's/\;/\\\;/g')

@@ -1,8 +1,10 @@
 #!/bin/bash
 APP_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd ../../../ && pwd )"
 
-source $APP_HOME/scripts/local/launch/.env_uris 2> /dev/null
-source $APP_HOME/scripts/local/launch/.env 2> /dev/null
+echo "Checking environment variables ...."
+
+source $APP_HOME/scripts/local/launch/.env_uris.sh 2> /dev/null
+source $APP_HOME/scripts/local/launch/.env.sh 2> /dev/null
 
 cd $APP_HOME/scripts/local/launch
 
@@ -42,17 +44,6 @@ if [ $azres -ne 0 ]; then
    esac
 fi
 
-source $APP_HOME/scripts/local/launch/.env_uris
-source $APP_HOME/scripts/local/launch/.env
-sh $APP_HOME/scripts/local/launch/start_device_simulation.sh
+echo "All environment variables set."
 
-editor=$1
-
-if [[ "$editor" == "" || "$editor" == "vs" ]]; then
-    start $APP_HOME/remote-monitoring.sln
-else
-    cd $APP_HOME
-	code .
-fi
-	
 set +e

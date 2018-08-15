@@ -1,21 +1,6 @@
-SET bat_file=".env.cmd"
-SET envFile=".env"
+SET envFile=".env.cmd"
+SET envUriFile=".env_uris.cmd"
 
 cd scripts\local\launch
-
-@echo off
-SETLOCAL ENABLEDELAYEDEXPANSION
-
-for /f "tokens=*" %%a in ('Type %envFile%') do (
-  Set line=%%a
-  if "!line:~0,1!"=="#" (
-    echo "-"
-  ) else (
-    if "!line:~0,1!"==" " (
-      echo "-"
-    ) else (
-      Set !line!
-    )
-  )
-)
-pause
+call %envFile%
+call %envUriFile%

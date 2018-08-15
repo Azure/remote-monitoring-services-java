@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
-log_file=".env"
-envvars=".envvars"
-bat="load_env.bat"
+env_file=".env.sh"
+envvars=".envvars.sh"
+bat=".env.cmd"
 
 function version_formatter { 
 	echo "$@" | awk -F. '{ printf("%d%03d%03d%03d\n", $1,$2,$3,$4); }'; 
@@ -40,7 +40,7 @@ function create_resources {
    pcs login
    # Creating RM resources in Azure Subscription
    echo "Creating resources ..."
-   pcs -t remotemonitoring -s local  | tee -a "$log_file"
+   pcs -t remotemonitoring -s local  | tee -a "$env_file"
 }
 
 function check_dependencies {
@@ -66,21 +66,23 @@ function check_dependencies {
 function set_env_vars {
 	while IFS='' read -r line || [[ -n "$line" ]]; do 	
 		line=$(echo $line | sed -e 's/\;/\\\;/g')
-		echo "export $line" >> $log_file
+		echo "export $line" >> $env_file
 		echo "SET $line" >> $bat
     done < $envvars
 }
 
-truncate -s 0 $log_file
+truncate -s 0 $env_file
 truncate -s 0 $envvars
 truncate -s 0 $bat
 
 check_dependencies
 create_resources
 
-tail -n 19 $log_file >> $envvars
-head -n -2 $envvars
-truncate -s 0 $log_file
+tail -n 19 $env_file >> $envvars
+head -n -1 $envvars > $env_file
+truncate -s 0 $envvars
+cp $env_file $envvars
+truncate -s 0 $env_file
 
 set +e
 
