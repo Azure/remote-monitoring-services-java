@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Copyright (c) Microsoft. All rights reserved.
 
 cd scripts/local/launch
 source .env.sh

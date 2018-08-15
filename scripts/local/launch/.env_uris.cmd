@@ -1,3 +1,4 @@
+# Copyright (c) Microsoft. All rights reserved.
 SET PCS_TELEMETRY_WEBSERVICE_URL="http://localhost:9004/v1"
 SET PCS_CONFIG_WEBSERVICE_URL="http://localhost:9005/v1"
 SET PCS_IOTHUBMANAGER_WEBSERVICE_URL="http://localhost:9002/v1"

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Copyright (c) Microsoft. All rights reserved.
 
 export PCS_TELEMETRY_WEBSERVICE_URL="http://localhost:9004/v1"
 export PCS_CONFIG_WEBSERVICE_URL="http://localhost:9005/v1"

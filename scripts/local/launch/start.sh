@@ -1,4 +1,7 @@
 #!/bin/bash
+# Copyright (c) Microsoft. All rights reserved.
+
+
 APP_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd ../../../ && pwd )"
 
 echo "Checking environment variables ...."

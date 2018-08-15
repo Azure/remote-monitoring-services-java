@@ -1,4 +1,6 @@
 #!/bin/bash
+# Copyright (c) Microsoft. All rights reserved.
+
 set -e
 env_file=".env.sh"
 envvars=".envvars.sh"
@@ -64,10 +66,10 @@ function check_dependencies {
 }
 
 function set_env_vars {
-	while IFS='' read -r line || [[ -n "$line" ]]; do 	
-		line=$(echo $line | sed -e 's/\;/\\\;/g')
-		echo "export $line" >> $env_file
-		echo "SET $line" >> $bat
+    while IFS='' read -r line || [[ -n "$line" ]]; do
+        line=$(echo $line | sed -e 's/\;/\\\;/g')
+        echo "export $line" >> $env_file
+        echo "SET $line" >> $bat
     done < $envvars
 }
 
