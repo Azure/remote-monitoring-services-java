@@ -1,6 +1,7 @@
-import com.sun.xml.internal.bind.v2.TODO
-organization := "com.microsoft.azure.iotsolutions"
+// Copyright (c) Microsoft. All rights reserved.
+import sbt.project
 
+organization := "com.microsoft.azure.iotsolutions"
 scalaVersion := "2.12.4"
 
 lazy val telemetry = (project in file("device-telemetry"))
@@ -13,7 +14,7 @@ lazy val pcsstorageadapter = (project in file("pcs-storage-adapter"))
 
 val sourceEnvVars = taskKey[Unit]("Source environment variables")
 
-val startDonNetOnlyMs = taskKey[Unit]("Start .Net only MS")
+val startDonNetOnlyServices = taskKey[Unit]("Start .Net only Services")
 
 
 sourceEnvVars := {
@@ -42,28 +43,28 @@ sourceEnvVars := {
 }
 
 
-startDonNetOnlyMs := {
+startDonNetOnlyServices := {
   import sys.process._
 
-  println("Starting all .Net only MS")
+  println("Starting all .Net only Services")
 
   lazy val projDir = baseDirectory.in(remoteMonitoring).value.getAbsolutePath
 
   val win = sys.props.get("os.name").get.contains("Windows")
   if (win) {
-    Seq( projDir + "\\scripts\\local\\launch\\start_dotnet_only_ms.cmd")!
+    Seq( projDir + "\\scripts\\local\\launch\\start_dotnet_only_services.cmd")!
   } else {
-    Seq("sh", projDir + "/scripts/local/launch/start_dotnet_only_ms.sh")!
+    Seq("sh", projDir + "/scripts/local/launch/start_dotnet_only_services.sh")!
   }
 
-  println("Completed all .Net only MS")
+  println("Completed all .Net only Services")
 }
 
 
 lazy val remoteMonitoring = (project in file(".")).
   settings(
     run := {
-      ((run in Runtime)  dependsOn startDonNetOnlyMs).evaluated
+      ((run in Runtime)  dependsOn startDonNetOnlyServices).evaluated
 
       (run in `iothubmanager` in Compile).evaluated
       (run in `telemetry` in Compile).evaluated
