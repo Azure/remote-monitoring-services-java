@@ -25,8 +25,9 @@ sourceEnvVars := {
   lazy val projDir = baseDirectory.in(remoteMonitoring).value.getAbsolutePath
 
   val win = sys.props.get("os.name").get.contains("Windows")
-  //TODO: Revisit to combine two if statements
+  //TO separate running scripts on Windows and other Linux based systems (including Mac OS)
 
+  //TODO: Revisit to combine two if statements
   if (win) {
     Seq(projDir + "\\scripts\\local\\launch\\.env.cmd")!
   } else {
