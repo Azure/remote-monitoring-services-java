@@ -31,7 +31,7 @@ public class Storage implements IStorage {
     static String ThemeKey = "theme";
     static String LogoKey = "logo";
     static String UserCollectionId = "user-settings";
-    static String DeviceGroupCollectionId = "deviceGroups";
+    static String DeviceGroupCollectionId = "devicegroups";
     static String AzureMapsKey = "AzureMapsKey";
     private final IStorageAdapterClient client;
     private final IServicesConfig config;
