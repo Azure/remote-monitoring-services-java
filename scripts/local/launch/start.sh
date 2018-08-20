@@ -28,6 +28,7 @@ set -e
 
 if [ $azres -ne 0 ]; then
 
+<<<<<<< HEAD
 	read  -n 1 -p "Have you created required Azure resources (Y/N)?" yn
 	echo -e "\n"
 
@@ -48,3 +49,27 @@ if [ $azres -ne 0 ]; then
 fi
 
 set +e
+=======
+   read  -n 1 -p "Have you created required Azure resources (Y/N)?" yn
+   echo -e "\n"
+
+   case $yn in
+	"Y") 
+	      echo -e "Please set the env variables in .env file.\n The file is located under scripts/local folder.";  
+	      exit 0
+	      ;;
+	"N") 
+	      echo "Setting up Azure resources."; 
+	      $APP_HOME/scripts/local/launch/create_azure_resources.sh;
+	      ;;
+	*)
+	       echo "Incorrect option. Please re-run the script."
+	       exit 0
+	       ;;
+    esac
+fi
+
+echo "All environment variables set."
+
+set +e
+>>>>>>> 0ba624b5f6cb9e9b405eafcc1648b36ffeb75cf8

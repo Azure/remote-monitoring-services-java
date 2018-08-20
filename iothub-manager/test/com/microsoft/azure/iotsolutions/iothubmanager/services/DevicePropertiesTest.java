@@ -2,8 +2,7 @@
 
 package com.microsoft.azure.iotsolutions.iothubmanager.services;
 
-import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.BaseException;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.ResourceNotFoundException;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.*;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.external.IStorageAdapterClient;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.external.ValueApiModel;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DevicePropertyServiceModel;
@@ -45,7 +44,13 @@ public class DevicePropertiesTest {
 
     @Test(timeout = 100000)
     @Category({UnitTest.class})
-    public void GetListAsyncTestAsync() throws BaseException, ExecutionException, InterruptedException {
+    public void GetListAsyncTestAsync()
+        throws ResourceNotFoundException,
+        ConflictingResourceException,
+        ExternalDependencyException,
+        InvalidInputException,
+        InterruptedException,
+        ExecutionException {
         Mockito.when(mockStorageAdapterClient.getAsync(Mockito.any(String.class), Mockito.any(String.class)))
             .thenReturn(CompletableFuture.supplyAsync(() -> new ValueApiModel("", this.cacheModel, "", metadata)));
         deviceProperties = new DeviceProperties(mockStorageAdapterClient, config, mockDevices);
@@ -55,7 +60,11 @@ public class DevicePropertiesTest {
 
     @Test(timeout = 100000)
     @Category({UnitTest.class})
-    public void UpdateListAsyncTestAsync() throws BaseException, ExecutionException, InterruptedException {
+    public void UpdateListAsyncTestAsync() throws ResourceNotFoundException,
+        ConflictingResourceException,
+        ExternalDependencyException,
+        InterruptedException,
+        ExecutionException {
         Mockito.when(mockStorageAdapterClient.getAsync(Mockito.any(String.class), Mockito.any(String.class)))
             .thenReturn(CompletableFuture.supplyAsync(() -> new ValueApiModel("", this.cacheModel, "", metadata)));
         DevicePropertyServiceModel resultModel = new DevicePropertyServiceModel(new HashSet<String>(Arrays.asList("c", "a", "y", "z", "@", "#")),
@@ -73,7 +82,12 @@ public class DevicePropertiesTest {
 
     @Test(timeout = 300000)
     @Category({UnitTest.class})
-    public void TryRecreateListAsyncSuccessTestAsync() throws Exception {
+    public void TryRecreateListAsyncSuccessTestAsync() throws
+        ResourceNotFoundException,
+        ConflictingResourceException,
+        ExternalDependencyException,
+        InterruptedException,
+        ExecutionException {
         Mockito.when(mockDevices.getDeviceTwinNames())
             .thenReturn(new DeviceTwinName(new HashSet<>(), new HashSet<>()))
             .thenReturn(new DeviceTwinName(new HashSet<>(Arrays.asList("tags.FieldService")), new HashSet<>()));
@@ -95,7 +109,12 @@ public class DevicePropertiesTest {
 
     @Test(timeout = 100000)
     @Category({UnitTest.class})
-    public void TryRecreateListAsyncFailureTestAsync() throws Exception {
+    public void TryRecreateListAsyncFailureTestAsync() throws
+        ResourceNotFoundException,
+        ConflictingResourceException,
+        ExternalDependencyException,
+        InterruptedException,
+        ExecutionException {
         Mockito.when(mockDevices.getDeviceTwinNames())
             .thenReturn(new DeviceTwinName(new HashSet<>(Arrays.asList("tags.FieldService")), new HashSet<>()));
         String rebuildingCacheModel = "{\"Rebuilding\": true,\"Tags\": null,\"Reported\": null }";

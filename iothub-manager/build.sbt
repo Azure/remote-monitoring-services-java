@@ -1,10 +1,9 @@
 // Copyright (c) Microsoft. All rights reserved.
 import sbt.project
 
-  name := "iothub-manager"
-  organization := "com.microsoft.azure.iotsolutions"
-
-  scalaVersion := "2.12.4"
+name := "iothub-manager"
+organization := "com.microsoft.azure.iotsolutions"
+scalaVersion := "2.12.4"
 
 libraryDependencies ++= {
   Seq(

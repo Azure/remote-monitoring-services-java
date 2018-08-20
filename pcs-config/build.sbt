@@ -9,6 +9,7 @@ libraryDependencies ++= {
   Seq(
     filters,
     guice,
+    ws,
 
     // https://mvnrepository.com/artifact/com.nimbusds/oauth2-oidc-sdk
     "com.nimbusds" % "oauth2-oidc-sdk" % "5.36",

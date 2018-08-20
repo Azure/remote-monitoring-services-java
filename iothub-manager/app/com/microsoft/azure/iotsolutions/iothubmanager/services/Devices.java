@@ -34,7 +34,8 @@ public final class Devices implements IDevices {
     private final IStorageAdapterClient storageAdapterClient;
 
     @Inject
-    public Devices(final IIoTHubWrapper ioTHubService, final IStorageAdapterClient storageAdapterClient) throws Exception {
+    public Devices(final IIoTHubWrapper ioTHubService,
+                   final IStorageAdapterClient storageAdapterClient) throws Exception {
         _ioTHubService = ioTHubService;
         this.storageAdapterClient = storageAdapterClient;
         this.registry = ioTHubService.getRegistryManagerClient();
@@ -43,27 +44,12 @@ public final class Devices implements IDevices {
         this.iotHubHostName = ioTHubService.getIotHubHostName();
     }
 
-    public DeviceTwinName getDeviceTwinNames() {
-        DeviceTwinName twinNames = new DeviceTwinName();
-        try {
-            CompletableFuture<DeviceServiceListModel> twinNamesTask = this.queryAsync("", "").toCompletableFuture();
-            DeviceServiceListModel model = twinNamesTask.get();
-            twinNames = model.toDeviceTwinNames();
-        } catch (ExternalDependencyException | ExecutionException | InterruptedException e) {
-            String message = String.format("Unable to convert DeviceServiceListModel to DeviceTwinName");
-            if (e instanceof ExternalDependencyException)
-                throw new CompletionException(
-                    new ExternalDependencyException(message, e));
-            else if (e instanceof ExecutionException)
-                throw new CompletionException(
-                    new ExecutionException(message, e));
-            else if (e instanceof InterruptedException)
-                throw new CompletionException(
-                    new InterruptedException(message));
-            else
-                throw new CompletionException(
-                    new BaseException(message, e));
-        }
+    public DeviceTwinName getDeviceTwinNames()
+            throws ExternalDependencyException, ExecutionException, InterruptedException {
+        CompletableFuture<DeviceServiceListModel> twinNamesTask = this.queryAsync
+            ("", "").toCompletableFuture();
+        DeviceServiceListModel model = twinNamesTask.get();
+        DeviceTwinName twinNames = model.toDeviceTwinNames();
         return twinNames;
     }
 
@@ -161,7 +147,8 @@ public final class Devices implements IDevices {
                         DeviceTwinDevice azureTwin = new DeviceTwinDevice(device.getId());
                         if (twinServiceModel == null || twinServiceModel.getETag() == null) {
                             this.deviceTwinClient.getTwin(azureTwin);
-                            return new DeviceServiceModel(azureDevice, new DeviceTwinServiceModel(azureTwin), this.iotHubHostName);
+                            return new DeviceServiceModel(azureDevice,
+                                new DeviceTwinServiceModel(azureTwin), this.iotHubHostName);
                         } else {
                             if (twinServiceModel.getDeviceId() == null || twinServiceModel.getDeviceId().isEmpty()) {
                                 twinServiceModel.setDeviceId(device.getId());
@@ -226,12 +213,14 @@ public final class Devices implements IDevices {
                         DeviceTwinDevice twin = new DeviceTwinDevice(device.getId());
                         if (device.getTwin() == null) {
                             this.deviceTwinClient.getTwin(twin);
-                            return new DeviceServiceModel(azureDevice, new DeviceTwinServiceModel(twin), this.iotHubHostName);
+                            return new DeviceServiceModel(azureDevice,
+                                new DeviceTwinServiceModel(twin), this.iotHubHostName);
                         } else {
                             this.deviceTwinClient.updateTwin(device.getTwin().toDeviceTwinDevice());
                             DevicePropertyServiceModel model = new DevicePropertyServiceModel();
                             model.setTags(new HashSet<String>(device.getTwin().getTags().keySet()));
-                            model.setReported(new HashSet<String>(device.getTwin().getProperties().getReported().keySet()));
+                            model.setReported(
+                                new HashSet<String>(device.getTwin().getProperties().getReported().keySet()));
                             // Update the deviceProperties cache, no need to wait
                             CompletionStage unused = devicePropertyCallBack.updateCache(model);
                             return new DeviceServiceModel(azureDevice, device.getTwin(), this.iotHubHostName);
@@ -241,14 +230,9 @@ public final class Devices implements IDevices {
                         log.error(message, e);
                         throw new CompletionException(
                             new ExternalDependencyException(message, e));
-                    } catch (BaseException | ExecutionException | InterruptedException e) {
+                    } catch (Exception e) {
                         String message = String.format("Unable to update cache");
-                        if (e instanceof ExecutionException)
-                            throw new CompletionException(new ExecutionException(message, e));
-                        else if (e instanceof InterruptedException)
-                            throw new CompletionException(new InterruptedException(message));
-                        else
-                            throw new CompletionException(new BaseException(message, e));
+                        throw new CompletionException(new Exception(message, e));
                     }
                 });
         } catch (IOException | IotHubException e) {
@@ -263,9 +247,11 @@ public final class Devices implements IDevices {
             return this.registry.removeDeviceAsync(id)
                 .exceptionally(error -> {
                     if (error instanceof IotHubNotFoundException) {
-                        throw new CompletionException(new ResourceNotFoundException("Unable to delete non-exist device: " + id, error));
+                        throw new CompletionException(
+                            new ResourceNotFoundException("Unable to delete non-exist device: " + id, error));
                     } else {
-                        throw new CompletionException(new ExternalDependencyException("Unable to delete device" + id, error));
+                        throw new CompletionException(
+                            new ExternalDependencyException("Unable to delete device" + id, error));
                     }
                 });
         } catch (IOException | IotHubException e) {
@@ -308,7 +294,8 @@ public final class Devices implements IDevices {
             QueryCollection twinQuery = this.deviceTwinClient.queryTwinCollection(fullQuery);
             while (this.deviceTwinClient.hasNext(twinQuery) && twins.size() < nubmerOfResult) {
                 QueryCollectionResponse<DeviceTwinDevice> response = this.deviceTwinClient.next(twinQuery, options);
-                response.getCollection().forEach(twin -> twins.put(twin.getDeviceId(), new DeviceTwinServiceModel(twin)));
+                response.getCollection().
+                    forEach(twin -> twins.put(twin.getDeviceId(), new DeviceTwinServiceModel(twin)));
             }
         } catch (IotHubException | IOException e) {
             throw new ExternalDependencyException("Unable to query device twin", e);

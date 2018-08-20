@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft. All rights reserved.
 
-package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth;
+package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.exceptions;
 
 /**
  * This exception is thrown when something is wrong in the

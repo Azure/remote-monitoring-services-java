@@ -7,7 +7,9 @@ _dev/
 *.tar
 *.exe
 *.bck
-*.env
+.env.cmd
+.env.sh
+.envvars.sh
 
 
 ### Java

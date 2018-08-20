@@ -5,7 +5,7 @@ package com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions;
 /**
  * Checked exception for invalid user input
  */
-public class ExternalDependencyException extends BaseException {
+public class ExternalDependencyException extends Exception {
     public ExternalDependencyException() {
     }
 
