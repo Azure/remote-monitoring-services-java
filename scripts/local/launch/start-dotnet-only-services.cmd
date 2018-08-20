@@ -1,3 +1,4 @@
+:: Copyright (c) Microsoft. All rights reserved.
 set BAT_DIR=%~dp0
 cd %BAT_DIR%
 cd ..\..\..\
