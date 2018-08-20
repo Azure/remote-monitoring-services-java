@@ -53,9 +53,9 @@ startDonNetOnlyServices := {
 
   val win = sys.props.get("os.name").get.contains("Windows")
   if (win) {
-    Seq( projDir + "\\scripts\\local\\launch\\start_dotnet_only_services.cmd")!
+    Seq( projDir + "\\scripts\\local\\launch\\start-dotnet-only-services.cmd")!
   } else {
-    Seq("sh", projDir + "/scripts/local/launch/start_dotnet_only_services.sh")!
+    Seq("sh", projDir + "/scripts/local/launch/start-dotnet-only-services.sh")!
   }
 
   println("Completed all .Net only Services")
