@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft. All rights reserved
 
-package com.microsoft.azure.iotsolutions.devicetelemetry.services.storage;
+package com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.cosmosDb;
 
 import com.google.inject.Inject;
 import com.microsoft.azure.documentdb.*;
@@ -152,13 +152,14 @@ public class StorageClient implements IStorageClient {
 
         if (response != null) {
             return new Status(
+                "Storage",
                 true,
-                "Alive and Well!");
+                "Storage alive and Well!");
         } else {
             return new Status(
+                "Storage",
                 false,
-                "Could not reach storage service" +
-                    "Check connection string");
+                "Could not reach storage service. Check connection string");
         }
     }
 
@@ -167,7 +168,7 @@ public class StorageClient implements IStorageClient {
         final String HOST_ID = "AccountEndpoint=";
         final String KEY_ID = "AccountKey=";
 
-        String connectionString = servicesConfig.getStorageConnectionString();
+        String connectionString = servicesConfig.getAlarmsConfig().getStorageConfig().getDocumentDbConnString();
 
         if (!connectionString.contains(";") ||
             !connectionString.contains(HOST_ID) ||

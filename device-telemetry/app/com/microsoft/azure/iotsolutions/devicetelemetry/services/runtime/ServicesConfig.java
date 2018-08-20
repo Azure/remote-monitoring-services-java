@@ -7,36 +7,23 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime;
  */
 public class ServicesConfig implements IServicesConfig {
 
-    private final String storageConnectionString;
-
     private final String keyValueStorageUrl;
 
-    private final StorageConfig messagesConfig;
+    private final MessagesConfig messagesConfig;
 
     private final AlarmsConfig alarmsConfig;
 
     private final DiagnosticsConfig diagnosticsConfig;
 
     public ServicesConfig(
-        final String storageConnectionString,
         final String keyValueStorageUrl,
-        StorageConfig messagesConfig,
+        MessagesConfig messagesConfig,
         AlarmsConfig alarmsConfig,
         DiagnosticsConfig diagnosticsConfig) {
-        this.storageConnectionString = storageConnectionString;
         this.keyValueStorageUrl = keyValueStorageUrl;
         this.messagesConfig = messagesConfig;
         this.alarmsConfig = alarmsConfig;
         this.diagnosticsConfig = diagnosticsConfig;
-    }
-
-    /**
-     * Get storage dependency connection string
-     *
-     * @return storage connection string
-     */
-    public String getStorageConnectionString() {
-        return this.storageConnectionString;
     }
 
     /**
@@ -48,13 +35,15 @@ public class ServicesConfig implements IServicesConfig {
         return this.keyValueStorageUrl;
     }
 
-    public StorageConfig getMessagesStorageConfig() {
+    public MessagesConfig getMessagesConfig() {
         return this.messagesConfig;
     }
 
-    public AlarmsConfig getAlarmsStorageConfig() {
+    public AlarmsConfig getAlarmsConfig() {
         return this.alarmsConfig;
     }
 
-    public DiagnosticsConfig getDiagnosticsConfig() { return this.diagnosticsConfig; }
+    public DiagnosticsConfig getDiagnosticsConfig() {
+        return this.diagnosticsConfig;
+    }
 }

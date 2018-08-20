@@ -9,16 +9,16 @@ public interface IServicesConfig {
     /**
      * Get storage dependency connection string
      */
-    String getStorageConnectionString();
+    // String getStorageConnectionString();
 
     /**
      * Get key value storage dependency url
      */
     String getKeyValueStorageUrl();
 
-    StorageConfig getMessagesStorageConfig();
+    MessagesConfig getMessagesConfig();
 
-    AlarmsConfig getAlarmsStorageConfig();
+    AlarmsConfig getAlarmsConfig();
 
     DiagnosticsConfig getDiagnosticsConfig();
 }

@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft. All rights reserved.
 
-package com.microsoft.azure.iotsolutions.devicetelemetry.services.storage;
+package com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.storageAdapter;
 
 import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.Status;
@@ -35,12 +35,12 @@ public class KeyValueClient implements IKeyValueClient {
 
         return responsePromise.handle((result, error) -> {
             if (error != null) {
-                return new Status(false, error.getMessage());
+                return new Status("KeyValueStorage", false, error.getMessage());
             } else {
                 if (result.getStatus() == 200) {
-                    return new Status(true, "Alive and well");
+                    return new Status("KeyValueStorage", true, "Storage adapter alive and well!");
                 } else {
-                    return new Status(false, result.getStatusText());
+                    return new Status("KeyValueStorage", false, result.getStatusText());
                 }
             }
         });
