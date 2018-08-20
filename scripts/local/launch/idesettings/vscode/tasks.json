@@ -1,0 +1,100 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build-asa-manager",
+            "command": "${workspaceFolder}/asa-manager/scripts/build.cmd",
+            "type": "shell",
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": "$msCompile",
+            //"dependsOn":[
+            //    "source-env"
+            //]
+        },
+        {
+            "label": "build-telemetry",
+            "command": "${workspaceFolder}/device-telemetry/scripts/build.cmd",
+            "type": "shell",
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": "$msCompile",
+            //"dependsOn":[
+            //    "source-env"
+            //]
+        },
+        {
+            "label": "build-iothub-manager",
+            "command": "${workspaceFolder}/iothub-manager/scripts/build.cmd",
+            "type": "shell",
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": "$msCompile",
+            //"dependsOn":[
+            //    "source-env"
+            //]
+        },
+        {
+            "label": "build-auth",
+            "command": "${workspaceFolder}/pcs-auth/scripts/build.cmd",
+            "type": "shell",
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": "$msCompile",
+            //"dependsOn":[
+            //    "source-env"
+            //]
+        },
+        {
+            "label": "build-config",
+            "command": "${workspaceFolder}/pcs-config/scripts/build.cmd",
+            "type": "shell",
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": "$msCompile",
+            //"dependsOn":[
+            //    "source-env"
+            //]
+        },
+        {
+            "label": "build-storage-adapter",
+            "command": "${workspaceFolder}/pcs-storage-adapter/scripts/build",
+            "type": "shell",
+            "group": "build",
+            "presentation": {
+                "reveal": "silent",
+            },
+            "problemMatcher": "$msCompile",
+            //"dependsOn":[
+            //    "source-env"
+            //]
+        },
+        {
+            "label": "device-simulation-launch",
+            "command": "${workspaceFolder}/scripts/local/launch/start_device_simulation.sh",
+            "windows": {
+                //Separate file for windows
+                "command": "${workspaceFolder}\\scripts\\local\\launch\\start_device_simulation.cmd"
+            },
+            "type": "shell",
+            "group": "build",
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "build",
+            "dependsOn": ["build-storage-adapter", "build-config", "build-auth", "build-iothub-manager", "build-telemetry", "build-asa-manager"]
+        }
+    ]
+}
