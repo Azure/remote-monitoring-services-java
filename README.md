@@ -10,6 +10,7 @@ Remote Monitoring Microservices
 
 Overview
 ========
+[![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://www.azureiotsolutions.com/Accelerators#solutions/types/RM2)
 > There is a .NET version of this repo available [here](https://github.com/Azure/remote-monitoring-services-dotnet).
 
 Remote monitoring helps you get better visibility into your devices, assets, and
