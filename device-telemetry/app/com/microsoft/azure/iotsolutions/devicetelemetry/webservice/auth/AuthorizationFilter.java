@@ -62,6 +62,7 @@ public class AuthorizationFilter extends Filter {
         Http.RequestHeader requestHeader) {
 
         requestHeader = requestHeader.addAttr(Authorizer.AUTH_REQUIRED_TYPED_KEY, this.authRequired);
+        requestHeader = requestHeader.addAttr(Authorizer.EXTERNAL_REQUEST_TYPED_KEY, true);
 
         // If auth is disabled, proceed with the request
         if (!this.authRequired) {
@@ -80,8 +81,6 @@ public class AuthorizationFilter extends Filter {
             requestHeader = requestHeader.addAttr(Authorizer.EXTERNAL_REQUEST_TYPED_KEY, false);
             return nextFilter.apply(requestHeader).thenApply(result -> result);
         }
-
-        requestHeader = requestHeader.addAttr(Authorizer.EXTERNAL_REQUEST_TYPED_KEY, true);
 
         // Validate the authorization header
         Boolean authorized = false;
