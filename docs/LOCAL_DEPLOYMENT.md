@@ -64,7 +64,40 @@ The build.sbt file has been configured to run all the microservices parallelly. 
 
 *SBT tool has been observed to fork number of processes equivalent to the number of CPUs. Hence, on dual core machines all the microservices may not be started parallelly.*
  
+Structure of the microservices
+=====
+Each microservice comprises of following packages/folders. 
+1) scripts 
+2) webService  
+3) service  
+4) webservice under test  
+5) service under Test
 
+Description: 
+1) Scripts  
+The scripts folder is organized as follows\
+i. **docker** sub folder for building docker containers of the current microservice.\
+ii. **root** folder contains scripts for building and running services natively.\
+&nbsp; 
+![script folder structure](https://user-images.githubusercontent.com/39531904/44290937-10df4e00-a230-11e8-9cd4-a9c0644e166b.PNG "Caption")\
+The docker build scripts require environment variables to be set up before execution. The run scripts can run both natively built and dockerized microservice. The run script under docker folder can also be independently used to pull and run published docker images. One can modify the tag and the account to pull different version or privately built docker images.
+&nbsp; 
 
+2) webservice  
+It contains code for REST endpoints of the microservice.
+&nbsp;  
 
-   
+3) service  
+It contains business logic and code interfacing various SDKs. 
+&nbsp;
+
+4) webservice (test)  
+It contains unit tests for the REST endpoints of the microservice. 
+&nbsp; 
+
+5) Service (test)
+It contains unit tests for the business logic and code interfacing various SDKs.
+&nbsp;  
+
+6) Other Packages  
+The microservice might contain other projects such as RecurringTaskAgent etc.
