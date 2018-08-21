@@ -19,4 +19,6 @@ public interface IServicesConfig {
     StorageConfig getMessagesStorageConfig();
 
     AlarmsConfig getAlarmsStorageConfig();
+
+    DiagnosticsConfig getDiagnosticsConfig();
 }
