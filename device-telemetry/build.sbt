@@ -67,6 +67,7 @@ lazy val telemetry = project.in(file("."))
 
 // Play framework
 PlayKeys.externalizeResources := false
+PlayKeys.playDefaultPort := 9004
 
 // Docker
 // Note: use lowercase name for the Docker image details
