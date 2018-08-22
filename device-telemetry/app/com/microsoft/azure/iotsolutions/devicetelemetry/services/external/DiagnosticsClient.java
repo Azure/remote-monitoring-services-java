@@ -41,7 +41,7 @@ public class DiagnosticsClient implements IDiagnosticsClient {
 
     @Override
     public CompletionStage<Void> logEventAsync(String eventName) {
-        Hashtable<String, Object> emptyTable = new Hashtable<>();
+        Dictionary<String, Object> emptyTable = new Hashtable<>();
         return CompletableFuture.runAsync(() -> this.logEvent(eventName, emptyTable));
     }
 
@@ -61,7 +61,7 @@ public class DiagnosticsClient implements IDiagnosticsClient {
             } catch (Exception e) {
                 retryCount++;
                 if (retryCount < this.diagnosticsMaxLogRetries) {
-                    log.warn("Failed to log to diagnostics service, retrying");
+                    log.warn("Failed to log to diagnostics service, " + (this.diagnosticsMaxLogRetries - retryCount) + " retries remaining");
                 } else {
                     log.error("Failed to log to diagnostics service, reached max number of retries");
                 }
@@ -69,8 +69,7 @@ public class DiagnosticsClient implements IDiagnosticsClient {
         }
     }
 
-    private CompletionStage<Object> sendPostRequest(JsonNode jsonData) throws Exception {
-        String data = jsonData.toString();
+    private CompletionStage<Object> sendPostRequest(JsonNode jsonData) {
         return this.prepareRequest()
                 .post(jsonData.toString())
                 .handle((result, error) -> {
@@ -91,10 +90,7 @@ public class DiagnosticsClient implements IDiagnosticsClient {
                 });
     }
 
-
-
     private WSRequest prepareRequest() {
-
         String url = this.diagnosticsEndpointUrl + "/diagnosticsevents";
 
         WSRequest wsRequest = this.wsClient
@@ -103,5 +99,4 @@ public class DiagnosticsClient implements IDiagnosticsClient {
 
         return wsRequest;
     }
-
 }

@@ -262,6 +262,8 @@ public final class Rules implements IRules {
                     }
 
                     try {
+
+                        this.logEventAndRuleCountToDiagnostics("Rule_Created");
                         return getServiceModelFromJson(
                                 Json.parse(result.getBody()));
                     } catch (Exception e) {
@@ -375,7 +377,7 @@ public final class Rules implements IRules {
                                 new ExternalDependencyException(result.getStatusText()));
                     }
 
-                    this.logEventAndRuleCountToDiagnosticsAsync("Rule_Deleted");
+                    this.logEventAndRuleCountToDiagnostics("Rule_Deleted");
                     log.info("Successfully deleted rule id " + id);
                     return true;
                 });
@@ -505,10 +507,6 @@ public final class Rules implements IRules {
                                         "Could not parse result from Key Value Storage"));
                     }
                 });
-    }
-
-    private CompletionStage<Void> logEventAndRuleCountToDiagnosticsAsync(String eventName) {
-        return CompletableFuture.runAsync(() -> logEventAndRuleCountToDiagnostics(eventName));
     }
 
     private void logEventAndRuleCountToDiagnostics(String eventName) {
