@@ -4,7 +4,7 @@ Starting Microservices on local environemnt
 The new repository contains a **start** script and few other scripts to bootstrap the new users with the required cloud resources. These scripts are used to create azure resources like Cosmos DB, IoTHub, Azure Stream Analytics etc. The start script is located in *scripts / local / launch* folder under root directory of the repository.
 
 **Please Note:**
-*The scripts are executable in **bash shell only**. On windows these scripts can be manually run using* *Git Bash shell or by using Windows Sub system for Linux. The instructions to enable WSL are available* *[here](https://docs.microsoft.com/en-us/windows/wsl/install-win10).*
+*These scripts are executable in **bash shell only**. On windows these scripts can be run manually using* *Git Bash shell or by using Windows Sub system for Linux. The instructions to enable WSL are available* *[here](https://docs.microsoft.com/en-us/windows/wsl/install-win10).*
 
 #### Start script
 This script checks if required environment variables are set on the local system. If the variables are set then one can open the IDE to start the microservices. If the variables are not set then this script will guide through the process of creating the new variables. It will then create different scripts under *scripts / local / launch / os / OS_TYPE /* which can be used to set environment variables on the machine.
@@ -21,7 +21,7 @@ For users who have already created the required azure resources, please set the 
 ````
 abc@pcs sh start.sh   
 ````
-![start](https://user-images.githubusercontent.com/39531904/44294555-edc39700-a24d-11e8-8053-07ab4c185442.PNG)
+![start](https://user-images.githubusercontent.com/39531904/44435771-6ab08280-a566-11e8-93c9-e6f35e5df247.PNG)
  
 #### Helper scripts
 These scripts are located under helpers folder which is under the launch folder. The script create_azure_resources.sh can be independently called to create resources in the cloud. The script check_dependencies.sh checks if environment variables are set for a particular microservices.
