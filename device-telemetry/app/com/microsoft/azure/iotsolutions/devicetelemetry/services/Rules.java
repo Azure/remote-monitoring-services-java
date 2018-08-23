@@ -45,10 +45,10 @@ public final class Rules implements IRules {
 
     @Inject
     public Rules(
-            final IServicesConfig servicesConfig,
-            final WSClient wsClient,
-            final IAlarms alarmsService,
-            final IDiagnosticsClient diagnosticsClient) {
+        final IServicesConfig servicesConfig,
+        final WSClient wsClient,
+        final IAlarms alarmsService,
+        final IDiagnosticsClient diagnosticsClient) {
 
         this.storageUrl = servicesConfig.getKeyValueStorageUrl() + "/collections/rules/values";
         this.wsClient = wsClient;
@@ -228,7 +228,7 @@ public final class Rules implements IRules {
     }
 
     public CompletionStage<RuleServiceModel> postAsync(
-            RuleServiceModel ruleServiceModel) {
+        RuleServiceModel ruleServiceModel) {
 
         // Ensure dates are correct
         ruleServiceModel.setDateCreated(DateTime.now(DateTimeZone.UTC).toString(DATE_FORMAT));
@@ -267,7 +267,6 @@ public final class Rules implements IRules {
                         new ExternalDependencyException(
                             "Could not parse result from Key Value Storage"));
                 }
-
             });
     }
 
@@ -514,4 +513,3 @@ public final class Rules implements IRules {
             });
     }
 }
-
