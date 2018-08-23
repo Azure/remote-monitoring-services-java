@@ -1,7 +1,7 @@
 Starting Microservices on local environemnt
 =====
 ### New & Existing Users
-The new repository contains a **start** script and few other scripts to bootstrap the new users with the required cloud resources. These scripts are used to create azure resources like Cosmos DB, IoTHub, Azure Stream Analytics etc. The start script is located in *scripts / local / launch* folder under root directory of the repository.
+The new repository contains a **start** script and few other scripts to bootstrap the new users with the required cloud resources. These scripts are used to create azure resources like Cosmos DB, IoTHub, Azure Stream Analytics etc. The start script is located in *scripts / local / launch* folder under root directory of the repository. If you have cloned azure-iot-pcs-remote-monitoring-java repository, the scripts folder is present under services submodule (folder).
 
 **Please Note:**
 *These scripts are executable in **bash shell only**. On windows these scripts can be run manually using* *Git Bash shell or by using Windows Sub system for Linux. The instructions to enable WSL are available* *[here](https://docs.microsoft.com/en-us/windows/wsl/install-win10).*
@@ -30,8 +30,13 @@ These scripts are located under helpers folder which is under the launch folder.
 sh check_dependencies.sh <microservice_folder_name> 
 2) create Azure resources 
 sh create_azure_resources.sh
+ 
+After creating the required azure resources, using start or create-azure-resources.sh, one should execute the following scripts present under *os/{linux / win / osx}* to set the environment variables. 
+1) set-env-uri
+2) set-env
 
-After creating the required azure resources, using start or create_azure_resources, one should execute the scripts under *os/{linux / win / osx}* to set the environment variables. 
+**Please Note:**
+*If you are using windows, you will have to execute these scripts in CMD shell. On OSX, these scripts are automatically run by the start script. For linux, the environment variables present in these scripts need to be set at global location, depending upon the flavour of linux you are using.* 
 
 #### Recap of steps to create resources and set environment variables
 1) Run start.sh
