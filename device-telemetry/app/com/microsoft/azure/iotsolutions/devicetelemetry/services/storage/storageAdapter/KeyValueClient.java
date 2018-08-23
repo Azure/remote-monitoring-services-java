@@ -32,15 +32,16 @@ public class KeyValueClient implements IKeyValueClient {
         WSRequest request = wsClient.url(storageAdapterWebserviceUrl + "/status");
         request.setRequestTimeout(Duration.ofSeconds(10));
         CompletionStage<WSResponse> responsePromise = request.get();
+        String name = "KeyValueStorage";
 
         return responsePromise.handle((result, error) -> {
             if (error != null) {
-                return new Status("KeyValueStorage", false, error.getMessage());
+                return new Status(name, false, error.getMessage());
             } else {
                 if (result.getStatus() == 200) {
-                    return new Status("KeyValueStorage", true, "Storage adapter alive and well!");
+                    return new Status(name, true, "Storage adapter alive and well!");
                 } else {
-                    return new Status("KeyValueStorage", false, result.getStatusText());
+                    return new Status(name, false, result.getStatusText());
                 }
             }
         });

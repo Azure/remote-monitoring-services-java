@@ -145,6 +145,7 @@ public class StorageClient implements IStorageClient {
     @Override
     public Status ping() {
         URI response = null;
+        String name = "Storage";
 
         if (this.client != null) {
             response = this.client.getReadEndpoint();
@@ -152,12 +153,12 @@ public class StorageClient implements IStorageClient {
 
         if (response != null) {
             return new Status(
-                "Storage",
+                name,
                 true,
                 "Storage alive and Well!");
         } else {
             return new Status(
-                "Storage",
+                name,
                 false,
                 "Could not reach storage service. Check connection string");
         }
