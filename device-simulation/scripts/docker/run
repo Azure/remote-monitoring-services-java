@@ -15,6 +15,7 @@ run_container() {
     $APP_HOME/scripts/env-vars-check
 
     echo "Starting Device Simulation ..."
+
     docker run -it -p 9003:9003 \
         -e PCS_IOTHUB_CONNSTRING \
         -e PCS_STORAGEADAPTER_WEBSERVICE_URL \
