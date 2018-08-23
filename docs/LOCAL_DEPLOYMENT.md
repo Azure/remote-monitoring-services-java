@@ -55,7 +55,7 @@ The java repository has a similar structure to the dotnet repo and contains the 
     * SBT Executor&nbsp;&nbsp;&nbsp;1.2.1 
     * Scala&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2018.1.9
 2)	Import the project using Intellji import project vizard.
-Use “Import project from external model” and select “sbt" model.
+Use “Import project from external model” and select "sbt" model.
 ![intellji](https://user-images.githubusercontent.com/39531904/44321254-ca3e4f00-a3fb-11e8-88c7-c442dd3a202e.png)
 3) Select “sbt sources” and “Use sbt shell options”
 Ensure your java version is 1.8 or less.
