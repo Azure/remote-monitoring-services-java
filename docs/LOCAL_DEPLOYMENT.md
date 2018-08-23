@@ -62,7 +62,7 @@ Ensure your java version is 1.8 or less.
 ![intellji](https://user-images.githubusercontent.com/39531904/44321300-083b7300-a3fc-11e8-9e5c-e33ab4859179.png)
 4) After import process has finished, the IDE starts “sbt dump” process. Please wait for this process to complete.
 5) After the sbt dump process, you can create build OR run configuration, for running all the microservices. Please use Intellji “Edit Configuration” vizard. Select “sbt task” and then you can use compile OR run tasks.
-![Intellji](https://user-images.githubusercontent.com/39531904/44321516-52712400-a3fd-11e8-9828-9daf43a3e43b.png)
+![Intellji](https://user-images.githubusercontent.com/39531904/44321516-52712400-a3fd-11e8-9828-9daf43a3e43b.png)\
 Environment variables can also be set in the Edit Configuration vizard under environment variables Tab.
 
 The build.sbt file has been configured to run all the microservices parallelly. It will also start the microservices available only in .Net flavor (device-simulation, auth and ASA manager).
