@@ -23,10 +23,7 @@ import play.libs.Json;
 import play.libs.ws.WSClient;
 import play.libs.ws.WSRequest;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Hashtable;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
@@ -61,175 +58,173 @@ public final class Rules implements IRules {
 
     public CompletionStage<RuleServiceModel> getAsync(String id) {
         return this.prepareRequest(id)
-                .get()
-                .handle((result, error) -> {
+            .get()
+            .handle((result, error) -> {
 
-                    if (error != null) {
-                        log.error("Key value storage request error: {}",
-                                error.getMessage());
-                        throw new CompletionException(
-                                new ExternalDependencyException(error.getMessage()));
-                    }
+                if (error != null) {
+                    log.error("Key value storage request error: {}",
+                        error.getMessage());
+                    throw new CompletionException(
+                        new ExternalDependencyException(error.getMessage()));
+                }
 
-                    if (result.getStatus() == NOT_FOUND) {
-                        log.info("Rule id " + id + " not found.");
-                        return null;
-                    }
+                if (result.getStatus() == NOT_FOUND) {
+                    log.info("Rule id " + id + " not found.");
+                    return null;
+                }
 
-                    try {
-
-                        return getServiceModelFromJson(Json.parse(result.getBody()));
-                    } catch (Exception e) {
-                        log.error("Could not parse result from Key Value Storage: {}",
-                                e.getMessage());
-                        throw new CompletionException(
-                                new ExternalDependencyException(
-                                        "Could not parse result from Key Value Storage"));
-                    }
-                });
+                try {
+                    return getServiceModelFromJson(Json.parse(result.getBody()));
+                } catch (Exception e) {
+                    log.error("Could not parse result from Key Value Storage: {}",
+                        e.getMessage());
+                    throw new CompletionException(
+                        new ExternalDependencyException(
+                            "Could not parse result from Key Value Storage"));
+                }
+            });
     }
 
     public CompletionStage<List<RuleServiceModel>> getListAsync(
-            String order,
-            int skip,
-            int limit,
-            String groupId,
-            boolean includeDeleted) {
+        String order,
+        int skip,
+        int limit,
+        String groupId,
+        boolean includeDeleted) {
 
         if (skip < 0 || limit <= 0) {
             log.error("Key value storage parameter bounds error");
             throw new CompletionException(
-                    new InvalidInputException("Parameter bounds error"));
+                new InvalidInputException("Parameter bounds error"));
         }
 
         return this.prepareRequest(null)
-                .get()
-                .handle((result, error) -> {
+            .get()
+            .handle((result, error) -> {
 
-                    if (error != null) {
-                        log.error("Key value storage request error: {}",
-                                error.getMessage());
-                        throw new CompletionException(
-                                new ExternalDependencyException(error.getMessage()));
+                if (error != null) {
+                    log.error("Key value storage request error: {}",
+                        error.getMessage());
+                    throw new CompletionException(
+                        new ExternalDependencyException(error.getMessage()));
+                }
+
+                try {
+                    ObjectMapper mapper = new ObjectMapper();
+                    JsonNode jsonResult = mapper.readTree(result.getBody());
+
+                    ArrayList<JsonNode> jsonList =
+                        getResultListFromJson(jsonResult);
+
+                    ArrayList<RuleServiceModel> ruleList = new ArrayList<>();
+
+                    for (JsonNode resultItem : jsonList) {
+                        RuleServiceModel rule =
+                            getServiceModelFromJson(resultItem);
+
+                        if ((groupId == null ||
+                            groupId.equalsIgnoreCase(rule.getGroupId()))
+                            && (!rule.getDeleted() || includeDeleted)) {
+                            ruleList.add(rule);
+                        }
                     }
 
-                    try {
-                        ObjectMapper mapper = new ObjectMapper();
-                        JsonNode jsonResult = mapper.readTree(result.getBody());
-
-                        ArrayList<JsonNode> jsonList =
-                                getResultListFromJson(jsonResult);
-
-                        ArrayList<RuleServiceModel> ruleList = new ArrayList<>();
-
-                        for (JsonNode resultItem : jsonList) {
-                            RuleServiceModel rule =
-                                    getServiceModelFromJson(resultItem);
-
-                            if ((groupId == null ||
-                                    groupId.equalsIgnoreCase(rule.getGroupId()))
-                                    && (!rule.getDeleted() || includeDeleted)) {
-                                ruleList.add(rule);
-                            }
-                        }
-
-                        if (ruleList.isEmpty()) {
-                            return ruleList;
-                        }
-
-                        if (order.equalsIgnoreCase("asc")) {
-                            Collections.sort(ruleList);
-                        } else {
-                            Collections.sort(ruleList, Collections.reverseOrder());
-                        }
-
-                        if (skip >= ruleList.size()) {
-                            log.debug("Skip value greater than size of listAsync");
-                            return new ArrayList<>();
-                        } else if ((limit + skip) > ruleList.size()) {
-                            return ruleList.subList(skip, ruleList.size());
-                        }
-
-                        return ruleList.subList(skip, limit + skip);
-                    } catch (Exception e) {
-                        log.error("Could not parse result from Key Value Storage: {}",
-                                e.getMessage());
-                        throw new CompletionException(
-                                new ExternalDependencyException(
-                                        "Could not parse result from Key Value Storage"));
+                    if (ruleList.isEmpty()) {
+                        return ruleList;
                     }
-                });
+
+                    if (order.equalsIgnoreCase("asc")) {
+                        Collections.sort(ruleList);
+                    } else {
+                        Collections.sort(ruleList, Collections.reverseOrder());
+                    }
+
+                    if (skip >= ruleList.size()) {
+                        log.debug("Skip value greater than size of listAsync");
+                        return new ArrayList<>();
+                    } else if ((limit + skip) > ruleList.size()) {
+                        return ruleList.subList(skip, ruleList.size());
+                    }
+
+                    return ruleList.subList(skip, limit + skip);
+                } catch (Exception e) {
+                    log.error("Could not parse result from Key Value Storage: {}",
+                        e.getMessage());
+                    throw new CompletionException(
+                        new ExternalDependencyException(
+                            "Could not parse result from Key Value Storage"));
+                }
+            });
     }
 
     @Override
     public CompletionStage<List<AlarmCountByRuleServiceModel>> getAlarmCountForList(
-            DateTime from,
-            DateTime to,
-            String order,
-            int skip,
-            int limit,
-            String[] devices
+        DateTime from,
+        DateTime to,
+        String order,
+        int skip,
+        int limit,
+        String[] devices
     ) throws ExternalDependencyException {
 
         ArrayList<AlarmCountByRuleServiceModel> alarmByRuleList = new ArrayList<>();
 
         // get list of rules
         return this.getListAsync(order, skip, limit, null, true)
-                .thenApply(rulesList -> {
+            .thenApply(rulesList -> {
 
-                    // get open alarm count and most recent alarm for each rule
-                    for (RuleServiceModel rule : rulesList) {
-
-                        int alarmCount;
-                        try {
-                            alarmCount = this.alarmsService.getCountByRuleId(
-                                    rule.getId(),
-                                    from,
-                                    to,
-                                    devices);
-                        } catch (java.lang.Exception e) {
-                            log.error("Could not retrieve alarm count for " +
-                                    "rule id {}", rule.getId(), e);
-                            throw new CompletionException(
-                                    new ExternalDependencyException(
-                                            "Could not retrieve alarm count for " +
-                                                    "rule id " + rule.getId(), e));
-                        }
-
-                        // skip to next rule if no alarms found
-                        if (alarmCount == 0) {
-                            continue;
-                        }
-
-                        // get most recent alarm for rule
-                        AlarmServiceModel recentAlarm = this.getMostRecentAlarmForRule(
-                                rule.getId(),
-                                from,
-                                to,
-                                devices);
-
-                        // should always find alarm at this point
-                        if (recentAlarm == null) {
-                            log.error("Alarm count mismatch -- could not " +
-                                    "find alarm for rule id {} when alarm count for " +
-                                    "rule is {}.", rule.getId(), alarmCount);
-                            throw new CompletionException(
-                                    new ExternalDependencyException(
-                                            "Alarm count mismatch -- could not " +
-                                                    "find alarm for rule id " + rule.getId()));
-                        }
-
-                        // Add alarm by rule to list
-                        alarmByRuleList.add(
-                                new AlarmCountByRuleServiceModel(
-                                        alarmCount,
-                                        recentAlarm.getStatus(),
-                                        recentAlarm.getDateCreated(),
-                                        rule));
+                // get open alarm count and most recent alarm for each rule
+                for (RuleServiceModel rule : rulesList) {
+                    int alarmCount;
+                    try {
+                        alarmCount = this.alarmsService.getCountByRuleId(
+                            rule.getId(),
+                            from,
+                            to,
+                            devices);
+                    } catch (java.lang.Exception e) {
+                        log.error("Could not retrieve alarm count for " +
+                            "rule id {}", rule.getId(), e);
+                        throw new CompletionException(
+                            new ExternalDependencyException(
+                                "Could not retrieve alarm count for " +
+                                    "rule id " + rule.getId(), e));
                     }
 
-                    return alarmByRuleList;
-                });
+                    // skip to next rule if no alarms found
+                    if (alarmCount == 0) {
+                        continue;
+                    }
+
+                    // get most recent alarm for rule
+                    AlarmServiceModel recentAlarm = this.getMostRecentAlarmForRule(
+                        rule.getId(),
+                        from,
+                        to,
+                        devices);
+
+                    // should always find alarm at this point
+                    if (recentAlarm == null) {
+                        log.error("Alarm count mismatch -- could not " +
+                            "find alarm for rule id {} when alarm count for " +
+                            "rule is {}.", rule.getId(), alarmCount);
+                        throw new CompletionException(
+                            new ExternalDependencyException(
+                                "Alarm count mismatch -- could not " +
+                                    "find alarm for rule id " + rule.getId()));
+                    }
+
+                    // Add alarm by rule to list
+                    alarmByRuleList.add(
+                        new AlarmCountByRuleServiceModel(
+                            alarmCount,
+                            recentAlarm.getStatus(),
+                            recentAlarm.getDateCreated(),
+                            rule));
+                }
+
+                return alarmByRuleList;
+            });
     }
 
     public CompletionStage<RuleServiceModel> postAsync(
@@ -243,38 +238,37 @@ public final class Rules implements IRules {
         jsonData.put("Data", ruleServiceModel.toJsonString());
 
         return this.prepareRequest(null)
-                .post(jsonData.toString())
-                .handle((result, error) -> {
-                    if (result.getStatus() != OK) {
-                        log.error("Key value storage error code {}",
-                                result.getStatusText());
-                        throw new CompletionException(
-                                new ExternalDependencyException(result.getStatusText()));
-                    }
+            .post(jsonData.toString())
+            .handle((result, error) -> {
+                if (result.getStatus() != OK) {
+                    log.error("Key value storage error code {}",
+                        result.getStatusText());
+                    throw new CompletionException(
+                        new ExternalDependencyException(result.getStatusText()));
+                }
 
-                    if (error != null) {
-                        log.error("Key value storage request error: {}",
-                                error.getMessage());
-                        throw new CompletionException(
-                                new ExternalDependencyException(
-                                        "Could not connect to key value storage " +
-                                                error.getMessage()));
-                    }
+                if (error != null) {
+                    log.error("Key value storage request error: {}",
+                        error.getMessage());
+                    throw new CompletionException(
+                        new ExternalDependencyException(
+                            "Could not connect to key value storage " +
+                                error.getMessage()));
+                }
 
-                    try {
+                try {
+                    this.logEventAndRuleCountToDiagnostics("Rule_Created");
+                    return getServiceModelFromJson(
+                        Json.parse(result.getBody()));
+                } catch (Exception e) {
+                    log.error("Could not parse result from Key Value Storage: {}",
+                        e.getMessage());
+                    throw new CompletionException(
+                        new ExternalDependencyException(
+                            "Could not parse result from Key Value Storage"));
+                }
 
-                        this.logEventAndRuleCountToDiagnostics("Rule_Created");
-                        return getServiceModelFromJson(
-                                Json.parse(result.getBody()));
-                    } catch (Exception e) {
-                        log.error("Could not parse result from Key Value Storage: {}",
-                                e.getMessage());
-                        throw new CompletionException(
-                                new ExternalDependencyException(
-                                        "Could not parse result from Key Value Storage"));
-                    }
-
-                });
+            });
     }
 
     public CompletionStage<RuleServiceModel> putAsync(RuleServiceModel ruleServiceModel) {
@@ -285,7 +279,7 @@ public final class Rules implements IRules {
             RuleServiceModel savedRule = savedRuleFuture.get();
             if (savedRule == null || savedRule.getDeleted()) {
                 throw new CompletionException(
-                        new ResourceNotFoundException(ruleServiceModel.getId()));
+                    new ResourceNotFoundException(ruleServiceModel.getId()));
             }
 
             ruleServiceModel.setDateCreated(savedRule.getDateCreated());
@@ -293,7 +287,7 @@ public final class Rules implements IRules {
         } catch (Exception e) {
             log.error("Could not get existing rule from Key Value Storage: {}", e.getMessage());
             throw new CompletionException(
-                    new ResourceNotFoundException(ruleServiceModel.getId()));
+                new ResourceNotFoundException(ruleServiceModel.getId()));
         }
 
         ObjectNode jsonData = new ObjectMapper().createObjectNode();
@@ -301,43 +295,43 @@ public final class Rules implements IRules {
         jsonData.put("ETag", ruleServiceModel.getETag());
 
         return this.prepareRequest(ruleServiceModel.getId())
-                .put(jsonData.toString())
-                .handle((result, error) -> {
+            .put(jsonData.toString())
+            .handle((result, error) -> {
 
-                    if (error != null) {
-                        log.error("Key value storage request error: {}",
-                                error.getMessage());
-                        throw new CompletionException(
-                                new ExternalDependencyException(error.getMessage()));
-                    }
+                if (error != null) {
+                    log.error("Key value storage request error: {}",
+                        error.getMessage());
+                    throw new CompletionException(
+                        new ExternalDependencyException(error.getMessage()));
+                }
 
-                    if (result.getStatus() == CONFLICT) {
-                        log.error("Key value storage ETag mismatch");
-                        throw new CompletionException(
-                                new ResourceOutOfDateException(
-                                        "Key value storage ETag mismatch"));
-                    } else if (result.getStatus() != OK) {
-                        log.error("Key value storage error code {}",
-                                result.getStatusText());
-                        throw new CompletionException(
-                                new ExternalDependencyException(result.getStatusText()));
-                    }
+                if (result.getStatus() == CONFLICT) {
+                    log.error("Key value storage ETag mismatch");
+                    throw new CompletionException(
+                        new ResourceOutOfDateException(
+                            "Key value storage ETag mismatch"));
+                } else if (result.getStatus() != OK) {
+                    log.error("Key value storage error code {}",
+                        result.getStatusText());
+                    throw new CompletionException(
+                        new ExternalDependencyException(result.getStatusText()));
+                }
 
-                    try {
-                        RuleServiceModel rule =
-                                getServiceModelFromJson(Json.parse(result.getBody()));
+                try {
+                    RuleServiceModel rule =
+                        getServiceModelFromJson(Json.parse(result.getBody()));
 
-                        log.info("Successfully retrieved rule id " + rule.getId());
+                    log.info("Successfully retrieved rule id " + rule.getId());
 
-                        return rule;
-                    } catch (Exception e) {
-                        log.error("Could not parse result from Key Value Storage: {}",
-                                e.getMessage());
-                        throw new CompletionException(
-                                new ExternalDependencyException(
-                                        "Could not parse result from Key Value Storage"));
-                    }
-                });
+                    return rule;
+                } catch (Exception e) {
+                    log.error("Could not parse result from Key Value Storage: {}",
+                        e.getMessage());
+                    throw new CompletionException(
+                        new ExternalDependencyException(
+                            "Could not parse result from Key Value Storage"));
+                }
+            });
     }
 
     public CompletionStage deleteAsync(String id) {
@@ -391,40 +385,40 @@ public final class Rules implements IRules {
         }
 
         WSRequest wsRequest = this.wsClient
-                .url(url)
-                .addHeader("Content-Type", "application/json");
+            .url(url)
+            .addHeader("Content-Type", "application/json");
 
         return wsRequest;
     }
 
     private AlarmServiceModel getMostRecentAlarmForRule(
-            String ruleId,
-            DateTime from,
-            DateTime to,
-            String[] devices) {
+        String ruleId,
+        DateTime from,
+        DateTime to,
+        String[] devices) {
 
         AlarmServiceModel result = null;
 
         try {
             ArrayList<AlarmServiceModel> resultList
-                    = this.alarmsService.getListByRuleId(
-                    ruleId,
-                    from,
-                    to,
-                    "desc",
-                    0,
-                    1,
-                    devices);
+                = this.alarmsService.getListByRuleId(
+                ruleId,
+                from,
+                to,
+                "desc",
+                0,
+                1,
+                devices);
 
             if (resultList.size() > 0) {
                 result = resultList.get(0);
             }
         } catch (java.lang.Exception e) {
             String errorMsg = "Could not retrieve most recent alarm " +
-                    "for rule id " + ruleId;
+                "for rule id " + ruleId;
             log.error(errorMsg, e);
             throw new CompletionException(
-                    new ExternalDependencyException(errorMsg, e));
+                new ExternalDependencyException(errorMsg, e));
         }
 
         return result;
@@ -443,8 +437,8 @@ public final class Rules implements IRules {
             } catch (Exception e) {
                 log.error("Could not parse data from Key Value Storage");
                 throw new CompletionException(
-                        new ExternalDependencyException(
-                                "Could not parse data from Key Value Storage"));
+                    new ExternalDependencyException(
+                        "Could not parse data from Key Value Storage"));
             }
         }
 
@@ -462,62 +456,62 @@ public final class Rules implements IRules {
             return rule;
         } catch (Exception e) {
             log.error("Could not parse data from Key Value Storage. " +
-                    "Json result: {}", jsonResultRule);
+                "Json result: {}", jsonResultRule);
             throw new CompletionException(
-                    new ExternalDependencyException(
-                            "Could not parse data from Key Value Storage"));
+                new ExternalDependencyException(
+                    "Could not parse data from Key Value Storage"));
         }
     }
 
     private CompletionStage<Integer> getRuleCountAsync() {
         return this.prepareRequest(null)
-                .get()
-                .handle((result, error) -> {
+            .get()
+            .handle((result, error) -> {
 
-                    if (error != null) {
-                        log.error("Key value storage request error: {}",
-                                error.getMessage());
-                        throw new CompletionException(
-                                new ExternalDependencyException(error.getMessage()));
-                    }
+                if (error != null) {
+                    log.error("Key value storage request error: {}",
+                        error.getMessage());
+                    throw new CompletionException(
+                        new ExternalDependencyException(error.getMessage()));
+                }
 
-                    try {
-                        ObjectMapper mapper = new ObjectMapper();
-                        JsonNode jsonResult = mapper.readTree(result.getBody());
+                try {
+                    ObjectMapper mapper = new ObjectMapper();
+                    JsonNode jsonResult = mapper.readTree(result.getBody());
 
-                        ArrayList<JsonNode> jsonList =
-                                getResultListFromJson(jsonResult);
+                    ArrayList<JsonNode> jsonList =
+                        getResultListFromJson(jsonResult);
 
-                        int ruleCount = 0;
+                    int ruleCount = 0;
 
-                        for (JsonNode resultItem : jsonList) {
-                            RuleServiceModel rule =
-                                    getServiceModelFromJson(resultItem);
+                    for (JsonNode resultItem : jsonList) {
+                        RuleServiceModel rule =
+                            getServiceModelFromJson(resultItem);
 
-                            if (!rule.getDeleted()) {
-                                ruleCount++;
-                            }
+                        if (!rule.getDeleted()) {
+                            ruleCount++;
                         }
-                        return ruleCount;
-                    } catch (Exception e) {
-                        log.error("Could not parse result from Key Value Storage: {}",
-                                e.getMessage());
-                        throw new CompletionException(
-                                new ExternalDependencyException(
-                                        "Could not parse result from Key Value Storage"));
                     }
-                });
+                    return ruleCount;
+                } catch (Exception e) {
+                    log.error("Could not parse result from Key Value Storage: {}",
+                        e.getMessage());
+                    throw new CompletionException(
+                        new ExternalDependencyException(
+                            "Could not parse result from Key Value Storage"));
+                }
+            });
     }
 
     private void logEventAndRuleCountToDiagnostics(String eventName) {
         this.diagnosticsClient.logEventAsync(eventName);
         this.getRuleCountAsync()
-                .thenApplyAsync((ruleCount) -> {
-                    Hashtable<String, Object> eventProperties = new Hashtable<>();
-                    eventProperties.put("Count", ruleCount);
-                    this.diagnosticsClient.logEventAsync("Rule_Count", eventProperties);
-                    return true;
-                });
+            .thenApplyAsync((ruleCount) -> {
+                Dictionary<String, Object> eventProperties = new Hashtable<>();
+                eventProperties.put("Count", ruleCount);
+                this.diagnosticsClient.logEventAsync("Rule_Count", eventProperties);
+                return true;
+            });
     }
 }
 

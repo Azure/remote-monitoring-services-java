@@ -2,15 +2,11 @@
 
 package com.microsoft.azure.iotsolutions.devicetelemetry.services.external;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.Rules;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ExternalDependencyException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.DiagnosticsRequestModel;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.DiagnosticsConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import play.Logger;
 import play.libs.ws.WSClient;
@@ -75,16 +71,16 @@ public class DiagnosticsClient implements IDiagnosticsClient {
                 .handle((result, error) -> {
                     if (error != null) {
                         log.error("Error logging to diagnostics service {}",
-                                error.getMessage());
+                            error.getMessage());
                         throw new CompletionException(
-                                new ExternalDependencyException(error.getMessage()));
+                            new ExternalDependencyException(error.getMessage()));
                     }
 
                     if (result.getStatus() != OK) {
                         log.error("Error logging to diagnostics service {}",
-                                error.getMessage());
+                            error.getMessage());
                         throw new CompletionException(
-                                new ExternalDependencyException(result.getStatusText()));
+                            new ExternalDependencyException(result.getStatusText()));
                     }
                     return true;
                 });
@@ -94,8 +90,8 @@ public class DiagnosticsClient implements IDiagnosticsClient {
         String url = this.diagnosticsEndpointUrl + "/diagnosticsevents";
 
         WSRequest wsRequest = this.wsClient
-                .url(url)
-                .addHeader("Content-Type", "application/json");
+            .url(url)
+            .addHeader("Content-Type", "application/json");
 
         return wsRequest;
     }
