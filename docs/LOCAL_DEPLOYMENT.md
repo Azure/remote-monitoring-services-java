@@ -35,7 +35,7 @@ After creating the required azure resources, using start or create-azure-resourc
 1) set-env-uri
 2) set-env
 
-**Please Note:**f
+**Please Note:**
 *If you are using windows, you will have to execute these scripts in CMD shell. On OSX, these scripts are automatically run by the start script. For linux, the environment variables present in these scripts need to be set at global location, depending upon the flavour of linux you are using.* 
 
 #### Recap of steps to create resources and set environment variables
