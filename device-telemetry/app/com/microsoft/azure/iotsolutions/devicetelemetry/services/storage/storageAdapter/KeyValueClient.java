@@ -5,6 +5,7 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.storag
 import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.Status;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
+import org.apache.http.HttpStatus;
 import play.libs.ws.WSClient;
 import play.libs.ws.WSRequest;
 import play.libs.ws.WSResponse;
@@ -13,8 +14,6 @@ import java.time.Duration;
 import java.util.concurrent.CompletionStage;
 
 public class KeyValueClient implements IKeyValueClient {
-
-    private final int OK = 200;
 
     private final IServicesConfig servicesConfig;
     private String storageAdapterWebserviceUrl;
@@ -38,7 +37,7 @@ public class KeyValueClient implements IKeyValueClient {
             if (error != null) {
                 return new Status(name, false, error.getMessage());
             } else {
-                if (result.getStatus() == 200) {
+                if (result.getStatus() == HttpStatus.SC_OK) {
                     return new Status(name, true, "Storage adapter alive and well!");
                 } else {
                     return new Status(name, false, result.getStatusText());

@@ -9,6 +9,7 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.helpers.QueryBu
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.AlarmServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.cosmosDb.IStorageClient;
+import org.apache.http.HttpStatus;
 import org.joda.time.DateTime;
 import play.Logger;
 
@@ -215,7 +216,7 @@ public class Alarms implements IAlarms {
                 if (e instanceof DocumentClientException)
                 {
                     DocumentClientException clientException = (DocumentClientException)e;
-                    if (clientException.getStatusCode() == 404) {
+                    if (clientException.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
                         return;
                     }
                     timeout = clientException.getRetryAfterInMilliseconds();

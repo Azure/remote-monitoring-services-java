@@ -16,6 +16,7 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.AlarmSer
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.RuleServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.serialization.JsonHelper;
+import org.apache.http.HttpStatus;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import play.Logger;
@@ -31,9 +32,6 @@ import java.util.concurrent.CompletionStage;
 public final class Rules implements IRules {
 
     private final static String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZZ";
-    private static final int CONFLICT = 409;
-    private static final int NOT_FOUND = 404;
-    private static final int OK = 200;
     private static final Logger.ALogger log = Logger.of(Rules.class);
 
     private final String storageUrl;
@@ -68,7 +66,7 @@ public final class Rules implements IRules {
                         new ExternalDependencyException(error.getMessage()));
                 }
 
-                if (result.getStatus() == NOT_FOUND) {
+                if (result.getStatus() == HttpStatus.SC_NOT_FOUND) {
                     log.info("Rule id " + id + " not found.");
                     return null;
                 }
@@ -240,7 +238,7 @@ public final class Rules implements IRules {
         return this.prepareRequest(null)
             .post(jsonData.toString())
             .handle((result, error) -> {
-                if (result.getStatus() != OK) {
+                if (result.getStatus() != HttpStatus.SC_OK) {
                     log.error("Key value storage error code {}",
                         result.getStatusText());
                     throw new CompletionException(
@@ -304,12 +302,12 @@ public final class Rules implements IRules {
                         new ExternalDependencyException(error.getMessage()));
                 }
 
-                if (result.getStatus() == CONFLICT) {
+                if (result.getStatus() == HttpStatus.SC_CONFLICT) {
                     log.error("Key value storage ETag mismatch");
                     throw new CompletionException(
                         new ResourceOutOfDateException(
                             "Key value storage ETag mismatch"));
-                } else if (result.getStatus() != OK) {
+                } else if (result.getStatus() != HttpStatus.SC_OK) {
                     log.error("Key value storage error code {}",
                         result.getStatusText());
                     throw new CompletionException(
@@ -363,7 +361,7 @@ public final class Rules implements IRules {
                                 new ExternalDependencyException(error.getMessage()));
                     }
 
-                    if (result.getStatus() != OK) {
+                    if (result.getStatus() != HttpStatus.SC_OK) {
                         log.error("Key value storage error code {}",
                                 result.getStatusText());
                         throw new CompletionException(

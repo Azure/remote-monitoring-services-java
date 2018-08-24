@@ -23,8 +23,8 @@ import play.libs.ws.WSClient;
 import play.libs.ws.WSRequest;
 import play.libs.ws.WSResponse;
 
+import java.time.Instant;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 public class TimeSeriesClient implements ITimeSeriesClient {
 
     private static final Logger.ALogger log = Logger.of(TimeSeriesConfig.class);
+    public static final int CLOCK_CALIBRATION_IN_SECONDS = 5;
 
     private final WSClient wsClient;
 
@@ -190,9 +191,13 @@ public class TimeSeriesClient implements ITimeSeriesClient {
         AuthenticationResult result;
         ExecutorService service = null;
 
-        if (this.authenticationResult != null
-            && this.authenticationResult.getExpiresOnDate().after(new Date())) {
-            return this.authenticationResult.getAccessToken();
+        if (this.authenticationResult != null){
+            Instant expiredTime = Instant.ofEpochMilli(this.authenticationResult.getExpiresOnDate().getTime());
+            // add a few seconds to calibrate clock drift
+            Instant futureTime = Instant.now().plusSeconds(CLOCK_CALIBRATION_IN_SECONDS);
+            if (expiredTime.isAfter(futureTime)) {
+                return this.authenticationResult.getAccessToken();
+            }
         }
 
         try {
