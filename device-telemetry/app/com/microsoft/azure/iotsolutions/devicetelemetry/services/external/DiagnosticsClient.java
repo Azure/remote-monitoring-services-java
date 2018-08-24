@@ -24,14 +24,21 @@ public class DiagnosticsClient implements IDiagnosticsClient {
     private final WSClient wsClient;
     private final String diagnosticsEndpointUrl;
     private final int diagnosticsMaxLogRetries;
-    private static final Logger.ALogger log = Logger.of(Rules.class);
+    private final boolean canWriteToDiagnostics;
 
+    private static final Logger.ALogger log = Logger.of(Rules.class);
     private static final int OK = 200;
 
     @Inject
     public DiagnosticsClient(final WSClient wsClient, final IServicesConfig servicesConfig) {
         this.wsClient = wsClient;
         this.diagnosticsEndpointUrl = servicesConfig.getDiagnosticsConfig().getApiUrl();
+        if(this.diagnosticsEndpointUrl == null || this.diagnosticsEndpointUrl.length() == 0) {
+            this.log.error("No diagnostics url given, cannot write to diagnostics");
+            this.canWriteToDiagnostics = false;
+        } else {
+            this.canWriteToDiagnostics = true;
+        }
         this.diagnosticsMaxLogRetries = servicesConfig.getDiagnosticsConfig().getMaxLogRetries();
     }
 
@@ -44,6 +51,11 @@ public class DiagnosticsClient implements IDiagnosticsClient {
     @Override
     public CompletionStage<Void> logEventAsync(String eventName, Dictionary<String, Object> eventProperties) {
         return CompletableFuture.runAsync(() -> this.logEvent(eventName, eventProperties));
+    }
+
+    @Override
+    public boolean canWriteToDiagnostics() {
+        return this.canWriteToDiagnostics;
     }
 
     private void logEvent(String eventName, Dictionary<String, Object> eventProperties) {

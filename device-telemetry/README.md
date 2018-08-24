@@ -4,12 +4,12 @@
 
 # Device Telemetry Overview
 
-This service provides a RESTful endpoint for read access to device telemetry, 
+This service provides a RESTful endpoint for read access to device telemetry,
 full CRUD for rules, and read/write for alarms from storage.
 
 ## Why?
 
-This microservice was built as part of the 
+This microservice was built as part of the
 [Azure IoT Remote Monitoring](https://github.com/Azure/azure-iot-pcs-remote-monitoring-java)
 project to provide a generic implementation for an end-to-end IoT solution.
 More information [here][rm-arch-url].
@@ -29,7 +29,7 @@ More information [here][rm-arch-url].
 
 ## Running the service with Docker
 
-You can run the microservice and its dependencies using 
+You can run the microservice and its dependencies using
 [Docker](https://www.docker.com/) with the instructions
 [here][run-with-docker-url].
 
@@ -55,13 +55,14 @@ for more information. More information on environment variables
   * `PCS_TELEMETRY_DOCUMENTDB_CONNSTRING` = {your Azure Cosmos DB connection string}
   * `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
   * `PCS_AUTH_WEBSERVICE_URL` = http://localhost:9001/v1
+  * `PCS_DIAGNOSTICS_ENDPOINT_URL` (optional) = {endpoint of Diagnostics Microservice}
 
 # Running the service in an IDE
 
 ## Prerequisites
 - Install [IntelliJ IDEA](https://www.jetbrains.com/idea/download)
 - Install [SBT](http://www.scala-sbt.org/download.html)
-- Install the latest 
+- Install the latest
 [Java 8 SDK](http://www.oracle.com/technetwork/java/javase/downloads)
 
 ## Running the service with IntelliJ IDEA
@@ -84,6 +85,7 @@ Steps using IntelliJ IDEA, with SBT plugin enabled:
      * `PCS_TELEMETRY_DOCUMENTDB_CONNSTRING` = {your Azure Cosmos DB connection string}
      * `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
      * `PCS_AUTH_WEBSERVICE_URL` = http://localhost:9001/v1
+     * `PCS_DIAGNOSTICS_ENDPOINT_URL` (optional) = {endpoint of Diagnostics Microservice}
 * Either from the toolbar or the Run menu, execute the configuration just
   created, using the Debug command/button
 * Test that the service is up and running pointing your browser to
@@ -118,6 +120,7 @@ More information on environment variables [here](#configuration-and-environment-
     1. `PCS_TELEMETRY_DOCUMENTDB_CONNSTRING` = {your Azure Cosmos DB connection string}
     1. `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
     1. `PCS_AUTH_WEBSERVICE_URL` = http://localhost:9001/v1
+    1. `PCS_DIAGNOSTICS_ENDPOINT_URL` (optional) = {endpoint of Diagnostics Microservice}
 1. Use the scripts in the [scripts](scripts) folder for many frequent tasks:
    * `build`: compile all the projects and run the tests.
    * `compile`: compile all the projects.
@@ -138,7 +141,7 @@ directly. A copy of SBT is included in the root of the project.
     * **WebService** - Tests for web services functionality
     * **Service** - Tests for services functionality
 * Configuration files and routes are in the **conf** folder
-* The **scripts** folder contains build scripts, docker container creation scripts, 
+* The **scripts** folder contains build scripts, docker container creation scripts,
    and scripts for running the microservice from the command line
 
 
@@ -162,7 +165,7 @@ dockerBuildOptions ++= Seq("--compress", "--label", "Tags=azure,iot,pcs,telemetr
 dockerEntrypoint := Seq("bin/telemetry")
 ```
 
-The package logic is executed via 
+The package logic is executed via
 [sbt-native-packager](https://github.com/sbt/sbt-native-packager),
 installed in [plugins.sbt](project/plugins.sbt).
 
@@ -194,14 +197,14 @@ the IDE, there are several ways to manage environment variables:
   * https://stackoverflow.com/questions/13046624/how-to-permanently-export-a-variable-in-linux
   * https://stackoverflow.com/questions/135688/setting-environment-variables-in-os-x
   * https://help.ubuntu.com/community/EnvironmentVariables
-* IntelliJ IDEA: env. vars can be set in each 
+* IntelliJ IDEA: env. vars can be set in each
 [Run Configuration](https://www.jetbrains.com/help/idea/run-debug-configuration-application.html)
 
 # Contributing to the solution
 Please follow our [contribution guidelines](CONTRIBUTING.md).  We love PRs too.
 
 # Feedback
-Please enter issues, bugs, or suggestions as 
+Please enter issues, bugs, or suggestions as
 [GitHub Issues](https://github.com/Azure/device-telemetry-java/issues).
 
 # License

@@ -88,8 +88,13 @@ public class Config implements IConfig {
             data.getString(ALARMS_DOCDB_COLLECTION_KEY),
             data.getInt(ALARMS_DOCDB_DELETE_RETRIES));
 
+        String diagnosticsUrl = "";
+        if (data.hasPath(DIAGNOSTICS_URL_KEY)) {
+            diagnosticsUrl = data.getString(DIAGNOSTICS_URL_KEY);
+        }
+
         DiagnosticsConfig diagnosticsConfig = new DiagnosticsConfig(
-                data.getString(DIAGNOSTICS_URL_KEY),
+                diagnosticsUrl,
                 data.getInt(DIAGNOSTICS_MAX_LOG_RETRIES));
 
         this.servicesConfig = new ServicesConfig(

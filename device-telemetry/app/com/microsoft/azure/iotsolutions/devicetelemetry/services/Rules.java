@@ -466,7 +466,6 @@ public final class Rules implements IRules {
         return this.prepareRequest(null)
             .get()
             .handle((result, error) -> {
-
                 if (error != null) {
                     log.error("Key value storage request error: {}",
                         error.getMessage());
@@ -503,13 +502,15 @@ public final class Rules implements IRules {
     }
 
     private void logEventAndRuleCountToDiagnostics(String eventName) {
-        this.diagnosticsClient.logEventAsync(eventName);
-        this.getRuleCountAsync()
-            .thenApplyAsync((ruleCount) -> {
-                Dictionary<String, Object> eventProperties = new Hashtable<>();
-                eventProperties.put("Count", ruleCount);
-                this.diagnosticsClient.logEventAsync("Rule_Count", eventProperties);
-                return true;
-            });
+        if (this.diagnosticsClient.canWriteToDiagnostics()) {
+            this.diagnosticsClient.logEventAsync(eventName);
+            this.getRuleCountAsync()
+                .thenApplyAsync((ruleCount) -> {
+                    Dictionary<String, Object> eventProperties = new Hashtable<>();
+                    eventProperties.put("Count", ruleCount);
+                    this.diagnosticsClient.logEventAsync("Rule_Count", eventProperties);
+                    return true;
+                });
+        }
     }
 }

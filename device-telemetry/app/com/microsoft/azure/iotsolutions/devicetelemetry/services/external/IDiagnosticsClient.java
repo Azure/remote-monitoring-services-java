@@ -12,4 +12,6 @@ public interface IDiagnosticsClient {
     CompletionStage<Void> logEventAsync(String eventName);
 
     CompletionStage<Void> logEventAsync(String eventName, Dictionary<String, Object> eventProperties);
+
+    boolean canWriteToDiagnostics();
 }
