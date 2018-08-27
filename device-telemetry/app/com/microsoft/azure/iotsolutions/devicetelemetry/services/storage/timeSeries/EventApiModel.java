@@ -9,18 +9,18 @@ import java.util.List;
 
 public class EventApiModel {
 
-    private long schemaRid;
+    private long schemaRowId;
     private SchemaModel schema;
     private String timestamp;
     private List<JsonNode> values;
 
     @JsonProperty("schemaRid")
-    public long getSchemaRid() {
-        return schemaRid;
+    public long getSchemaRowId() {
+        return schemaRowId;
     }
 
-    public void setSchemaRid(long schemaRid) {
-        this.schemaRid = schemaRid;
+    public void setSchemaRowId(long schemaRowId) {
+        this.schemaRowId = schemaRowId;
     }
 
     @JsonProperty("schema")
@@ -33,7 +33,6 @@ public class EventApiModel {
     }
 
     @JsonProperty("$ts")
-    //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATETIME_FORMAT)
     public String getTimestamp() {
         return timestamp;
     }

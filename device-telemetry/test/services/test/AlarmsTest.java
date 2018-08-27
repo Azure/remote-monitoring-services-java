@@ -42,6 +42,9 @@ public class AlarmsTest {
                     "aadApplicationId",
                     "aadApplicationSecret",
                     "apiVersion",
+                    "",
+                    "",
+                    "",
                     "dateFormat",
                     20
                 )

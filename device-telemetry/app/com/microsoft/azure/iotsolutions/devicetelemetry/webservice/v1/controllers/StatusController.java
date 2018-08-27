@@ -57,7 +57,7 @@ public final class StatusController extends Controller {
             Status timeSeriesClientStatus = this.timeSeriesClient.ping();
             statusApiModel.addStatus(timeSeriesClientStatus);
             statusApiModel.getProperties().put(TSI_EXPLORER_URL,
-                messagesConfig.getTimeSeriesConfig().getTimeSeriesExplorerUrl());
+                messagesConfig.getTimeSeriesConfig().getExplorerUrl());
         }
 
         CompletionStage<Status> keyValueStorageStatusResult = this.keyValueClient.pingAsync();

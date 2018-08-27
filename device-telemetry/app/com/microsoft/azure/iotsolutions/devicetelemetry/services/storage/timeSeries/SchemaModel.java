@@ -3,7 +3,7 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.timeSeries;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidInputException;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.TimeSeriesParseException;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,7 +11,7 @@ import java.util.List;
 
 public class SchemaModel {
 
-    private long rid;
+    private long rowId;
     private String eventSourceName;
     private List<PropertyModel> properties;
 
@@ -33,12 +33,12 @@ public class SchemaModel {
     }};
 
     @JsonProperty("rid")
-    public long getRid() {
-        return rid;
+    public long getRowId() {
+        return rowId;
     }
 
-    public void setRid(long rid) {
-        this.rid = rid;
+    public void setRowId(long rowId) {
+        this.rowId = rowId;
     }
 
     @JsonProperty("$esn")
@@ -72,14 +72,14 @@ public class SchemaModel {
         return result;
     }
 
-    public int getDeviceIdIndex() throws InvalidInputException {
+    public int getDeviceIdIndex() throws TimeSeriesParseException {
         for (int i = 0; i < this.properties.size(); i++) {
             if (this.properties.get(i).getName().equalsIgnoreCase(DEVICE_ID_KEY)) {
                 return i;
             }
         }
 
-        throw new InvalidInputException(String.format(
+        throw new TimeSeriesParseException(String.format(
             "No device id found in message schema from Time Series Insights. " +
                 "Device id property '%s' is missing.", DEVICE_ID_KEY));
     }

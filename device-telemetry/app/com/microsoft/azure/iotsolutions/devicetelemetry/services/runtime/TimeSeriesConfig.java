@@ -8,29 +8,37 @@ import play.Logger;
 public class TimeSeriesConfig {
 
     private static final Logger.ALogger log = Logger.of(TimeSeriesConfig.class);
-    private static final String TSI_EXPLORER_URL_FORMAT = "https://insights.timeseries.azure.com/?environmentId=%s&tid=%s";
+    private static final String TSI_DEFAULT_AUTHORITY_URL = "https://login.windows.net/";
+    private static final String TSI_DEFAULT_AUDIENCE_URL = "https://api.timeseries.azure.com/";
+    private static final String TSI_DEFAULT_EXPLORER_URL = "https://insights.timeseries.azure.com/";
 
-    private final String timeSeriesFqdn;
+    private final String dataAccessFqdn;
     private final String aadTenant;
     private final String aadApplicationId;
     private final String aadApplicationSecret;
     private final String apiVersion;
+    private final String authorityUrl;
+    private final String audienceUrl;
+    private final String explorerUrl;
     private final String dateFormat;
     private final int timeOutInSeconds;
 
     private final int DEFAULT_TIMEOUT_IN_SECONDS = 20;
 
     public TimeSeriesConfig(
-        String timeSeriesFqdn,
+        String dataAccessFqdn,
         String aadTenant,
         String aadApplicationId,
         String aadApplicationSecret,
         String apiVersion,
+        String authorityUrl,
+        String audienceUrl,
+        String explorerUrl,
         String dateFormat,
         int timeOutInSeconds) throws InvalidConfigurationException {
 
-        this.timeSeriesFqdn = timeSeriesFqdn;
-        if (this.timeSeriesFqdn == null || this.timeSeriesFqdn.isEmpty()) {
+        this.dataAccessFqdn = dataAccessFqdn;
+        if (this.dataAccessFqdn == null || this.dataAccessFqdn.isEmpty()) {
             this.logErrorAndThrowException("Time Series data access FQDN setting is empty");
         }
 
@@ -50,9 +58,13 @@ public class TimeSeriesConfig {
         }
 
         this.apiVersion = apiVersion;
-        if (this.apiVersion == null && this.apiVersion.isEmpty()) {
+        if (this.apiVersion == null || this.apiVersion.isEmpty()) {
             this.logErrorAndThrowException("Time Series API version setting is empty");
         }
+
+        this.authorityUrl = (authorityUrl == null && authorityUrl.isEmpty()) ? TSI_DEFAULT_AUTHORITY_URL : authorityUrl;
+        this.audienceUrl = (audienceUrl == null && audienceUrl.isEmpty()) ? TSI_DEFAULT_AUDIENCE_URL : audienceUrl;
+        this.explorerUrl = (explorerUrl == null && explorerUrl.isEmpty()) ? TSI_DEFAULT_EXPLORER_URL : explorerUrl;
 
         this.dateFormat = dateFormat;
         if (this.dateFormat == null || this.dateFormat.isEmpty()) {
@@ -62,13 +74,21 @@ public class TimeSeriesConfig {
         this.timeOutInSeconds = timeOutInSeconds > 0 ? timeOutInSeconds : DEFAULT_TIMEOUT_IN_SECONDS;
     }
 
-    public String getTimeSeriesFqdn() {
-        return this.timeSeriesFqdn;
+    public String getDataAccessFqdn() {
+        return this.dataAccessFqdn;
     }
 
-    public String getTimeSeriesExplorerUrl() {
-        String environmentId = this.timeSeriesFqdn.substring(0, this.timeSeriesFqdn.indexOf("."));
-        return String.format(TSI_EXPLORER_URL_FORMAT, environmentId, this.aadTenant);
+    public String getAuthorityUrl() {
+        return authorityUrl;
+    }
+
+    public String getAudienceUrl() {
+        return audienceUrl;
+    }
+
+    public String getExplorerUrl() {
+        String environmentId = this.dataAccessFqdn.substring(0, this.dataAccessFqdn.indexOf("."));
+        return String.format("%s?environmentId=%s&tid=%s", this.explorerUrl, environmentId, this.aadTenant);
     }
 
     public String getAadTenant() {

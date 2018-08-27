@@ -43,6 +43,9 @@ public class Config implements IConfig {
     private final String MESSAGES_TSI_API_VERSION_KEY = APPLICATION_KEY + "messages.timeSeriesInsights.apiVersion";
     private final String MESSAGES_TSI_DATE_FORMAT_KEY = APPLICATION_KEY + "messages.timeSeriesInsights.dateFormat";
     private final String MESSAGES_TSI_TIMEOUT_KEY = APPLICATION_KEY + "messages.timeSeriesInsights.timeOutInSeconds";
+    private final String MESSAGES_TSI_AUTHORITY_URL_KEY = APPLICATION_KEY + "messages.timeSeriesInsights.authorityUrl";
+    private final String MESSAGES_TSI_AUDIENCE_URL_KEY = APPLICATION_KEY + "messages.timeSeriesInsights.audienceUrl";
+    private final String MESSAGES_TSI_EXPLORER_URL_KEY = APPLICATION_KEY + "messages.timeSeriesInsights.explorerUrl";
 
     private final String ALARMS_STORAGE_TYPE_KEY = APPLICATION_KEY + "alarms.storageType";
     private final String ALARMS_DOCDB_DATABASE_KEY = APPLICATION_KEY + "alarms.cosmosDb.database";
@@ -97,6 +100,9 @@ public class Config implements IConfig {
                 data.getString(AAD_APP_ID_KEY),
                 data.getString(AAD_APP_SECRET_KEY),
                 data.getString(MESSAGES_TSI_API_VERSION_KEY),
+                data.getString(MESSAGES_TSI_AUTHORITY_URL_KEY),
+                data.getString(MESSAGES_TSI_AUDIENCE_URL_KEY),
+                data.getString(MESSAGES_TSI_EXPLORER_URL_KEY),
                 data.getString(MESSAGES_TSI_DATE_FORMAT_KEY),
                 data.getInt(MESSAGES_TSI_TIMEOUT_KEY));
         }

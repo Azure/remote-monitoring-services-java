@@ -38,9 +38,6 @@ public class TimeSeriesClient implements ITimeSeriesClient {
 
     private final WSClient wsClient;
 
-    private final String AUTHORITY = "https://login.windows.net/%s";
-    private final String RESOURCE = "https://api.timeseries.azure.com/";
-
     private final String AVAILABILITY_KEY = "availability";
     private final String EVENTS_KEY = "events";
     private final String SEARCH_SPAN_KEY = "searchSpan";
@@ -63,6 +60,9 @@ public class TimeSeriesClient implements ITimeSeriesClient {
     private String applicationSecret;
     private String dataAccessFqdn;
     private String apiVersion;
+    private String authorityUrl;
+    private String audienceUrl;
+    private String explorerUrl;
     private String dateFormat;
     private int timeoutInSeconds;
 
@@ -81,11 +81,14 @@ public class TimeSeriesClient implements ITimeSeriesClient {
         TimeSeriesConfig tsiConfig = messagesConfig.getTimeSeriesConfig();
 
         if (tsiConfig != null) {
-            this.dataAccessFqdn = tsiConfig.getTimeSeriesFqdn();
+            this.dataAccessFqdn = tsiConfig.getDataAccessFqdn();
             this.aadTenantId = tsiConfig.getAadTenant();
             this.applicationId = tsiConfig.getAadApplicationId();
             this.applicationSecret = tsiConfig.getAadApplicationSecret();
             this.apiVersion = tsiConfig.getApiVersion();
+            this.audienceUrl = tsiConfig.getAuthorityUrl();
+            this.audienceUrl = tsiConfig.getAudienceUrl();
+            this.explorerUrl = tsiConfig.getExplorerUrl();
             this.dateFormat = tsiConfig.getDateFormat();
             this.timeoutInSeconds = tsiConfig.getTimeOutInSeconds();
         } else {
@@ -191,7 +194,7 @@ public class TimeSeriesClient implements ITimeSeriesClient {
         AuthenticationResult result;
         ExecutorService service = null;
 
-        if (this.authenticationResult != null){
+        if (this.authenticationResult != null) {
             Instant expiredTime = Instant.ofEpochMilli(this.authenticationResult.getExpiresOnDate().getTime());
             // add a few seconds to calibrate clock drift
             Instant futureTime = Instant.now().plusSeconds(CLOCK_CALIBRATION_IN_SECONDS);
@@ -203,19 +206,17 @@ public class TimeSeriesClient implements ITimeSeriesClient {
         try {
             service = Executors.newFixedThreadPool(1);
             context = new AuthenticationContext(
-                String.format(AUTHORITY, this.aadTenantId),
+                String.format("%s%s", this.authorityUrl, this.aadTenantId),
                 false, service);
             Future<AuthenticationResult> future = context.acquireToken(
-                RESOURCE,
+                this.audienceUrl,
                 new ClientCredential(this.applicationId, this.applicationSecret),
                 null
             );
             result = future.get();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new NotAuthorizedException("Unable to acquire access token");
-        }
-        finally {
+        } finally {
             service.shutdown();
         }
 
@@ -238,7 +239,7 @@ public class TimeSeriesClient implements ITimeSeriesClient {
         WSRequest request = this.wsClient.url(url)
             .addHeader("x-ms-client-application-name", this.applicationId)
             .addHeader("Authorization", "Bearer " + accessToken);
-        log.info(accessToken);
+
         return request;
     }
 }

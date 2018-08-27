@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 import com.microsoft.azure.documentdb.*;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ExternalDependencyException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidConfigurationException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.TimeSeriesParseException;
@@ -34,7 +33,6 @@ public final class Messages implements IMessages {
     private DocumentClient docDbConnection;
     private String docDbCollectionLink;
     private ITimeSeriesClient timeSeriesClient;
-
 
     @Inject
     public Messages(IServicesConfig servicesConfig, ITimeSeriesClient timeSeriesClient) {
@@ -68,7 +66,7 @@ public final class Messages implements IMessages {
         if (this.storageType == StorageType.tsi) {
             return timeSeriesClient.queryEvents(from, to, order, skip, limit, devices);
         } else {
-            return queryMessagesFromCosmosDb(from, to, order, skip, limit, devices);
+            return this.queryMessagesFromCosmosDb(from, to, order, skip, limit, devices);
         }
     }
 

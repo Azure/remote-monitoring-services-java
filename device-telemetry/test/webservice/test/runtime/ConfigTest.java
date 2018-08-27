@@ -27,7 +27,7 @@ public class ConfigTest {
 
     @Test(timeout = 5000)
     @Category({UnitTest.class})
-    public void providesDocDbConnectionString() throws InvalidConfigurationException {
+    public void providesCosmosDbConnectionString() throws InvalidConfigurationException {
         Config target = new Config();
         AlarmsConfig alarmsConfig = target.getServicesConfig().getAlarmsConfig();
         String connectionString = alarmsConfig.getStorageConfig().getDocumentDbConnString();

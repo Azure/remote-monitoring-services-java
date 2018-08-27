@@ -47,9 +47,9 @@ public class EventListApiModel {
             // unavailable in following events which will refer the schema id.
             SchemaModel schema = event.getSchema();
             if (schema != null) {
-                schemasMap.put(event.getSchema().getRid(), schema);
+                schemasMap.put(event.getSchema().getRowId(), schema);
             } else {
-                schema = schemasMap.get(event.getSchemaRid());
+                schema = schemasMap.get(event.getSchemaRowId());
             }
 
             MessageServiceModel messageServiceModel;
