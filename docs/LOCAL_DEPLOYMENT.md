@@ -1,6 +1,5 @@
 Starting Microservices on local environment
 =====
-<<<<<<< HEAD
 ### Steps to create Azure resources
 #### New Users
 1) Run the [start.sh](https://github.com/Azure/remote-monitoring-services-java/blob/master/scripts/local/launch/start.sh) script located under launch *(scripts/local/launch)* folder.
@@ -9,18 +8,6 @@ Starting Microservices on local environment
     ii. [set-env.(cmd|sh)](https://github.com/Azure/remote-monitoring-services-java/tree/master/scripts/local/launch/os)
 
 ![start](https://user-images.githubusercontent.com/39531904/44435771-6ab08280-a566-11e8-93c9-e6f35e5df247.PNG)
-=======
-### New & Existing Users
-The new repository contains a **start** script and few other scripts to bootstrap the new users with the required cloud resources. These scripts are used to create azure resources like Cosmos DB, IoTHub, Azure Stream Analytics etc. The start script is located in *scripts / local / launch* folder under root directory of the repository. If you have cloned azure-iot-pcs-remote-monitoring-java repository, the scripts folder is present under services submodule (folder).
-
-**Please Note:**
-*These scripts are executable in **bash shell only**. On windows these scripts can be run manually using* *Git Bash shell or by using Windows Sub system for Linux. The instructions to enable WSL are available* *[here](https://docs.microsoft.com/en-us/windows/wsl/install-win10).*
-
-#### Start script
-This script checks if required environment variables are set on the local system. If the variables are set then one can open the IDE to start the microservices. If the variables are not set then this script will guide through the process of creating the new variables. It will then create different scripts under *scripts / local / launch / os / OS_TYPE /* which can be used to set environment variables on the machine.
-
-For users who have already created the required azure resources, please set the envvironment variables on your machine so as to be accessible by the IDE. Alternatively, these variables can be set in the Edit configurations wizard of the IDE. Although not recommended, environment variables can also be set in application.conf file present under webservice package for each of the microservices.
->>>>>>> bcc84f54662058b5d1987a13225c9895f08f0392
 
 **Please Note:**
 1) *These scripts are executable in **bash shell only**. On windows these scripts can be run manually using Git Bash shell or by using Windows Sub system for Linux. The instructions to enable WSL are available* *[here](https://docs.microsoft.com/en-us/windows/wsl/install-win10).*
@@ -30,35 +17,12 @@ For users who have already created the required azure resources, please set the 
     *npm install -g iot-solutions*
 &nbsp; 
 
-<<<<<<< HEAD
 #### Existing Users
 For users who have already created the required azure resources, please set the envvironment variables 
 1) globally on your machine so as to be accessible by the IDE. OR
 2) In "Edit configurations" vizard of the Intellji IDE. 
 
 *Although not recommended, environment variables can also be set in application.conf file present under webservice package for each of the microservices.*
-=======
-##### Usage:   
-````
-abc@pcs sh start.sh   
-````
-![start](https://user-images.githubusercontent.com/39531904/44435771-6ab08280-a566-11e8-93c9-e6f35e5df247.PNG)
- 
-#### Helper scripts
-These scripts are located under helpers folder which is under the launch folder. The script create_azure_resources.sh can be independently called to create resources in the cloud. The script check_dependencies.sh checks if environment variables are set for a particular microservices.
-##### Usage:
-1) check environment variables for a microservice 
-sh check_dependencies.sh <microservice_folder_name> 
-2) create Azure resources 
-sh create_azure_resources.sh
- 
-After creating the required azure resources, using start or create-azure-resources.sh, one should execute the following scripts present under *os/{linux / win / osx}* to set the environment variables. 
-1) set-env-uri
-2) set-env
-
-**Please Note:**
-*If you are using windows, you will have to execute these scripts in CMD shell. On OSX, these scripts are automatically run by the start script. For linux, the environment variables present in these scripts need to be set at global location, depending upon the flavour of linux you are using.* 
->>>>>>> bcc84f54662058b5d1987a13225c9895f08f0392
 
 
 #### Walk through for importing new Solution in IDE
