@@ -86,6 +86,16 @@ Steps using IntelliJ IDEA, with SBT plugin enabled:
      * `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
      * `PCS_AUTH_WEBSERVICE_URL` = http://localhost:9001/v1
      * `PCS_DIAGNOSTICS_WEBSERVICE_URL` (optional) = http://localhost:9006/v1
+     * `PCS_AAD_TENANT` = {Azure Active Directory Tenant ID}
+        * see: Azure Portal => Azure Active Directory => Properties => Directory ID
+     * `PCS_AAD_APPID` = {Azure Active Directory application ID}
+        * see: Azure Portal => Azure Active Directory => App Registrations => Your App => Application ID
+     * `PCS_AAD_APPSECRET` = {application secret}
+        * see: Azure Portal => Azure Active Directory => App Registrations => Your App => Settings => Passwords
+     * `PCS_TELEMETRY_STORAGE_TYPE` = "tsi"
+        * Allowed values: ["cosmosdb", "tsi"]. Default is "tsi"
+     * `PCS_TSI_FQDN`= {Time Series FQDN}
+        * see: Azure Portal => Your Resource Group => Time Series Insights Environment => Data Access FQDN
 * Either from the toolbar or the Run menu, execute the configuration just
   created, using the Debug command/button
 * Test that the service is up and running pointing your browser to
@@ -117,10 +127,21 @@ Steps using Eclipse Oxygen ("Eclipse for Java Developers" package):
 1. Make sure the [prerequisites](#prerequisites) are set up.
 1. Set the following environment variables in your system.
 More information on environment variables [here](#configuration-and-environment-variables).
-    1. `PCS_TELEMETRY_DOCUMENTDB_CONNSTRING` = {your Azure Cosmos DB connection string}
-    1. `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
-    1. `PCS_AUTH_WEBSERVICE_URL` = http://localhost:9001/v1
-    1. `PCS_DIAGNOSTICS_WEBSERVICE_URL` (optional) = http://localhost:9006/v1
+    * `PCS_TELEMETRY_DOCUMENTDB_CONNSTRING` = {your Azure Cosmos DB connection string}
+    * `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
+    * `PCS_AUTH_WEBSERVICE_URL` = http://localhost:9001/v1
+    * `PCS_AAD_TENANT` = {Azure Active Directory Tenant ID}
+        * see: Azure Portal => Azure Active Directory => Properties => Directory ID
+    * `PCS_AAD_APPID` = {Azure Active Directory application ID}
+        * see: Azure Portal => Azure Active Directory => App Registrations => Your App => Application ID
+    * `PCS_AAD_APPSECRET` = {application secret}
+        * see: Azure Portal => Azure Active Directory => App Registrations => Your App => Settings => Passwords
+    * `PCS_TELEMETRY_STORAGE_TYPE` = "tsi"
+        * Allowed values: ["cosmosdb", "tsi"]. Default is "tsi"
+    * `PCS_TSI_FQDN`= {Time Series FQDN}
+        * see: Azure Portal => Your Resource Group => Time Series Insights Environment => Data Access FQDN
+    * `PCS_DIAGNOSTICS_WEBSERVICE_URL` (optional) = http://localhost:9006/v1
+
 1. Use the scripts in the [scripts](scripts) folder for many frequent tasks:
    * `build`: compile all the projects and run the tests.
    * `compile`: compile all the projects.
