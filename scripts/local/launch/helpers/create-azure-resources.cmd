@@ -1,6 +1,6 @@
 :: Copyright (c) Microsoft. All rights reserved.
 :: This script will install pcs-cli on this machine.
-:: For more info on pcs-cli visit ().
+:: For more info on pcs-cli visit (https://github.com/Azure/pcs-cli).
 @echo off
 
 :main 
