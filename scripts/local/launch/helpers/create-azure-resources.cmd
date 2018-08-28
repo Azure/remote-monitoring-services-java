@@ -55,7 +55,8 @@ GOTO:EOF
     xcopy ..\..\..\..\pcs-cli\.env .\
 GOTO:EOF
 
-::::::::::::::::::::: Helper Function ::::::::::::::::::::
+::::::::::::::::::::: Helper Functions ::::::::::::::::::::
+
 :node_is_installed
     node -v > Nul 2>&1
     if "%errorlevel%" == "9009" (
