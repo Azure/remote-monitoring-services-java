@@ -5,7 +5,6 @@ Starting Microservices on local environment
 1) Run the [start.(cmd|sh)](https://github.com/Azure/remote-monitoring-services-java/blob/master/scripts/local/launch/) script located under launch *(scripts/local/launch)* folder.    
 2) Run the following script to set environment variables. The scripts are located under *(scripts/local/launch/os)* folder.\
     i. [set-env-uri.(cmd|sh)](https://github.com/Azure/remote-monitoring-services-java/tree/master/scripts/local/launch/os)\
-    ii. The created environment variables are present in [.env](https://github.com/Azure/remote-monitoring-services-java/blob/master/scripts/local/launch/) file located in *(scripts/local/launch)* folder.
 ![start](https://user-images.githubusercontent.com/39531904/44435771-6ab08280-a566-11e8-93c9-e6f35e5df247.PNG)
 
 **Please Note:**
