@@ -26,7 +26,7 @@ For users who have already created the required azure resources, please **set th
 
 This is our preferred editor for Java development.
 
-##### Steps to import build and run configurations
+##### Steps to import project and create build/run configurations
 1) Install SBT, SBT Executor & Scala plugins for Intellji
 ![intellji](https://user-images.githubusercontent.com/39531904/44321184-58fe9c00-a3fb-11e8-8d3e-4ff208139bac.png)
     * SBT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.8.0 
