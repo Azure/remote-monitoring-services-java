@@ -8,6 +8,7 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.Rules;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ExternalDependencyException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.DiagnosticsRequestModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
+import org.apache.http.HttpStatus;
 import play.Logger;
 import play.libs.ws.WSClient;
 import play.libs.ws.WSRequest;
@@ -27,7 +28,6 @@ public class DiagnosticsClient implements IDiagnosticsClient {
     private final boolean canWriteToDiagnostics;
 
     private static final Logger.ALogger log = Logger.of(Rules.class);
-    private static final int OK = 200;
 
     @Inject
     public DiagnosticsClient(final WSClient wsClient, final IServicesConfig servicesConfig) {
@@ -88,7 +88,7 @@ public class DiagnosticsClient implements IDiagnosticsClient {
                             new ExternalDependencyException(error.getMessage()));
                     }
 
-                    if (result.getStatus() != OK) {
+                    if (result.getStatus() != HttpStatus.SC_OK) {
                         log.error("Error logging to diagnostics service {}",
                             error.getMessage());
                         throw new CompletionException(
