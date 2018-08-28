@@ -23,11 +23,10 @@ For users who have already created the required azure resources, please **set th
 
 ### Walk through for importing new Solution in IDE
 ##### Intellji
+
 This is our preferred editor for Java development.
 
-The java repository has a similar structure to the java repo and contains the same script(s). The scripts, described above, are located under scripts/local/launch folder.  
-
-##### Steps to import launch settings
+##### Steps to import build and run configurations
 1) Install SBT, SBT Executor & Scala plugins for Intellji
 ![intellji](https://user-images.githubusercontent.com/39531904/44321184-58fe9c00-a3fb-11e8-8d3e-4ff208139bac.png)
     * SBT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.8.0 
