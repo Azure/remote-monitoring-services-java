@@ -5,8 +5,8 @@ APP_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd ../ && pwd )"
 
 env_file=".env.sh"
 envvars=".envvars.sh"
-linux_file="set_env.sh"
-win_file="set_env.cmd"
+linux_file="set-env.sh"
+win_file="set-env.cmd"
 
 function version_formatter { 
 	echo "$@" | awk -F. '{ printf("%d%03d%03d%03d\n", $1,$2,$3,$4); }'; 
@@ -116,7 +116,12 @@ function main {
 
 	if [ "$OSTYPE" == "darwin"* ]; then
 		sh "$APP_HOME/os/osx/$env_file"
-		sh "$APP_HOME/os/osx/.env_uris.sh"
+		sh "$APP_HOME/os/osx/set-env-uri.sh"
+	fi
+
+	if [ "$OSTYPE" == "linux"* ]; then
+		sh "$APP_HOME/os/linux/$env_file"
+		sh "$APP_HOME/os/linux/set-env-uri.sh"
 	fi
 }
 
