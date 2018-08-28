@@ -14,9 +14,9 @@ Starting Microservices on local environment
 &nbsp; 
 
 #### Existing Users
-For users who have already created the required azure resources, please **set the environment variables** 
-1) Globally on your machine so as to be accessible by the IDE. OR
-2) In "Edit configurations" vizard of the Intellji IDE. 
+For users who have already created the required azure resources, please do one of the following: 
+1) Set the environment variables globally on your machine.
+2) **Intellji** Set the environment variables in the "Edit configurations" vizard of the IDE. (The steps for creating the configurations are given below.)
 
 *Although not recommended, environment variables can also be set in application.conf file present under webservice package for each of the microservices.*
 
