@@ -45,7 +45,7 @@ Environment variables can also be set in the Edit Configuration wizard under env
 
 The build.sbt file has been configured to run all the microservices parallelly. It will also start the microservices available only in .Net flavor (device-simulation, auth and ASA manager).
 
-*SBT tool has been observed to fork number of processes equivalent to the number of CPUs. Hence, on dual core machines all the microservices may not be started parallelly.*
+*SBT tool has been observed to fork number of processes equivalent to the number of CPUs. Hence, on dual core machines all the microservices may not be started in parallel.*
 
 ### Script Description
 #### Start Script
