@@ -55,7 +55,7 @@ for more information. More information on environment variables
   * `PCS_TELEMETRY_DOCUMENTDB_CONNSTRING` = {your Azure Cosmos DB connection string}
   * `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
   * `PCS_AUTH_WEBSERVICE_URL` = http://localhost:9001/v1
-  * `PCS_DIAGNOSTICS_ENDPOINT_URL` (optional) = http://localhost:9006/v1
+  * `PCS_DIAGNOSTICS_WEBSERVICE_URL` (optional) = http://localhost:9006/v1
 
 # Running the service in an IDE
 
@@ -85,7 +85,7 @@ Steps using IntelliJ IDEA, with SBT plugin enabled:
      * `PCS_TELEMETRY_DOCUMENTDB_CONNSTRING` = {your Azure Cosmos DB connection string}
      * `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
      * `PCS_AUTH_WEBSERVICE_URL` = http://localhost:9001/v1
-     * `PCS_DIAGNOSTICS_ENDPOINT_URL` (optional) = http://localhost:9006/v1
+     * `PCS_DIAGNOSTICS_WEBSERVICE_URL` (optional) = http://localhost:9006/v1
 * Either from the toolbar or the Run menu, execute the configuration just
   created, using the Debug command/button
 * Test that the service is up and running pointing your browser to
@@ -120,7 +120,7 @@ More information on environment variables [here](#configuration-and-environment-
     1. `PCS_TELEMETRY_DOCUMENTDB_CONNSTRING` = {your Azure Cosmos DB connection string}
     1. `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
     1. `PCS_AUTH_WEBSERVICE_URL` = http://localhost:9001/v1
-    1. `PCS_DIAGNOSTICS_ENDPOINT_URL` (optional) = http://localhost:9006/v1
+    1. `PCS_DIAGNOSTICS_WEBSERVICE_URL` (optional) = http://localhost:9006/v1
 1. Use the scripts in the [scripts](scripts) folder for many frequent tasks:
    * `build`: compile all the projects and run the tests.
    * `compile`: compile all the projects.
