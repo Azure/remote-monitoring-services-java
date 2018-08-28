@@ -54,12 +54,11 @@ The build.sbt file has been configured to run all the microservices parallelly. 
 The new repository contains a **start** script and few other scripts to bootstrap the new users with the required cloud resources. These scripts are used to create azure resources like Cosmos DB, IoTHub, Azure Stream Analytics etc. The start script is located in *scripts / local / launch* folder under root directory of the repository.
 
 #### Helpers scripts
-These scripts are located under helpers folder which is under the launch folder. The script create-azure-resources.sh can be independently called to create resources in the cloud.
+The script create-azure-resources.sh can be independently called to create resources in the cloud.
 ##### Usage:
 1) create Azure resources 
-sh create-azure-resources.sh
+[create-azure-resources.(sh|cmd)](https://github.com/Azure/remote-monitoring-services-dotnet/blob/master/scripts/local/launch/helpers/create-azure-resources.sh)
 
-After creating the required azure resources, using start or create-azure-resources.sh, one should execute the scripts under *os/{linux / win / osx}* to set the environment variables. 
 
 Structure of the microservices
 =====
