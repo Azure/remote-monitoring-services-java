@@ -22,6 +22,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -98,7 +99,8 @@ public class OpenIdConnectJwtValidation implements IJwtValidation {
         try {
             JWTClaimsSet claims = jwtProcessor.process(token, ctx);
             userClaims.setUserObjectId((String)claims.getClaims().get(USER_OBJECT_ID_CLAIM_TYPE));
-            userClaims.setRoles((List<String>)claims.getClaim(ROLE_CLAIM_TYPE));
+            Object roles = claims.getClaim(ROLE_CLAIM_TYPE);
+            userClaims.setRoles(roles == null ? new ArrayList<>(): (List<String>)roles);
             return userClaims;
         } catch (Exception e) {
             throw new NotAuthorizedException("The authorization token is not valid");

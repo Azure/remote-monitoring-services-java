@@ -98,7 +98,8 @@ public class OpenIdConnectJwtValidation implements IJwtValidation {
             UserClaims userClaims = new UserClaims();
             JWTClaimsSet claims = jwtProcessor.process(token, ctx);
             userClaims.setUserObjectId((String)claims.getClaims().get(USER_OBJECT_ID_CLAIM_TYPE));
-            userClaims.setRoles((List<String>)claims.getClaim(ROLE_CLAIM_TYPE));
+            Object roles = claims.getClaim(ROLE_CLAIM_TYPE);
+            userClaims.setRoles(roles == null ? new ArrayList<>(): (List<String>)roles);
             return userClaims;
         } catch (Exception e) {
             throw new NotAuthorizedException("The authorization token is not valid");
