@@ -30,7 +30,7 @@ public class ConfigTest {
     public void providesCosmosDbConnectionString() throws InvalidConfigurationException {
         Config target = new Config();
         AlarmsConfig alarmsConfig = target.getServicesConfig().getAlarmsConfig();
-        String connectionString = alarmsConfig.getStorageConfig().getDocumentDbConnString();
+        String connectionString = alarmsConfig.getStorageConfig().getCosmosDbConnString();
         assertNotNull(connectionString);
     }
 

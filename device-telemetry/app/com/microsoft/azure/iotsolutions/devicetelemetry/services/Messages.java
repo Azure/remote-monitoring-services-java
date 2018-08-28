@@ -42,12 +42,12 @@ public final class Messages implements IMessages {
 
         this.docDbCollectionLink = String.format(
             "/dbs/%s/colls/%s",
-            messageConfig.getStorageConfig().getDocumentDbDatabase(),
-            messageConfig.getStorageConfig().getDocumentDbCollection());
+            messageConfig.getStorageConfig().getCosmosDbDatabase(),
+            messageConfig.getStorageConfig().getCosmosDbCollection());
 
         this.docDbConnection = new DocumentClient(
-            messageConfig.getStorageConfig().getDocumentDbUri(),
-            messageConfig.getStorageConfig().getDocumentDbKey(),
+            messageConfig.getStorageConfig().getCosmosDbUri(),
+            messageConfig.getStorageConfig().getCosmosDbKey(),
             ConnectionPolicy.GetDefault(),
             ConsistencyLevel.Eventual);
     }

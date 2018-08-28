@@ -62,7 +62,6 @@ public class TimeSeriesClient implements ITimeSeriesClient {
     private String apiVersion;
     private String authorityUrl;
     private String audienceUrl;
-    private String explorerUrl;
     private String dateFormat;
     private int timeoutInSeconds;
 
@@ -86,9 +85,9 @@ public class TimeSeriesClient implements ITimeSeriesClient {
             this.applicationId = tsiConfig.getAadApplicationId();
             this.applicationSecret = tsiConfig.getAadApplicationSecret();
             this.apiVersion = tsiConfig.getApiVersion();
+            this.authorityUrl = tsiConfig.getAuthorityUrl();
             this.audienceUrl = tsiConfig.getAuthorityUrl();
             this.audienceUrl = tsiConfig.getAudienceUrl();
-            this.explorerUrl = tsiConfig.getExplorerUrl();
             this.dateFormat = tsiConfig.getDateFormat();
             this.timeoutInSeconds = tsiConfig.getTimeOutInSeconds();
         } else {

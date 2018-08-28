@@ -169,7 +169,7 @@ public class StorageClient implements IStorageClient {
         final String HOST_ID = "AccountEndpoint=";
         final String KEY_ID = "AccountKey=";
 
-        String connectionString = servicesConfig.getAlarmsConfig().getStorageConfig().getDocumentDbConnString();
+        String connectionString = servicesConfig.getAlarmsConfig().getStorageConfig().getCosmosDbConnString();
 
         if (!connectionString.contains(";") ||
             !connectionString.contains(HOST_ID) ||

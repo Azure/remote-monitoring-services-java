@@ -41,8 +41,8 @@ public class Alarms implements IAlarms {
     @Inject
     public Alarms(IServicesConfig servicesConfig, IStorageClient storageClient) {
         this.storageClient = storageClient;
-        this.databaseName = servicesConfig.getAlarmsConfig().getStorageConfig().getDocumentDbDatabase();
-        this.collectionId = servicesConfig.getAlarmsConfig().getStorageConfig().getDocumentDbCollection();
+        this.databaseName = servicesConfig.getAlarmsConfig().getStorageConfig().getCosmosDbDatabase();
+        this.collectionId = servicesConfig.getAlarmsConfig().getStorageConfig().getCosmosDbCollection();
         this.maxDeleteRetryCount = servicesConfig.getAlarmsConfig().getMaxDeleteRetries();
     }
 
