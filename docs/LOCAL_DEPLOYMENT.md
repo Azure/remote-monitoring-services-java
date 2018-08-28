@@ -2,30 +2,26 @@ Starting Microservices on local environment
 =====
 ### Steps to create Azure resources
 #### New Users
-1) Run the [start.sh](https://github.com/Azure/remote-monitoring-services-java/blob/master/scripts/local/launch/start.sh) script located under launch *(scripts/local/launch)* folder.
-2) Run the following scripts to set environment variables. The scripts are located under *(scripts/local/launch/os)* folder.
-    i. [set-env-uri.(cmd|sh)](https://github.com/Azure/remote-monitoring-services-java/tree/master/scripts/local/launch/os)
-    ii. [set-env.(cmd|sh)](https://github.com/Azure/remote-monitoring-services-java/tree/master/scripts/local/launch/os)
-
+1) Run the [start.(cmd|sh)](https://github.com/Azure/remote-monitoring-services-java/blob/master/scripts/local/launch/) script located under launch *(scripts/local/launch)* folder.\
+2) Run the following script to set environment variables. The scripts are located under *(scripts/local/launch/os)* folder.\
+    i. [set-env-uri.(cmd|sh)](https://github.com/Azure/remote-monitoring-services-java/tree/master/scripts/local/launch/os)\
+    ii. The created environment variables are present in [.env](https://github.com/Azure/remote-monitoring-services-java/blob/master/scripts/local/launch/) file located in *(scripts/local/launch)* folder.
 ![start](https://user-images.githubusercontent.com/39531904/44435771-6ab08280-a566-11e8-93c9-e6f35e5df247.PNG)
 
 **Please Note:**
-1) *These scripts are executable in **bash shell only**. On windows these scripts can be run manually using Git Bash shell or by using Windows Sub system for Linux. The instructions to enable WSL are available* *[here](https://docs.microsoft.com/en-us/windows/wsl/install-win10).*
-
-2) *This script requires **Node.js** to execute, please install Node (version < 8.11.2) before using this script. Also, this script might require administartive privileges or sudo permission as it tries to install node packages, if they are not already installed. At times, the script might fail while installing npm packages. In such cases, please install npm package **iot-solutions** using following command using administartive privileges or sudo access.*
-
-    *npm install -g iot-solutions*
+1) *If you have cloned azure-iot-pcs-remote-monitoring-java repository, the scripts folder is present under services submodule (folder).*
+2) *This script requires **Node.js** to execute, please install Node (version < 8.11.2) before using this script. Also, this script might require administartive privileges or sudo permission as it tries to install [pcs-cli](https://github.com/Azure/pcs-cli) a cli interface for remote-monitoring deployments.*
 &nbsp; 
 
 #### Existing Users
-For users who have already created the required azure resources, please set the envvironment variables 
-1) globally on your machine so as to be accessible by the IDE. OR
+For users who have already created the required azure resources, please **set the environment variables** 
+1) Globally on your machine so as to be accessible by the IDE. OR
 2) In "Edit configurations" vizard of the Intellji IDE. 
 
 *Although not recommended, environment variables can also be set in application.conf file present under webservice package for each of the microservices.*
 
 
-#### Walk through for importing new Solution in IDE
+### Walk through for importing new Solution in IDE
 ##### Intellji
 This is our preferred editor for Java development.
 
@@ -54,20 +50,16 @@ The build.sbt file has been configured to run all the microservices parallelly. 
 
 
 ### Script Description
-#### Start script
+#### Start Script
 The new repository contains a **start** script and few other scripts to bootstrap the new users with the required cloud resources. These scripts are used to create azure resources like Cosmos DB, IoTHub, Azure Stream Analytics etc. The start script is located in *scripts / local / launch* folder under root directory of the repository.
 
-This script checks if required environment variables are set on the local system. If the variables are set then one can open the IDE to start the microservices. If the variables are not set then this script will guide through the process of creating the new variables. It will then create different scripts under *scripts / local / launch / os / OS_TYPE /* which can be used to set environment variables on the machine.
-
-#### Helper scripts
-These scripts are located under helpers folder which is under the launch folder. The script create_azure_resources.sh can be independently called to create resources in the cloud. The script check_dependencies.sh checks if environment variables are set for a particular microservices.
+#### Helpers scripts
+These scripts are located under helpers folder which is under the launch folder. The script create-azure-resources.sh can be independently called to create resources in the cloud.
 ##### Usage:
-1) check environment variables for a microservice 
-sh check_dependencies.sh <microservice_folder_name> 
-2) create Azure resources 
-sh create_azure_resources.sh
+1) create Azure resources 
+sh create-azure-resources.sh
 
-After creating the required azure resources, using start or create_azure_resources, one should execute the scripts under *os/{linux / win / osx}* to set the environment variables.
+After creating the required azure resources, using start or create-azure-resources.sh, one should execute the scripts under *os/{linux / win / osx}* to set the environment variables. 
 
 Structure of the microservices
 =====
