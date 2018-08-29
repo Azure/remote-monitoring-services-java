@@ -1,54 +1,31 @@
-Starting Microservices on local environemnt
+Starting Microservices on local environment
 =====
-### New & Existing Users
-The new repository contains a **start** script and few other scripts to bootstrap the new users with the required cloud resources. These scripts are used to create azure resources like Cosmos DB, IoTHub, Azure Stream Analytics etc. The start script is located in *scripts / local / launch* folder under root directory of the repository. If you have cloned azure-iot-pcs-remote-monitoring-java repository, the scripts folder is present under services submodule (folder).
+### Steps to create Azure resources
+#### New Users
+1) Run the [start.(cmd|sh)](https://github.com/Azure/remote-monitoring-services-java/blob/master/scripts/local/launch/) script located under launch *(scripts/local/launch)* folder.    
+2) Run the following script to set environment variables. The script is located under *(scripts/local/launch/os)* folder.\
+    i. [set-env-uri.(cmd|sh)](https://github.com/Azure/remote-monitoring-services-java/tree/master/scripts/local/launch/os)\
+![start](https://user-images.githubusercontent.com/39531904/44435771-6ab08280-a566-11e8-93c9-e6f35e5df247.PNG)
 
 **Please Note:**
-*These scripts are executable in **bash shell only**. On windows these scripts can be run manually using* *Git Bash shell or by using Windows Sub system for Linux. The instructions to enable WSL are available* *[here](https://docs.microsoft.com/en-us/windows/wsl/install-win10).*
-
-#### Start script
-This script checks if required environment variables are set on the local system. If the variables are set then one can open the IDE to start the microservices. If the variables are not set then this script will guide through the process of creating the new variables. It will then create different scripts under *scripts / local / launch / os / OS_TYPE /* which can be used to set environment variables on the machine.
-
-For users who have already created the required azure resources, please set the envvironment variables on your machine so as to be accessible by the IDE. Alternatively, these variables can be set in the Edit configurations wizard of the IDE. Although not recommended, environment variables can also be set in application.conf file present under webservice package for each of the microservices.
-
-**Please Note:**
-*This script requires **Node.js** to execute, please install Node (version < 8.11.2) before using this script. Also, this script might require administartive privileges or sudo permission as it tries to install node packages, if they are not already installed. At times, the script might fail while installing npm packages. In such cases, please install npm package **iot-solutions** using following command using administartive privileges or sudo access.*
-
-*npm install -g iot-solutions*
+1) *If you have cloned azure-iot-pcs-remote-monitoring-java repository, the scripts folder is present under services submodule (folder).*
+2) *This script requires **Node.js** to execute, please install Node (version < 8.11.2) before using this script. Also, this script might require administartive privileges or sudo permission as it tries to install [pcs-cli](https://github.com/Azure/pcs-cli) a cli interface for remote-monitoring deployments.*
 &nbsp; 
 
-##### Usage:   
-````
-abc@pcs sh start.sh   
-````
-![start](https://user-images.githubusercontent.com/39531904/44435771-6ab08280-a566-11e8-93c9-e6f35e5df247.PNG)
- 
-#### Helper scripts
-These scripts are located under helpers folder which is under the launch folder. The script create_azure_resources.sh can be independently called to create resources in the cloud. The script check_dependencies.sh checks if environment variables are set for a particular microservices.
-##### Usage:
-1) check environment variables for a microservice 
-sh check_dependencies.sh <microservice_folder_name> 
-2) create Azure resources 
-sh create_azure_resources.sh
- 
-After creating the required azure resources, using start or create-azure-resources.sh, one should execute the following scripts present under *os/{linux / win / osx}* to set the environment variables. 
-1) set-env-uri
-2) set-env
+#### Existing Users
+For users who have already created the required azure resources, please do one of the following: 
+1) Set the environment variables globally on your machine.
+2) **Intellji:** Set the environment variables in the "Edit configurations" vizard of the IDE. (The steps for creating the configurations are given below.)
 
-**Please Note:**
-*If you are using windows, you will have to execute these scripts in CMD shell. On OSX, these scripts are automatically run by the start script. For linux, the environment variables present in these scripts need to be set at global location, depending upon the flavour of linux you are using.* 
+*Although not recommended, environment variables can also be set in application.conf file present under webservice package for each of the microservices.*
 
-#### Recap of steps to create resources and set environment variables
-1) Run start.sh
-2) Run scripts under os folder. 
 
-#### Walk through for importing new Solution in IDE
+### Walk through for importing new Solution in IDE
 ##### Intellji
+
 This is our preferred editor for Java development.
 
-The java repository has a similar structure to the dotnet repo and contains the same script(s). The scripts, described above, are located under scripts/local/launch folder.  
-
-##### Steps to import launch settings
+##### Steps to import project and create build/run configurations
 1) Install SBT, SBT Executor & Scala plugins for Intellji
 ![intellji](https://user-images.githubusercontent.com/39531904/44321184-58fe9c00-a3fb-11e8-8d3e-4ff208139bac.png)
     * SBT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.8.0 
@@ -67,8 +44,18 @@ Environment variables can also be set in the Edit Configuration wizard under env
 
 The build.sbt file has been configured to run all the microservices parallelly. It will also start the microservices available only in .Net flavor (device-simulation, auth and ASA manager).
 
-*SBT tool has been observed to fork number of processes equivalent to the number of CPUs. Hence, on dual core machines all the microservices may not be started parallelly.*
- 
+*SBT tool has been observed to fork number of processes equivalent to the number of CPUs. Hence, on dual core machines all the microservices may not be started in parallel.*
+
+### Script Description
+#### Start Script
+The new repository contains a **start** script and few other scripts to bootstrap the new users with the required cloud resources. These scripts are used to create azure resources like Cosmos DB, IoTHub, Azure Stream Analytics etc. The start script is located in *scripts / local / launch* folder under root directory of the repository.
+
+#### Helpers scripts
+The script create-azure-resources.sh can be independently called to create resources in the cloud.
+##### Usage:
+1) create Azure resources   
+[create-azure-resources.(sh|cmd)](https://github.com/Azure/remote-monitoring-services-dotnet/blob/master/scripts/local/launch/helpers/create-azure-resources.sh)
+
 Structure of the microservices
 =====
 Each microservice comprises of following packages/folders. 
