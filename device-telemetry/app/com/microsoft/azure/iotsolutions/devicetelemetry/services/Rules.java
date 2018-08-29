@@ -10,6 +10,7 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.Exte
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ResourceNotFoundException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ResourceOutOfDateException;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.external.IDiagnosticsClient;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.AlarmCountByRuleServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.AlarmServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.RuleServiceModel;
@@ -22,9 +23,7 @@ import play.libs.Json;
 import play.libs.ws.WSClient;
 import play.libs.ws.WSRequest;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
@@ -42,15 +41,19 @@ public final class Rules implements IRules {
 
     private final IAlarms alarmsService;
 
+    private final IDiagnosticsClient diagnosticsClient;
+
     @Inject
     public Rules(
         final IServicesConfig servicesConfig,
         final WSClient wsClient,
-        final IAlarms alarmsService) {
+        final IAlarms alarmsService,
+        final IDiagnosticsClient diagnosticsClient) {
 
         this.storageUrl = servicesConfig.getKeyValueStorageUrl() + "/collections/rules/values";
         this.wsClient = wsClient;
         this.alarmsService = alarmsService;
+        this.diagnosticsClient = diagnosticsClient;
     }
 
     public CompletionStage<RuleServiceModel> getAsync(String id) {
@@ -172,7 +175,6 @@ public final class Rules implements IRules {
 
                 // get open alarm count and most recent alarm for each rule
                 for (RuleServiceModel rule : rulesList) {
-
                     int alarmCount;
                     try {
                         alarmCount = this.alarmsService.getCountByRuleId(
@@ -255,6 +257,7 @@ public final class Rules implements IRules {
                 }
 
                 try {
+                    this.logEventAndRuleCountToDiagnostics("Rule_Created");
                     return getServiceModelFromJson(
                         Json.parse(result.getBody()));
                 } catch (Exception e) {
@@ -366,6 +369,8 @@ public final class Rules implements IRules {
                         throw new CompletionException(
                                 new ExternalDependencyException(result.getStatusText()));
                     }
+
+                    this.logEventAndRuleCountToDiagnostics("Rule_Deleted");
                     log.info("Successfully deleted rule id " + id);
                     return true;
                 });
@@ -454,6 +459,58 @@ public final class Rules implements IRules {
             throw new CompletionException(
                 new ExternalDependencyException(
                     "Could not parse data from Key Value Storage"));
+        }
+    }
+
+    private CompletionStage<Integer> getRuleCountAsync() {
+        return this.prepareRequest(null)
+            .get()
+            .handle((result, error) -> {
+                if (error != null) {
+                    log.error("Key value storage request error: {}",
+                        error.getMessage());
+                    throw new CompletionException(
+                        new ExternalDependencyException(error.getMessage()));
+                }
+
+                try {
+                    ObjectMapper mapper = new ObjectMapper();
+                    JsonNode jsonResult = mapper.readTree(result.getBody());
+
+                    ArrayList<JsonNode> jsonList =
+                        getResultListFromJson(jsonResult);
+
+                    int ruleCount = 0;
+
+                    for (JsonNode resultItem : jsonList) {
+                        RuleServiceModel rule =
+                            getServiceModelFromJson(resultItem);
+
+                        if (!rule.getDeleted()) {
+                            ruleCount++;
+                        }
+                    }
+                    return ruleCount;
+                } catch (Exception e) {
+                    log.error("Could not parse result from Key Value Storage: {}",
+                        e.getMessage());
+                    throw new CompletionException(
+                        new ExternalDependencyException(
+                            "Could not parse result from Key Value Storage"));
+                }
+            });
+    }
+
+    private void logEventAndRuleCountToDiagnostics(String eventName) {
+        if (this.diagnosticsClient.canWriteToDiagnostics()) {
+            this.diagnosticsClient.logEventAsync(eventName);
+            this.getRuleCountAsync()
+                .thenApplyAsync((ruleCount) -> {
+                    Dictionary<String, Object> eventProperties = new Hashtable<>();
+                    eventProperties.put("Count", ruleCount);
+                    this.diagnosticsClient.logEventAsync("Rule_Count", eventProperties);
+                    return true;
+                });
         }
     }
 }

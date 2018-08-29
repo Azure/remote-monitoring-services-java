@@ -6,6 +6,7 @@ import com.microsoft.azure.documentdb.Document;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.Alarms;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.IAlarms;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.AlarmsConfig;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.DiagnosticsConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.ServicesConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.StorageConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.IStorageClient;
@@ -40,6 +41,9 @@ public class AlarmsTest {
                 "connString",
                 "database",
                 "collection",
+                3),
+            new DiagnosticsConfig(
+                "diagnosticsUrl",
                 3
             ));
         this.storageClientMock = Mockito.mock(IStorageClient.class);
