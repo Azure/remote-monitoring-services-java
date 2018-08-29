@@ -28,7 +28,8 @@ public class TimeSeriesClientTest {
         this.servicesConfig = new ServicesConfig(
             "http://localhost:9022/v1",
             mock(MessagesConfig.class),
-            mock(AlarmsConfig.class)
+            mock(AlarmsConfig.class),
+            mock(DiagnosticsConfig.class)
         );
         this.timeSeriesClient = new TimeSeriesClient(this.servicesConfig, this.wsClient);
     }
