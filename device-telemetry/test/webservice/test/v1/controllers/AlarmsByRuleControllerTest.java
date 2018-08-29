@@ -7,6 +7,7 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.Alarms;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.IAlarms;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.IRules;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.Rules;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.external.IDiagnosticsClient;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.IStorageClient;
@@ -68,9 +69,10 @@ public class AlarmsByRuleControllerTest {
         try {
             IServicesConfig servicesConfig = new Config().getServicesConfig();
             IStorageClient client = mock(IStorageClient.class);
+            IDiagnosticsClient diagnosticsClient = mock(IDiagnosticsClient.class);
             this.wsClient = mock(WSClient.class);
             this.alarms = new Alarms(servicesConfig, client);
-            this.rules = new Rules(servicesConfig, wsClient, alarms);
+            this.rules = new Rules(servicesConfig, wsClient, alarms, diagnosticsClient);
             this.controller = new AlarmsByRuleController(this.alarms, this.rules);
         } catch (Exception ex) {
             log.error("Exception setting up test", ex);

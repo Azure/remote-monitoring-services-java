@@ -2,10 +2,7 @@
 
 package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime;
 
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.AlarmsConfig;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.ServicesConfig;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.StorageConfig;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.ClientAuthConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.IClientAuthConfig;
 import com.typesafe.config.ConfigFactory;
@@ -56,6 +53,10 @@ public class Config implements IConfig {
     private final String JWT_AUDIENCE_KEY = JWT_KEY + "audience";
     private final String JWT_CLOCK_SKEW_KEY = JWT_KEY + "clock_skew_seconds";
 
+    private final String DIAGNOSTICS_KEY = APPLICATION_KEY + "diagnostics.";
+    private final String DIAGNOSTICS_URL_KEY = DIAGNOSTICS_KEY + "webservice_url";
+    private final String DIAGNOSTICS_MAX_LOG_RETRIES = DIAGNOSTICS_KEY + "max_log_retries";
+
     private com.typesafe.config.Config data;
     private IServicesConfig servicesConfig;
     private IClientAuthConfig clientAuthConfig;
@@ -87,11 +88,21 @@ public class Config implements IConfig {
             data.getString(ALARMS_DOCDB_COLLECTION_KEY),
             data.getInt(ALARMS_DOCDB_DELETE_RETRIES));
 
+        String diagnosticsUrl = "";
+        if (data.hasPath(DIAGNOSTICS_URL_KEY)) {
+            diagnosticsUrl = data.getString(DIAGNOSTICS_URL_KEY);
+        }
+
+        DiagnosticsConfig diagnosticsConfig = new DiagnosticsConfig(
+                diagnosticsUrl,
+                data.getInt(DIAGNOSTICS_MAX_LOG_RETRIES));
+
         this.servicesConfig = new ServicesConfig(
             storageConnectionString,
             keyValueStorageUrl,
             messagesConfig,
-            alarmsConfig);
+            alarmsConfig,
+            diagnosticsConfig);
 
         return this.servicesConfig;
     }
