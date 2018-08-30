@@ -22,7 +22,7 @@ import java.util.*;
 
 /**
  * TODO: ensure certs are cached for a reasonable time
- *       https://github.com/Azure/iothub-manager-java/issues/51
+ * https://github.com/Azure/iothub-manager-java/issues/51
  */
 @Singleton
 public class OpenIdConnectJwtValidation implements IJwtValidation {
@@ -73,6 +73,7 @@ public class OpenIdConnectJwtValidation implements IJwtValidation {
     /**
      * Extract current user id and role information from token for authorization
      * on the action request.
+     *
      * @param token jwt token string
      * @return user claims include object id and roles
      * @throws NotAuthorizedException if token is not valid or user claims is not valid
@@ -92,9 +93,9 @@ public class OpenIdConnectJwtValidation implements IJwtValidation {
         try {
             UserClaims userClaims = new UserClaims();
             JWTClaimsSet claims = jwtProcessor.process(token, ctx);
-            userClaims.setUserObjectId((String)claims.getClaims().get(USER_OBJECT_ID_CLAIM_TYPE));
+            userClaims.setUserObjectId((String) claims.getClaims().get(USER_OBJECT_ID_CLAIM_TYPE));
             Object roles = claims.getClaim(ROLE_CLAIM_TYPE);
-            userClaims.setRoles(roles == null ? new ArrayList<>(): (List<String>)roles);
+            userClaims.setRoles(roles == null ? new ArrayList<>() : (List<String>) roles);
             return userClaims;
         } catch (Exception e) {
             throw new NotAuthorizedException("The authorization token is not valid");
@@ -156,7 +157,7 @@ public class OpenIdConnectJwtValidation implements IJwtValidation {
      * Try to setup the Open Id authentication classes, including downloading
      * the certificates used to verify JWT signatures. The call could fail
      * so it should be retried if that happens.
-     *
+     * <p>
      * The method can be called from the constructor, but in that case
      * exceptions should not be thrown, to allow Guice DI to complete
      * the object provisioning.
@@ -263,7 +264,7 @@ public class OpenIdConnectJwtValidation implements IJwtValidation {
 
     /**
      * Download the OpenId Connect provider metadata
-     *
+     * <p>
      * See: https://connect2id.com/products/nimbus-oauth-openid-connect-sdk/guides/java-cookbook-for-openid-connect-public-clients
      */
     private JWKSource getJwkSource()
