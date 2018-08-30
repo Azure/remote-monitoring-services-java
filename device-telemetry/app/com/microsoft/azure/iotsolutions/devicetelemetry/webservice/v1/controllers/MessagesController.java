@@ -4,7 +4,10 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controlle
 
 import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.IMessages;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ExternalDependencyException;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidConfigurationException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidInputException;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.TimeSeriesParseException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.helpers.DateHelper;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.MessageListApiModel;
 import org.joda.time.DateTime;
@@ -34,7 +37,10 @@ public final class MessagesController extends Controller {
         String order,
         Integer skip,
         Integer limit,
-        String devices) throws InvalidInputException {
+        String devices) throws
+        InvalidInputException,
+        InvalidConfigurationException,
+        TimeSeriesParseException {
 
         DateTime fromDate = DateHelper.parseDate(from);
         DateTime toDate = DateHelper.parseDate(to);
@@ -44,7 +50,7 @@ public final class MessagesController extends Controller {
         if (limit == null) limit = 1000;
 
         // TODO: move this logic to the storage engine, depending on the
-        // storage type the limit will be different. 200 is DocumentDb
+        // storage type the limit will be different. 200 is CosmosDb
         // limit for the IN clause.
         String[] deviceIds = new String[0];
         if (devices != null) {

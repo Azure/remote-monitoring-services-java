@@ -42,7 +42,7 @@ public class AlarmsController extends Controller {
     public Result list(String from, String to, String order, int skip,
                        int limit, String devices) throws Exception {
         // TODO: move this logic to the storage engine, depending on the
-        // storage type the limit will be different. 200 is DocumentDb
+        // storage type the limit will be different. 200 is CosmosDb
         // limit for the IN clause.
         String[] deviceIds = new String[0];
         if (devices != null) {

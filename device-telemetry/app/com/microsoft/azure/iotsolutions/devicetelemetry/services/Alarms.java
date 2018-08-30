@@ -8,7 +8,8 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.Exte
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.helpers.QueryBuilder;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.AlarmServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.IStorageClient;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.cosmosDb.IStorageClient;
+import org.apache.http.HttpStatus;
 import org.joda.time.DateTime;
 import play.Logger;
 
@@ -40,9 +41,9 @@ public class Alarms implements IAlarms {
     @Inject
     public Alarms(IServicesConfig servicesConfig, IStorageClient storageClient) {
         this.storageClient = storageClient;
-        this.databaseName = servicesConfig.getAlarmsStorageConfig().getStorageConfig().getDocumentDbDatabase();
-        this.collectionId = servicesConfig.getAlarmsStorageConfig().getStorageConfig().getDocumentDbCollection();
-        this.maxDeleteRetryCount = servicesConfig.getAlarmsStorageConfig().getMaxDeleteRetries();
+        this.databaseName = servicesConfig.getAlarmsConfig().getStorageConfig().getCosmosDbDatabase();
+        this.collectionId = servicesConfig.getAlarmsConfig().getStorageConfig().getCosmosDbCollection();
+        this.maxDeleteRetryCount = servicesConfig.getAlarmsConfig().getMaxDeleteRetries();
     }
 
     @Override
@@ -215,7 +216,7 @@ public class Alarms implements IAlarms {
                 if (e instanceof DocumentClientException)
                 {
                     DocumentClientException clientException = (DocumentClientException)e;
-                    if (clientException.getStatusCode() == 404) {
+                    if (clientException.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
                         return;
                     }
                     timeout = clientException.getRetryAfterInMilliseconds();

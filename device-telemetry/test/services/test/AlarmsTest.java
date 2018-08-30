@@ -5,11 +5,9 @@ package services.test;
 import com.microsoft.azure.documentdb.Document;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.Alarms;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.IAlarms;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.AlarmsConfig;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.DiagnosticsConfig;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.ServicesConfig;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.StorageConfig;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.IStorageClient;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidConfigurationException;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.*;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.cosmosDb.IStorageClient;
 import helpers.UnitTest;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,26 +24,45 @@ public class AlarmsTest {
     private IAlarms alarms;
 
     @Before
-    public void setUp() {
+    public void setUp() throws InvalidConfigurationException {
         // setup before every test
+
         ServicesConfig servicesConfig = new ServicesConfig(
-            "storageConnection",
-            "storageUrl",
-            new StorageConfig(
-                "documentdb",
-                "connString",
-                "database",
-                "collection"),
+            "keyValueStorageUrl",
+            new MessagesConfig(
+                "tsi",
+                new StorageConfig(
+                    "connString",
+                    "database",
+                    "collection"
+                ),
+                new TimeSeriesConfig(
+                    "timeSeriesFqdn",
+                    "aadTenant",
+                    "aadApplicationId",
+                    "aadApplicationSecret",
+                    "apiVersion",
+                    "",
+                    "",
+                    "",
+                    "dateFormat",
+                    20
+                )
+            ),
             new AlarmsConfig(
-                "documentdb",
-                "connString",
-                "database",
-                "collection",
+                "cosmosdb",
+                    new StorageConfig(
+                        "connString",
+                        "database",
+                        "collection"
+                    ),
                 3),
             new DiagnosticsConfig(
                 "diagnosticsUrl",
                 3
-            ));
+            )
+        );
+
         this.storageClientMock = Mockito.mock(IStorageClient.class);
         this.alarms = new Alarms(servicesConfig, this.storageClientMock);
     }

@@ -2,6 +2,8 @@
 
 package webservice.test.runtime;
 
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidConfigurationException;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.AlarmsConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime.Config;
 import helpers.UnitTest;
 import org.junit.After;
@@ -25,15 +27,16 @@ public class ConfigTest {
 
     @Test(timeout = 5000)
     @Category({UnitTest.class})
-    public void providesDocDbConnectionString() {
+    public void providesCosmosDbConnectionString() throws InvalidConfigurationException {
         Config target = new Config();
-        String connectionString = target.getServicesConfig().getStorageConnectionString();
+        AlarmsConfig alarmsConfig = target.getServicesConfig().getAlarmsConfig();
+        String connectionString = alarmsConfig.getStorageConfig().getCosmosDbConnString();
         assertNotNull(connectionString);
     }
 
     @Test(timeout = 1000)
     @Category({UnitTest.class})
-    public void provideKeyValueWebserviceUrl() {
+    public void provideKeyValueWebserviceUrl() throws InvalidConfigurationException {
         Config target = new Config();
         String url = target.getServicesConfig().getKeyValueStorageUrl();
     }

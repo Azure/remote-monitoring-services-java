@@ -6,13 +6,19 @@ import com.google.inject.Inject;
 
 public class Status {
 
+    private String name;
     private Boolean healthy;
     private String statusMessage;
 
     @Inject
-    public Status(final Boolean healthy, final String statusMessage) {
+    public Status(final String name, final Boolean healthy, final String statusMessage) {
+        this.name = name;
         this.healthy = healthy;
         this.statusMessage = statusMessage;
+    }
+
+    public String getName () {
+        return this.name;
     }
 
     public Boolean isHealthy() {
