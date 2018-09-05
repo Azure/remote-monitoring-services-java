@@ -287,22 +287,22 @@ public final class Rules implements IRules {
         return upsertAsync(rule, savedRule);
     }
 
-    private CompletionStage<RuleServiceModel> upsertAsync(RuleServiceModel ruleServiceModel, RuleServiceModel savedRule) {
+    private CompletionStage<RuleServiceModel> upsertAsync(RuleServiceModel rule, RuleServiceModel savedRule) {
         // If rule does not exist and id is provided upsert rule with that id
-        if (savedRule == null && ruleServiceModel.getId() != null) {
-            ruleServiceModel.setDateCreated(DateTime.now(DateTimeZone.UTC).toString(DATE_FORMAT));
-            ruleServiceModel.setDateModified(ruleServiceModel.getDateCreated());
+        if (savedRule == null && rule.getId() != null) {
+            rule.setDateCreated(DateTime.now(DateTimeZone.UTC).toString(DATE_FORMAT));
+            rule.setDateModified(rule.getDateCreated());
         } else { // update rule with stored date created
-            ruleServiceModel.setDateCreated(savedRule.getDateCreated());
-            ruleServiceModel.setDateModified(DateTime.now(DateTimeZone.UTC).toString(DATE_FORMAT));
+            rule.setDateCreated(savedRule.getDateCreated());
+            rule.setDateModified(DateTime.now(DateTimeZone.UTC).toString(DATE_FORMAT));
         }
 
         // Save the updated rule if it exists or create new rule with id
         ObjectNode jsonData = new ObjectMapper().createObjectNode();
-        jsonData.put("Data", ruleServiceModel.toJsonString());
-        jsonData.put("ETag", ruleServiceModel.getETag());
+        jsonData.put("Data", rule.toJsonString());
+        jsonData.put("ETag", rule.getETag());
 
-        return this.prepareRequest(ruleServiceModel.getId())
+        return this.prepareRequest(rule.getId())
             .put(jsonData.toString())
             .handle((result, error) -> {
 
@@ -326,12 +326,9 @@ public final class Rules implements IRules {
                 }
 
                 try {
-                    RuleServiceModel rule =
-                        getServiceModelFromJson(Json.parse(result.getBody()));
-
-                    log.info("Successfully retrieved rule id " + rule.getId());
-
-                    return rule;
+                    RuleServiceModel updatedRule = getServiceModelFromJson(Json.parse(result.getBody()));
+                    log.info("Successfully retrieved rule id " + updatedRule.getId());
+                    return updatedRule;
                 } catch (Exception e) {
                     log.error("Could not parse result from Key Value Storage: {}",
                         e.getMessage());
