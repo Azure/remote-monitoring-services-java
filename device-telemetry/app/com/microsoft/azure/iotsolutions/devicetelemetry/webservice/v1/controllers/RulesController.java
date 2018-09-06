@@ -117,7 +117,7 @@ public class RulesController extends Controller {
         if (ruleApiModel == null) {
             badRequest(request().body().asText());
         }
-        return rules.putAsync(ruleApiModel.toServiceModel(id))
+        return rules.upsertIfNotDeletedAsync(ruleApiModel.toServiceModel(id))
             .thenApply(newRule -> ok(toJson(new RuleApiModel(newRule, false))))
             .exceptionally(e -> {
                 if (e.getCause() instanceof ResourceOutOfDateException) {

@@ -268,30 +268,41 @@ public final class Rules implements IRules {
             });
     }
 
-    public CompletionStage<RuleServiceModel> putAsync(RuleServiceModel ruleServiceModel) {
+    public CompletionStage<RuleServiceModel> upsertIfNotDeletedAsync(RuleServiceModel rule) {
         // Ensure dates are correct
         // Get the existing rule so we keep the created date correct; update the modified date to now
+        RuleServiceModel savedRule = null;
         try {
-            CompletableFuture<RuleServiceModel> savedRuleFuture = getAsync(ruleServiceModel.getId()).toCompletableFuture();
-            RuleServiceModel savedRule = savedRuleFuture.get();
-            if (savedRule == null || savedRule.getDeleted()) {
-                throw new CompletionException(
-                    new ResourceNotFoundException(ruleServiceModel.getId()));
-            }
-
-            ruleServiceModel.setDateCreated(savedRule.getDateCreated());
-            ruleServiceModel.setDateModified(DateTime.now(DateTimeZone.UTC).toString(DATE_FORMAT));
+            CompletableFuture<RuleServiceModel> savedRuleFuture = getAsync(rule.getId()).toCompletableFuture();
+            savedRule = savedRuleFuture.get();
         } catch (Exception e) {
-            log.error("Could not get existing rule from Key Value Storage: {}", e.getMessage());
-            throw new CompletionException(
-                new ResourceNotFoundException(ruleServiceModel.getId()));
+            log.error("Rule not found and will create new rule for Id:" + rule.getId(), e);
         }
 
-        ObjectNode jsonData = new ObjectMapper().createObjectNode();
-        jsonData.put("Data", ruleServiceModel.toJsonString());
-        jsonData.put("ETag", ruleServiceModel.getETag());
+        if (savedRule != null && savedRule.getDeleted()) {
+            throw new CompletionException(
+                new ResourceNotFoundException(String.format("Rule {%s} not found", rule.getId())));
+        }
 
-        return this.prepareRequest(ruleServiceModel.getId())
+        return upsertAsync(rule, savedRule);
+    }
+
+    private CompletionStage<RuleServiceModel> upsertAsync(RuleServiceModel rule, RuleServiceModel savedRule) {
+        // If rule does not exist and id is provided upsert rule with that id
+        if (savedRule == null && rule.getId() != null) {
+            rule.setDateCreated(DateTime.now(DateTimeZone.UTC).toString(DATE_FORMAT));
+            rule.setDateModified(rule.getDateCreated());
+        } else { // update rule with stored date created
+            rule.setDateCreated(savedRule.getDateCreated());
+            rule.setDateModified(DateTime.now(DateTimeZone.UTC).toString(DATE_FORMAT));
+        }
+
+        // Save the updated rule if it exists or create new rule with id
+        ObjectNode jsonData = new ObjectMapper().createObjectNode();
+        jsonData.put("Data", rule.toJsonString());
+        jsonData.put("ETag", rule.getETag());
+
+        return this.prepareRequest(rule.getId())
             .put(jsonData.toString())
             .handle((result, error) -> {
 
@@ -315,12 +326,9 @@ public final class Rules implements IRules {
                 }
 
                 try {
-                    RuleServiceModel rule =
-                        getServiceModelFromJson(Json.parse(result.getBody()));
-
-                    log.info("Successfully retrieved rule id " + rule.getId());
-
-                    return rule;
+                    RuleServiceModel updatedRule = getServiceModelFromJson(Json.parse(result.getBody()));
+                    log.info("Successfully retrieved rule id " + updatedRule.getId());
+                    return updatedRule;
                 } catch (Exception e) {
                     log.error("Could not parse result from Key Value Storage: {}",
                         e.getMessage());
@@ -351,27 +359,27 @@ public final class Rules implements IRules {
         jsonData.put("Data", savedRule.toJsonString());
         jsonData.put("ETag", savedRule.getETag());
         return this.prepareRequest(savedRule.getId())
-                .put(jsonData.toString())
-                .handle((result, error) -> {
+            .put(jsonData.toString())
+            .handle((result, error) -> {
 
-                    if (error != null) {
-                        log.error("Key value storage request error: {}",
-                                error.getMessage());
-                        throw new CompletionException(
-                                new ExternalDependencyException(error.getMessage()));
-                    }
+                if (error != null) {
+                    log.error("Key value storage request error: {}",
+                        error.getMessage());
+                    throw new CompletionException(
+                        new ExternalDependencyException(error.getMessage()));
+                }
 
-                    if (result.getStatus() != HttpStatus.SC_OK) {
-                        log.error("Key value storage error code {}",
-                                result.getStatusText());
-                        throw new CompletionException(
-                                new ExternalDependencyException(result.getStatusText()));
-                    }
+                if (result.getStatus() != HttpStatus.SC_OK) {
+                    log.error("Key value storage error code {}",
+                        result.getStatusText());
+                    throw new CompletionException(
+                        new ExternalDependencyException(result.getStatusText()));
+                }
 
-                    this.logEventAndRuleCountToDiagnostics("Rule_Deleted");
-                    log.info("Successfully deleted rule id " + id);
-                    return true;
-                });
+                this.logEventAndRuleCountToDiagnostics("Rule_Deleted");
+                log.info("Successfully deleted rule id " + id);
+                return true;
+            });
     }
 
     private WSRequest prepareRequest(String id) {
@@ -449,7 +457,10 @@ public final class Rules implements IRules {
             jsonResultRule = JsonHelper.getNode(response, "Data").asText();
             RuleServiceModel rule = new ObjectMapper().readValue(jsonResultRule, RuleServiceModel.class);
             rule.setETag(JsonHelper.getNode(response, "ETag").asText());
-            rule.setId(JsonHelper.getNode(response, "Key").asText());
+            JsonNode idNode = JsonHelper.getNode(response, "id");
+            if (idNode == null || idNode.asText().isEmpty()) {
+                rule.setId(JsonHelper.getNode(response, "Key").asText());
+            }
             return rule;
         } catch (Exception e) {
             log.error("Could not parse data from Key Value Storage. " +
