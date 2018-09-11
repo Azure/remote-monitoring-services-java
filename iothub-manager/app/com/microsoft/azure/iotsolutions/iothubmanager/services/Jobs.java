@@ -107,7 +107,7 @@ public class Jobs implements IJobs {
             Date startTime,
             long maxExecutionTimeInSeconds)
             throws ExternalDependencyException, InvalidInputException {
-
+        // The json payload needs to be passed in the form of HashMap otherwise java will double escape it.
         Map<String, Object> mapPayload = new Hashtable<String, Object>();
         ObjectMapper mapper = new ObjectMapper();
         if (parameter.getJsonPayload() != "") {
