@@ -8,6 +8,7 @@ import play.libs.Json;
 import play.libs.ws.WSClient;
 import play.mvc.Http;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
@@ -28,6 +29,10 @@ public class UserManagementClient implements IUserManagementClient {
     @Override
     public CompletionStage<List<String>> getAllowedActions(String userObjectId, List<String> roles) {
         String url = String.format("%s/users/%s/allowedActions", this.userManagementServiceUrl, userObjectId);
+        if (roles == null) {
+            roles = new ArrayList<>();
+        }
+
         return this.wsClient.url(url)
             .post(Json.toJson(roles))
             .handle((response, error) -> {

@@ -24,6 +24,13 @@ docker run -it -p 9004:9004 ^
     -e PCS_AUTH_WEBSERVICE_URL ^
     -e PCS_TELEMETRY_DOCUMENTDB_CONNSTRING ^
     -e PCS_STORAGEADAPTER_WEBSERVICE_URL ^
+    -e "PCS_AUTH_ISSUER=%PCS_AUTH_ISSUER%" ^
+    -e "PCS_AUTH_AUDIENCE=%PCS_AUTH_AUDIENCE%" ^
+    -e "PCS_AAD_TENANT" ^
+    -e "PCS_AAD_APPID" ^
+    -e "PCS_AAD_APPSECRET" ^
+    -e "PCS_TELEMETRY_STORAGE_TYPE" ^
+    -e "PCS_TSI_FQDN" ^
     %DOCKER_IMAGE%:testing
 
 :: - - - - - - - - - - - - - -

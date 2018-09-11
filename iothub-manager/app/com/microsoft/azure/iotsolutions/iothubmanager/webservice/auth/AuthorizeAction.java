@@ -40,15 +40,8 @@ public class AuthorizeAction extends Action<Authorize> {
         String allowedAction = configuration.value().toLowerCase().trim();
 
         // move forward if authentication is disabled or request come from internal services
-        try {
-            if (!Authorizer.isAuthRequired(ctx) || !Authorizer.isExternalRequest(ctx)) {
-                return delegate.call(ctx);
-            }
-        } catch (Exception e) {
-            Result internalServerError = internalServerError(Json.toJson(new HashMap<String, String>() {{
-                put("Error", "Failed to get context of authorization from request");
-            }}));
-            return CompletableFuture.completedFuture(internalServerError);
+        if (!Authorizer.isAuthRequired(ctx) || !Authorizer.isExternalRequest(ctx)) {
+            return delegate.call(ctx);
         }
 
         // move forward if no action is required by the controller

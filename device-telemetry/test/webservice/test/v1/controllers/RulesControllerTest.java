@@ -179,7 +179,7 @@ public class RulesControllerTest {
         IRules rules = mock(IRules.class);
 
         RulesController controller = new RulesController(rules);
-        when(rules.putAsync(any())).thenReturn(ruleResult);
+        when(rules.upsertIfNotDeletedAsync(any())).thenReturn(ruleResult);
 
         mockHttpContext(new RuleApiModel(this.sampleNewRuleServiceModel, false));
 

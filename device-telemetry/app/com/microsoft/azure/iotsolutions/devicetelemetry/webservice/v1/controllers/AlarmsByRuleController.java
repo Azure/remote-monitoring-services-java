@@ -45,7 +45,7 @@ public class AlarmsByRuleController {
     public CompletionStage<Result> listAsync(String from, String to, String order, int skip,
                                              int limit, String devices) throws Exception {
         // TODO: move this logic to the storage engine, depending on the
-        // storage type the limit will be different. 200 is DocumentDb
+        // storage type the limit will be different. 200 is CosmosDb
         // limit for the IN clause.
         String[] deviceIds = new String[0];
         if (devices != null) {
@@ -74,7 +74,7 @@ public class AlarmsByRuleController {
     public Result get(String id, String from, String to, String order, int skip,
                       int limit, String devices) throws Exception {
         // TODO: move this logic to the storage engine, depending on the
-        // storage type the limit will be different. 200 is DocumentDb
+        // storage type the limit will be different. 200 is CosmosDb
         // limit for the IN clause.
         String[] deviceIds = new String[0];
         if (devices != null) {

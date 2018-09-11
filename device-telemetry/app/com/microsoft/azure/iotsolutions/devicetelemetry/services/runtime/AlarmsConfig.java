@@ -4,16 +4,17 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime;
 
 public class AlarmsConfig {
 
+    private final String storageType;
     private final StorageConfig storageConfig;
     private final int maxDeleteRetries;
 
     public AlarmsConfig(
             String storageType,
-            String documentDbConnString,
-            String documentDbDatabase,
-            String documentDbCollection,
+            StorageConfig storageConfig,
             int maxDeleteRetries) {
-        this.storageConfig = new StorageConfig(storageType, documentDbConnString, documentDbDatabase, documentDbCollection);
+
+        this.storageType = storageType;
+        this.storageConfig = storageConfig;
         this.maxDeleteRetries = maxDeleteRetries;
     }
 

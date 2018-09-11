@@ -7,13 +7,13 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.Alarms;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.IAlarms;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.IRules;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.Rules;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.external.IDiagnosticsClient;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.IStorageClient;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.cosmosDb.IStorageClient;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime.Config;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsByRuleController;
 import helpers.UnitTest;
-import org.eclipse.jetty.util.Callback;
 import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Assert;
@@ -22,20 +22,14 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import play.Logger;
 import play.libs.ws.WSClient;
-import play.libs.ws.WSRequest;
-import play.libs.ws.WSResponse;
 import play.mvc.Result;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.Future;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -68,9 +62,10 @@ public class AlarmsByRuleControllerTest {
         try {
             IServicesConfig servicesConfig = new Config().getServicesConfig();
             IStorageClient client = mock(IStorageClient.class);
+            IDiagnosticsClient diagnosticsClient = mock(IDiagnosticsClient.class);
             this.wsClient = mock(WSClient.class);
             this.alarms = new Alarms(servicesConfig, client);
-            this.rules = new Rules(servicesConfig, wsClient, alarms);
+            this.rules = new Rules(servicesConfig, wsClient, alarms, diagnosticsClient);
             this.controller = new AlarmsByRuleController(this.alarms, this.rules);
         } catch (Exception ex) {
             log.error("Exception setting up test", ex);

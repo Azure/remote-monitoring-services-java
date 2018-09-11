@@ -13,6 +13,8 @@ libraryDependencies ++= Seq(
   // https://github.com/Azure/azure-documentdb-java
   "com.microsoft.azure" % "azure-documentdb" % "1.12.0",
 
+  "com.microsoft.azure" % "adal4j" % "1.2.0",
+
   // https://mvnrepository.com/artifact/com.nimbusds/oauth2-oidc-sdk
   "com.nimbusds" % "oauth2-oidc-sdk" % "5.36"
 )
@@ -67,6 +69,7 @@ lazy val telemetry = project.in(file("."))
 
 // Play framework
 PlayKeys.externalizeResources := false
+PlayKeys.playDefaultPort := 9004
 
 // Docker
 // Note: use lowercase name for the Docker image details

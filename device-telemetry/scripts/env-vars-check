@@ -27,3 +27,38 @@ if [[ -z "$PCS_STORAGEADAPTER_WEBSERVICE_URL" ]]; then
     echo "Error: the PCS_STORAGEADAPTER_WEBSERVICE_URL environment variable is not defined."
     exit -1
 fi
+
+if [[ -z "$PCS_AUTH_ISSUER" ]]; then
+    echo "Error: the PCS_AUTH_ISSUER environment variable is not defined."
+    exit -1
+fi
+
+if [[ -z "$PCS_AUTH_AUDIENCE" ]]; then
+    echo "Error: the PCS_AUTH_AUDIENCE environment variable is not defined."
+    exit -1
+fi
+
+if [[ -z "$PCS_AAD_TENANT" ]]; then
+    echo "Error: the PCS_AAD_TENANT environment variable is not defined."
+    exit -1
+fi
+
+if [[ -z "$PCS_AAD_APPID" ]]; then
+    echo "Error: the PCS_AAD_APPID environment variable is not defined."
+    exit -1
+fi
+
+if [[ -z "$PCS_AAD_APPSECRET" ]]; then
+    echo "Error: the PCS_AAD_APPSECRET environment variable is not defined."
+    exit -1
+fi
+
+if [[ -z "$PCS_TELEMETRY_STORAGE_TYPE" ]]; then
+    echo "Error: the PCS_TELEMETRY_STORAGE_TYPE environment variable is not defined."
+    exit -1
+fi
+
+if [[ -z "$PCS_TSI_FQDN" ]]; then
+    echo "Error: the PCS_TSI_FQDN environment variable is not defined."
+    exit -1
+fi
