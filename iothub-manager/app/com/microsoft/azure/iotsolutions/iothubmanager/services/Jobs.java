@@ -43,16 +43,16 @@ public class Jobs implements IJobs {
 
     @Override
     public CompletionStage<List<JobServiceModel>> getJobsAsync(
-            JobType jobType,
-            JobStatus jobStatus,
-            Integer pageSize,
-            long from, long to)
-            throws InvalidInputException, ExternalDependencyException {
+        JobType jobType,
+        JobStatus jobStatus,
+        Integer pageSize,
+        long from, long to)
+        throws InvalidInputException, ExternalDependencyException {
         try {
             Query query = this.jobClient.queryJobResponse(
-                    jobType == null ? null : JobType.toAzureJobType(jobType),
-                    jobStatus == null ? null : JobStatus.toAzureJobStatus(jobStatus),
-                    pageSize);
+                jobType == null ? null : JobType.toAzureJobType(jobType),
+                jobStatus == null ? null : JobStatus.toAzureJobStatus(jobStatus),
+                pageSize);
 
             List jobs = new ArrayList<JobResult>();
             while (this.jobClient.hasNextJob(query)) {
@@ -71,10 +71,10 @@ public class Jobs implements IJobs {
 
     @Override
     public CompletionStage<JobServiceModel> getJobAsync(
-            String jobId,
-            boolean includeDeviceDetails,
-            DeviceJobStatus devicejobStatus)
-            throws ExternalDependencyException {
+        String jobId,
+        boolean includeDeviceDetails,
+        DeviceJobStatus devicejobStatus)
+        throws ExternalDependencyException {
         try {
             JobResult result = this.jobClient.getJob(jobId);
             JobServiceModel jobModel;
@@ -82,7 +82,7 @@ public class Jobs implements IJobs {
                 jobModel = new JobServiceModel(result, null);
             } else {
                 String queryString = devicejobStatus == null ? String.format(DEVICE_DETAILS_QUERY_FORMAT, jobId) :
-                        String.format(DEVICE_DETAILS_QUERYWITH_STATUS_FORMAT, jobId, devicejobStatus);
+                    String.format(DEVICE_DETAILS_QUERYWITH_STATUS_FORMAT, jobId, devicejobStatus);
                 Query query = this.jobClient.queryDeviceJob(queryString);
                 List deviceJobs = new ArrayList<JobServiceModel>();
                 while (this.jobClient.hasNextJob(query)) {
@@ -124,19 +124,19 @@ public class Jobs implements IJobs {
         }
         try {
             JobResult result = this.jobClient.scheduleDeviceMethod(
-                    jobId,
-                    queryCondition,
-                    parameter.getName(),
-                    parameter.getResponseTimeout() == null ? null : parameter.getResponseTimeout().getSeconds(),
-                    parameter.getConnectionTimeout() == null ? null : parameter.getConnectionTimeout().getSeconds(),
-                    mapPayload,
-                    startTime,
-                    maxExecutionTimeInSeconds);
+                jobId,
+                queryCondition,
+                parameter.getName(),
+                parameter.getResponseTimeout() == null ? null : parameter.getResponseTimeout().getSeconds(),
+                parameter.getConnectionTimeout() == null ? null : parameter.getConnectionTimeout().getSeconds(),
+                mapPayload,
+                startTime,
+                maxExecutionTimeInSeconds);
             JobServiceModel jobModel = new JobServiceModel(result, null);
             return CompletableFuture.supplyAsync(() -> jobModel);
         } catch (IOException | IotHubException e) {
             String message = String.format("Unable to schedule device method job: %s, %s, %s",
-                    jobId, queryCondition, Json.stringify(Json.toJson(parameter)));
+                jobId, queryCondition, Json.stringify(Json.toJson(parameter)));
             log.error(message, e);
             throw new ExternalDependencyException(message, e);
         }
@@ -144,12 +144,12 @@ public class Jobs implements IJobs {
 
     @Override
     public CompletionStage<JobServiceModel> scheduleTwinUpdateAsync(
-            String jobId,
-            String queryCondition,
-            DeviceTwinServiceModel twin,
-            Date startTime,
-            long maxExecutionTimeInSeconds)
-            throws ExternalDependencyException {
+        String jobId,
+        String queryCondition,
+        DeviceTwinServiceModel twin,
+        Date startTime,
+        long maxExecutionTimeInSeconds)
+        throws ExternalDependencyException {
         try {
             DevicePropertyServiceModel model = new DevicePropertyServiceModel();
             if (twin.getTags() != null) {
@@ -162,16 +162,16 @@ public class Jobs implements IJobs {
             CompletionStage unused = this.deviceProperties.updateListAsync(model);
 
             JobResult result = this.jobClient.scheduleUpdateTwin(
-                    jobId,
-                    queryCondition,
-                    twin.toDeviceTwinDevice(),
-                    startTime,
-                    maxExecutionTimeInSeconds);
+                jobId,
+                queryCondition,
+                twin.toDeviceTwinDevice(),
+                startTime,
+                maxExecutionTimeInSeconds);
             JobServiceModel jobModel = new JobServiceModel(result, null);
             return CompletableFuture.supplyAsync(() -> jobModel);
         } catch (IOException | IotHubException e) {
             String message = String.format("Unable to schedule twin update job: %s, %s, %s",
-                    jobId, queryCondition, Json.stringify(Json.toJson(twin)));
+                jobId, queryCondition, Json.stringify(Json.toJson(twin)));
             log.error(message, e);
             throw new ExternalDependencyException(message, e);
         } catch (InterruptedException e) {
