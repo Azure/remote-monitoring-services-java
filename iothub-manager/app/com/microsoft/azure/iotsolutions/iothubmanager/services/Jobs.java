@@ -2,6 +2,8 @@
 
 package com.microsoft.azure.iotsolutions.iothubmanager.services;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.*;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.external.IStorageAdapterClient;
@@ -99,12 +101,27 @@ public class Jobs implements IJobs {
 
     @Override
     public CompletionStage<JobServiceModel> scheduleDeviceMethodAsync(
-        String jobId,
-        String queryCondition,
-        MethodParameterServiceModel parameter,
-        Date startTime,
-        long maxExecutionTimeInSeconds)
-        throws ExternalDependencyException {
+            String jobId,
+            String queryCondition,
+            MethodParameterServiceModel parameter,
+            Date startTime,
+            long maxExecutionTimeInSeconds)
+            throws ExternalDependencyException, InvalidInputException {
+        // The json payload needs to be passed in the form of HashMap otherwise java will double escape it.
+        Map<String, Object> mapPayload = new Hashtable<String, Object>();
+        ObjectMapper mapper = new ObjectMapper();
+        if (parameter.getJsonPayload() != "") {
+            try {
+                //convert JSON string to Map
+                mapPayload = mapper.readValue(parameter.getJsonPayload(), new TypeReference<HashMap<String, String>>() {
+                });
+            } catch (Exception e) {
+                String message = String.format("Unable to parse cloudToDeviceMethod: %s",
+                        parameter.getJsonPayload());
+                log.error(message, e);
+                throw new InvalidInputException(message, e);
+            }
+        }
         try {
             JobResult result = this.jobClient.scheduleDeviceMethod(
                 jobId,
@@ -112,7 +129,7 @@ public class Jobs implements IJobs {
                 parameter.getName(),
                 parameter.getResponseTimeout() == null ? null : parameter.getResponseTimeout().getSeconds(),
                 parameter.getConnectionTimeout() == null ? null : parameter.getConnectionTimeout().getSeconds(),
-                parameter.getJsonPayload(),
+                mapPayload,
                 startTime,
                 maxExecutionTimeInSeconds);
             JobServiceModel jobModel = new JobServiceModel(result, null);

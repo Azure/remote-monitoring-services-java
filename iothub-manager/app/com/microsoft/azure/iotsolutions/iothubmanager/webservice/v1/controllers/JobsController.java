@@ -92,7 +92,7 @@ public final class JobsController extends Controller {
 
     @Authorize("CreateJobs")
     public CompletionStage<Result> scheduleJobAsync()
-        throws NotSupportedException, ExternalDependencyException {
+        throws NotSupportedException, ExternalDependencyException, InvalidInputException {
         JsonNode json = request().body().asJson();
         final JobApiModel jobApiModel = fromJson(json, JobApiModel.class);
 
