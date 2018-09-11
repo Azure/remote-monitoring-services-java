@@ -108,18 +108,19 @@ public class Jobs implements IJobs {
             long maxExecutionTimeInSeconds)
             throws ExternalDependencyException, InvalidInputException {
 
-        Map<String, Object> mapPayload;
+        Map<String, Object> mapPayload = new Hashtable<String, Object>();
         ObjectMapper mapper = new ObjectMapper();
-
-        try {
-            //convert JSON string to Map
-            mapPayload = mapper.readValue(parameter.getJsonPayload(), new TypeReference<HashMap<String, String>>() {
-            });
-        } catch (Exception e) {
-            String message = String.format("Unable to parse cloudToDeviceMethod: %s",
-                    parameter.getJsonPayload());
-            log.error(message, e);
-            throw new InvalidInputException(message, e);
+        if (parameter.getJsonPayload() != "") {
+            try {
+                //convert JSON string to Map
+                mapPayload = mapper.readValue(parameter.getJsonPayload(), new TypeReference<HashMap<String, String>>() {
+                });
+            } catch (Exception e) {
+                String message = String.format("Unable to parse cloudToDeviceMethod: %s",
+                        parameter.getJsonPayload());
+                log.error(message, e);
+                throw new InvalidInputException(message, e);
+            }
         }
         try {
             JobResult result = this.jobClient.scheduleDeviceMethod(
