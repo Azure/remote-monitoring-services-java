@@ -101,12 +101,12 @@ public class Jobs implements IJobs {
 
     @Override
     public CompletionStage<JobServiceModel> scheduleDeviceMethodAsync(
-            String jobId,
-            String queryCondition,
-            MethodParameterServiceModel parameter,
-            Date startTime,
-            long maxExecutionTimeInSeconds)
-            throws ExternalDependencyException, InvalidInputException {
+        String jobId,
+        String queryCondition,
+        MethodParameterServiceModel parameter,
+        Date startTime,
+        long maxExecutionTimeInSeconds)
+        throws ExternalDependencyException, InvalidInputException {
         // The json payload needs to be passed in the form of HashMap otherwise java will double escape it.
         Map<String, Object> mapPayload = new Hashtable<String, Object>();
         ObjectMapper mapper = new ObjectMapper();
