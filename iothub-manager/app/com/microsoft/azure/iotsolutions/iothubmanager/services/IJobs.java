@@ -39,5 +39,5 @@ public interface IJobs {
         MethodParameterServiceModel parameter,
         Date startTime,
         long maxExecutionTimeInSeconds)
-        throws ExternalDependencyException;
+        throws ExternalDependencyException, InvalidInputException;
 }
