@@ -6,6 +6,7 @@ import com.google.inject.ImplementedBy;
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.BaseException;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.DeviceGroup;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.Logo;
+import com.microsoft.azure.iotsolutions.uiconfig.services.models.Package;
 
 import java.util.concurrent.CompletionStage;
 
@@ -33,4 +34,12 @@ public interface IStorage {
     CompletionStage<DeviceGroup> updateDeviceGroupAsync(String id, DeviceGroup input, String etag) throws BaseException;
 
     CompletionStage deleteDeviceGroupAsync(String id) throws BaseException;
+
+    CompletionStage<Iterable<Package>> getAllPackagesAsync() throws BaseException;
+
+    CompletionStage<Package> getPackageAsync(String id) throws BaseException;
+
+    CompletionStage<Package> addPackageAsync(Package input) throws BaseException;
+
+    CompletionStage<Package> deletePackageAsync(String id) throws BaseException;
 }

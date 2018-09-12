@@ -9,13 +9,14 @@ import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.ResourceNot
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.IStorageAdapterClient;
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.ValueApiModel;
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.ValueListApiModel;
-import com.microsoft.azure.iotsolutions.uiconfig.services.models.DeviceGroup;
-import com.microsoft.azure.iotsolutions.uiconfig.services.models.DeviceGroupCondition;
-import com.microsoft.azure.iotsolutions.uiconfig.services.models.Logo;
-import com.microsoft.azure.iotsolutions.uiconfig.services.models.Theme;
+import com.microsoft.azure.iotsolutions.uiconfig.services.models.*;
+import com.microsoft.azure.iotsolutions.uiconfig.services.models.Package;
 import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.ServicesConfig;
 import helpers.Random;
 import helpers.UnitTest;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormatter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -30,6 +31,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
+import static org.joda.time.format.DateTimeFormat.forPattern;
 import static org.junit.Assert.*;
 
 public class StorageTest {
@@ -40,6 +42,10 @@ public class StorageTest {
     private ServicesConfig config;
     private String azureMapsKey;
     private static final String LOGO_FORMAT = "{\"Image\":\"%s\",\"Type\":\"%s\",\"Name\":\"%s\",\"IsDefault\":%s}";
+    private static final DateTimeFormatter DATE_FORMAT =
+            forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
+    private static final String DEVICE_GROUPS_COLLECTION_ID = "devicegroups";
+    private static final String PACKAGES_COLLECTION_ID = "packages";
     private static final int TIMEOUT = 100000;
 
     @Before
@@ -49,6 +55,7 @@ public class StorageTest {
         config = new ServicesConfig();
         azureMapsKey = rand.NextString();
         config.setAzureMapsKey(azureMapsKey);
+        this.storage = new Storage(mockClient, config);
     }
 
     @Test(timeout = StorageTest.TIMEOUT)
@@ -60,7 +67,6 @@ public class StorageTest {
         model.setData(String.format("{\"Name\":\"%s\",\"Description\":\"%s\"}", name, description));
         Mockito.when(mockClient.getAsync(Mockito.anyString(), Mockito.anyString()))
                 .thenReturn(CompletableFuture.supplyAsync(() -> model));
-        storage = new Storage(mockClient, config);
         Object result = storage.getThemeAsync().toCompletableFuture().get();
         JsonNode node = Json.toJson(result);
         assertEquals(node.get("Name").asText(), name);
@@ -73,7 +79,6 @@ public class StorageTest {
     public void getThemeAsyncDefaultTest() throws BaseException, ExecutionException, InterruptedException {
         Mockito.when(mockClient.getAsync(Mockito.anyString(), Mockito.anyString()))
                 .thenThrow(new BaseException());
-        storage = new Storage(mockClient, config);
         Object result = storage.getThemeAsync().toCompletableFuture().get();
         JsonNode node = Json.toJson(result);
         assertEquals(node.get("Name").asText(), Theme.Default.getName());
@@ -92,7 +97,6 @@ public class StorageTest {
         model.setData(jsonData);
         Mockito.when(mockClient.updateAsync(Mockito.any(String.class), Mockito.any(String.class), Mockito.any(String.class), Mockito.any(String.class))).
                 thenReturn(CompletableFuture.supplyAsync(() -> model));
-        storage = new Storage(mockClient, config);
         Object result = storage.setThemeAsync(theme).toCompletableFuture().get();
         JsonNode node = Json.toJson(result);
         assertEquals(node.get("Name").asText(), name);
@@ -112,7 +116,6 @@ public class StorageTest {
         model.setData(jsonData);
         Mockito.when(mockClient.getAsync(Mockito.any(String.class), Mockito.any(String.class)))
                 .thenReturn(CompletableFuture.supplyAsync(() -> model));
-        storage = new Storage(mockClient, config);
         Object result = storage.getUserSetting(id).toCompletableFuture().get();
         JsonNode node = Json.toJson(result);
         assertEquals(node.get("Name").asText(), name);
@@ -131,7 +134,6 @@ public class StorageTest {
         model.setData(jsonData);
         Mockito.when(mockClient.updateAsync(Mockito.any(String.class), Mockito.any(String.class), Mockito.any(String.class), Mockito.any(String.class)))
                 .thenReturn(CompletableFuture.supplyAsync(() -> model));
-        storage = new Storage(mockClient, config);
         Object result = storage.setUserSetting(id, setting).toCompletableFuture().get();
         JsonNode node = Json.toJson(result);
         assertEquals(node.get("Name").asText(), name);
@@ -147,7 +149,6 @@ public class StorageTest {
         String isDefault = "false";
         String jsonData = String.format("{\"Image\":\"%s\",\"Type\":\"%s\",\"IsDefault\":%s}", image, type, isDefault);
         mockGetLogo(jsonData);
-        storage = new Storage(mockClient, config);
 
         // Act
         Object result = storage.getLogoAsync().toCompletableFuture().get();
@@ -169,7 +170,6 @@ public class StorageTest {
         String isDefault = "false";
         String jsonData = String.format(StorageTest.LOGO_FORMAT, image, type, name, isDefault);
         mockGetLogo(jsonData);
-        storage = new Storage(mockClient, config);
 
         // Act
         Object result = storage.getLogoAsync().toCompletableFuture().get();
@@ -187,7 +187,6 @@ public class StorageTest {
     public void getLogoShouldReturnDefaultLogoOnException() throws BaseException, ExecutionException, InterruptedException {
         // Arrange
         Mockito.when(mockClient.getAsync(Mockito.any(String.class), Mockito.any(String.class))).thenThrow(new ResourceNotFoundException());
-        storage = new Storage(mockClient, config);
 
         // Act
         Object result = storage.getLogoAsync().toCompletableFuture().get();
@@ -245,7 +244,6 @@ public class StorageTest {
         String isDefault = "false";
         String jsonData = String.format(StorageTest.LOGO_FORMAT, oldImage, oldType, oldName, isDefault);
         mockGetLogo(jsonData);
-        storage = new Storage(mockClient, config);
         Object result = storage.setLogoAsync(logo).toCompletableFuture().get();
         return Json.toJson(result);
     }
@@ -275,10 +273,8 @@ public class StorageTest {
         List<ValueApiModel> items = groups.stream().map(m ->
                 new ValueApiModel(rand.NextString(), Json.stringify(Json.toJson(m)), rand.NextString(), null)
         ).collect(Collectors.toList());
-        ValueListApiModel model = new ValueListApiModel();
-        model.Items = items;
-        Mockito.when(mockClient.getAllAsync(Mockito.any(String.class))).thenReturn(CompletableFuture.supplyAsync(() -> model));
-        storage = new Storage(mockClient, config);
+        this.setupAllAsyncMock(DEVICE_GROUPS_COLLECTION_ID, items);
+
         List<DeviceGroup> result = Lists.newArrayList(storage.getAllDeviceGroupsAsync().toCompletableFuture().get());
         assertEquals(result.size(), groups.size());
         for (DeviceGroup item : result) {
@@ -304,7 +300,6 @@ public class StorageTest {
         Mockito.when(mockClient.getAsync(Mockito.any(String.class),
                 Mockito.any(String.class))).
                 thenReturn(CompletableFuture.supplyAsync(() -> model));
-        storage = new Storage(mockClient, config);
         DeviceGroup result = storage.getDeviceGroupAsync(groupId).toCompletableFuture().get();
         assertEquals(result.getDisplayName(), displayName);
         assertEquals(result.getConditions(), conditions);
@@ -325,7 +320,6 @@ public class StorageTest {
         Mockito.when(mockClient.createAsync(Mockito.any(String.class),
                 Mockito.any(String.class))).
                 thenReturn(CompletableFuture.supplyAsync(() -> model));
-        storage = new Storage(mockClient, config);
         DeviceGroup result = storage.createDeviceGroupAsync(group).toCompletableFuture().get();
         assertEquals(result.getId(), groupId);
         assertEquals(result.getDisplayName(), displayName);
@@ -350,11 +344,76 @@ public class StorageTest {
                 Mockito.any(String.class),
                 Mockito.any(String.class))).
                 thenReturn(CompletableFuture.supplyAsync(() -> model));
-        storage = new Storage(mockClient, config);
         DeviceGroup result = storage.updateDeviceGroupAsync(groupId, group, etagOld).toCompletableFuture().get();
         assertEquals(result.getId(), groupId);
         assertEquals(result.getDisplayName(), displayName);
         assertEquals(result.getConditions(), conditions);
         assertEquals(result.getETag(), etagNew);
+    }
+
+    @Test
+    @Category({UnitTest.class})
+    public void addPackageTest() throws BaseException, ExecutionException, InterruptedException {
+        Package pkg = new Package(null, rand.NextString(), PackageType.edgeManifest, rand.NextString());
+
+        ValueApiModel model = new ValueApiModel(rand.NextString(), null, null, null);
+        model.setData(Json.stringify(Json.toJson(pkg)));
+
+        Mockito.when(mockClient.createAsync(Mockito.eq(PACKAGES_COLLECTION_ID),
+                                            Mockito.any(String.class)))
+               .thenReturn(CompletableFuture.supplyAsync(() -> model));
+
+        Package result = storage.addPackageAsync(pkg).toCompletableFuture().get();
+        assertEquals(pkg.getName(), result.getName());
+        assertEquals(pkg.getType(), result.getType());
+        assertEquals(pkg.getContent(), result.getContent());
+    }
+
+    @Test(timeout = StorageTest.TIMEOUT)
+    @Category({UnitTest.class})
+    public void getAllPackageTest() throws BaseException, ExecutionException, InterruptedException {
+        List<Package> packages = new ArrayList<>();
+        final String pkgName = "pkgName";
+        final PackageType type = PackageType.edgeManifest;
+        final String content = "{}";
+        final String dateCreated =
+                StorageTest.DATE_FORMAT.print(DateTime.now().toDateTime(DateTimeZone.UTC));
+
+        for (int i = 0; i < 5; i++) {
+            Package model = new Package(null, pkgName + i, type, content + i, dateCreated);
+            packages.add(model);
+        }
+
+        List<ValueApiModel> items = packages.stream().map(m ->
+                new ValueApiModel(rand.NextString(), Json.stringify(Json.toJson(m)), rand.NextString(), null)
+        ).collect(Collectors.toList());
+        this.setupAllAsyncMock(PACKAGES_COLLECTION_ID, items);
+
+        List<Package> results = Lists.newArrayList(storage.getAllPackagesAsync().toCompletableFuture().get());
+        assertEquals(5, results.size());
+
+        for (int i = 0; i < results.size(); i++) {
+            Package result = results.get(i);
+            ValueApiModel value = items.stream().filter(m -> m.getKey().equals(result.getId())).findFirst().get();
+            Package pkg = Json.fromJson(Json.parse(value.getData()), Package.class);
+            assertEquals(pkgName + i, pkg.getName());
+            assertEquals(content + i, pkg.getContent());
+        }
+    }
+
+    @Test(timeout = StorageTest.TIMEOUT)
+    @Category({UnitTest.class})
+    public void deletePackageTest() throws BaseException {
+        final String packageId = rand.NextString();
+        this.storage.deletePackageAsync(packageId);
+
+        Mockito.verify(this.mockClient).deleteAsync(PACKAGES_COLLECTION_ID, packageId);
+    }
+
+    private void setupAllAsyncMock(String collectionId, List<ValueApiModel> items) throws BaseException {
+        ValueListApiModel model = new ValueListApiModel();
+        model.Items = items;
+        Mockito.when(mockClient.getAllAsync(Mockito.eq(collectionId)))
+                .thenReturn(CompletableFuture.supplyAsync(() -> model));
     }
 }

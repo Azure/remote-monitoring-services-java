@@ -11,8 +11,10 @@ import com.microsoft.azure.iotsolutions.uiconfig.services.external.IStorageAdapt
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.ValueApiModel;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.DeviceGroup;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.Logo;
+import com.microsoft.azure.iotsolutions.uiconfig.services.models.Package;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.Theme;
 import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.IServicesConfig;
+import org.apache.commons.lang3.StringUtils;
 import play.Logger;
 import play.libs.Json;
 
@@ -27,12 +29,12 @@ public class Storage implements IStorage {
 
     private static final Logger.ALogger log = Logger.of(Storage.class);
 
-    static String SolutionCollectionId = "solution-settings";
-    static String ThemeKey = "theme";
-    static String LogoKey = "logo";
-    static String UserCollectionId = "user-settings";
-    static String DeviceGroupCollectionId = "devicegroups";
-    static String AzureMapsKey = "AzureMapsKey";
+    private static String SolutionCollectionId = "solution-settings";
+    private static String ThemeKey = "theme";
+    private static String LogoKey = "logo";
+    private static String UserCollectionId = "user-settings";
+    private static String DeviceGroupCollectionId = "devicegroups";
+    private static String PackagesCollectionId = "packages";
     private final IStorageAdapterClient client;
     private final IServicesConfig config;
 
@@ -55,7 +57,7 @@ public class Storage implements IStorage {
         String data = toJson(Theme.Default);
         try {
             String serverData = client.getAsync(SolutionCollectionId, ThemeKey).toCompletableFuture().get().getData();
-            if (serverData != null && serverData.trim() != "") {
+            if (serverData != null && StringUtils.isNotBlank(serverData)) {
                 data = serverData;
             }
         } catch (Exception ex) {
@@ -76,7 +78,7 @@ public class Storage implements IStorage {
 
         return client.updateAsync(SolutionCollectionId, ThemeKey, value, "*").thenApplyAsync(m -> {
                     String data = "{}";
-                    if (m.getData() != null && m.getData().trim() != "") {
+                    if (m.getData() != null && StringUtils.isNotBlank(m.getData())) {
                         data = m.getData();
                     }
                     ObjectNode themeOut = (ObjectNode) Json.parse(data);
@@ -146,7 +148,9 @@ public class Storage implements IStorage {
     @Override
     public CompletionStage<Iterable<DeviceGroup>> getAllDeviceGroupsAsync() throws BaseException {
         return client.getAllAsync(DeviceGroupCollectionId).thenApplyAsync(m -> {
-            return StreamSupport.stream(m.Items.spliterator(), false).map(Storage::createGroup).collect(Collectors.toList());
+            return StreamSupport.stream(m.Items.spliterator(), false)
+                                .map(Storage::createGroup)
+                                .collect(Collectors.toList());
         });
     }
 
@@ -178,6 +182,35 @@ public class Storage implements IStorage {
         return client.deleteAsync(DeviceGroupCollectionId, id);
     }
 
+    @Override
+    public CompletionStage<Iterable<Package>> getAllPackagesAsync() throws BaseException {
+        return this.client.getAllAsync(PackagesCollectionId).thenApplyAsync(p -> {
+            return StreamSupport.stream(p.Items.spliterator(), false)
+                    .map(Storage::createPackage)
+                    .collect(Collectors.toList());
+        });
+    }
+
+    @Override
+    public CompletionStage<Package> getPackageAsync(String id) throws BaseException {
+        return this.client.getAsync(PackagesCollectionId, id).thenApplyAsync(p -> {
+           return Storage.createPackage(p);
+        });
+    }
+
+    @Override
+    public CompletionStage<Package> addPackageAsync(Package input) throws BaseException {
+        String value = toJson(input);
+        return client.createAsync(PackagesCollectionId, value).thenApplyAsync(p ->
+            Storage.createPackage(p)
+        );
+    }
+
+    @Override
+    public CompletionStage deletePackageAsync(String id) throws BaseException {
+        return client.deleteAsync(PackagesCollectionId, id);
+    }
+
     private static DeviceGroup createGroup(ValueApiModel input) {
         DeviceGroup output = fromJson(input.getData(), DeviceGroup.class);
         output.setId(input.getKey());
@@ -185,9 +218,16 @@ public class Storage implements IStorage {
         return output;
     }
 
+    private static Package createPackage(ValueApiModel input) {
+        Package output = fromJson(input.getData(), Package.class);
+        output.setId(input.getKey());
+        return output;
+    }
+
     private void appendAzureMapsKey(ObjectNode theme) {
-        if (!theme.has(AzureMapsKey)) {
-            theme.put(AzureMapsKey, config.getAzureMapsKey());
+        final String azureMapsKey = "AzureMapsKey";
+        if (!theme.has(azureMapsKey)) {
+            theme.put(azureMapsKey, config.getAzureMapsKey());
         }
     }
 
