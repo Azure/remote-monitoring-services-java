@@ -97,10 +97,10 @@
       ]
     },
     {
-      "Id": "default_Truck_Temperature_High",
-      "Name": "Higher than normal cargo temperature",
+      "Id": "default_Truck_Temperature_Low",
+      "Name": "Lower than normal cargo temperature",
       "Enabled": true,
-      "Description": "Cargo temperature is > 45 degrees",
+      "Description": "Cargo temperature is < 50 degrees",
       "GroupId": "default_Trucks",
       "Severity": "Warning",
       "Calculation": "Average",
@@ -108,8 +108,8 @@
       "Conditions": [
         {
           "Field": "temperature",
-          "Operator": "GreaterThan",
-          "Value": "45"
+          "Operator": "LessThan",
+          "Value": "50"
         }
       ]
     },
@@ -165,11 +165,11 @@
       "Count": 1
     },
     {
-      "Id": "truck-01",
+      "Id": "delivery-truck-01",
       "Count": 1
     },
     {
-      "Id": "truck-02",
+      "Id": "delivery-truck-02",
       "Count": 1
     }
   ]
