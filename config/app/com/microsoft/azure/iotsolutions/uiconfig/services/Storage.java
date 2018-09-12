@@ -15,6 +15,9 @@ import com.microsoft.azure.iotsolutions.uiconfig.services.models.Package;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.Theme;
 import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.IServicesConfig;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormatter;
 import play.Logger;
 import play.libs.Json;
 
@@ -23,6 +26,8 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+
+import static org.joda.time.format.DateTimeFormat.forPattern;
 
 @Singleton
 public class Storage implements IStorage {
@@ -35,6 +40,8 @@ public class Storage implements IStorage {
     private static String UserCollectionId = "user-settings";
     private static String DeviceGroupCollectionId = "devicegroups";
     private static String PackagesCollectionId = "packages";
+    private static final DateTimeFormatter DATE_FORMAT =
+            forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
     private final IStorageAdapterClient client;
     private final IServicesConfig config;
 
@@ -182,6 +189,9 @@ public class Storage implements IStorage {
         return client.deleteAsync(DeviceGroupCollectionId, id);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public CompletionStage<Iterable<Package>> getAllPackagesAsync() throws BaseException {
         return this.client.getAllAsync(PackagesCollectionId).thenApplyAsync(p -> {
@@ -191,6 +201,9 @@ public class Storage implements IStorage {
         });
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public CompletionStage<Package> getPackageAsync(String id) throws BaseException {
         return this.client.getAsync(PackagesCollectionId, id).thenApplyAsync(p -> {
@@ -198,14 +211,21 @@ public class Storage implements IStorage {
         });
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public CompletionStage<Package> addPackageAsync(Package input) throws BaseException {
+        input.setDateCreated(Storage.DATE_FORMAT.print(DateTime.now().toDateTime(DateTimeZone.UTC)));
         String value = toJson(input);
         return client.createAsync(PackagesCollectionId, value).thenApplyAsync(p ->
             Storage.createPackage(p)
         );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public CompletionStage deletePackageAsync(String id) throws BaseException {
         return client.deleteAsync(PackagesCollectionId, id);

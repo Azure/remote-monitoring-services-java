@@ -37,14 +37,28 @@ public class PackageController extends Controller {
         this.storage = storage;
     }
 
+    /**
+     * Retrieve all previously uploaded packages
+     * @return {@link PackageListApiModel}
+     */
     public CompletionStage<Result> getAllAsync() throws BaseException {
         return storage.getAllPackagesAsync().thenApplyAsync(m -> ok(toJson(new PackageListApiModel(m))));
     }
 
+    /**
+     * Get a previously created from storage.
+     * @param id The id of the package to retrieve from storage.
+     * @return {@link PackageApiModel}
+     */
     public CompletionStage<Result> getAsync(String id) throws BaseException {
         return storage.getPackageAsync(id).thenApplyAsync(m -> ok(toJson(new PackageApiModel(m))));
     }
 
+    /**
+     * Create a package form a multipart form post which expects
+     * a "type" and a file uploaded with the name "package".
+     * @return Returns the result in the form of {@link PackageApiModel}
+     */
     public CompletionStage<Result> createAsync() throws BaseException, BadRequestException, IOException {
         final MultipartFormData formData = request().body().asMultipartFormData();
         if (formData == null) {
@@ -73,6 +87,10 @@ public class PackageController extends Controller {
                 PackageApiModel(m))));
     }
 
+    /**
+     * Deletes a package from storage
+     * @param id Id of the package to be deleted
+     */
     public CompletionStage<Result> deleteAsync(String id) throws BaseException {
         return storage.deletePackageAsync(id).thenApplyAsync(m -> ok());
     }

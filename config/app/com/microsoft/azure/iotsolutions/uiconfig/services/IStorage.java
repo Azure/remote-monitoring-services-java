@@ -35,11 +35,29 @@ public interface IStorage {
 
     CompletionStage deleteDeviceGroupAsync(String id) throws BaseException;
 
+    /**
+     * Retrieves all packages that have been previous uploaded.
+     * @return All packages which can be iterated over
+     */
     CompletionStage<Iterable<Package>> getAllPackagesAsync() throws BaseException;
 
+    /**
+     * Retrieves a single uploaded package by its unique Id.
+     * @param id Unique identifier which was returned when creating a package
+     * @return All packages which can be iterated over
+     */
     CompletionStage<Package> getPackageAsync(String id) throws BaseException;
 
+    /**
+     * Creates a package with a new id given the provided input.
+     * @param input {@link Package} parameters which include the name, content and type.
+     * @return The created package along with id, and dateCreated.
+     */
     CompletionStage<Package> addPackageAsync(Package input) throws BaseException;
 
-    CompletionStage<Package> deletePackageAsync(String id) throws BaseException;
+    /**
+     * Deletes a previously uploaded package.
+     * @param id The id of the package to be removed.
+     */
+    CompletionStage deletePackageAsync(String id) throws BaseException;
 }

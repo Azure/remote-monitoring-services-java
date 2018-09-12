@@ -398,6 +398,7 @@ public class StorageTest {
             Package pkg = Json.fromJson(Json.parse(value.getData()), Package.class);
             assertEquals(pkgName + i, pkg.getName());
             assertEquals(content + i, pkg.getContent());
+
         }
     }
 
