@@ -233,8 +233,8 @@ Please enter issues, bugs, or suggestions as
 Copyright (c) Microsoft Corporation. All rights reserved.
 Licensed under the [MIT](LICENSE) License.
 
-[build-badge]: https://img.shields.io/travis/Azure/pcs-config-java.svg
-[build-url]: https://travis-ci.org/Azure/pcs-config-java
+[build-badge]: https://solutionaccelerators.visualstudio.com/RemoteMonitoring/_apis/build/status/Consolidated%20Repo%20-%20Java 
+[build-url]: https://solutionaccelerators.visualstudio.com/RemoteMonitoring/_build/latest?definitionId=25
 [issues-badge]: https://img.shields.io/github/issues/azure/pcs-config-java.svg
 [issues-url]: https://github.com/azure/pcs-config-java/issues
 [gitter-badge]: https://img.shields.io/gitter/room/azure/iot-solutions.js.svg
