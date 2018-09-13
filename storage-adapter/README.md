@@ -164,8 +164,8 @@ Feedback
 ========
 Please enter issues, bugs, or suggestions as GitHub Issues here: https://github.com/Azure/pcs-storage-adapter-java/issues.
 
-[build-badge]: https://img.shields.io/travis/Azure/pcs-storage-adapter-dotnet.svg
-[build-url]: https://travis-ci.org/Azure/pcs-storage-adapter-dotnet
+[build-badge]: https://solutionaccelerators.visualstudio.com/RemoteMonitoring/_apis/build/status/Consolidated%20Repo%20-%20Java 
+[build-url]: https://solutionaccelerators.visualstudio.com/RemoteMonitoring/_build/latest?definitionId=25
 [issues-badge]: https://img.shields.io/github/issues/azure/pcs-storage-adapter-dotnet.svg
 [issues-url]: https://github.com/azure/pcs-storage-adapter-dotnet/issues
 [gitter-badge]: https://img.shields.io/gitter/room/azure/iot-solutions.js.svg
