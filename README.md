@@ -1,4 +1,4 @@
-[![Build status](https://solutionaccelerators.visualstudio.com/RemoteMonitoring/_apis/build/status/Consolidated%20Repo%20-%20Java)](https://solutionaccelerators.visualstudio.com/RemoteMonitoring/_build/latest?definitionId=25)
+[![Build][build-badge]][build-url]
 [![Issues][issues-badge]][issues-url]
 [![Gitter][gitter-badge]][gitter-url]
 
@@ -92,8 +92,8 @@ License
 Copyright (c) Microsoft Corporation. All rights reserved.
 Licensed under the [MIT](LICENSE) License.
 
-[build-badge]: https://solutionaccelerators.visualstudio.com/RemoteMonitoring/_apis/build/status/Consolidated%20Repo%20-%20Java
-[build-url]: https://solutionaccelerators.visualstudio.com/RemoteMonitoring/_apis/build/status/Consolidated%20Repo%20-%20Java
+[build-badge]: https://solutionaccelerators.visualstudio.com/RemoteMonitoring/_apis/build/status/Consolidated%20Repo%20-%20Java 
+[build-url]: https://solutionaccelerators.visualstudio.com/RemoteMonitoring/_build/latest?definitionId=25
 [issues-badge]: https://img.shields.io/github/issues/azure/azure-iot-pcs-remote-monitoring-java.svg
 [issues-url]: https://github.com/azure/azure-iot-pcs-remote-monitoring-java/issues
 [gitter-badge]: https://img.shields.io/gitter/room/azure/iot-solutions.js.svg
