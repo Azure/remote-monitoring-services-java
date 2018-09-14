@@ -2,14 +2,14 @@ Starting Microservices on local environment
 =====
 ### Steps to create Azure resources
 #### New Users
-1) Run the [start.(cmd|sh)](https://github.com/Azure/remote-monitoring-services-java/blob/master/scripts/local/launch/) script located under launch *(scripts/local/launch)* folder.    
+1) Run the [[start.cmd or start.sh]](https://github.com/Azure/remote-monitoring-services-java/blob/master/scripts/local/launch/) script (depending on your OS) located under launch *(scripts/local/launch)* folder.    
 2) Run the following script to set environment variables. The script is located under *(scripts/local/launch/os)* folder.\
-    i. [set-env-uri.(cmd|sh)](https://github.com/Azure/remote-monitoring-services-java/tree/master/scripts/local/launch/os)\
+    i. [set-env-uri.cmd or set-env-uri.sh](https://github.com/Azure/remote-monitoring-services-java/tree/master/scripts/local/launch/os)\
 ![start](https://user-images.githubusercontent.com/39531904/44435771-6ab08280-a566-11e8-93c9-e6f35e5df247.PNG)
 
 **Please Note:**
 1) *If you have cloned azure-iot-pcs-remote-monitoring-java repository, the scripts folder is present under services submodule (folder).*
-2) *This script requires **Node.js** to execute, please install Node (version < 8.11.2) before using this script. Also, this script might require administartive privileges or sudo permission as it tries to install [pcs-cli](https://github.com/Azure/pcs-cli) a cli interface for remote-monitoring deployments.*
+2) *The start script requires **Node.js** to execute, please install Node (version < 8.11.2) before using this script. Also, this script might require administartive privileges or sudo permission as it tries to install [pcs-cli](https://github.com/Azure/pcs-cli) a cli interface for remote-monitoring deployments.*
 &nbsp; 
 
 #### Existing Users
