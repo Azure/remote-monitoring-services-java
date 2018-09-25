@@ -23,6 +23,7 @@ public class Config implements IConfig {
     private final String APPLICATION_KEY = NAMESPACE + "iothub-manager.";
     private final String IOTHUB_CONNSTRING_KEY = APPLICATION_KEY + "iothub.connstring";
     private final String STORAGE_ADAPTER_WEBSERVICE_URL = APPLICATION_KEY + "storageadapter-webservice-url";
+    private final String CONFIG_WEBSERVICE_URL = APPLICATION_KEY + "config-webservice-url";
     private final String DEVICE_PROPERTIES_KEY = APPLICATION_KEY + "device-properties-cache.";
     private final String DEVICE_PROPERTIES_TTL = DEVICE_PROPERTIES_KEY + "TTL";
     private final String DEVICE_PROPERTIES_REBUILD_TIMEOUT = DEVICE_PROPERTIES_KEY + "rebuild_timeout";
@@ -57,7 +58,8 @@ public class Config implements IConfig {
 
         String cs = data.getString(IOTHUB_CONNSTRING_KEY);
         String storageadapterServiceUrl = data.getString(STORAGE_ADAPTER_WEBSERVICE_URL);
-        this.servicesConfig = new ServicesConfig(cs, storageadapterServiceUrl,
+        String configServiceUrl = data.getString(CONFIG_WEBSERVICE_URL);
+        this.servicesConfig = new ServicesConfig(cs, storageadapterServiceUrl, configServiceUrl,
             this.data.getInt(DEVICE_PROPERTIES_TTL),
             this.data.getInt(DEVICE_PROPERTIES_REBUILD_TIMEOUT),
             this.data.getStringList(DEVICE_PROPERTIES_WHITELIST_KEY)

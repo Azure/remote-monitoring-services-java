@@ -54,6 +54,7 @@ This service has a dependency on the following Azure resources. Follow the instr
 for [Deploy the Azure services](https://docs.microsoft.com/azure/iot-suite/iot-suite-remote-monitoring-deploy-local#deploy-the-azure-services) to deploy the required resources.
 
 * [Storage adapter microservice](https://github.com/Azure/pcs-storage-adapter-java)
+* [Configuration Microservice][configuration-microservice-url]
 
 > Note: you can also use a [deployed endpoint][deploy-rm] with [Authentication disabled][disable-auth] (e.g. https://{your-resource-group}.azurewebsites.net/config/v1)
 
@@ -66,6 +67,9 @@ In order to run the service, some environment variables need to be created at le
     *  More information on where to find your IoT Hub connection string [here][iothub-connstring-blog].
 * `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
     * The url for the [Storage adapter microservice](https://github.com/Azure/pcs-storage-adapter-java) from [Setup Dependencies](#setup-dependencies)
+* `PCS_CONFIG_WEBSERVICE_URL` = http://localhost:9005/v1
+    * The url for the [Config microservice][configuration-microservice-url] from
+    [Setup Dependencies](#setup-dependencies)
 
 # Running the service in an IDE
 
@@ -95,6 +99,7 @@ Steps using IntelliJ IDEA Community 2017, with SBT plugin enabled:
     * `PCS_AUTH_WEBSERVICE_URL` = http://localhost:9001/v1
     * `PCS_IOTHUB_CONNSTRING` = {your Azure IoT Hub connection string}
     * `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
+    * `PCS_CONFIG_WEBSERVICE_URL` = http://localhost:9005/v1
 * Either from the toolbar or the Run menu, execute the configuration just
   created, using the Debug command/button
 * Test that the service is up and running pointing your browser to
@@ -128,6 +133,7 @@ Steps using Eclipse Oxygen ("Eclipse for Java Developers" package):
     * `PCS_AUTH_WEBSERVICE_URL` = http://localhost:9001/v1
     * `PCS_IOTHUB_CONNSTRING` = {your Azure IoT Hub connection string}
     * `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
+    * `PCS_CONFIG_WEBSERVICE_URL` = http://localhost:9005/v1
 1. Use the scripts in the [scripts](scripts) folder for many frequent tasks:
 
 * `build`: compile all the projects and run the tests.
@@ -235,3 +241,4 @@ Licensed under the [MIT](LICENSE) License.
 [deploy-rm]:https://docs.microsoft.com/azure/iot-suite/iot-suite-remote-monitoring-deploy
 [disable-auth]:https://github.com/Azure/azure-iot-pcs-remote-monitoring-dotnet/wiki/Developer-Reference-Guide#disable-authentication
 [iothub-connstring-blog]:https://blogs.msdn.microsoft.com/iotdev/2017/05/09/understand-different-connection-strings-in-azure-iot-hub/
+[configuration-microservice-url]:https://github.com/Azure/remote-monitoring-services-java/tree/master/config

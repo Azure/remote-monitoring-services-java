@@ -20,6 +20,13 @@ public interface IServicesConfig {
      */
     String getStorageAdapterServiceUrl();
 
+    /**
+     * Get Config service URL.
+     *
+     * @return Config service URL
+     */
+    String getConfigServiceUrl();
+
     int getDevicePropertiesTTL();
     int getDevicePropertiesRebuildTimeout();
     List<String> getDevicePropertiesWhiteList();

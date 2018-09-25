@@ -11,36 +11,44 @@ public class ServicesConfig implements IServicesConfig {
 
     private String hubConnString;
     private String storageAdapterServiceUrl;
+    private String configServiceUrl;
     private int devicePropertiesTTL;
     private int devicePropertiesRebuildTimeout;
     private List<String> devicePropertiesWhiteList;
 
-    public ServicesConfig(final String hubConnString, final String storageAdapterServiceUrl,
-                          int devicePropertiesTTL, int devicePropertiesRebuildTimeout, List<String> devicePropertiesWhiteList) {
+    public ServicesConfig(final String hubConnString, final String storageAdapterServiceUrl, final String
+            configServiceUrl, int devicePropertiesTTL, int devicePropertiesRebuildTimeout, List<String>
+            devicePropertiesWhiteList) {
         this.hubConnString = hubConnString;
         this.storageAdapterServiceUrl = storageAdapterServiceUrl;
+        this.configServiceUrl = configServiceUrl;
         this.devicePropertiesWhiteList = devicePropertiesWhiteList;
         this.devicePropertiesTTL = devicePropertiesTTL;
         this.devicePropertiesRebuildTimeout = devicePropertiesRebuildTimeout;
     }
 
     /**
-     * Get Azure IoT Hub connection string.
-     *
-     * @return Connection string
+     * {@inheritDoc}
      */
+    @Override
     public String getHubConnString() {
         return this.hubConnString;
     }
 
     /**
-     * Get Storage Adapter service URL.
-     *
-     * @return Storage Adapter service URL
+     * {@inheritDoc}
      */
     @Override
     public String getStorageAdapterServiceUrl() {
         return storageAdapterServiceUrl;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getConfigServiceUrl() {
+        return this.configServiceUrl;
     }
 
     @Override

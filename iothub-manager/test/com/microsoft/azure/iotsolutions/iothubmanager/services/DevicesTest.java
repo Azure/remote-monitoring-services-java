@@ -57,7 +57,7 @@ public class DevicesTest {
         servicesConfig = config.getServicesConfig();
         storageAdapterClient = new StorageAdapterClient(
             mockWsClient,
-            new ServicesConfig(null, MockServiceUri, 0, 0, null));
+            new ServicesConfig(null, MockServiceUri, null, 0, 0, null));
         ioTHubWrapper = new IoTHubWrapper(servicesConfig);
         deviceService = new Devices(ioTHubWrapper, storageAdapterClient);
 

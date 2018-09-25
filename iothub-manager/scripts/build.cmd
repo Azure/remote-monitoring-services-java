@@ -56,6 +56,7 @@ IF "%1"=="--in-sandbox" GOTO :RunInSandbox
         -e PCS_AUTH_WEBSERVICE_URL ^
         -e PCS_IOTHUB_CONNSTRING ^
         -e PCS_STORAGEADAPTER_WEBSERVICE_URL ^
+        -e PCS_CONFIG_WEBSERVICE_URL ^
         -v %PCS_CACHE%\sandbox\.ivy2:/root/.ivy2 ^
         -v %PCS_CACHE%\sandbox\.sbt:/root/.sbt ^
         -v %APP_HOME%:/opt/code ^
