@@ -25,7 +25,7 @@ public final class DeviceRegistryApiModel {
     private AuthenticationMechanismApiModel authentication = null;
     private String ioTHubHostName = null;
     private HashMap<String, Object> tags;
-    private DeviceTwinProperties properties;
+    private TwinProperties properties;
     private boolean isSimulated;
 
     private final String dateFormatString = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
@@ -51,7 +51,7 @@ public final class DeviceRegistryApiModel {
         this.authentication = new AuthenticationMechanismApiModel(device.getAuthentication());
         this.ioTHubHostName = device.getIoTHubHostName();
 
-        DeviceTwinServiceModel twinModel = device.getTwin();
+        TwinServiceModel twinModel = device.getTwin();
         if (twinModel != null) {
             this.eTag = this.eTag + "|" + device.getTwin().getETag();
             this.properties = twinModel.getProperties();
@@ -157,11 +157,11 @@ public final class DeviceRegistryApiModel {
 
     @JsonProperty("Properties")
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    public DeviceTwinProperties getProperties() {
+    public TwinProperties getProperties() {
         return this.properties;
     }
 
-    public void setProperties(DeviceTwinProperties value) {
+    public void setProperties(TwinProperties value) {
         this.properties = value;
     }
 
@@ -176,7 +176,7 @@ public final class DeviceRegistryApiModel {
     }
 
     public DeviceServiceModel toServiceModel() {
-        DeviceTwinServiceModel twinServiceModel = new DeviceTwinServiceModel(
+        TwinServiceModel twinServiceModel = new TwinServiceModel(
             this.eTag,
             this.id,
             this.properties,

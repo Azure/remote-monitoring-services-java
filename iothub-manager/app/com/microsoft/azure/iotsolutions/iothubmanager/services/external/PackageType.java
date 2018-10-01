@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum PackageType {
     edgeManifest("EdgeManifest");
-    private String value;
+    private final String value;
     PackageType(String value) {
         this.value = value;
     }
