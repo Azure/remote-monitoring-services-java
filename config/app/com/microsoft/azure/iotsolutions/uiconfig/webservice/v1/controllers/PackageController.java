@@ -59,6 +59,7 @@ public class PackageController extends Controller {
      * a "type" and a file uploaded with the name "package".
      * @return Returns the result in the form of {@link PackageApiModel}
      */
+    @Authorize("CreatePackages")
     public CompletionStage<Result> createAsync() throws BaseException, BadRequestException, IOException {
         final MultipartFormData formData = request().body().asMultipartFormData();
         if (formData == null) {
@@ -91,6 +92,7 @@ public class PackageController extends Controller {
      * Deletes a package from storage
      * @param id Id of the package to be deleted
      */
+    @Authorize("DeletePackages")
     public CompletionStage<Result> deleteAsync(String id) throws BaseException {
         return storage.deletePackageAsync(id).thenApplyAsync(m -> ok());
     }
