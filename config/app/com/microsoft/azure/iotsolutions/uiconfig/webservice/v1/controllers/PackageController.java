@@ -6,6 +6,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.microsoft.azure.iotsolutions.uiconfig.services.IStorage;
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.BaseException;
+import com.microsoft.azure.iotsolutions.uiconfig.webservice.auth.Authorize;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.PackageType;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.exceptions.BadRequestException;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models.PackageApiModel;

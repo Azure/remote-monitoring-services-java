@@ -112,7 +112,7 @@ public class DevicesUnitTest {
             final String pattern = "(?i)" + query;
 
             when(this.deviceTwinClient.queryTwinCollection(matches(pattern))).thenReturn(this.queryCollection);
-            when(this.deviceTwinClient.hasNext(this.queryCollection)).thenReturn(true);
+            when(this.deviceTwinClient.hasNext(this.queryCollection)).thenReturn(true, false);
 
             final QueryCollectionResponse<DeviceTwinDevice> response = this.createQueryResponse(deviceId, moduleId);
             when(this.deviceTwinClient.next(eq(this.queryCollection), any())).thenReturn(response);
@@ -133,7 +133,7 @@ public class DevicesUnitTest {
         final String pattern = "(?i)" + query;
 
         when(this.deviceTwinClient.queryTwinCollection(matches(queryToMatch))).thenReturn(this.queryCollection);
-        when(this.deviceTwinClient.hasNext(this.queryCollection)).thenReturn(true);
+        when(this.deviceTwinClient.hasNext(this.queryCollection)).thenReturn(true, false);
         final QueryCollectionResponse<DeviceTwinDevice> response = this.createQueryResponse("test", "test");
         when(this.deviceTwinClient.next(eq(this.queryCollection), any())).thenReturn(response);
 
