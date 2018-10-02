@@ -19,7 +19,7 @@ services:
   reverseproxy:
     image: azureiotpcs/remote-monitoring-nginx:testing
     ports:
-      - "8080:80"
+      - "8080:10080"
     depends_on:
       - webui
       - auth
@@ -39,6 +39,7 @@ services:
       - devicesimulation
       - telemetry
       - config
+      - diagnostics
   # NOTE: Volumes disabled for local development, uncomment if enabling auth
   # volumes:
   #   - ./webui-config.js:/app/build/webui-config.js:ro
@@ -55,8 +56,10 @@ services:
   iothubmanager:
     image: azureiotpcs/iothub-manager-java:testing
     depends_on:
+      - auth
       - storageadapter
     environment:
+      - PCS_AUTH_WEBSERVICE_URL=http://auth:9001/v1
       - PCS_IOTHUB_CONNSTRING
       - PCS_STORAGEADAPTER_WEBSERVICE_URL=http://storageadapter:9022/v1
       - PCS_AUTH_ISSUER
@@ -66,7 +69,7 @@ services:
       - PCS_APPLICATION_SECRET
 
   devicesimulation:
-    image: azureiotpcs/device-simulation-dotnet:testing
+    image: azureiotpcs/device-simulation-dotnet:DS-1.0.2
     depends_on:
       - storageadapter
     environment:
@@ -83,34 +86,46 @@ services:
   #   - ./my-device-models:/app/data:ro
 
   telemetry:
-    image: azureiotpcs/telemetry-dotnet:testing
+    image: azureiotpcs/telemetry-java:testing
     depends_on:
+      - auth
       - storageadapter
     environment:
+      - PCS_AUTH_WEBSERVICE_URL=http://auth:9001/v1
       - PCS_TELEMETRY_DOCUMENTDB_CONNSTRING
       - PCS_STORAGEADAPTER_WEBSERVICE_URL=http://storageadapter:9022/v1
+      - PCS_DIAGNOSTICS_WEBSERVICE_URL=http://diagnostics:9006/v1
       - PCS_AUTH_ISSUER
       - PCS_AUTH_AUDIENCE
       - PCS_AUTH_REQUIRED
       - PCS_CORS_WHITELIST
       - PCS_APPLICATION_SECRET
+      - PCS_AAD_TENANT
+      - PCS_AAD_APPID
+      - PCS_AAD_APPSECRET
+      - PCS_TELEMETRY_STORAGE_TYPE
+      - PCS_TSI_FQDN
 
   config:
     image: azureiotpcs/pcs-config-java:testing
     depends_on:
+      - auth
       - storageadapter
       - devicesimulation
       - telemetry
     environment:
+      - PCS_AUTH_WEBSERVICE_URL=http://auth:9001/v1
       - PCS_STORAGEADAPTER_WEBSERVICE_URL=http://storageadapter:9022/v1
       - PCS_DEVICESIMULATION_WEBSERVICE_URL=http://devicesimulation:9003/v1
       - PCS_TELEMETRY_WEBSERVICE_URL=http://telemetry:9004/v1
-      - PCS_BINGMAP_KEY
+      - PCS_SOLUTION_TYPE
+      - PCS_AZUREMAPS_KEY
       - PCS_AUTH_ISSUER
       - PCS_AUTH_AUDIENCE
       - PCS_AUTH_REQUIRED
       - PCS_CORS_WHITELIST
       - PCS_APPLICATION_SECRET
+      - PCS_SEED_TEMPLATE
 
   storageadapter:
     image: azureiotpcs/pcs-storage-adapter-java:testing
@@ -122,26 +137,44 @@ services:
       - PCS_CORS_WHITELIST
       - PCS_APPLICATION_SECRET
 
-  telemetryagent:
-    image: azureiotpcs/telemetry-agent-java:testing
+  asamanager:
+    image: azureiotpcs/asa-manager-dotnet:testing
     depends_on:
       - telemetry
       - iothubmanager
       - config
     environment:
-      - PCS_TELEMETRYAGENT_DOCUMENTDB_CONNSTRING
+      - PCS_TELEMETRY_DOCUMENTDB_CONNSTRING
       - PCS_TELEMETRY_WEBSERVICE_URL=http://telemetry:9004/v1
       - PCS_CONFIG_WEBSERVICE_URL=http://config:9005/v1
       - PCS_IOTHUBMANAGER_WEBSERVICE_URL=http://iothubmanager:9002/v1
-      - PCS_IOTHUBREACT_AZUREBLOB_ACCOUNT
-      - PCS_IOTHUBREACT_AZUREBLOB_KEY
-      - PCS_IOTHUBREACT_AZUREBLOB_ENDPOINT_SUFFIX
-      - PCS_IOTHUBREACT_HUB_NAME
-      - PCS_IOTHUBREACT_HUB_ENDPOINT
-      - PCS_IOTHUBREACT_HUB_PARTITIONS
-      - PCS_IOTHUBREACT_ACCESS_CONNSTRING
+      - PCS_ASA_DATA_AZUREBLOB_ACCOUNT
+      - PCS_ASA_DATA_AZUREBLOB_KEY
+      - PCS_ASA_DATA_AZUREBLOB_ENDPOINT_SUFFIX
+      - PCS_EVENTHUB_CONNSTRING
+      - PCS_EVENTHUB_NAME
+      - PCS_AUTH_REQUIRED
+      - PCS_CORS_WHITELIST
+      - PCS_AUTH_ISSUER
+      - PCS_AUTH_AUDIENCE
+      - PCS_APPLICATION_SECRET
+      - PCS_TELEMETRY_STORAGE_TYPE
+
+  diagnostics:
+    image: azureiotpcs/pcs-diagnostics-dotnet:testing
+    depends_on:
+      - config
+    environment:
+      - PCS_LOG_LEVEL
       - PCS_AUTH_ISSUER
       - PCS_AUTH_AUDIENCE
       - PCS_AUTH_REQUIRED
       - PCS_CORS_WHITELIST
-      - PCS_APPLICATION_SECRET
+      - PCS_CLOUD_TYPE
+      - PCS_SUBSCRIPTION_ID
+      - PCS_SOLUTION_TYPE
+      - PCS_SOLUTION_NAME
+      - PCS_DEPLOYMENT_ID
+      - PCS_IOTHUB_NAME
+      - PCS_DIAGNOSTICS_ENDPOINT_URL
+      - PCS_CONFIG_WEBSERVICE_URL=http://config:9005/v1
