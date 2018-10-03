@@ -20,7 +20,6 @@ services:
       - PCS_AUTH_WEBSERVICE_URL
       - PCS_IOTHUB_CONNSTRING
       - PCS_STORAGEADAPTER_WEBSERVICE_URL
-      - PCS_CONFIG_WEBSERVICE_URL
   auth:
     image: azureiotpcs/pcs-auth-dotnet:testing
     ports:

@@ -24,7 +24,6 @@ docker run -it -p 9002:9002 ^
     -e PCS_AUTH_WEBSERVICE_URL ^
     -e PCS_IOTHUB_CONNSTRING ^
     -e PCS_STORAGEADAPTER_WEBSERVICE_URL ^
-    -e PCS_CONFIG_WEBSERVICE_URL ^
     %DOCKER_IMAGE%:testing
 
 :: - - - - - - - - - - - - - -
