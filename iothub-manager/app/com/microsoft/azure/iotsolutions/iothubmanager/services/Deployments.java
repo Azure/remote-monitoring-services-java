@@ -280,20 +280,13 @@ public final class Deployments implements IDeployments {
     private static Configuration createEdgeConfiguration(final DeploymentServiceModel deployment) throws InvalidInputException {
         final String deploymentId = UUID.randomUUID().toString();
         final Configuration edgeConfiguration = new Configuration(deploymentId);
-        String packageContent;
 
-        try {
-            packageContent = deployment.getPackageContent();
-            JsonNode node = Json.parse(packageContent);
-            JsonNode schemaVersionNode = Json.parse(packageContent).get(SCHEMA_VERSION);
-            if (schemaVersionNode == null || StringUtils.isEmpty(schemaVersionNode.toString())) {
-                node = ((ObjectNode) node).put(SCHEMA_VERSION, "1.0");
-                packageContent = Json.toJson(node).toString();
-            }
-        } catch(Exception e) {
-            final String message = "Package provided is not a valid deployment manifest";
-            log.error(message, e);
-            throw new InvalidInputException(message);
+        String packageContent = deployment.getPackageContent();
+        JsonNode node = Json.parse(packageContent);
+        JsonNode schemaVersionNode = Json.parse(packageContent).get(SCHEMA_VERSION);
+        if (schemaVersionNode == null || StringUtils.isEmpty(schemaVersionNode.toString())) {
+            node = ((ObjectNode) node).put(SCHEMA_VERSION, "1.0");
+            packageContent = Json.toJson(node).toString();
         }
 
         final Configuration pkgConfiguration = fromJson(Json.parse(packageContent), Configuration.class);
