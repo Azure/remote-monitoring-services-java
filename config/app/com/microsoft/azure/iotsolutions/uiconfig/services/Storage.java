@@ -220,7 +220,10 @@ public class Storage implements IStorage {
     @Override
     public CompletionStage<Package> addPackageAsync(Package input) throws BaseException {
         try {
-            fromJson(input.getContent(), Configuration.class);
+            Configuration config = fromJson(input.getContent(), Configuration.class);
+            if (config.getContent() == null) {
+                throw new InvalidInputException("Manifest provided is valid json but not a valid manifest");
+            }
         } catch(Exception e) {
             final String message = "Package provided is not a valid deployment manifest";
             log.error(message, e);
