@@ -5,6 +5,7 @@ package com.microsoft.azure.iotsolutions.uiconfig.services;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.Lists;
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.BaseException;
+import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.ResourceNotFoundException;
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.IStorageAdapterClient;
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.ValueApiModel;
@@ -12,14 +13,17 @@ import com.microsoft.azure.iotsolutions.uiconfig.services.external.ValueListApiM
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.*;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.Package;
 import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.ServicesConfig;
+import com.microsoft.azure.sdk.iot.service.Configuration;
 import helpers.Random;
 import helpers.UnitTest;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormatter;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 import play.libs.Json;
 
@@ -47,6 +51,9 @@ public class StorageTest {
     private static final String DEVICE_GROUPS_COLLECTION_ID = "devicegroups";
     private static final String PACKAGES_COLLECTION_ID = "packages";
     private static final int TIMEOUT = 100000;
+
+    @Rule
+    public final ExpectedException exception = ExpectedException.none();
 
     @Before
     public void setUp() throws URISyntaxException, IOException {
@@ -354,7 +361,7 @@ public class StorageTest {
     @Test
     @Category({UnitTest.class})
     public void addPackageTest() throws BaseException, ExecutionException, InterruptedException {
-        Package pkg = new Package(null, rand.NextString(), PackageType.edgeManifest, rand.NextString());
+        Package pkg = new Package(null, rand.NextString(), PackageType.edgeManifest, this.createConfiguration());
 
         ValueApiModel model = new ValueApiModel(rand.NextString(), null, null, null);
         model.setData(Json.stringify(Json.toJson(pkg)));
@@ -367,6 +374,15 @@ public class StorageTest {
         assertEquals(pkg.getName(), result.getName());
         assertEquals(pkg.getType(), result.getType());
         assertEquals(pkg.getContent(), result.getContent());
+    }
+
+    @Test
+    @Category({UnitTest.class})
+    public void invalidPackageTest() throws BaseException, ExecutionException, InterruptedException {
+        Package pkg = new Package(null, rand.NextString(), PackageType.edgeManifest, rand.NextString());
+
+        exception.expect(InvalidInputException.class);
+        storage.addPackageAsync(pkg).toCompletableFuture().get();
     }
 
     @Test(timeout = StorageTest.TIMEOUT)
@@ -416,5 +432,11 @@ public class StorageTest {
         model.Items = items;
         Mockito.when(mockClient.getAllAsync(Mockito.eq(collectionId)))
                 .thenReturn(CompletableFuture.supplyAsync(() -> model));
+    }
+
+    private String createConfiguration() {
+        final Configuration config = new Configuration("test");
+        config.setPriority(10);
+        return Json.toJson(config).toString();
     }
 }

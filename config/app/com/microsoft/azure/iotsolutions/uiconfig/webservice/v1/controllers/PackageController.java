@@ -70,7 +70,7 @@ public class PackageController extends Controller {
                 ArrayUtils.isEmpty(data.get(PACKAGE_TYPE_PARAM)) ||
                 StringUtils.isEmpty(data.get(PACKAGE_TYPE_PARAM)[0])) {
             throw new BadRequestException(String.format("Package type not provided. Please specify %s " +
-                    "parameter"));
+                    "parameter", PACKAGE_TYPE_PARAM));
         }
 
         final MultipartFormData.FilePart<File> file = formData.getFile(FILE_PARAM);
@@ -80,7 +80,7 @@ public class PackageController extends Controller {
         }
 
         final String content = new String(Files.readAllBytes(file.getFile().toPath()));
-        final String packageType = data.get("type")[0];
+        final String packageType = data.get(PACKAGE_TYPE_PARAM)[0];
         final PackageApiModel input = new PackageApiModel(file.getFilename(),
                 EnumUtils.getEnumIgnoreCase(PackageType.class, packageType), content);
         return storage.addPackageAsync(input.ToServiceModel()).thenApplyAsync(m -> ok(toJson(new

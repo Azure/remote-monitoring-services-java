@@ -18,6 +18,7 @@ import com.microsoft.azure.sdk.iot.service.devicetwin.DeviceTwin;
 import com.microsoft.azure.sdk.iot.service.devicetwin.DeviceTwinDevice;
 import com.microsoft.azure.sdk.iot.service.devicetwin.Query;
 import com.microsoft.azure.sdk.iot.service.devicetwin.SqlQuery;
+import com.microsoft.azure.sdk.iot.service.exceptions.IotHubBadFormatException;
 import com.microsoft.azure.sdk.iot.service.exceptions.IotHubException;
 import com.microsoft.azure.sdk.iot.service.exceptions.IotHubNotFoundException;
 import org.apache.commons.lang3.BooleanUtils;
@@ -182,6 +183,10 @@ public final class Deployments implements IDeployments {
             final Configuration result = this.registry.addConfiguration(edgeConfig);
             return CompletableFuture.completedFuture(new DeploymentServiceModel(result));
         }
+        catch (IotHubBadFormatException e) {
+            log.error("Unable to create deployment. Verify the format of your query.", e);
+            throw new InvalidInputException(e.toString());
+        }
         catch (InvalidInputException e) {
             log.error("Unable to create deployment. Invalid group or package information provided", e);
             throw new CompletionException(e);
@@ -275,14 +280,22 @@ public final class Deployments implements IDeployments {
     private static Configuration createEdgeConfiguration(final DeploymentServiceModel deployment) throws InvalidInputException {
         final String deploymentId = UUID.randomUUID().toString();
         final Configuration edgeConfiguration = new Configuration(deploymentId);
+        String packageContent;
 
-        String packageContent = deployment.getPackageContent();
-        JsonNode node = Json.parse(packageContent);
-        JsonNode schemaVersionNode = Json.parse(packageContent).get(SCHEMA_VERSION);
-        if (schemaVersionNode == null || StringUtils.isEmpty(schemaVersionNode.toString())) {
-            node = ((ObjectNode)node).put(SCHEMA_VERSION, "1.0");
-            packageContent = Json.toJson(node).toString();
+        try {
+            packageContent = deployment.getPackageContent();
+            JsonNode node = Json.parse(packageContent);
+            JsonNode schemaVersionNode = Json.parse(packageContent).get(SCHEMA_VERSION);
+            if (schemaVersionNode == null || StringUtils.isEmpty(schemaVersionNode.toString())) {
+                node = ((ObjectNode) node).put(SCHEMA_VERSION, "1.0");
+                packageContent = Json.toJson(node).toString();
+            }
+        } catch(Exception e) {
+            final String message = "Package provided is not a valid deployment manifest";
+            log.error(message, e);
+            throw new InvalidInputException(message);
         }
+
         final Configuration pkgConfiguration = fromJson(Json.parse(packageContent), Configuration.class);
         edgeConfiguration.setContent(pkgConfiguration.getContent());
 

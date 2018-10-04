@@ -2,10 +2,12 @@
 
 package com.microsoft.azure.iotsolutions.uiconfig.services;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.BaseException;
+import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.ResourceNotFoundException;
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.IStorageAdapterClient;
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.ValueApiModel;
@@ -14,6 +16,7 @@ import com.microsoft.azure.iotsolutions.uiconfig.services.models.Logo;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.Package;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.Theme;
 import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.IServicesConfig;
+import com.microsoft.azure.sdk.iot.service.Configuration;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -216,8 +219,16 @@ public class Storage implements IStorage {
      */
     @Override
     public CompletionStage<Package> addPackageAsync(Package input) throws BaseException {
+        try {
+            fromJson(input.getContent(), Configuration.class);
+        } catch(Exception e) {
+            final String message = "Package provided is not a valid deployment manifest";
+            log.error(message, e);
+            throw new InvalidInputException(message);
+        }
+
         input.setDateCreated(Storage.DATE_FORMAT.print(DateTime.now().toDateTime(DateTimeZone.UTC)));
-        String value = toJson(input);
+        final String value = toJson(input);
         return client.createAsync(PackagesCollectionId, value).thenApplyAsync(p ->
             Storage.createPackage(p)
         );
