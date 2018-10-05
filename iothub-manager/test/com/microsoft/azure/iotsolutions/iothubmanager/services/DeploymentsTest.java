@@ -35,8 +35,10 @@ public class DeploymentsTest {
     private final Deployments deployments;
     private static final String DEPLOYMENT_NAME_LABEL = "Name";
     private static final String DEPLOYMENT_GROUP_ID_LABEL = "DeviceGroupId";
-    private static final String DEPLOYMENT_PACKAGE_ID_LABEL = "PackageId";
+    private static final String DEPLOYMENT_GROUP_NAME_LABEL = "DeviceGroupName";
+    private static final String DEPLOYMENT_PACKAGE_NAME_LABEL = "PackageName";
     private static final String RM_CREATED_LABEL = "RMDeployment";
+
 
     @Mock
     private RegistryManager registry;
@@ -64,6 +66,7 @@ public class DeploymentsTest {
     public void createDeploymentTest(String deploymentName, String deviceGroupId,
                                     String dvcGroupQuery, boolean addPackageContent, int priority,
                                     boolean exceptionExpected) throws Exception {
+        // Arrange
         // Provides a different value to ensure that the configuration object returned
         // from creating the deployment is different than the one provided to the registry manager
         final String registryManagerDeploymentId = "test-config";
@@ -78,14 +81,17 @@ public class DeploymentsTest {
 
         final DeploymentServiceModel model = new DeploymentServiceModel(deploymentName,
                                                                         deviceGroupId,
+                                                                        StringUtils.EMPTY,
                                                                         dvcGroupQuery,
                                                                         packageContent,
+                                                                        StringUtils.EMPTY,
                                                                         priority,
                                                                         DeploymentType.edgeManifest);
 
         final IsValidConfiguration isValidConfig = new IsValidConfiguration(deploymentName, deviceGroupId);
         when(this.registry.addConfiguration(argThat(isValidConfig))).thenReturn(config);
 
+        // Act & Assert
         if (exceptionExpected) {
             exception.expect(InvalidInputException.class);
             this.deployments.createAsync(model).toCompletableFuture().get();
@@ -101,36 +107,50 @@ public class DeploymentsTest {
     @Test
     @Parameters({"0","1","5"})
     public void getDeploymentsTest(int numDeployments) throws Exception {
+        // Arrange
         List<Configuration> configurations = new ArrayList<>();
         for (int i = numDeployments - 1; i >= 0; i--) {
             configurations.add(this.createConfiguration(i, true));
         }
 
         when(this.registry.getConfigurations(20)).thenReturn(configurations);
+
+        // Act
         DeploymentServiceListModel returnedDeployments = this.deployments.listAsync().toCompletableFuture()
                 .get();
         assertEquals(numDeployments, returnedDeployments.getItems().size());
 
-        // verify deployments are ordered by name
+        // Assert - verify deployments are ordered by name
         for (int i = 0; i < numDeployments; i++)
         {
-            assertEquals("deployment" + i, returnedDeployments.getItems().get(i).getName());
+            final DeploymentServiceModel deployment = returnedDeployments.getItems().get(i);
+            assertEquals("deployment" + i, deployment.getName());
+            assertEquals("dvcGroupId" + i, deployment.getDeviceGroupId());
+            assertEquals("dvcGroupName" + i, deployment.getDeviceGroupName());
+            assertEquals("packageName" + i, deployment.getPackageName());
         }
     }
 
     @Test
     public void filterOutNonRmDeploymentsTest() throws Exception {
-
+        // Arrange
         final List<Configuration> configurations = new ArrayList<>();
         configurations.add(this.createConfiguration(0, true));
         configurations.add(this.createConfiguration(1, false));
 
         when(this.registry.getConfigurations(20)).thenReturn(configurations);
+
+        // Act
         DeploymentServiceListModel returnedDeployments = this.deployments.listAsync().toCompletableFuture()
                 .get();
 
+        // Assert
         assertEquals(1, returnedDeployments.getItems().size());
+        final DeploymentServiceModel deployment = returnedDeployments.getItems().get(0);
         assertEquals("deployment0", returnedDeployments.getItems().get(0).getName());
+        assertEquals("dvcGroupId0", deployment.getDeviceGroupId());
+        assertEquals("dvcGroupName0", deployment.getDeviceGroupName());
+        assertEquals("packageName0", deployment.getPackageName());
     }
 
     private Configuration createConfiguration(int idx, boolean addCreatedByRmLabel)
@@ -140,7 +160,8 @@ public class DeploymentsTest {
             {
                 put(DEPLOYMENT_NAME_LABEL, "deployment" + idx);
                 put(DEPLOYMENT_GROUP_ID_LABEL, "dvcGroupId" + idx);
-                put(DEPLOYMENT_PACKAGE_ID_LABEL, "packageId" + idx);
+                put(DEPLOYMENT_GROUP_NAME_LABEL, "dvcGroupName" + idx);
+                put(DEPLOYMENT_PACKAGE_NAME_LABEL, "packageName" + idx);
             }
         };
         conf.setLabels(labels);

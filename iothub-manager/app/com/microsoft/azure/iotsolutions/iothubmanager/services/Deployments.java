@@ -48,11 +48,15 @@ public final class Deployments implements IDeployments {
 
     private static final String DEPLOYMENT_NAME_LABEL = "Name";
     private static final String DEPLOYMENT_GROUP_ID_LABEL = "DeviceGroupId";
+    private static final String DEPLOYMENT_GROUP_NAME_LABEL = "DeviceGroupName";
+    private static final String DEPLOYMENT_PACKAGE_NAME_LABEL = "PackageName";
     private static final String RM_CREATED_LABEL = "RMDeployment";
+
     private static final String DEVICE_GROUP_ID_PARAM = "deviceGroupId";
     private static final String DEVICE_GROUP_QUERY_PARAM = "deviceGroupQuery";
     private static final String NAME_PARAM = "name";
     private static final String PACKAGE_CONTENT_PARAM = "packageContent";
+
     private static final String SCHEMA_VERSION = "schemaVersion";
     private static final String APPLIED_DEVICES_QUERY =
             "moduleId = '$edgeAgent' and configurations.[[%s]].status = 'Applied'";
@@ -168,11 +172,11 @@ public final class Deployments implements IDeployments {
     @Override
     public CompletionStage<DeploymentServiceModel> createAsync(DeploymentServiceModel deployment) throws
             InvalidInputException {
+        // Required labels
         this.verifyDeploymentArgument(DEVICE_GROUP_ID_PARAM, deployment.getDeviceGroupId());
         this.verifyDeploymentArgument(DEVICE_GROUP_QUERY_PARAM, deployment.getDeviceGroupQuery());
         this.verifyDeploymentArgument(NAME_PARAM, deployment.getName());
         this.verifyDeploymentArgument(PACKAGE_CONTENT_PARAM, deployment.getPackageContent());
-        this.verifyDeploymentArgument(DEVICE_GROUP_ID_PARAM, deployment.getDeviceGroupId());
 
         if (deployment.getPriority() < 0) {
             throw new InvalidInputException("Invalid input. A priority should be provided greater than 0.");
@@ -302,9 +306,19 @@ public final class Deployments implements IDeployments {
         }
         final Map<String, String> labels = edgeConfiguration.getLabels();
 
+        // Required labels
         labels.put(DEPLOYMENT_NAME_LABEL, deployment.getName());
         labels.put(DEPLOYMENT_GROUP_ID_LABEL, deployment.getDeviceGroupId());
         labels.put(RM_CREATED_LABEL, Boolean.TRUE.toString());
+
+        // Add optional labels
+        if (deployment.getDeviceGroupName() != null) {
+            labels.put(DEPLOYMENT_GROUP_NAME_LABEL, deployment.getDeviceGroupName());
+        }
+        if (deployment.getPackageName() != null) {
+            labels.put(DEPLOYMENT_PACKAGE_NAME_LABEL, deployment.getPackageName());
+        }
+
         return edgeConfiguration;
     }
 

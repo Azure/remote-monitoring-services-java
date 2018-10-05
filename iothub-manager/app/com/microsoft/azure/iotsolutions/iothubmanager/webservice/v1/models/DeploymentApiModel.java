@@ -11,21 +11,25 @@ public class DeploymentApiModel {
     private String name;
     private String createdDateTimeUtc;
     private String deviceGroupId;
+    private String deviceGroupName;
     private String deviceGroupQuery;
     private String packageContent;
+    private String packageName;
     private int priority;
     private DeploymentType type;
     private DeploymentMetricsApiModel metrics;
 
     public DeploymentApiModel() {}
 
-    public DeploymentApiModel(String deploymentName, String deviceGroupId,
-                              String deviceGroupQuery, String packageContent, int priority,
-                              DeploymentType deploymentType) {
+    public DeploymentApiModel(String deploymentName, String deviceGroupId, String deviceGroupName,
+                              String deviceGroupQuery, String packageContent, String packageName,
+                              int priority, DeploymentType deploymentType) {
         this.name = deploymentName;
         this.deviceGroupId = deviceGroupId;
+        this.deviceGroupName = deviceGroupName;
         this.deviceGroupQuery = deviceGroupQuery;
         this.packageContent = packageContent;
+        this.packageName = packageName;
         this.priority = priority;
         this.type = deploymentType;
     }
@@ -34,9 +38,11 @@ public class DeploymentApiModel {
         this.createdDateTimeUtc = serviceModel.getCreatedDateTimeUtc();
         this.id = serviceModel.getId();
         this.deviceGroupId = serviceModel.getDeviceGroupId();
+        this.deviceGroupName = serviceModel.getDeviceGroupName();
         this.deviceGroupQuery = serviceModel.getDeviceGroupQuery();
         this.name = serviceModel.getName();
         this.packageContent = serviceModel.getPackageContent();
+        this.packageName = serviceModel.getPackageName();
         this.priority = serviceModel.getPriority();
         this.type = serviceModel.getType();
         this.metrics = new DeploymentMetricsApiModel(serviceModel.getDeploymentMetrics());
@@ -62,6 +68,9 @@ public class DeploymentApiModel {
         return this.deviceGroupId;
     }
 
+    @JsonProperty("DeviceGroupName")
+    public String getDeviceGroupName() { return this.deviceGroupName; }
+
     @JsonProperty("DeviceGroupQuery")
     public String getDeviceGroupQuery() {
         return this.deviceGroupQuery;
@@ -71,6 +80,9 @@ public class DeploymentApiModel {
     public String getPackageContent() {
         return this.packageContent;
     }
+
+    @JsonProperty("PackageName")
+    public String getPackageName() { return this.packageName; }
 
     @JsonProperty("Priority")
     public int getPriority() {
@@ -90,8 +102,10 @@ public class DeploymentApiModel {
     public DeploymentServiceModel toServiceModel() {
         return new DeploymentServiceModel(this.name,
                                           this.deviceGroupId,
+                                          this.deviceGroupName,
                                           this.deviceGroupQuery,
                                           this.packageContent,
+                                          this.packageName,
                                           this.priority,
                                           this.type);
     }

@@ -12,6 +12,7 @@ import com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models.Deplo
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models.DeploymentListApiModel;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -33,8 +34,10 @@ import static org.mockito.Mockito.when;
 public class DeploymentsControllerTest {
     private static final String DEPLOYMENT_NAME = "depname";
     private static final String DEVICE_GROUP_ID = "dvcGroupId";
+    private static final String DEVICE_GROUP_NAME = "dvcGroupName";
     private static final String DEVICE_GROUP_QUERY = "dvcGroupQuery";
     private static final String PACKAGE_CONTENT = "packageContent";
+    private static final String PACKAGE_NAME = "packageName";
     private static final String DEPLOYMENT_ID = "dvcGroupId-packageId";
     private static final int PRIORITY = 10;
 
@@ -56,8 +59,10 @@ public class DeploymentsControllerTest {
         // Arrange
         DeploymentServiceModel deploymentModel = new DeploymentServiceModel(DEPLOYMENT_NAME,
                                                                             DEVICE_GROUP_ID,
+                                                                            DEVICE_GROUP_NAME,
                                                                             DEVICE_GROUP_QUERY,
                                                                             PACKAGE_CONTENT,
+                                                                            PACKAGE_NAME,
                                                                             PRIORITY,
                                                                             DeploymentType.edgeManifest);
 
@@ -82,8 +87,10 @@ public class DeploymentsControllerTest {
         for(int i = 0; i < numDeployments; i++) {
             DeploymentServiceModel dep = new DeploymentServiceModel(DEPLOYMENT_NAME + i,
                                                                     DEVICE_GROUP_ID + i,
+                                                                    DEVICE_GROUP_NAME + i,
                                                                     DEVICE_GROUP_QUERY + i,
                                                                     PACKAGE_CONTENT + i,
+                                                                    PACKAGE_NAME + i,
                                                                     PRIORITY + i,
                                                                     DeploymentType.edgeManifest);
             deploymentsList.add(dep);
@@ -103,6 +110,8 @@ public class DeploymentsControllerTest {
             final DeploymentApiModel deployment = deployments.getItems().get(i);
             assertEquals(DEPLOYMENT_NAME + i, deployment.getName());
             assertEquals(DEVICE_GROUP_ID + i, deployment.getDeviceGroupId());
+            assertEquals(DEVICE_GROUP_NAME + i, deployment.getDeviceGroupName());
+            assertEquals(PACKAGE_NAME + i, deployment.getPackageName());
             assertEquals(PRIORITY + i, deployment.getPriority());
         }
     }
@@ -123,13 +132,14 @@ public class DeploymentsControllerTest {
                 deviceGroupQuery, packageContent, priority);
 
         final DeploymentServiceModel deploymentMode = new DeploymentServiceModel(deploymentName,
-                deviceGroupId, packageContent,
+                deviceGroupId, StringUtils.EMPTY, packageContent, StringUtils.EMPTY,
                 deploymentName, priority, DeploymentType.edgeManifest);
         when(this.deployments.createAsync(argThat(matchesDeployment))).thenReturn(completedFuture
                 (deploymentMode));
 
         final DeploymentApiModel depApiModel = new DeploymentApiModel(deploymentName, deviceGroupId,
-                deviceGroupQuery, packageContent, priority, DeploymentType.edgeManifest);
+                StringUtils.EMPTY, deviceGroupQuery, packageContent, StringUtils.EMPTY, priority,
+                DeploymentType.edgeManifest);
 
         // Act
         TestUtils.setRequest(depApiModel);

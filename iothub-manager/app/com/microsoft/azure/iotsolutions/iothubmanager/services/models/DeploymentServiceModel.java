@@ -12,28 +12,36 @@ public class DeploymentServiceModel {
 
     private final static String DEPLOYMENT_NAME_LABEL = "Name";
     private final static String DEPLOYMENT_GROUP_ID_LABEL = "DeviceGroupId";
+    private final static String DEPLOYMENT_GROUP_NAME_LABEL = "DeviceGroupName";
+    private final static String DEPLOYMENT_PACKAGE_NAME_LABEL = "PackageName";
     private final static String DATE_FORMAT_STRING = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
     private String id;
     private String name;
-    private String packageContent;
     private String deviceGroupId;
+    private String deviceGroupName;
     private String deviceGroupQuery;
-    private String createdDateTimeUtc;
+    private String packageContent;
+    private String packageName;
     private int priority;
+    private String createdDateTimeUtc;
     private DeploymentType type;
     private DeploymentMetrics deploymentMetrics;
 
     public DeploymentServiceModel(final String name,
                                   final String deviceGroupId,
+                                  final String deviceGroupName,
                                   final String deviceGroupQuery,
                                   final String packageContent,
+                                  final String packageName,
                                   final int priority,
                                   final DeploymentType type) {
         this.deviceGroupId = deviceGroupId;
+        this.deviceGroupName = deviceGroupName;
         this.deviceGroupQuery = deviceGroupQuery;
         this.packageContent = packageContent;
         this.name = name;
+        this.packageName = packageName;
         this.priority = priority;
         this.type = type;
     }
@@ -53,6 +61,14 @@ public class DeploymentServiceModel {
         this.id = config.getId();
         this.name = config.getLabels().get(DEPLOYMENT_NAME_LABEL);
         this.deviceGroupId = config.getLabels().get(DEPLOYMENT_GROUP_ID_LABEL);
+
+        if (config.getLabels().containsKey(DEPLOYMENT_GROUP_NAME_LABEL)) {
+            this.deviceGroupName = config.getLabels().get(DEPLOYMENT_GROUP_NAME_LABEL);
+        }
+        if (config.getLabels().containsKey(DEPLOYMENT_PACKAGE_NAME_LABEL)) {
+            this.packageName = config.getLabels().get(DEPLOYMENT_PACKAGE_NAME_LABEL);
+        }
+
         this.createdDateTimeUtc =  this.formatDateTimeToUTC(config.getCreatedTimeUtc());
         this.priority = config.getPriority();
         this.type = DeploymentType.edgeManifest;
@@ -67,15 +83,25 @@ public class DeploymentServiceModel {
         return this.name;
     }
 
-    public String getPackageContent() {
-        return this.packageContent;
-    }
-
     public String getDeviceGroupId() {
         return this.deviceGroupId;
     }
 
-    public String getDeviceGroupQuery() { return this.deviceGroupQuery; }
+    public String getDeviceGroupName() {
+        return this.deviceGroupName;
+    }
+
+    public String getDeviceGroupQuery() {
+        return this.deviceGroupQuery;
+    }
+
+    public String getPackageContent() {
+        return this.packageContent;
+    }
+
+    public String getPackageName() {
+        return this.packageName;
+    }
 
     public String getCreatedDateTimeUtc() {
         return this.createdDateTimeUtc;
