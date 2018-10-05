@@ -16,7 +16,7 @@ public class Package {
     }
 
     public Package(String id, String name, PackageType type, String content) {
-        this(id, name, type, content,StringUtils.EMPTY);
+        this(id, name, type, content, StringUtils.EMPTY);
     }
 
     public Package(String id, String name, PackageType type, String content, String dateCreated) {
@@ -29,7 +29,7 @@ public class Package {
 
     @JsonProperty("Id")
     public String getId() {
-        return id;
+        return this.id;
     }
 
     public void setId(String id) {
@@ -38,7 +38,7 @@ public class Package {
 
     @JsonProperty("Name")
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public void setName(String name) {
@@ -47,7 +47,7 @@ public class Package {
 
     @JsonProperty("Type")
     public PackageType getType() {
-        return type;
+        return this.type;
     }
 
     public void setType(PackageType type) {
@@ -56,7 +56,7 @@ public class Package {
 
     @JsonProperty("Content")
     public String getContent() {
-        return content;
+        return this.content;
     }
 
     public void setContent(String content) {
@@ -65,7 +65,7 @@ public class Package {
 
     @JsonProperty("DateCreated")
     public String getDateCreated() {
-        return dateCreated;
+        return this.dateCreated;
     }
 
     public void setDateCreated(String dateCreated) {

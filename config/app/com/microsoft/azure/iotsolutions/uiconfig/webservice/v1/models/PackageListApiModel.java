@@ -17,7 +17,7 @@ public class PackageListApiModel {
 
     @JsonProperty("items")
     public Iterable<PackageApiModel> getItems() {
-        return items;
+        return this.items;
     }
 
     public void setItems(Iterable<PackageApiModel> items) {
@@ -26,7 +26,7 @@ public class PackageListApiModel {
 
     @JsonProperty("$metadata")
     public Hashtable<String, String> getMetadata() {
-        return metadata;
+        return this.metadata;
     }
 
     public void setMetadata(Hashtable<String, String> metadata) {
@@ -37,10 +37,10 @@ public class PackageListApiModel {
     }
 
     public PackageListApiModel(Iterable<Package> models) {
-        items = StreamSupport.stream(models.spliterator(), false)
+        this.items = StreamSupport.stream(models.spliterator(), false)
                 .map(m -> new PackageApiModel(m)).collect(Collectors.toList());
-        metadata = new Hashtable<String, String>();
-        metadata.put("$type", String.format("Package;%s", Version.Number));
-        metadata.put("$url", String.format("/%s/packages", Version.Path));
+        this.metadata = new Hashtable<String, String>();
+        this.metadata.put("$type", String.format("Package;%s", Version.Number));
+        this.metadata.put("$url", String.format("/%s/packages", Version.Path));
     }
 }

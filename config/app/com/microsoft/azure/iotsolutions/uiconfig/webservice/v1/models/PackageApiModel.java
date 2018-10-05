@@ -60,11 +60,11 @@ public class PackageApiModel {
     }
 
     public PackageApiModel(Package model) {
-        id = model.getId();
-        name = model.getName();
-        type = model.getType();
-        content = model.getContent();
-        dateCreated = model.getDateCreated();
+        this.id = model.getId();
+        this.name = model.getName();
+        this.type = model.getType();
+        this.content = model.getContent();
+        this.dateCreated = model.getDateCreated();
     }
 
     public PackageApiModel(String name, PackageType type, String content) {
