@@ -6,6 +6,7 @@ import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.Invali
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentServiceListModel;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentServiceModel;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentType;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeviceGroup;
 import com.microsoft.azure.sdk.iot.service.Configuration;
 import com.microsoft.azure.sdk.iot.service.RegistryManager;
 import com.microsoft.azure.sdk.iot.service.devicetwin.DeviceTwin;
@@ -80,13 +81,11 @@ public class DeploymentsTest {
         final String packageContent = addPackageContent ? Json.toJson(config).toString() : StringUtils.EMPTY;
 
         final DeploymentServiceModel model = new DeploymentServiceModel(deploymentName,
-                                                                        deviceGroupId,
-                                                                        StringUtils.EMPTY,
-                                                                        dvcGroupQuery,
-                                                                        packageContent,
-                                                                        StringUtils.EMPTY,
-                                                                        priority,
-                                                                        DeploymentType.edgeManifest);
+                new DeviceGroup(deviceGroupId, StringUtils.EMPTY, dvcGroupQuery),
+                packageContent,
+                StringUtils.EMPTY,
+                priority,
+                DeploymentType.edgeManifest);
 
         final IsValidConfiguration isValidConfig = new IsValidConfiguration(deploymentName, deviceGroupId);
         when(this.registry.addConfiguration(argThat(isValidConfig))).thenReturn(config);
@@ -99,7 +98,7 @@ public class DeploymentsTest {
             DeploymentServiceModel createdDeployment = this.deployments.createAsync(model).toCompletableFuture().get();
             assertEquals(registryManagerDeploymentId, createdDeployment.getId());
             assertEquals(deploymentName, createdDeployment.getName());
-            assertEquals(deviceGroupId, createdDeployment.getDeviceGroupId());
+            assertEquals(deviceGroupId, createdDeployment.getDeviceGroup().getId());
             assertEquals(priority, createdDeployment.getPriority());
         }
     }
@@ -125,8 +124,8 @@ public class DeploymentsTest {
         {
             final DeploymentServiceModel deployment = returnedDeployments.getItems().get(i);
             assertEquals("deployment" + i, deployment.getName());
-            assertEquals("dvcGroupId" + i, deployment.getDeviceGroupId());
-            assertEquals("dvcGroupName" + i, deployment.getDeviceGroupName());
+            assertEquals("dvcGroupId" + i, deployment.getDeviceGroup().getId());
+            assertEquals("dvcGroupName" + i, deployment.getDeviceGroup().getName());
             assertEquals("packageName" + i, deployment.getPackageName());
         }
     }
@@ -148,8 +147,8 @@ public class DeploymentsTest {
         assertEquals(1, returnedDeployments.getItems().size());
         final DeploymentServiceModel deployment = returnedDeployments.getItems().get(0);
         assertEquals("deployment0", returnedDeployments.getItems().get(0).getName());
-        assertEquals("dvcGroupId0", deployment.getDeviceGroupId());
-        assertEquals("dvcGroupName0", deployment.getDeviceGroupName());
+        assertEquals("dvcGroupId0", deployment.getDeviceGroup().getId());
+        assertEquals("dvcGroupName0", deployment.getDeviceGroup().getName());
         assertEquals("packageName0", deployment.getPackageName());
     }
 

@@ -12,6 +12,7 @@ import com.microsoft.azure.iotsolutions.iothubmanager.services.helpers.QueryCond
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentServiceListModel;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentServiceModel;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentStatus;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeviceGroup;
 import com.microsoft.azure.sdk.iot.service.Configuration;
 import com.microsoft.azure.sdk.iot.service.RegistryManager;
 import com.microsoft.azure.sdk.iot.service.devicetwin.DeviceTwin;
@@ -173,8 +174,8 @@ public final class Deployments implements IDeployments {
     public CompletionStage<DeploymentServiceModel> createAsync(DeploymentServiceModel deployment) throws
             InvalidInputException {
         // Required labels
-        this.verifyDeploymentArgument(DEVICE_GROUP_ID_PARAM, deployment.getDeviceGroupId());
-        this.verifyDeploymentArgument(DEVICE_GROUP_QUERY_PARAM, deployment.getDeviceGroupQuery());
+        this.verifyDeploymentArgument(DEVICE_GROUP_ID_PARAM, deployment.getDeviceGroup().getId());
+        this.verifyDeploymentArgument(DEVICE_GROUP_QUERY_PARAM, deployment.getDeviceGroup().getQuery());
         this.verifyDeploymentArgument(NAME_PARAM, deployment.getName());
         this.verifyDeploymentArgument(PACKAGE_CONTENT_PARAM, deployment.getPackageContent());
 
@@ -296,7 +297,9 @@ public final class Deployments implements IDeployments {
         final Configuration pkgConfiguration = fromJson(Json.parse(packageContent), Configuration.class);
         edgeConfiguration.setContent(pkgConfiguration.getContent());
 
-        final String query = QueryConditionTranslator.ToQueryString(deployment.getDeviceGroupQuery());
+        final DeviceGroup deploymentGroup = deployment.getDeviceGroup();
+        final String dvcGroupQuery = deploymentGroup.getQuery();
+        final String query = QueryConditionTranslator.ToQueryString(dvcGroupQuery);
         edgeConfiguration.setTargetCondition(query);
         edgeConfiguration.setPriority(deployment.getPriority());
         edgeConfiguration.setEtag("");
@@ -308,12 +311,12 @@ public final class Deployments implements IDeployments {
 
         // Required labels
         labels.put(DEPLOYMENT_NAME_LABEL, deployment.getName());
-        labels.put(DEPLOYMENT_GROUP_ID_LABEL, deployment.getDeviceGroupId());
+        labels.put(DEPLOYMENT_GROUP_ID_LABEL, deploymentGroup.getId());
         labels.put(RM_CREATED_LABEL, Boolean.TRUE.toString());
 
         // Add optional labels
-        if (deployment.getDeviceGroupName() != null) {
-            labels.put(DEPLOYMENT_GROUP_NAME_LABEL, deployment.getDeviceGroupName());
+        if (deploymentGroup.getName() != null) {
+            labels.put(DEPLOYMENT_GROUP_NAME_LABEL, deploymentGroup.getName());
         }
         if (deployment.getPackageName() != null) {
             labels.put(DEPLOYMENT_PACKAGE_NAME_LABEL, deployment.getPackageName());

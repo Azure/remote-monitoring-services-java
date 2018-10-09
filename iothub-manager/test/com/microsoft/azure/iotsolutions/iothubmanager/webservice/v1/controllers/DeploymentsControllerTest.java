@@ -8,6 +8,7 @@ import com.microsoft.azure.iotsolutions.iothubmanager.services.helpers.TestUtils
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentServiceListModel;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentServiceModel;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentType;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeviceGroup;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models.DeploymentApiModel;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models.DeploymentListApiModel;
 import junitparams.JUnitParamsRunner;
@@ -58,9 +59,7 @@ public class DeploymentsControllerTest {
     public void getDeploymentTest() throws Exception {
         // Arrange
         DeploymentServiceModel deploymentModel = new DeploymentServiceModel(DEPLOYMENT_NAME,
-                                                                            DEVICE_GROUP_ID,
-                                                                            DEVICE_GROUP_NAME,
-                                                                            DEVICE_GROUP_QUERY,
+                new DeviceGroup(DEVICE_GROUP_ID, DEVICE_GROUP_NAME, DEVICE_GROUP_QUERY),
                                                                             PACKAGE_CONTENT,
                                                                             PACKAGE_NAME,
                                                                             PRIORITY,
@@ -86,13 +85,11 @@ public class DeploymentsControllerTest {
         List<DeploymentServiceModel> deploymentsList = new ArrayList<>();
         for(int i = 0; i < numDeployments; i++) {
             DeploymentServiceModel dep = new DeploymentServiceModel(DEPLOYMENT_NAME + i,
-                                                                    DEVICE_GROUP_ID + i,
-                                                                    DEVICE_GROUP_NAME + i,
-                                                                    DEVICE_GROUP_QUERY + i,
-                                                                    PACKAGE_CONTENT + i,
-                                                                    PACKAGE_NAME + i,
-                                                                    PRIORITY + i,
-                                                                    DeploymentType.edgeManifest);
+                    new DeviceGroup(DEVICE_GROUP_ID + i,DEVICE_GROUP_NAME + i, DEVICE_GROUP_QUERY + i),
+                    PACKAGE_CONTENT + i,
+                    PACKAGE_NAME + i,
+                    PRIORITY + i,
+                    DeploymentType.edgeManifest);
             deploymentsList.add(dep);
         }
 
@@ -132,8 +129,11 @@ public class DeploymentsControllerTest {
                 deviceGroupQuery, packageContent, priority);
 
         final DeploymentServiceModel deploymentMode = new DeploymentServiceModel(deploymentName,
-                deviceGroupId, StringUtils.EMPTY, packageContent, StringUtils.EMPTY,
-                deploymentName, priority, DeploymentType.edgeManifest);
+                new DeviceGroup(deviceGroupId, StringUtils.EMPTY, deviceGroupQuery),
+                StringUtils.EMPTY,
+                packageContent,
+                priority,
+                DeploymentType.edgeManifest);
         when(this.deployments.createAsync(argThat(matchesDeployment))).thenReturn(completedFuture
                 (deploymentMode));
 
@@ -177,8 +177,8 @@ public class DeploymentsControllerTest {
         @Override
         public boolean matches(DeploymentServiceModel config) {
             return this.deploymentName.equals(config.getName()) &&
-                    this.deviceGroupId.equals(config.getDeviceGroupId()) &&
-                    this.deviceGroupQuery.equals(config.getDeviceGroupQuery()) &&
+                    this.deviceGroupId.equals(config.getDeviceGroup().getId()) &&
+                    this.deviceGroupQuery.equals(config.getDeviceGroup().getQuery()) &&
                     this.packageContent.equals(config.getPackageContent()) &&
                     this.priority == config.getPriority();
         }

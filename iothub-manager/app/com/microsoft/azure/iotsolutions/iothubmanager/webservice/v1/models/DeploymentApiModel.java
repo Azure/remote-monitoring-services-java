@@ -5,6 +5,7 @@ package com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentServiceModel;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentType;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeviceGroup;
 
 public class DeploymentApiModel {
     private String id;
@@ -37,9 +38,9 @@ public class DeploymentApiModel {
     public DeploymentApiModel(DeploymentServiceModel serviceModel) {
         this.createdDateTimeUtc = serviceModel.getCreatedDateTimeUtc();
         this.id = serviceModel.getId();
-        this.deviceGroupId = serviceModel.getDeviceGroupId();
-        this.deviceGroupName = serviceModel.getDeviceGroupName();
-        this.deviceGroupQuery = serviceModel.getDeviceGroupQuery();
+        this.deviceGroupId = serviceModel.getDeviceGroup().getId();
+        this.deviceGroupName = serviceModel.getDeviceGroup().getName();
+        this.deviceGroupQuery = serviceModel.getDeviceGroup().getQuery();
         this.name = serviceModel.getName();
         this.packageContent = serviceModel.getPackageContent();
         this.packageName = serviceModel.getPackageName();
@@ -101,12 +102,10 @@ public class DeploymentApiModel {
 
     public DeploymentServiceModel toServiceModel() {
         return new DeploymentServiceModel(this.name,
-                                          this.deviceGroupId,
-                                          this.deviceGroupName,
-                                          this.deviceGroupQuery,
-                                          this.packageContent,
-                                          this.packageName,
-                                          this.priority,
-                                          this.type);
+                new DeviceGroup(this.deviceGroupId, this.deviceGroupName, this.deviceGroupQuery),
+                this.packageContent,
+                this.packageName,
+                this.priority,
+                this.type);
     }
 }
