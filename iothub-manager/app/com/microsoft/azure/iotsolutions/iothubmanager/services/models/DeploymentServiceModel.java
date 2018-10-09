@@ -12,31 +12,34 @@ public class DeploymentServiceModel {
 
     private final static String DEPLOYMENT_NAME_LABEL = "Name";
     private final static String DEPLOYMENT_GROUP_ID_LABEL = "DeviceGroupId";
+    private final static String DEPLOYMENT_GROUP_NAME_LABEL = "DeviceGroupName";
+    private final static String DEPLOYMENT_PACKAGE_NAME_LABEL = "PackageName";
     private final static String DATE_FORMAT_STRING = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
     private String id;
     private String name;
+    private DeviceGroup deviceGroup;
     private String packageContent;
-    private String deviceGroupId;
-    private String deviceGroupQuery;
-    private String createdDateTimeUtc;
+    private String packageName;
     private int priority;
+    private String createdDateTimeUtc;
     private DeploymentType type;
     private DeploymentMetrics deploymentMetrics;
 
     public DeploymentServiceModel(final String name,
-                                  final String deviceGroupId,
-                                  final String deviceGroupQuery,
+                                  final DeviceGroup deviceGroup,
                                   final String packageContent,
+                                  final String packageName,
                                   final int priority,
                                   final DeploymentType type) {
-        this.deviceGroupId = deviceGroupId;
-        this.deviceGroupQuery = deviceGroupQuery;
+        this.deviceGroup = deviceGroup;
         this.packageContent = packageContent;
         this.name = name;
+        this.packageName = packageName;
         this.priority = priority;
         this.type = type;
     }
+
     public DeploymentServiceModel(Configuration config) throws InvalidInputException {
         if (StringUtils.isEmpty(config.getId())) {
             throw new InvalidInputException("Invalid id provided");
@@ -52,7 +55,19 @@ public class DeploymentServiceModel {
 
         this.id = config.getId();
         this.name = config.getLabels().get(DEPLOYMENT_NAME_LABEL);
-        this.deviceGroupId = config.getLabels().get(DEPLOYMENT_GROUP_ID_LABEL);
+
+        String deviceGroupId = config.getLabels().get(DEPLOYMENT_GROUP_ID_LABEL);
+        String deviceGroupName = StringUtils.EMPTY;
+        if (config.getLabels().containsKey(DEPLOYMENT_GROUP_NAME_LABEL)) {
+            deviceGroupName = config.getLabels().get(DEPLOYMENT_GROUP_NAME_LABEL);
+        }
+        this.deviceGroup = new DeviceGroup(deviceGroupId, deviceGroupName, null);
+
+        this.packageName = StringUtils.EMPTY;
+        if (config.getLabels().containsKey(DEPLOYMENT_PACKAGE_NAME_LABEL)) {
+            this.packageName = config.getLabels().get(DEPLOYMENT_PACKAGE_NAME_LABEL);
+        }
+
         this.createdDateTimeUtc =  this.formatDateTimeToUTC(config.getCreatedTimeUtc());
         this.priority = config.getPriority();
         this.type = DeploymentType.edgeManifest;
@@ -67,19 +82,17 @@ public class DeploymentServiceModel {
         return this.name;
     }
 
-    public String getPackageContent() {
-        return this.packageContent;
-    }
+    public String getPackageContent() { return this.packageContent; }
 
-    public String getDeviceGroupId() {
-        return this.deviceGroupId;
+    public String getPackageName() {
+        return this.packageName;
     }
-
-    public String getDeviceGroupQuery() { return this.deviceGroupQuery; }
 
     public String getCreatedDateTimeUtc() {
         return this.createdDateTimeUtc;
     }
+
+    public DeviceGroup getDeviceGroup() { return this.deviceGroup; }
 
     public int getPriority() {
         return this.priority;
