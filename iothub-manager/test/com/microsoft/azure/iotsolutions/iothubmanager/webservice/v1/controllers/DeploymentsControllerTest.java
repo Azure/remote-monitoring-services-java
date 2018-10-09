@@ -60,10 +60,10 @@ public class DeploymentsControllerTest {
         // Arrange
         DeploymentServiceModel deploymentModel = new DeploymentServiceModel(DEPLOYMENT_NAME,
                 new DeviceGroup(DEVICE_GROUP_ID, DEVICE_GROUP_NAME, DEVICE_GROUP_QUERY),
-                                                                            PACKAGE_CONTENT,
-                                                                            PACKAGE_NAME,
-                                                                            PRIORITY,
-                                                                            DeploymentType.edgeManifest);
+                PACKAGE_CONTENT,
+                PACKAGE_NAME,
+                PRIORITY,
+                DeploymentType.edgeManifest);
 
         when(this.deployments.getAsync(DEPLOYMENT_ID, false)).thenReturn(completedFuture(deploymentModel));
 
