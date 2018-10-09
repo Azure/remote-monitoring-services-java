@@ -11,7 +11,13 @@ import com.microsoft.azure.iotsolutions.iothubmanager.services.helpers.QueryCond
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.*;
 import com.microsoft.azure.sdk.iot.service.Device;
 import com.microsoft.azure.sdk.iot.service.RegistryManager;
-import com.microsoft.azure.sdk.iot.service.devicetwin.*;
+import com.microsoft.azure.sdk.iot.service.devicetwin.DeviceMethod;
+import com.microsoft.azure.sdk.iot.service.devicetwin.DeviceTwin;
+import com.microsoft.azure.sdk.iot.service.devicetwin.DeviceTwinDevice;
+import com.microsoft.azure.sdk.iot.service.devicetwin.MethodResult;
+import com.microsoft.azure.sdk.iot.service.devicetwin.QueryCollection;
+import com.microsoft.azure.sdk.iot.service.devicetwin.QueryCollectionResponse;
+import com.microsoft.azure.sdk.iot.service.devicetwin.QueryOptions;
 import com.microsoft.azure.sdk.iot.service.exceptions.IotHubException;
 import com.microsoft.azure.sdk.iot.service.exceptions.IotHubNotFoundException;
 import org.apache.commons.collections4.MapUtils;
@@ -22,7 +28,12 @@ import play.Logger;
 import play.libs.Json;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
@@ -124,21 +135,26 @@ public final class Devices implements IDevices {
                     }
 
                     try {
-                        Pair<HashMap<String, TwinServiceModel>, String> twins = getTwinByQueryAsync(
+                        final Pair<HashMap<String, TwinServiceModel>, String> twins = getTwinByQueryAsync(
                             DevicesQueryPrefix,
                             QueryConditionTranslator.ToQueryString(query),
                             continuationToken,
                             MAX_GET_LIST);
+
+                        final Map<String, TwinServiceModel> twinsMap = twins.getLeft();
+                        final String responseContinuationToken = twins.getRight();
+
                         ArrayList<DeviceServiceModel> deviceList = new ArrayList<>();
                         for (Device azureDevice : devices) {
-                            if (twins.getLeft().containsKey(azureDevice.getDeviceId())) {
+                            if (twinsMap.containsKey(azureDevice.getDeviceId())) {
                                 deviceList.add(new DeviceServiceModel(
-                                    azureDevice,
-                                    twins.getLeft().get(azureDevice.getDeviceId()),
-                                    this.iotHubHostName));
+                                        azureDevice,
+                                        twinsMap.get(azureDevice.getDeviceId()),
+                                        this.iotHubHostName));
                             }
                         }
-                        return new DeviceServiceListModel(deviceList, twins.getRight());
+
+                        return new DeviceServiceListModel(deviceList, responseContinuationToken);
                     } catch (InvalidInputException | ExternalDependencyException e) {
                         String message = String.format("Unable to get device twin by query: %s", query);
                         log.error(message, e);
@@ -381,7 +397,7 @@ public final class Devices implements IDevices {
         final String fullQuery = query.isEmpty() ? queryPrefix : String.format("%s where %s", queryPrefix,
                 query);
         final QueryOptions options = new QueryOptions();
-        if (continuationToken != null && !continuationToken.isEmpty()) {
+        if (StringUtils.isNotEmpty(continuationToken)) {
             options.setContinuationToken(continuationToken);
         }
 
@@ -399,6 +415,8 @@ public final class Devices implements IDevices {
             throw new ExternalDependencyException("Unable to query device twin", e);
         }
 
+        log.info(String.format("Found %d devices for query %s starting at continuationToken %s",
+                twins.size(), fullQuery, continuationToken));
         return new ImmutablePair<>(twins, responseContinuationToken);
     }
 }
