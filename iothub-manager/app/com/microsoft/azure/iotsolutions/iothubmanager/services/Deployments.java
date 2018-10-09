@@ -8,10 +8,6 @@ import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.ExternalDependencyException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.ResourceNotFoundException;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.external.DeviceGroupApiModel;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.external.IDeviceGroupsClient;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.external.IPackageManagementClient;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.external.PackageApiModel;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.helpers.QueryConditionTranslator;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentServiceListModel;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentServiceModel;
@@ -40,11 +36,9 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import static play.libs.Json.fromJson;
-import static play.libs.Json.toJson;
 
 public final class Deployments implements IDeployments {
 
@@ -53,11 +47,11 @@ public final class Deployments implements IDeployments {
 
     private static final String DEPLOYMENT_NAME_LABEL = "Name";
     private static final String DEPLOYMENT_GROUP_ID_LABEL = "DeviceGroupId";
-    private static final String DEPLOYMENT_PACKAGE_ID_LABEL = "PackageId";
     private static final String RM_CREATED_LABEL = "RMDeployment";
     private static final String DEVICE_GROUP_ID_PARAM = "deviceGroupId";
+    private static final String DEVICE_GROUP_QUERY_PARAM = "deviceGroupQuery";
     private static final String NAME_PARAM = "name";
-    private static final String PACKAGE_ID_PARAM = "packageId";
+    private static final String PACKAGE_CONTENT_PARAM = "packageContent";
     private static final String SCHEMA_VERSION = "schemaVersion";
     private static final String APPLIED_DEVICES_QUERY =
             "moduleId = '$edgeAgent' and configurations.[[%s]].status = 'Applied'";
@@ -71,27 +65,17 @@ public final class Deployments implements IDeployments {
     private final RegistryManager registry;
     private final DeviceTwin deviceTwin;
     private final String ioTHubHostName;
-    private final IDeviceGroupsClient deviceGroupsClient;
-    private final IPackageManagementClient packageManagementClient;
 
     @Inject
-    public Deployments(final IIoTHubWrapper ioTHubService,
-                       final IPackageManagementClient packageManagementClient,
-                       final IDeviceGroupsClient deviceGroupsClient) throws Exception {
-        this.packageManagementClient = packageManagementClient;
-        this.deviceGroupsClient = deviceGroupsClient;
+    public Deployments(final IIoTHubWrapper ioTHubService) throws Exception {
         this.registry = ioTHubService.getRegistryManagerClient();
         this.deviceTwin = ioTHubService.getDeviceTwinClient();
         this.ioTHubHostName = ioTHubService.getIotHubHostName();
     }
 
     public Deployments(final String ioTHubHostName,
-                       final IDeviceGroupsClient deviceGroupsClient,
-                       final IPackageManagementClient packageManagementClient,
                        final DeviceTwin deviceTwin,
                        final RegistryManager registry) {
-        this.packageManagementClient = packageManagementClient;
-        this.deviceGroupsClient = deviceGroupsClient;
         this.registry = registry;
         this.deviceTwin = deviceTwin;
         this.ioTHubHostName = ioTHubHostName;
@@ -181,59 +165,28 @@ public final class Deployments implements IDeployments {
      */
     @Override
     public CompletionStage<DeploymentServiceModel> createAsync(DeploymentServiceModel deployment) throws
-            ExternalDependencyException, InvalidInputException {
-        if (StringUtils.isEmpty(deployment.getDeviceGroupId())) {
-            throw new InvalidInputException("Invalid input. Must provide a value to " +
-                    DEVICE_GROUP_ID_PARAM);
-        }
-
-        if (StringUtils.isEmpty(deployment.getName())) {
-            throw new InvalidInputException("Invalid input. Must provide a value to " +
-                    NAME_PARAM);
-        }
-
-        if (StringUtils.isEmpty(deployment.getPackageId())) {
-            throw new InvalidInputException("Invalid input. Must provide a value to " +
-                    PACKAGE_ID_PARAM);
-        }
+            InvalidInputException {
+        this.verifyDeploymentArgument(DEVICE_GROUP_ID_PARAM, deployment.getDeviceGroupId());
+        this.verifyDeploymentArgument(DEVICE_GROUP_QUERY_PARAM, deployment.getDeviceGroupQuery());
+        this.verifyDeploymentArgument(NAME_PARAM, deployment.getName());
+        this.verifyDeploymentArgument(PACKAGE_CONTENT_PARAM, deployment.getPackageContent());
+        this.verifyDeploymentArgument(DEVICE_GROUP_ID_PARAM, deployment.getDeviceGroupId());
 
         if (deployment.getPriority() < 0) {
             throw new InvalidInputException("Invalid input. A priority should be provided greater than 0.");
         }
 
         try {
-
-            final CompletableFuture<DeviceGroupApiModel> getGroupFuture = this.deviceGroupsClient
-                    .getDeviceGroupAsync(deployment.getDeviceGroupId()).toCompletableFuture();
-            final CompletableFuture<PackageApiModel> getPackageFuture = this.packageManagementClient
-                    .getPackageAsync(deployment.getPackageId()).toCompletableFuture();
-
-            CompletableFuture.allOf(getGroupFuture).join();
-
-            try {
-                final DeviceGroupApiModel group = getGroupFuture.get();
-                final PackageApiModel pkg = getPackageFuture.get();
-                final Configuration edgeConfig = createEdgeConfiguration(deployment.getName(),
-                        group,
-                        pkg,
-                        deployment.getPriority());
-
-                final Configuration result = this.registry.addConfiguration(edgeConfig);
-                return CompletableFuture.completedFuture(new DeploymentServiceModel(result));
-            }
-            catch (InvalidInputException e) {
-                log.error("Unable to create deployment. Invalid group or package information provided", e);
-                throw new CompletionException(e);
-            }
-            catch (InterruptedException | ExecutionException e) {
-                log.error("Unable to create deployment. Issue executing futures.", e);
-                throw new CompletionException(e);
-            }
-            catch (IotHubException | IOException e) {
-                log.error("Unable to create deployment when communicating with the hub.", e);
-                throw new CompletionException(e);
-            }
-        } catch (ResourceNotFoundException e) {
+            final Configuration edgeConfig = createEdgeConfiguration(deployment);
+            final Configuration result = this.registry.addConfiguration(edgeConfig);
+            return CompletableFuture.completedFuture(new DeploymentServiceModel(result));
+        }
+        catch (InvalidInputException e) {
+            log.error("Unable to create deployment. Invalid group or package information provided", e);
+            throw new CompletionException(e);
+        }
+        catch (IotHubException | IOException e) {
+            log.error("Unable to create deployment when communicating with the hub.", e);
             throw new CompletionException(e);
         }
     }
@@ -283,6 +236,14 @@ public final class Deployments implements IDeployments {
         return deviceStatuses;
     }
 
+    private void verifyDeploymentArgument(final String argumentName, final String argumentValue)
+            throws InvalidInputException {
+        if (StringUtils.isEmpty(argumentValue)) {
+            throw new InvalidInputException("Invalid input. Must provide a value to " +
+                    argumentName);
+        }
+    }
+
     private Set<String> getDevicesInQuery(String hubQuery, String deploymentId) throws IOException {
         final String query = String.format(hubQuery, deploymentId);
         final SqlQuery sqlQuery = SqlQuery.createSqlQuery("*", SqlQuery.FromType.MODULES, query, null);
@@ -310,28 +271,23 @@ public final class Deployments implements IDeployments {
         return deviceIds;
     }
 
-    private static Configuration createEdgeConfiguration(final String name,
-                                                         final DeviceGroupApiModel deviceGroup,
-                                                         final PackageApiModel pkg,
-                                                         final int priority) throws InvalidInputException {
+    private static Configuration createEdgeConfiguration(final DeploymentServiceModel deployment) throws InvalidInputException {
         final String deploymentId = UUID.randomUUID().toString();
         final Configuration edgeConfiguration = new Configuration(deploymentId);
 
-        JsonNode node = Json.parse(pkg.getContent());
-        JsonNode schemaVersionNode = Json.parse(pkg.getContent()).get(SCHEMA_VERSION);
+        String packageContent = deployment.getPackageContent();
+        JsonNode node = Json.parse(packageContent);
+        JsonNode schemaVersionNode = Json.parse(packageContent).get(SCHEMA_VERSION);
         if (schemaVersionNode == null || StringUtils.isEmpty(schemaVersionNode.toString())) {
             node = ((ObjectNode)node).put(SCHEMA_VERSION, "1.0");
-            pkg.setContent(Json.toJson(node).toString());
+            packageContent = Json.toJson(node).toString();
         }
-        final Configuration pkgConfiguration = fromJson(Json.parse(pkg.getContent()), Configuration.class);
+        final Configuration pkgConfiguration = fromJson(Json.parse(packageContent), Configuration.class);
         edgeConfiguration.setContent(pkgConfiguration.getContent());
 
-        String query = toJson(deviceGroup.getConditions()).toString();
-        query = QueryConditionTranslator.ToQueryString(query);
-        query = StringUtils.isEmpty(query) ? "*" : query;
-
+        final String query = QueryConditionTranslator.ToQueryString(deployment.getDeviceGroupQuery());
         edgeConfiguration.setTargetCondition(query);
-        edgeConfiguration.setPriority(priority);
+        edgeConfiguration.setPriority(deployment.getPriority());
         edgeConfiguration.setEtag("");
 
         if(edgeConfiguration.getLabels() == null) {
@@ -339,9 +295,8 @@ public final class Deployments implements IDeployments {
         }
         final Map<String, String> labels = edgeConfiguration.getLabels();
 
-        labels.put(DEPLOYMENT_NAME_LABEL, name);
-        labels.put(DEPLOYMENT_GROUP_ID_LABEL, deviceGroup.getId());
-        labels.put(DEPLOYMENT_PACKAGE_ID_LABEL, pkg.getId());
+        labels.put(DEPLOYMENT_NAME_LABEL, deployment.getName());
+        labels.put(DEPLOYMENT_GROUP_ID_LABEL, deployment.getDeviceGroupId());
         labels.put(RM_CREATED_LABEL, Boolean.TRUE.toString());
         return edgeConfiguration;
     }

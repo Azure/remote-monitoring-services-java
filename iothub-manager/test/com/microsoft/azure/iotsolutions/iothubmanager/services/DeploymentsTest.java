@@ -3,7 +3,6 @@
 package com.microsoft.azure.iotsolutions.iothubmanager.services;
 
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidInputException;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.external.*;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentServiceListModel;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentServiceModel;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentType;
@@ -12,6 +11,7 @@ import com.microsoft.azure.sdk.iot.service.RegistryManager;
 import com.microsoft.azure.sdk.iot.service.devicetwin.DeviceTwin;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.argThat;
 import static org.mockito.Mockito.when;
@@ -40,12 +39,6 @@ public class DeploymentsTest {
     private static final String RM_CREATED_LABEL = "RMDeployment";
 
     @Mock
-    private IPackageManagementClient packageClient;
-
-    @Mock
-    private IDeviceGroupsClient deviceGroupsClient;
-
-    @Mock
     private RegistryManager registry;
 
     @Mock
@@ -57,48 +50,40 @@ public class DeploymentsTest {
     public DeploymentsTest() {
         MockitoAnnotations.initMocks(this);
         this.deployments = new Deployments("hubname",
-                                           this.deviceGroupsClient,
-                                           this.packageClient,
                                            this.deviceTwin,
                                            this.registry);
     }
 
     @Test
-    @Parameters({"depname, dvcgroupid, packageid, 10, false",
-                 ", dvcgroupid, packageid, 10, true",
-                 "depname, , packageid, 10, true",
-                 "depname, dvcgroupid, , 10, true",
-                 "depname, dvcgroupid, packageid, -10, true"})
-    public void ceateDeploymentTest(String deploymentName, String deviceGroupId,
-                                    String packageId, int priority,
+    @Parameters({"depname, dvcgroupid, dvcGroupQuery, true, 10, false",
+                 ", dvcgroupid, dvcGroupQuery, true, 10, true",
+                 "depname, , dvcGroupQuery, true, 10, true",
+                 "depname, dvcgroupid, , true, 10, true",
+                 "depname, dvcgroupid, dvcGroupQuery, false, 10, true",
+                 "depname, dvcgroupid, dvcGroupQuery, true, -1, true"})
+    public void createDeploymentTest(String deploymentName, String deviceGroupId,
+                                    String dvcGroupQuery, boolean addPackageContent, int priority,
                                     boolean exceptionExpected) throws Exception {
         // Provides a different value to ensure that the configuration object returned
         // from creating the deployment is different than the one provided to the registry manager
         final String registryManagerDeploymentId = "test-config";
+
         final Configuration config = new Configuration(registryManagerDeploymentId);
         config.setLabels(new HashMap<>());
         config.getLabels().put(DEPLOYMENT_NAME_LABEL, deploymentName);
         config.getLabels().put(DEPLOYMENT_GROUP_ID_LABEL, deviceGroupId);
-        config.getLabels().put(DEPLOYMENT_PACKAGE_ID_LABEL, packageId);
         config.getLabels().put(RM_CREATED_LABEL, "true");
         config.setPriority(priority);
+        final String packageContent = addPackageContent ? Json.toJson(config).toString() : StringUtils.EMPTY;
 
-        final DeploymentServiceModel model = new DeploymentServiceModel(deviceGroupId,
-                                                                        packageId,
-                                                                        deploymentName,
+        final DeploymentServiceModel model = new DeploymentServiceModel(deploymentName,
+                                                                        deviceGroupId,
+                                                                        dvcGroupQuery,
+                                                                        packageContent,
                                                                         priority,
                                                                         DeploymentType.edgeManifest);
 
-        final PackageApiModel pkg = new PackageApiModel(packageId, packageId + "Name", PackageType
-                .edgeManifest, Json.toJson(config).toString());
-        when(this.packageClient.getPackageAsync(packageId)).thenReturn(completedFuture(pkg));
-
-        final DeviceGroupApiModel dvcGroup = new DeviceGroupApiModel(deviceGroupId, deviceGroupId + "Name",
-                new ArrayList<>(), deviceGroupId + "ETag");
-        when(this.deviceGroupsClient.getDeviceGroupAsync(deviceGroupId)).thenReturn(completedFuture(dvcGroup));
-
-        final IsValidConfiguration isValidConfig = new IsValidConfiguration(deploymentName,
-                deviceGroupId, packageId);
+        final IsValidConfiguration isValidConfig = new IsValidConfiguration(deploymentName, deviceGroupId);
         when(this.registry.addConfiguration(argThat(isValidConfig))).thenReturn(config);
 
         if (exceptionExpected) {
@@ -108,7 +93,6 @@ public class DeploymentsTest {
             DeploymentServiceModel createdDeployment = this.deployments.createAsync(model).toCompletableFuture().get();
             assertEquals(registryManagerDeploymentId, createdDeployment.getId());
             assertEquals(deploymentName, createdDeployment.getName());
-            assertEquals(packageId, createdDeployment.getPackageId());
             assertEquals(deviceGroupId, createdDeployment.getDeviceGroupId());
             assertEquals(priority, createdDeployment.getPriority());
         }
@@ -173,14 +157,11 @@ public class DeploymentsTest {
 
         private final String deploymentName;
         private final String deviceGroupId;
-        private final String packageId;
 
         IsValidConfiguration(final String deploymentName,
-                                    final String deviceGroupId,
-                                    final String packageId) {
+                                    final String deviceGroupId) {
             this.deploymentName = deploymentName;
             this.deviceGroupId = deviceGroupId;
-            this.packageId = packageId;
         }
 
         @Override
@@ -189,7 +170,7 @@ public class DeploymentsTest {
 
             return labels.getOrDefault( DEPLOYMENT_NAME_LABEL,"").equals(deploymentName) &&
                     labels.getOrDefault( DEPLOYMENT_GROUP_ID_LABEL,"").equals(deviceGroupId) &&
-                    labels.getOrDefault( DEPLOYMENT_PACKAGE_ID_LABEL,"").equals(packageId);
+                    labels.getOrDefault( RM_CREATED_LABEL,"").equals("true");
         }
     }
 }

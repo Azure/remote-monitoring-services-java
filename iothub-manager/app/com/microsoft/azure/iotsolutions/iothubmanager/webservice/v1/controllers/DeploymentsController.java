@@ -92,8 +92,12 @@ public class DeploymentsController extends Controller {
             throw new InvalidInputException("DeviceGroupId must be provided");
         }
 
-        if (StringUtils.isEmpty(deployment.getPackageId())) {
-            throw new InvalidInputException("PackageId must be provided");
+        if (StringUtils.isEmpty(deployment.getDeviceGroupQuery())) {
+            throw new InvalidInputException("DeviceGroupQuery must be provided");
+        }
+
+        if (StringUtils.isEmpty(deployment.getPackageContent())) {
+            throw new InvalidInputException("PackageContent must be provided");
         }
 
         if (StringUtils.isEmpty(deployment.getName())) {

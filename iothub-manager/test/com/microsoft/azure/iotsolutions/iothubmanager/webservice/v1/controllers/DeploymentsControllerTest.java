@@ -33,7 +33,8 @@ import static org.mockito.Mockito.when;
 public class DeploymentsControllerTest {
     private static final String DEPLOYMENT_NAME = "depname";
     private static final String DEVICE_GROUP_ID = "dvcGroupId";
-    private static final String PACKAGE_ID = "packageId";
+    private static final String DEVICE_GROUP_QUERY = "dvcGroupQuery";
+    private static final String PACKAGE_CONTENT = "packageContent";
     private static final String DEPLOYMENT_ID = "dvcGroupId-packageId";
     private static final int PRIORITY = 10;
 
@@ -53,8 +54,11 @@ public class DeploymentsControllerTest {
     @Test
     public void getDeploymentTest() throws Exception {
         // Arrange
-        DeploymentServiceModel deploymentModel = new DeploymentServiceModel(DEVICE_GROUP_ID, PACKAGE_ID,
-                                                                            DEPLOYMENT_NAME, PRIORITY,
+        DeploymentServiceModel deploymentModel = new DeploymentServiceModel(DEPLOYMENT_NAME,
+                                                                            DEVICE_GROUP_ID,
+                                                                            DEVICE_GROUP_QUERY,
+                                                                            PACKAGE_CONTENT,
+                                                                            PRIORITY,
                                                                             DeploymentType.edgeManifest);
 
         when(this.deployments.getAsync(DEPLOYMENT_ID, false)).thenReturn(completedFuture(deploymentModel));
@@ -66,7 +70,6 @@ public class DeploymentsControllerTest {
 
         // Assert
         assertEquals(DEPLOYMENT_NAME, deployment.getName());
-        assertEquals(PACKAGE_ID, deployment.getPackageId());
         assertEquals(DEVICE_GROUP_ID, deployment.getDeviceGroupId());
         assertEquals(PRIORITY, deployment.getPriority());
         assertEquals(DeploymentType.edgeManifest, deployment.getType());
@@ -77,9 +80,10 @@ public class DeploymentsControllerTest {
     public void getDeploymentsTest(int numDeployments) throws Exception {
         List<DeploymentServiceModel> deploymentsList = new ArrayList<>();
         for(int i = 0; i < numDeployments; i++) {
-            DeploymentServiceModel dep = new DeploymentServiceModel(DEVICE_GROUP_ID + i,
-                                                                    PACKAGE_ID + i,
-                                                                    DEPLOYMENT_NAME + i,
+            DeploymentServiceModel dep = new DeploymentServiceModel(DEPLOYMENT_NAME + i,
+                                                                    DEVICE_GROUP_ID + i,
+                                                                    DEVICE_GROUP_QUERY + i,
+                                                                    PACKAGE_CONTENT + i,
                                                                     PRIORITY + i,
                                                                     DeploymentType.edgeManifest);
             deploymentsList.add(dep);
@@ -98,7 +102,6 @@ public class DeploymentsControllerTest {
         for (int i = 0; i < numDeployments; i++) {
             final DeploymentApiModel deployment = deployments.getItems().get(i);
             assertEquals(DEPLOYMENT_NAME + i, deployment.getName());
-            assertEquals(PACKAGE_ID + i, deployment.getPackageId());
             assertEquals(DEVICE_GROUP_ID + i, deployment.getDeviceGroupId());
             assertEquals(PRIORITY + i, deployment.getPriority());
         }
@@ -112,19 +115,21 @@ public class DeploymentsControllerTest {
         "depName, dvcGroupId, , 10, true",
         "depName, dvcGroupId, pkgId, -5, true"
     })
-    public void postDeploymentTest(String deploymentName, String deviceGroupId, String packageId, int
+    public void postDeploymentTest(String deploymentName, String deviceGroupId, String packageContent, int
             priority, boolean exceptionExpected) throws Exception {
         // Arrange
+        String deviceGroupQuery = "[]";
         DeploymentMatcher matchesDeployment = new DeploymentMatcher(deploymentName, deviceGroupId,
-                packageId, priority);
+                deviceGroupQuery, packageContent, priority);
 
-        final DeploymentServiceModel deploymentMode = new DeploymentServiceModel(deviceGroupId, packageId,
+        final DeploymentServiceModel deploymentMode = new DeploymentServiceModel(deploymentName,
+                deviceGroupId, packageContent,
                 deploymentName, priority, DeploymentType.edgeManifest);
         when(this.deployments.createAsync(argThat(matchesDeployment))).thenReturn(completedFuture
                 (deploymentMode));
 
         final DeploymentApiModel depApiModel = new DeploymentApiModel(deploymentName, deviceGroupId,
-                packageId, priority, DeploymentType.edgeManifest);
+                deviceGroupQuery, packageContent, priority, DeploymentType.edgeManifest);
 
         // Act
         TestUtils.setRequest(depApiModel);
@@ -137,7 +142,6 @@ public class DeploymentsControllerTest {
 
             // Assert
             assertEquals(deploymentName, dep.getName());
-            assertEquals(packageId, dep.getPackageId());
             assertEquals(deviceGroupId, dep.getDeviceGroupId());
             assertEquals(priority, dep.getPriority());
             assertEquals(DeploymentType.edgeManifest, dep.getType());
@@ -147,14 +151,16 @@ public class DeploymentsControllerTest {
     class DeploymentMatcher implements ArgumentMatcher<DeploymentServiceModel> {
         private final String deploymentName;
         private final String deviceGroupId;
-        private final String packageId;
+        private final String deviceGroupQuery;
+        private final String packageContent;
         private final int priority;
 
         DeploymentMatcher(final String deploymentName, final String deviceGroupId,
-                                 final String packageId, final int priority) {
+                          final String deviceGroupQuery, final String packageContent, final int priority) {
             this.deploymentName = deploymentName;
             this.deviceGroupId = deviceGroupId;
-            this.packageId = packageId;
+            this.deviceGroupQuery = deviceGroupQuery;
+            this.packageContent = packageContent;
             this.priority = priority;
         }
 
@@ -162,7 +168,8 @@ public class DeploymentsControllerTest {
         public boolean matches(DeploymentServiceModel config) {
             return this.deploymentName.equals(config.getName()) &&
                     this.deviceGroupId.equals(config.getDeviceGroupId()) &&
-                    this.packageId.equals(config.getPackageId()) &&
+                    this.deviceGroupQuery.equals(config.getDeviceGroupQuery()) &&
+                    this.packageContent.equals(config.getPackageContent()) &&
                     this.priority == config.getPriority();
         }
     }

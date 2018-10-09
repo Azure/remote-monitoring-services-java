@@ -53,7 +53,7 @@ public class JobsTest {
         servicesConfig = config.getServicesConfig();
         storageAdapterClient = new StorageAdapterClient(
             mockWsClient,
-            new ServicesConfig(null, MockServiceUri, null, 0, 0, null));
+            new ServicesConfig(null, MockServiceUri, 0, 0, null));
         ioTHubWrapper = new IoTHubWrapper(servicesConfig);
         deviceService = new Devices(ioTHubWrapper, storageAdapterClient);
         mockDeviceProperties = new DeviceProperties(storageAdapterClient, servicesConfig, deviceService);
