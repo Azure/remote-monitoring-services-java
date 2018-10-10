@@ -28,7 +28,7 @@ public interface IJobs {
     CompletionStage<JobServiceModel> scheduleTwinUpdateAsync(
         String jobId,
         String queryCondition,
-        TwinServiceModel twin,
+        DeviceTwinServiceModel twin,
         Date startTime,
         long maxExecutionTimeInSeconds)
         throws ExternalDependencyException;

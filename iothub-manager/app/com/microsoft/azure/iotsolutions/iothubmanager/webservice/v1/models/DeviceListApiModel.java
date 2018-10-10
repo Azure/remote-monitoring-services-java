@@ -23,7 +23,7 @@ public final class DeviceListApiModel {
     }
 
     public DeviceListApiModel(final DeviceServiceListModel devices) {
-        this.items = new ArrayList<>();
+        this.items = new ArrayList<DeviceRegistryApiModel>();
         this.continuationToken = devices.getContinuationToken();
         for (DeviceServiceModel d : devices.getItems()) {
             this.items.add(new DeviceRegistryApiModel(d));

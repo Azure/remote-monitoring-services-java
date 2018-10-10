@@ -18,7 +18,7 @@ public class JobServiceModel {
     private JobType jobType;
     private JobStatus jobStatus;
     private MethodParameterServiceModel methodParameter;
-    private TwinServiceModel updateTwin;
+    private DeviceTwinServiceModel updateTwin;
     private String failureReason;
     private String statusMessage;
     private JobStatistics resultStatistics;
@@ -41,7 +41,7 @@ public class JobServiceModel {
         }
 
         if (jobResult.getUpdateTwin() != null) {
-            this.updateTwin = new TwinServiceModel(jobResult.getUpdateTwin());
+            this.updateTwin = new DeviceTwinServiceModel(jobResult.getUpdateTwin());
         }
 
         this.failureReason = jobResult.getFailureReason();
@@ -131,11 +131,11 @@ public class JobServiceModel {
         this.methodParameter = methodParameter;
     }
 
-    public TwinServiceModel getUpdateTwin() {
+    public DeviceTwinServiceModel getUpdateTwin() {
         return updateTwin;
     }
 
-    public void setUpdateTwin(TwinServiceModel updateTwin) {
+    public void setUpdateTwin(DeviceTwinServiceModel updateTwin) {
         this.updateTwin = updateTwin;
     }
 

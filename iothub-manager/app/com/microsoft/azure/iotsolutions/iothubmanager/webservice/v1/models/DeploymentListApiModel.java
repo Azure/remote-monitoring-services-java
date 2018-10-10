@@ -4,12 +4,9 @@ package com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentServiceListModel;
-import com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.Version;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.Collections;
-import java.util.Dictionary;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,14 +22,6 @@ public class DeploymentListApiModel {
         } else {
             this.items = Collections.emptyList();
         }
-    }
-
-    @JsonProperty("$metadata")
-    public Dictionary<String, String> getMetadata() {
-        return new Hashtable<String, String>() {{
-            put("$type", "DeploymentsList;" + Version.NUMBER);
-            put("$uri", "/" + Version.PATH + "/deployments");
-        }};
     }
 
     @JsonProperty("Items")

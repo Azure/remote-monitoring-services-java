@@ -8,59 +8,41 @@ import com.microsoft.azure.sdk.iot.service.devicetwin.DeviceTwinDevice;
 
 import java.util.*;
 
-public final class TwinServiceModel {
+public final class DeviceTwinServiceModel {
 
     private String eTag;
     private String deviceId;
-    private String moduleId;
-    private TwinProperties properties;
+    private DeviceTwinProperties properties;
     private HashMap<String, Object> tags;
-    private Boolean isEdgeDevice;
     private Boolean isSimulated;
     private static final String SIMULATED_KEY = "IsSimulated";
 
-    public TwinServiceModel() {}
+    public DeviceTwinServiceModel () {}
 
-    public TwinServiceModel(
+    public DeviceTwinServiceModel(
         final String eTag,
         final String deviceId,
-        final TwinProperties properties,
-        final HashMap<String, Object> tags,
+        final DeviceTwinProperties properties,
+        final HashMap tags,
         final Boolean isSimulated) {
-        this(eTag, deviceId, null, properties, tags,
-                isSimulated, false);
-    }
-
-    public TwinServiceModel(
-            final String eTag,
-            final String deviceId,
-            final String moduleId,
-            final TwinProperties properties,
-            final HashMap<String, Object> tags,
-            final Boolean isSimulated,
-            final Boolean isEdgeDevice) {
 
         this.eTag = eTag;
         this.deviceId = deviceId;
-        this.moduleId = moduleId;
         this.properties = properties;
         this.tags = tags;
         this.isSimulated = isSimulated;
-        this.isEdgeDevice = isEdgeDevice;
     }
 
-    public TwinServiceModel(final DeviceTwinDevice device) {
+    public DeviceTwinServiceModel(final DeviceTwinDevice device) {
         this(
             device.getETag(),
             device.getDeviceId(),
-            device.getModuleId(),
-            new TwinProperties(
+            new DeviceTwinProperties(
                 HashMapHelper.setToHashMap(device.getDesiredProperties()),
                 HashMapHelper.setToHashMap(device.getReportedProperties())
             ),
             HashMapHelper.setToHashMap(device.getTags()),
-            isSimulated(HashMapHelper.setToHashMap(device.getTags())),
-            device.getCapabilities() != null ? device.getCapabilities().isIotEdge() : false
+            isSimulated(HashMapHelper.setToHashMap(device.getTags()))
         );
     }
 
@@ -78,13 +60,8 @@ public final class TwinServiceModel {
         this.deviceId = deviceId;
     }
 
-    @JsonProperty("ModuleId")
-    public String getModuleId() {
-        return this.moduleId;
-    }
-
     @JsonProperty("Properties")
-    public TwinProperties getProperties() {
+    public DeviceTwinProperties getProperties() {
         return this.properties;
     }
 
@@ -95,12 +72,7 @@ public final class TwinServiceModel {
 
     @JsonProperty("IsSimulated")
     public Boolean getIsSimulated() {
-        return this.isSimulated;
-    }
-
-    @JsonProperty("IsEdgeDevice")
-    public Boolean getIsEdgeDevice() {
-        return this.isEdgeDevice;
+        return isSimulated;
     }
 
     private static Boolean isSimulated(Map tags) {
@@ -122,10 +94,6 @@ public final class TwinServiceModel {
 
         if (this.properties != null && this.properties.getDesired() != null)
             twinDevice.setDesiredProperties(HashMapHelper.mapToSet(this.properties.getDesired()));
-
-        if (this.isEdgeDevice && twinDevice.getCapabilities() != null) {
-            twinDevice.getCapabilities().setIotEdge(this.isEdgeDevice);
-        }
 
         return twinDevice;
     }

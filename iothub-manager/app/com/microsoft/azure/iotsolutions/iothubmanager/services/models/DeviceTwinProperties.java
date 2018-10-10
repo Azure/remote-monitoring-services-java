@@ -7,17 +7,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.HashMap;
 
-public class TwinProperties {
+public class DeviceTwinProperties {
 
     private HashMap<String, Object> desired;
     private HashMap<String, Object> reported;
 
-    public TwinProperties(HashMap<String, Object> desired, HashMap<String, Object> reported) {
+    public DeviceTwinProperties(HashMap<String, Object> desired, HashMap<String, Object> reported) {
         this.desired = desired;
         this.reported = reported;
     }
 
-    public TwinProperties() {}
+    public DeviceTwinProperties() {}
 
     @JsonProperty("Desired")
     @JsonInclude(JsonInclude.Include.NON_NULL)
