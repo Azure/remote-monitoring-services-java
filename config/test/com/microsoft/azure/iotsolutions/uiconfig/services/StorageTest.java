@@ -14,6 +14,7 @@ import com.microsoft.azure.iotsolutions.uiconfig.services.models.*;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.Package;
 import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.ServicesConfig;
 import com.microsoft.azure.sdk.iot.service.Configuration;
+import com.microsoft.azure.sdk.iot.service.ConfigurationContent;
 import helpers.Random;
 import helpers.UnitTest;
 import org.joda.time.DateTime;
@@ -436,6 +437,7 @@ public class StorageTest {
 
     private String createConfiguration() {
         final Configuration config = new Configuration("test");
+        config.setContent(new ConfigurationContent());
         config.setPriority(10);
         return Json.toJson(config).toString();
     }
