@@ -17,7 +17,7 @@ public final class DeviceServiceModel {
     private final Boolean connected;
     private final Boolean enabled;
     private final DateTime lastStatusUpdated;
-    private final DeviceTwinServiceModel twin;
+    private final TwinServiceModel twin;
     private final String ioTHubHostName;
     private final AuthenticationMechanismServiceModel authentication;
 
@@ -29,7 +29,7 @@ public final class DeviceServiceModel {
         final Boolean connected,
         final Boolean enabled,
         final DateTime lastStatusUpdated,
-        final DeviceTwinServiceModel twin,
+        final TwinServiceModel twin,
         final AuthenticationMechanismServiceModel authentication,
         final String iotHubHostName) {
 
@@ -45,7 +45,7 @@ public final class DeviceServiceModel {
         this.ioTHubHostName = iotHubHostName;
     }
 
-    public DeviceServiceModel(final Device device, final DeviceTwinServiceModel twin, String iotHubHostName) {
+    public DeviceServiceModel(final Device device, final TwinServiceModel twin, String iotHubHostName) {
         this(
             device.geteTag(),
             device.getDeviceId(),
@@ -91,7 +91,7 @@ public final class DeviceServiceModel {
         return lastStatusUpdated;
     }
 
-    public DeviceTwinServiceModel getTwin() {
+    public TwinServiceModel getTwin() {
         return twin;
     }
 

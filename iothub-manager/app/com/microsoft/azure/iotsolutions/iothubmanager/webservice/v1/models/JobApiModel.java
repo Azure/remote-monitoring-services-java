@@ -18,7 +18,7 @@ public class JobApiModel {
     private JobType type;
     private JobStatus status;
     private MethodParameterApiModel methodParameter;
-    private DeviceTwinServiceModel updateTwin;
+    private TwinServiceModel updateTwin;
     private String failureReason;
     private String statusMessage;
     private JobStatistics resultStatistics;
@@ -169,12 +169,12 @@ public class JobApiModel {
 
     @JsonProperty("UpdateTwin")
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    public DeviceTwinServiceModel getUpdateTwin() {
+    public TwinServiceModel getUpdateTwin() {
         return updateTwin;
     }
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    public void setUpdateTwin(DeviceTwinServiceModel updateTwin) {
+    public void setUpdateTwin(TwinServiceModel updateTwin) {
         this.updateTwin = updateTwin;
     }
 

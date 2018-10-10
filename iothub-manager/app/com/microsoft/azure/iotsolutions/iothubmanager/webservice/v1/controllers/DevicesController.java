@@ -4,12 +4,19 @@ package com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.*;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.*;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.DevicePropertyCallBack;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.IDeviceProperties;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.IDevices;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.ExternalDependencyException;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.auth.Authorize;
-import com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models.*;
-import play.libs.Json;
-import play.mvc.*;
+import com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models.DeviceListApiModel;
+import com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models.DeviceRegistryApiModel;
+import com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models.MethodParameterApiModel;
+import com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models.MethodResultApiModel;
+import play.mvc.Controller;
+import play.mvc.Http;
+import play.mvc.Result;
 
 import java.util.concurrent.CompletionStage;
 
@@ -40,8 +47,9 @@ public final class DevicesController extends Controller {
     public CompletionStage<Result> queryDevicesAsync() throws ExternalDependencyException {
         String continuationToken = "";
         String query;
-        if (request().getHeaders().get(CONTENT_TYPE).get().equals(Http.MimeTypes.JSON)) {
-            query = Json.stringify(request().body().asJson());
+        if (request().getHeaders().get(CONTENT_TYPE).isPresent() &&
+            request().getHeaders().get(CONTENT_TYPE).get().equals(Http.MimeTypes.JSON)) {
+            query = request().body().asJson().asText();
         } else {
             query = request().body().asText();
         }

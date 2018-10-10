@@ -119,7 +119,6 @@ public final class Deployments implements IDeployments {
             log.error(message, e);
             throw new ExternalDependencyException(message, e);
         }
-
     }
 
     /**

@@ -146,7 +146,7 @@ public class Jobs implements IJobs {
     public CompletionStage<JobServiceModel> scheduleTwinUpdateAsync(
         String jobId,
         String queryCondition,
-        DeviceTwinServiceModel twin,
+        TwinServiceModel twin,
         Date startTime,
         long maxExecutionTimeInSeconds)
         throws ExternalDependencyException {

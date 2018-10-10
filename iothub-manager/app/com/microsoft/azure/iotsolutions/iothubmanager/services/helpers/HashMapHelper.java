@@ -5,7 +5,9 @@ package com.microsoft.azure.iotsolutions.iothubmanager.services.helpers;
 import com.microsoft.azure.sdk.iot.service.devicetwin.Pair;
 
 import java.util.HashMap;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This class is used to convert Set<Pair> and HashMap<String, Object>
