@@ -23,6 +23,16 @@ DELETE /v1/devices/:id          @com.microsoft.azure.iotsolutions.iothubmanager.
 POST /v1/devices/:id/methods    @com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.invokeDeviceMethodAsync(id)
 POST /v1/devices/:id/methods/   @com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DevicesController.invokeDeviceMethodAsync(id)
 
+GET    /v1/deployments          @com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DeploymentsController.getDeploymentsAsync()
+GET    /v1/deployments/         @com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DeploymentsController.getDeploymentsAsync()
+
+GET    /v1/deployments/:id      @com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DeploymentsController.getDeployment(id, includeDeviceStatus: Boolean ?= false)
+
+POST   /v1/deployments          @com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DeploymentsController.postAsync
+POST   /v1/deployments/         @com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DeploymentsController.postAsync
+
+DELETE /v1/deployments/:id      @com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.DeploymentsController.deleteAsync(id)
+
 GET    /v1/jobs                 @com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.JobsController.getJobsAsync
 GET    /v1/jobs/                @com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers.JobsController.getJobsAsync
 
