@@ -11,6 +11,9 @@ libraryDependencies ++= {
     guice,
     ws,
 
+    // https://github.com/Azure/azure-iot-sdk-java/releases
+    "com.microsoft.azure.sdk.iot" % "iot-service-client" % "1.15.0",
+
     // https://mvnrepository.com/artifact/com.nimbusds/oauth2-oidc-sdk
     "com.nimbusds" % "oauth2-oidc-sdk" % "5.36",
 

@@ -115,7 +115,7 @@ public final class Devices implements IDevices {
                         return new DeviceServiceListModel(deviceList, continuationToken);
                     } catch (InvalidInputException | ExternalDependencyException e) {
                         String message = String.format("Unable to get device twin by query: %s", query);
-                        log.error(message, error);
+                        log.error(message, e);
                         throw new CompletionException(message, e);
                     }
                 });
