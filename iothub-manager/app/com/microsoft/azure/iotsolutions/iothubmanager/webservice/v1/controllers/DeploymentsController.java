@@ -7,6 +7,7 @@ import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.IDeployments;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.ExternalDependencyException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidInputException;
+import com.microsoft.azure.iotsolutions.iothubmanager.webservice.auth.Authorize;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models.DeploymentApiModel;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models.DeploymentListApiModel;
 import org.apache.commons.lang3.StringUtils;
@@ -66,6 +67,7 @@ public class DeploymentsController extends Controller {
      * @throws ExternalDependencyException thrown if there is an issue querying the RegistryManager. Details
      * are provided in the inner exception.
      */
+    @Authorize("DeleteDeployments")
     public CompletionStage<Result> deleteAsync(final String id) throws
             ExternalDependencyException, InvalidInputException {
         if (StringUtils.isEmpty(id)) {
@@ -84,6 +86,7 @@ public class DeploymentsController extends Controller {
      * @throws ExternalDependencyException thrown if there is an issue communicating with the hub or in the
      * creation of the deployment. Details are provided in the inner exception.
      */
+    @Authorize("CreateDeployments")
     public CompletionStage<Result> postAsync() throws ExternalDependencyException, InvalidInputException {
         final JsonNode json = request().body().asJson();
         final DeploymentApiModel deployment = fromJson(json, DeploymentApiModel.class);
