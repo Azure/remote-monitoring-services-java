@@ -7,6 +7,7 @@ import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.IDeployments;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.ExternalDependencyException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidInputException;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.ResourceNotFoundException;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models.DeploymentApiModel;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models.DeploymentListApiModel;
 import org.apache.commons.lang3.StringUtils;
@@ -65,11 +66,13 @@ public class DeploymentsController extends Controller {
      * 400 - Bad request is returned if an id is not provided
      * @throws ExternalDependencyException thrown if there is an issue querying the RegistryManager. Details
      * are provided in the inner exception.
+     * @throws InvalidInputException thrown if a deployment id is not provided.
+     * @throws ResourceNotFoundException thrown if a deployment with the given id is not found.
      */
     public CompletionStage<Result> deleteAsync(final String id) throws
-            ExternalDependencyException, InvalidInputException {
+            ExternalDependencyException, InvalidInputException, ResourceNotFoundException {
         if (StringUtils.isEmpty(id)) {
-            throw new InvalidInputException("Must specify deployment id to retrieve");
+            throw new InvalidInputException("Must specify the id of the deployment to delete");
         }
 
         return this.deploymentsService.deleteAsync(id).thenApply(result -> ok());
@@ -105,7 +108,7 @@ public class DeploymentsController extends Controller {
         }
 
         if (deployment.getPriority() < 0) {
-            throw new InvalidInputException("Priority must be provided");
+            throw new InvalidInputException("Priority must be greater than or equal to zero");
         }
 
         return deploymentsService.createAsync(deployment.toServiceModel())

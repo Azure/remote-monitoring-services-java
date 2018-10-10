@@ -55,5 +55,5 @@ public interface IDeployments {
      * @throws ExternalDependencyException thrown if there is an issue querying the RegistryManager. Details
      * are provided in the inner exception.
      */
-    CompletionStage<Boolean> deleteAsync(String id) throws ExternalDependencyException;
+    CompletionStage<Boolean> deleteAsync(String id) throws ExternalDependencyException, ResourceNotFoundException;
 }
