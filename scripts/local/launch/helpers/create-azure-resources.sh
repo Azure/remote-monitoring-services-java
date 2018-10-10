@@ -61,7 +61,7 @@ function create_resources {
 	# Login to Azure Subscription
 	echo "Creating resources ... This operation might fail if you are not logged in. Please login and try again."
 	# Creating RM resources in Azure Subscription
-	pcs -t remotemonitoring -s local --setLocalEnvironments .env
+	pcs -t remotemonitoring -s local
 }
 
 function copy_env {

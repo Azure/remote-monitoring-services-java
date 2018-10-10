@@ -18,8 +18,9 @@ For users who have already created the required azure resources, please **set th
 1) Globally on your machine so as to be accessible by the IDE. OR
 2) In "Edit configurations" vizard of the Intellji IDE. 
 
-*Although not recommended, environment variables can also be set in application.conf file present under webservice package for each of the microservices.*
-
+**Please Note:**
+1) *Although not recommended, environment variables can also be set in appsettings.ini file present under WebService folder for each of the microservices.*
+2) *Build tasks depend upon env variables. If env variables are being set in IDE configurations OR in appsettings file, the tasks may not work. You will have to build services separately by settings env variables.*
 
 ### Walk through for importing new Solution in IDE
 ##### Intellji
@@ -58,8 +59,6 @@ The script create-azure-resources.sh can be independently called to create resou
 ##### Usage:
 1) create Azure resources 
 [create-azure-resources.(sh|cmd)](https://github.com/Azure/remote-monitoring-services-dotnet/blob/master/scripts/local/launch/helpers/create-azure-resources.sh)
-
-
 Structure of the microservices
 =====
 Each microservice comprises of following packages/folders. 

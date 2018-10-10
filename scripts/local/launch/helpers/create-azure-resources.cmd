@@ -20,7 +20,7 @@ call :main
 	: Login to Azure Subscription
 	echo Creating Azure resources ... This operation might fail if you are not logged in. Please login and try again.
 	: Creating RM resources in Azure Subscription
-	call pcs -t remotemonitoring -s local --setLocalEnvironments .env
+	call pcs -t remotemonitoring -s local
 GOTO:EOF
 
 :install_cli
