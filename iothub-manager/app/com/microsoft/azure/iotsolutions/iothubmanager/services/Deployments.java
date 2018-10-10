@@ -171,12 +171,11 @@ public final class Deployments implements IDeployments {
      */
     @Override
     public CompletionStage<DeploymentServiceModel> createAsync(DeploymentServiceModel deployment) throws
-            InvalidInputException {
-        // Required labels
-        this.verifyDeploymentArgument(DEVICE_GROUP_ID_PARAM, deployment.getDeviceGroup().getId());
-        this.verifyDeploymentArgument(DEVICE_GROUP_QUERY_PARAM, deployment.getDeviceGroup().getQuery());
-        this.verifyDeploymentArgument(NAME_PARAM, deployment.getName());
-        this.verifyDeploymentArgument(PACKAGE_CONTENT_PARAM, deployment.getPackageContent());
+            InvalidInputException, ExternalDependencyException {
+        this.verifyDeploymentParameter(DEVICE_GROUP_ID_PARAM, deployment.getDeviceGroup().getId());
+        this.verifyDeploymentParameter(DEVICE_GROUP_QUERY_PARAM, deployment.getDeviceGroup().getQuery());
+        this.verifyDeploymentParameter(NAME_PARAM, deployment.getName());
+        this.verifyDeploymentParameter(PACKAGE_CONTENT_PARAM, deployment.getPackageContent());
 
         if (deployment.getPriority() < 0) {
             throw new InvalidInputException("Invalid input. A priority should be provided greater than 0.");
@@ -192,12 +191,15 @@ public final class Deployments implements IDeployments {
             throw new InvalidInputException(e.toString());
         }
         catch (InvalidInputException e) {
-            log.error("Unable to create deployment. Invalid group or package information provided", e);
-            throw new CompletionException(e);
+            final String message = "Unable to create deployment. Invalid group or package information " +
+                    "provided";
+            log.error(message, e);
+            throw new CompletionException(message, e);
         }
         catch (IotHubException | IOException e) {
-            log.error("Unable to create deployment when communicating with the hub.", e);
-            throw new CompletionException(e);
+            final String message = "Unable to create deployment when communicating with the hub.";
+            log.error(message, e);
+            throw new ExternalDependencyException(message, e);
         }
     }
 
@@ -205,14 +207,13 @@ public final class Deployments implements IDeployments {
      * {@inheritDoc}
      */
     @Override
-    public CompletionStage<Boolean> deleteAsync(String id) throws ExternalDependencyException {
+    public CompletionStage<Boolean> deleteAsync(String id) throws ExternalDependencyException, ResourceNotFoundException {
         try {
             this.registry.removeConfiguration(id);
             return CompletableFuture.completedFuture(true);
         } catch (IotHubNotFoundException e) {
-            throw new CompletionException(
-                    new ResourceNotFoundException(String.format("No deployment with id %s found for %s hub.",
-                            id, this.ioTHubHostName)));
+            throw new ResourceNotFoundException(String.format("No deployment with id %s found for %s hub.",
+                            id, this.ioTHubHostName));
         } catch (IOException|IotHubException e) {
             final String message = "Unable to delete deployment with id: " + id;
             log.error(message, e);
@@ -227,26 +228,26 @@ public final class Deployments implements IDeployments {
      * @return Map of deviceId to the {@link DeploymentStatus}.
      */
     private Map<String, DeploymentStatus> getDeviceStatuses(String deploymentId) throws IOException {
-        final Set<String> appliedDevices = this.getDevicesInQuery(APPLIED_DEVICES_QUERY, deploymentId);
-        final Set<String> successfulDevices = this.getDevicesInQuery(SUCCESSFUL_DEVICES_QUERY, deploymentId);
-        final Set<String> failedDevices = this.getDevicesInQuery(FAILED_DEVICES_QUERY, deploymentId);
+        final Set<String> appliedDeviceIds = this.getDevicesInQuery(APPLIED_DEVICES_QUERY, deploymentId);
+        final Set<String> successfulDeviceIds = this.getDevicesInQuery(SUCCESSFUL_DEVICES_QUERY, deploymentId);
+        final Set<String> failedDeviceIds = this.getDevicesInQuery(FAILED_DEVICES_QUERY, deploymentId);
         Map<String,DeploymentStatus> deviceStatuses = new HashMap<>();
 
-        for (String successfulDevice : successfulDevices) {
-            deviceStatuses.put(successfulDevice, DeploymentStatus.Successful);
+        for (String successfulDevice : successfulDeviceIds) {
+            deviceStatuses.put(successfulDevice, DeploymentStatus.Succeeded);
         }
-        for (String failedDevice : failedDevices) {
+        for (String failedDevice : failedDeviceIds) {
             deviceStatuses.put(failedDevice, DeploymentStatus.Failed);
         }
-        for (String device : appliedDevices) {
-            if (!successfulDevices.contains(device) && !failedDevices.contains(device)) {
+        for (String device : appliedDeviceIds) {
+            if (!successfulDeviceIds.contains(device) && !failedDeviceIds.contains(device)) {
                 deviceStatuses.put(device, DeploymentStatus.Pending);
             }
         }
         return deviceStatuses;
     }
 
-    private void verifyDeploymentArgument(final String argumentName, final String argumentValue)
+    private void verifyDeploymentParameter(final String argumentName, final String argumentValue)
             throws InvalidInputException {
         if (StringUtils.isEmpty(argumentValue)) {
             throw new InvalidInputException("Invalid input. Must provide a value to " +

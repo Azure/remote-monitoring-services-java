@@ -4,6 +4,6 @@ package com.microsoft.azure.iotsolutions.iothubmanager.services.models;
 
 public enum DeploymentStatus {
     Pending,
-    Successful,
+    Succeeded,
     Failed
 }
