@@ -1,7 +1,11 @@
 :: Copyright (c) Microsoft. All rights reserved.
 :: This script will install pcs-cli on this machine.
-:: For more info on pcs-cli visit ().
+:: For more info on pcs-cli visit (https://github.com/Azure/pcs-cli).
 @echo off
+
+:: strlen of /scripts/local/launch/helpers/ => 30
+SET APP_HOME=%~dp0
+SET APP_HOME=%APP_HOME:~0,-30%
 
 :main 
     call :check_dependencies
@@ -17,24 +21,24 @@ call :main
 ::::::::::::::::::::: Functions ::::::::::::::::::::
 
 :create_azure_resources
-	: Login to Azure Subscription
-	echo Creating Azure resources ... This operation might fail if you are not logged in. Please login and try again.
-	: Creating RM resources in Azure Subscription
-	call pcs -t remotemonitoring -s local
+    : Login to Azure Subscription
+    echo Creating Azure resources ... This operation might fail if you are not logged in. Please login and try again.
+    : Creating RM resources in Azure Subscription
+    call pcs -t remotemonitoring -s local
 GOTO:EOF
 
 :install_cli
     cd ..\..\..\..\
-	:: If pcs-cli is installed this step will do nothing
-	git clone https://github.com/Azure/pcs-cli.git  > Nul 2>&1
-	:: Build and Link CLI
+    :: If pcs-cli is installed this step will do nothing (Temporary before release)
+    git clone https://github.com/Azure/pcs-cli.git  > Nul 2>&1
+    :: Build and Link CLI
     echo "Building pcs-cli ....."
 
-	cd pcs-cli
-	call npm install 
+    cd pcs-cli
+    call npm install 
     call npm start
     call npm link > Nul 2>&1
-	cd ..\remote-monitoring-services-java\scripts\local\launch
+    cd %APP_HOME%\scripts\local\launch
 GOTO:EOF
 
 :check_dependencies
@@ -52,10 +56,11 @@ GOTO:EOF
 GOTO:EOF
 
 :copy_env
-	xcopy ..\..\..\..\pcs-cli\.env .\
+    xcopy ..\..\..\..\pcs-cli\.env .\
 GOTO:EOF
 
-::::::::::::::::::::: Helper Function ::::::::::::::::::::
+::::::::::::::::::::: Helper Functions ::::::::::::::::::::
+
 :node_is_installed
     node -v > Nul 2>&1
     if "%errorlevel%" == "9009" (

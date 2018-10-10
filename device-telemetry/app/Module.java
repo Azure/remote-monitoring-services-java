@@ -2,6 +2,7 @@
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidConfigurationException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.IClientAuthConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime.IConfig;
@@ -25,7 +26,7 @@ public class Module extends AbstractModule {
     }
 
     @Provides
-    IServicesConfig provideIServicesConfig(IConfig config) {
+    IServicesConfig provideIServicesConfig(IConfig config) throws InvalidConfigurationException {
         return config.getServicesConfig();
     }
 

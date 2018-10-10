@@ -12,23 +12,23 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import java.util.Dictionary;
-import java.util.Hashtable;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @JsonPropertyOrder({"Name", "Status", "CurrentTime", "StartTime", "UpTime", "Properties", "Dependencies", "$metadata"})
 public final class StatusApiModel {
 
     private String status;
     private DateTimeFormatter dateFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
-    private Status storageClientStatus;
-    private Status keyValueStorageStatus;
+    private List<Status> statusList;
+    private HashMap<String, String> properties = new HashMap<String, String>() {{
+        put("Simulation", "on");
+        put("Region", "US");
+        put("DebugMode", "off");
+    }};
 
-    public StatusApiModel(
-        Status storageClientStatus,
-        Status keyValueStorageStatus) {
-        this.storageClientStatus = storageClientStatus;
-        this.keyValueStorageStatus = keyValueStorageStatus;
-
+    public StatusApiModel() {
+        this.statusList = new ArrayList<>();
         setStatusMessage();
     }
 
@@ -63,55 +63,45 @@ public final class StatusApiModel {
     }
 
     @JsonProperty("Properties")
-    public Dictionary<String, String> getProperties() {
-        return new Hashtable<String, String>() {{
-            put("Simulation", "on");
-            put("Region", "US");
-            put("DebugMode", "off");
-        }};
+    public HashMap<String, String> getProperties() {
+        return this.properties;
     }
 
     @JsonProperty("Dependencies")
-    public Dictionary<String, String> getDependencies() {
-        return new Hashtable<String, String>() {{
-            put("Storage",
-                (storageClientStatus.isHealthy() ? "OK" : "ERROR") + ": " +
-                    storageClientStatus.getStatusMessage());
+    public HashMap<String, String> getDependencies() {
+        HashMap<String, String> dependencies = new HashMap<>();
 
-            put("KeyValueStorage",
-                (keyValueStorageStatus.isHealthy() ? "OK" : "ERROR") + ": " +
-                    keyValueStorageStatus.getStatusMessage());
-
-        }};
+        this.statusList.stream()
+            .forEach(s -> {
+                String dependencyStatusMessage = s.isHealthy() ? "OK" : "ERROR";
+                dependencies.put(s.getName(), dependencyStatusMessage + ": " + s.getStatusMessage());
+            });
+        return dependencies;
     }
 
     @JsonProperty("$metadata")
-    public Dictionary<String, String> getMetadata() {
-        return new Hashtable<String, String>() {{
+    public HashMap<String, String> getMetadata() {
+        return new HashMap<String, String>() {{
             put("$type", "Status;" + Version.NAME);
             put("$uri", "/" + Version.NAME + "/status");
         }};
     }
 
+    public void addStatus(Status status) {
+        this.statusList.add(status);
+        this.setStatusMessage();
+    }
+
     private void setStatusMessage() {
         // check dependency health
-        if (!this.storageClientStatus.isHealthy() ||
-            !this.keyValueStorageStatus.isHealthy()) {
-            this.status = "ERROR";
+        boolean isHealthy = this.statusList.stream()
+            .allMatch(s -> s.isHealthy());
 
-            // print error messages from failing dependencies
-            if (!this.storageClientStatus.isHealthy()) {
-                this.status += ":" + this.storageClientStatus.getStatusMessage();
-            }
-            if (!this.keyValueStorageStatus.isHealthy()) {
-                // add separator if both dependencies fail.
-                if (!this.storageClientStatus.isHealthy()) {
-                    this.status += "; ";
-                }
-                this.status += ":" + this.keyValueStorageStatus.getStatusMessage();
-            }
-        } else {
-            this.status = "OK:Alive and well";
-        }
+        this.status = isHealthy ? "OK:Alive and well" : String.join(";",
+            this.statusList.stream()
+                .filter(s -> !s.isHealthy())
+                .map(s -> s.getStatusMessage())
+                .collect(Collectors.toList())
+        );
     }
 }

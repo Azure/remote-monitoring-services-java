@@ -2,21 +2,20 @@ Starting Microservices on local environment
 =====
 ### Steps to create Azure resources
 #### New Users
-1) Run the [start.(cmd|sh)](https://github.com/Azure/remote-monitoring-services-java/blob/master/scripts/local/launch/) script located under launch *(scripts/local/launch)* folder.\
-2) Run the following script to set environment variables. The scripts are located under *(scripts/local/launch/os)* folder.\
-    i. [set-env-uri.(cmd|sh)](https://github.com/Azure/remote-monitoring-services-java/tree/master/scripts/local/launch/os)\
-    ii. The created environment variables are present in [.env](https://github.com/Azure/remote-monitoring-services-java/blob/master/scripts/local/launch/) file located in *(scripts/local/launch)* folder.
-![start](https://user-images.githubusercontent.com/39531904/44435771-6ab08280-a566-11e8-93c9-e6f35e5df247.PNG)
+1) Run the [start.cmd or start.sh](https://github.com/Azure/remote-monitoring-services-java/blob/master/scripts/local/launch/) script (depending on your OS) located under launch *(scripts/local/launch)* folder.    
+2) Run the following script to set environment variables. The script is located under *(scripts/local/launch/os)* folder.\
+    i. [set-env-uri.cmd or set-env-uri.sh](https://github.com/Azure/remote-monitoring-services-java/tree/master/scripts/local/launch/os)\
+![start_new_java](https://user-images.githubusercontent.com/39531904/46707719-0918a600-cbf0-11e8-96d4-b5d89d957962.PNG)
 
 **Please Note:**
 1) *If you have cloned azure-iot-pcs-remote-monitoring-java repository, the scripts folder is present under services submodule (folder).*
-2) *This script requires **Node.js** to execute, please install Node (version < 8.11.2) before using this script. Also, this script might require administartive privileges or sudo permission as it tries to install [pcs-cli](https://github.com/Azure/pcs-cli) a cli interface for remote-monitoring deployments.*
+2) *The start script requires **Node.js** to execute,please install latest stable Node 8 (donot use Node 10) before using this script. Also, this script might require administartive privileges or sudo permission as it tries to install [pcs-cli](https://github.com/Azure/pcs-cli) a cli interface for remote-monitoring deployments.*
 &nbsp; 
 
 #### Existing Users
-For users who have already created the required azure resources, please **set the environment variables** 
-1) Globally on your machine so as to be accessible by the IDE. OR
-2) In "Edit configurations" vizard of the Intellji IDE. 
+For users who have already created the required azure resources, please do one of the following: 
+1) Set the environment variables globally on your machine.
+2) **Intellji:** Set the environment variables in the "Edit configurations" vizard of the IDE. (The steps for creating the configurations are given below.)
 
 **Please Note:**
 1) *Although not recommended, environment variables can also be set in appsettings.ini file present under WebService folder for each of the microservices.*
@@ -24,11 +23,10 @@ For users who have already created the required azure resources, please **set th
 
 ### Walk through for importing new Solution in IDE
 ##### Intellji
+
 This is our preferred editor for Java development.
 
-The java repository has a similar structure to the java repo and contains the same script(s). The scripts, described above, are located under scripts/local/launch folder.  
-
-##### Steps to import launch settings
+##### Steps to import project and create build/run configurations
 1) Install SBT, SBT Executor & Scala plugins for Intellji
 ![intellji](https://user-images.githubusercontent.com/39531904/44321184-58fe9c00-a3fb-11e8-8d3e-4ff208139bac.png)
     * SBT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.8.0 
@@ -47,8 +45,7 @@ Environment variables can also be set in the Edit Configuration wizard under env
 
 The build.sbt file has been configured to run all the microservices parallelly. It will also start the microservices available only in .Net flavor (device-simulation, auth and ASA manager).
 
-*SBT tool has been observed to fork number of processes equivalent to the number of CPUs. Hence, on dual core machines all the microservices may not be started parallelly.*
-
+*SBT tool has been observed to fork number of processes equivalent to the number of CPUs. Hence, on dual core machines all the microservices may not be started in parallel.*
 
 ### Script Description
 #### Start Script
@@ -57,8 +54,9 @@ The new repository contains a **start** script and few other scripts to bootstra
 #### Helpers scripts
 The script create-azure-resources.sh can be independently called to create resources in the cloud.
 ##### Usage:
-1) create Azure resources 
-[create-azure-resources.(sh|cmd)](https://github.com/Azure/remote-monitoring-services-dotnet/blob/master/scripts/local/launch/helpers/create-azure-resources.sh)
+1) create Azure resources   
+[create-azure-resources.sh or create-azure-resources.cmd](https://github.com/Azure/remote-monitoring-services-dotnet/blob/master/scripts/local/launch/helpers/create-azure-resources.sh)
+
 Structure of the microservices
 =====
 Each microservice comprises of following packages/folders. 

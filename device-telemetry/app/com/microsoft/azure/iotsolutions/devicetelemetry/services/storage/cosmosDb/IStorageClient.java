@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft. All rights reserved.
 
-package com.microsoft.azure.iotsolutions.devicetelemetry.services.storage;
+package com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.cosmosDb;
 
 import com.google.inject.ImplementedBy;
 import com.microsoft.azure.documentdb.*;

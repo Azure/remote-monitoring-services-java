@@ -3,7 +3,10 @@
 package webservice.test.v1.controllers;
 
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.IMessages;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ExternalDependencyException;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidConfigurationException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidInputException;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.TimeSeriesParseException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.MessageListServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.MessageServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.MessagesController;
@@ -33,7 +36,11 @@ public class MessagesControllerTest {
 
     @Test(timeout = 5000)
     @Category({UnitTest.class})
-    public void itGetsAllMessages() throws InvalidInputException {
+    public void itGetsAllMessages() throws
+        InvalidInputException,
+        InvalidConfigurationException,
+        ExternalDependencyException,
+        TimeSeriesParseException {
 
         // Arrange
         IMessages messages = mock(IMessages.class);

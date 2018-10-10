@@ -33,7 +33,7 @@ public interface IRules {
     CompletionStage<RuleServiceModel> postAsync(
         RuleServiceModel ruleServiceModel);
 
-    CompletionStage<RuleServiceModel> putAsync(
+    CompletionStage<RuleServiceModel> upsertIfNotDeletedAsync(
         RuleServiceModel ruleServiceModel);
 
     CompletionStage deleteAsync(String id);
