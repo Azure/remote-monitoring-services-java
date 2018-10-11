@@ -30,8 +30,8 @@ import static play.libs.Json.toJson;
 public class PackageController extends Controller {
 
     private final IStorage storage;
-    private static final String PACKAGE_TYPE_PARAM = "type";
-    private static final String FILE_PARAM = "package";
+    private static final String PACKAGE_TYPE_PARAM = "Type";
+    private static final String FILE_PARAM = "Package";
 
     @Inject
     public PackageController(IStorage storage) {
