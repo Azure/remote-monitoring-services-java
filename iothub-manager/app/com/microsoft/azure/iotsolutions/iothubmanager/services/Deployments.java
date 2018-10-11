@@ -300,7 +300,7 @@ public final class Deployments implements IDeployments {
         final DeviceGroup deploymentGroup = deployment.getDeviceGroup();
         final String dvcGroupQuery = deploymentGroup.getQuery();
         final String query = QueryConditionTranslator.ToQueryString(dvcGroupQuery);
-        edgeConfiguration.setTargetCondition(query);
+        edgeConfiguration.setTargetCondition(StringUtils.isNotBlank(query) ? query : "*");
         edgeConfiguration.setPriority(deployment.getPriority());
         edgeConfiguration.setEtag("");
 
