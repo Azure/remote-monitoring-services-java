@@ -45,7 +45,7 @@ public class Storage implements IStorage {
     private static String PackagesCollectionId = "packages";
     private static final DateTimeFormatter DATE_FORMAT =
             forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
-    private static final String azureMapsKey = "AzureMapsKey";
+    private static final String AzureMapsKey = "AzureMapsKey";
     private final IStorageAdapterClient client;
     private final IServicesConfig config;
 
@@ -260,8 +260,8 @@ public class Storage implements IStorage {
     }
 
     private void appendAzureMapsKey(ObjectNode theme) {
-        if (!theme.has(azureMapsKey)) {
-            theme.put(azureMapsKey, config.getAzureMapsKey());
+        if (!theme.has(AzureMapsKey)) {
+            theme.put(AzureMapsKey, config.getAzureMapsKey());
         }
     }
 

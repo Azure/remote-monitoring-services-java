@@ -107,6 +107,7 @@ public class DevicesUnitTest {
             exception.expect(InvalidInputException.class);
             this.devices.getModuleTwinAsync(deviceId, moduleId);
         } else {
+            // Arrange
             final String query = String.format("SELECT \\* FROM devices.modules where deviceId = '%s' and " +
                     "moduleId = '%s'", deviceId, moduleId);
             final String pattern = "(?i)" + query;
@@ -117,9 +118,11 @@ public class DevicesUnitTest {
             final QueryCollectionResponse<DeviceTwinDevice> response = this.createQueryResponse(deviceId, moduleId);
             when(this.deviceTwinClient.next(eq(this.queryCollection), any())).thenReturn(response);
 
+            // Act
             final TwinServiceModel module = this.devices.getModuleTwinAsync(deviceId, moduleId)
                     .toCompletableFuture().get();
 
+            // Assert
             assertEquals(deviceId, module.getDeviceId());
             assertEquals(moduleId, module.getModuleId());
         }
@@ -130,6 +133,7 @@ public class DevicesUnitTest {
                  "deviceId='test', SELECT \\* FROM devices.modules where deviceId='test'"})
     public void getModuleTwinTest(String query, String queryToMatch) throws
             Exception {
+        // Arrange
         final String pattern = "(?i)" + query;
 
         when(this.deviceTwinClient.queryTwinCollection(matches(queryToMatch))).thenReturn(this.queryCollection);
@@ -137,9 +141,11 @@ public class DevicesUnitTest {
         final QueryCollectionResponse<DeviceTwinDevice> response = this.createQueryResponse("test", "test");
         when(this.deviceTwinClient.next(eq(this.queryCollection), any())).thenReturn(response);
 
+        // Act
         final TwinServiceListModel model = this.devices.getModuleTwinsByQueryAsync(query, StringUtils.EMPTY)
                 .toCompletableFuture().get();
 
+        // Assert
         assertEquals(1, model.getItems().size());
         assertEquals("test", model.getItems().get(0).getDeviceId());
     }

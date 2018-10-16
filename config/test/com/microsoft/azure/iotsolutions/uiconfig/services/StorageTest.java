@@ -362,6 +362,7 @@ public class StorageTest {
     @Test
     @Category({UnitTest.class})
     public void addPackageTest() throws BaseException, ExecutionException, InterruptedException {
+        // Arrange
         Package pkg = new Package(null, rand.NextString(), PackageType.edgeManifest, this.createConfiguration());
 
         ValueApiModel model = new ValueApiModel(rand.NextString(), null, null, null);
@@ -371,7 +372,10 @@ public class StorageTest {
                                             Mockito.any(String.class)))
                .thenReturn(CompletableFuture.supplyAsync(() -> model));
 
+        // Act
         Package result = storage.addPackageAsync(pkg).toCompletableFuture().get();
+
+        // Assert
         assertEquals(pkg.getName(), result.getName());
         assertEquals(pkg.getType(), result.getType());
         assertEquals(pkg.getContent(), result.getContent());
@@ -380,8 +384,10 @@ public class StorageTest {
     @Test
     @Category({UnitTest.class})
     public void invalidPackageTest() throws BaseException, ExecutionException, InterruptedException {
+        // Arrange
         Package pkg = new Package(null, rand.NextString(), PackageType.edgeManifest, rand.NextString());
 
+        // Act & Assert
         exception.expect(InvalidInputException.class);
         storage.addPackageAsync(pkg).toCompletableFuture().get();
     }
@@ -389,6 +395,7 @@ public class StorageTest {
     @Test(timeout = StorageTest.TIMEOUT)
     @Category({UnitTest.class})
     public void getAllPackageTest() throws BaseException, ExecutionException, InterruptedException {
+        // Arrange
         List<Package> packages = new ArrayList<>();
         final String pkgName = "pkgName";
         final PackageType type = PackageType.edgeManifest;
@@ -406,7 +413,10 @@ public class StorageTest {
         ).collect(Collectors.toList());
         this.setupAllAsyncMock(PACKAGES_COLLECTION_ID, items);
 
+        // Act
         List<Package> results = Lists.newArrayList(storage.getAllPackagesAsync().toCompletableFuture().get());
+
+        // Assert
         assertEquals(5, results.size());
 
         for (int i = 0; i < results.size(); i++) {
@@ -415,16 +425,19 @@ public class StorageTest {
             Package pkg = Json.fromJson(Json.parse(value.getData()), Package.class);
             assertEquals(pkgName + i, pkg.getName());
             assertEquals(content + i, pkg.getContent());
-
         }
     }
 
     @Test(timeout = StorageTest.TIMEOUT)
     @Category({UnitTest.class})
     public void deletePackageTest() throws BaseException {
+        // Arrange
         final String packageId = rand.NextString();
+
+        // Act
         this.storage.deletePackageAsync(packageId);
 
+        // Assert
         Mockito.verify(this.mockClient).deleteAsync(PACKAGES_COLLECTION_ID, packageId);
     }
 
