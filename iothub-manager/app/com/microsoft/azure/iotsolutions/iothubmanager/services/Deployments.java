@@ -286,14 +286,7 @@ public final class Deployments implements IDeployments {
         final String deploymentId = UUID.randomUUID().toString();
         final Configuration edgeConfiguration = new Configuration(deploymentId);
 
-        String packageContent = deployment.getPackageContent();
-        JsonNode node = Json.parse(packageContent);
-        JsonNode schemaVersionNode = Json.parse(packageContent).get(SCHEMA_VERSION);
-        if (schemaVersionNode == null || StringUtils.isEmpty(schemaVersionNode.toString())) {
-            node = ((ObjectNode) node).put(SCHEMA_VERSION, "1.0");
-            packageContent = Json.toJson(node).toString();
-        }
-
+        final String packageContent = deployment.getPackageContent();
         final Configuration pkgConfiguration = fromJson(Json.parse(packageContent), Configuration.class);
         edgeConfiguration.setContent(pkgConfiguration.getContent());
 
