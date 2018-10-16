@@ -23,6 +23,8 @@ More information [here][rm-arch-url].
 * Get or upload logo
 * Get or set overall solution settings
 * Get or set individual user settings
+* Create or delete a package
+* Get all or a single uploaded package.
 
 ## Documentation
 * View the API documentation in the [Wiki](https://github.com/Azure/pcs-config-java/wiki).

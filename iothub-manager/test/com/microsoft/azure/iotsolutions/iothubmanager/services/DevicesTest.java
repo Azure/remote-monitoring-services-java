@@ -37,7 +37,7 @@ public class DevicesTest {
     private static ArrayList<DeviceServiceModel> testDevices = new ArrayList<>();
     private static ArrayList<DeviceClient> testDeviceEmulators = new ArrayList<>();
     private static String batchId = UUID.randomUUID().toString().replace("-", "");
-    private static final String MALFORMED_JSON_EXCEED_5_LEVELS = "Malformed Json: exceed 5 levels";
+    private static final String MALFORMED_JSON_EXCEED_LEVELS = "exceed maximum";
     private static DevicePropertyCallBack cacheUpdateCallBack;
 
     private static boolean setUpIsDone = false;
@@ -169,11 +169,11 @@ public class DevicesTest {
             }
         };
 
-        DeviceTwinProperties properties = new DeviceTwinProperties(desired, null);
-        DeviceTwinServiceModel twin = new DeviceTwinServiceModel(eTag, deviceId, properties, tags, true);
+        TwinProperties properties = new TwinProperties(desired, null);
+        TwinServiceModel twin = new TwinServiceModel(eTag, deviceId, properties, tags, true);
         DeviceServiceModel device = new DeviceServiceModel(eTag, deviceId, 0, null, false, true, null, twin, null, null);
         DeviceServiceModel newDevice = deviceService.createAsync(device).toCompletableFuture().get();
-        DeviceTwinServiceModel newTwin = newDevice.getTwin();
+        TwinServiceModel newTwin = newDevice.getTwin();
         HashMap<String, Object> configMap = (HashMap) newTwin.getProperties().getDesired().get("Config");
 
         Assert.assertEquals(deviceId, newDevice.getId());
@@ -200,7 +200,7 @@ public class DevicesTest {
         authModel.setPrimaryKey(key.getPrimaryKey());
         authModel.setSecondaryKey(key.getSecondaryKey());
 
-        DeviceTwinServiceModel twin = new DeviceTwinServiceModel(eTag, deviceId, null, tags, true);
+        TwinServiceModel twin = new TwinServiceModel(eTag, deviceId, null, tags, true);
         DeviceServiceModel device = new DeviceServiceModel(eTag, deviceId, 0, null, false, true, null, twin, authModel, null);
         DeviceServiceModel newDevice = deviceService.createAsync(device).toCompletableFuture().get();
 
@@ -224,7 +224,7 @@ public class DevicesTest {
         }};
         AuthenticationMechanismServiceModel authModel = new AuthenticationMechanismServiceModel(AuthenticationType.SelfSinged);
 
-        DeviceTwinServiceModel twin = new DeviceTwinServiceModel(eTag, deviceId, null, tags, true);
+        TwinServiceModel twin = new TwinServiceModel(eTag, deviceId, null, tags, true);
         DeviceServiceModel device = new DeviceServiceModel(eTag, deviceId, 0, null, false, true, null, twin, authModel, null);
         DeviceServiceModel newDevice = deviceService.createAsync(device).toCompletableFuture().get();
 
@@ -244,8 +244,8 @@ public class DevicesTest {
         HashMap<String, Object> tags = new HashMap<String, Object>() {{
             put("Building", "Building40");
         }};
-        DeviceTwinProperties properties = new DeviceTwinProperties(null, null);
-        DeviceTwinServiceModel twin = new DeviceTwinServiceModel(eTag, deviceId, properties, tags, true);
+        TwinProperties properties = new TwinProperties(null, null);
+        TwinServiceModel twin = new TwinServiceModel(eTag, deviceId, properties, tags, true);
         DeviceServiceModel device = new DeviceServiceModel(eTag, deviceId, 0, null, false, true, null, twin, null, null);
         DeviceServiceModel newDevice = deviceService.createAsync(device).toCompletableFuture().get();
         Assert.assertNotNull(newDevice.getId());
@@ -278,11 +278,11 @@ public class DevicesTest {
                 });
             }
         };
-        DeviceTwinProperties properties = new DeviceTwinProperties(desired, reported);
-        DeviceTwinServiceModel twin = new DeviceTwinServiceModel(eTag, deviceId, properties, tags, true);
+        TwinProperties properties = new TwinProperties(desired, reported);
+        TwinServiceModel twin = new TwinServiceModel(eTag, deviceId, properties, tags, true);
         DeviceServiceModel device = new DeviceServiceModel(eTag, deviceId, 0, null, false, true, null, twin, null, null);
         DeviceServiceModel newDevice = deviceService.createOrUpdateAsync(device.getId(), device, cacheUpdateCallBack).toCompletableFuture().get();
-        DeviceTwinServiceModel newTwin = newDevice.getTwin();
+        TwinServiceModel newTwin = newDevice.getTwin();
         HashMap<String, Object> configMap = (HashMap) newTwin.getProperties().getDesired().get("Config");
         Assert.assertEquals(deviceId, newDevice.getId());
         Assert.assertEquals(newTwin.getTags().get("Building"), "Building40");
@@ -295,7 +295,7 @@ public class DevicesTest {
     public void createOrUpdateWithMismatchedIdFailureTest() throws Exception {
         String deviceId = randomDeviceId();
         String eTag = "etagxx==";
-        DeviceTwinServiceModel twin = new DeviceTwinServiceModel(eTag, "MismatchedDeviceID", null, null, true);
+        TwinServiceModel twin = new TwinServiceModel(eTag, "MismatchedDeviceID", null, null, true);
         DeviceServiceModel device = new DeviceServiceModel(eTag, "MismatchedDeviceID", 0, null, false, true, null, twin, null, null);
         deviceService.createOrUpdateAsync(deviceId, device, cacheUpdateCallBack).toCompletableFuture().get();
     }
@@ -305,7 +305,7 @@ public class DevicesTest {
     public void createOrUpdateWithEmptyIdFailureTest() throws Exception {
         String deviceId = randomDeviceId();
         String eTag = "etagxx==";
-        DeviceTwinServiceModel twin = new DeviceTwinServiceModel(eTag, "", null, null, true);
+        TwinServiceModel twin = new TwinServiceModel(eTag, "", null, null, true);
         DeviceServiceModel device = new DeviceServiceModel(eTag, "", 0, null, false, true, null, twin, null, null);
         deviceService.createOrUpdateAsync(deviceId, device, cacheUpdateCallBack).toCompletableFuture().get();
     }
@@ -344,7 +344,8 @@ public class DevicesTest {
         // the expected exception will be checked if the issue is hit.
         // see more detail at https://github.com/Azure/azure-iot-sdk-java/issues/158
         if (e.getCause() instanceof IllegalArgumentException) {
-            Assert.assertTrue(e.getMessage().contains(MALFORMED_JSON_EXCEED_5_LEVELS));
+            System.err.println(e.getMessage());
+            Assert.assertTrue(e.getMessage().contains(MALFORMED_JSON_EXCEED_LEVELS));
         } else {
             Assert.fail(message);
         }
@@ -368,8 +369,8 @@ public class DevicesTest {
                         });
                     }
                 };
-                DeviceTwinProperties properties = new DeviceTwinProperties(desired, null);
-                DeviceTwinServiceModel twin = new DeviceTwinServiceModel(eTag, deviceId, properties, tags, true);
+                TwinProperties properties = new TwinProperties(desired, null);
+                TwinServiceModel twin = new TwinServiceModel(eTag, deviceId, properties, tags, true);
                 DeviceServiceModel device = new DeviceServiceModel(eTag, deviceId, 0, null, false, true, null, twin, null, null);
                 DeviceServiceModel newDevice = deviceService.createAsync(device).toCompletableFuture().get();
                 testDevices.add(newDevice);
