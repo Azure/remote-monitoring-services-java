@@ -27,15 +27,17 @@ public class QueryConditionTranslatorTest {
         String conditions = "Tags.Building = 43 and Properties.Reported.Type = \"Chiller\"";
         String query = QueryConditionTranslator.ToQueryString(conditions);
         String expected = "Tags.Building = 43 and Properties.Reported.Type = 'Chiller'";
-        Assert.assertEquals(query, expected);
+        Assert.assertEquals(expected, query);
     }
 
     @Test()
     @Category({UnitTest.class})
     public void ToQueryEmptyStringTest() throws Exception {
-        Assert.assertEquals(QueryConditionTranslator.ToQueryString(""), "");
-        Assert.assertEquals(QueryConditionTranslator.ToQueryString("\"\""), "''");
-        Assert.assertEquals(QueryConditionTranslator.ToQueryString("[]"), "");
-        Assert.assertEquals(QueryConditionTranslator.ToQueryString("[  ]"), "");
+        Assert.assertEquals("", QueryConditionTranslator.ToQueryString(""));
+        Assert.assertEquals("''", QueryConditionTranslator.ToQueryString("\"\""));
+        Assert.assertEquals("", QueryConditionTranslator.ToQueryString("[]"));
+        Assert.assertEquals("", QueryConditionTranslator.ToQueryString("[  ]"));
+        Assert.assertEquals("", QueryConditionTranslator.ToQueryString("  [ ]"));
+        Assert.assertEquals("deviceId IN []", QueryConditionTranslator.ToQueryString("deviceId IN []"));
     }
 }

@@ -49,7 +49,7 @@ public class QueryConditionTranslator {
         }
 
         if (clauses.size() == 0) {
-            return conditions.replace('\"', '\'').replaceAll("\\[\\s*\\]", "");
+            return conditions.replace('\"', '\'').replaceAll("^\\s*\\[\\s*\\]", "");
         } else {
             StringWriter sb = new StringWriter();
             for (QueryConditionClause clause : clauses) {
