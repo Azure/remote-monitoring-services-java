@@ -10,11 +10,13 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.Rules;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ExternalDependencyException;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.IActionServiceModel;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import play.Logger;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletionException;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -38,6 +40,8 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
     private boolean deleted = false;
 
     private ArrayList<ConditionServiceModel> conditions = null;
+
+    private List<IActionServiceModel> actions = null;
 
     public RuleServiceModel() {
     }
@@ -65,7 +69,8 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
             calculation,
             timePeriod,
             conditions,
-            false
+            false,
+            null
         );
     }
 
@@ -82,7 +87,8 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
         CalculationType calculation,
         Long timePeriod,
         ArrayList<ConditionServiceModel> conditions,
-        boolean deleted) {
+        boolean deleted,
+        List<IActionServiceModel> actions) {
 
         this.eTag = eTag;
         this.id = id;
@@ -97,6 +103,7 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
         this.timePeriod = timePeriod;
         this.conditions = conditions;
         this.deleted = deleted;
+        this.actions = actions;
     }
 
     @JsonIgnore
@@ -208,6 +215,10 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
 
     public void setDeleted(boolean deleted) { this.deleted = deleted; }
 
+    public List<IActionServiceModel> getActions() { return this.actions; }
+
+    public void setActions(List<IActionServiceModel> actions) { this.actions = actions; }
+
     @Override
     public int compareTo(RuleServiceModel rule) {
         return getDateCreated().compareTo(rule.getDateCreated());
@@ -240,7 +251,8 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
             this.calculation,
             this.timePeriod,
             this.conditions,
-            this.deleted);
+            this.deleted,
+            this.actions);
         return rule;
     }
 }
