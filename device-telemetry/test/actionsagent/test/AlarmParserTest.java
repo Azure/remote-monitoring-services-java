@@ -5,7 +5,7 @@ package actionsagent.test;
 import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.actions.AlarmParser;
 import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.models.AsaAlarmApiModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.ActionType;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.EmailAction;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.EmailActionServiceModel;
 import org.junit.Test;
 import org.junit.Assert;
 
@@ -31,7 +31,7 @@ public class AlarmParserTest {
         Assert.assertEquals("description2", result.get(2).getRuleDescription());
 
         Assert.assertEquals(1, result.get(0).getActions().size());
-        EmailAction action = (EmailAction) result.get(0).getActions().get(0);
+        EmailActionServiceModel action = (EmailActionServiceModel) result.get(0).getActions().get(0);
         Assert.assertEquals(ActionType.Email, action.getType());
         List<String> recipients = action.getRecipients();
         Assert.assertEquals("Test Subject", action.getSubject());
@@ -39,7 +39,7 @@ public class AlarmParserTest {
         Assert.assertEquals(1, recipients.size());
         Assert.assertEquals("sampleEmail1@gmail.com", recipients.get(0));
 
-        EmailAction action2 = (EmailAction) result.get(1).getActions().get(0);
+        EmailActionServiceModel action2 = (EmailActionServiceModel) result.get(1).getActions().get(0);
         Assert.assertEquals("Test Subject1", action2.getSubject());
         Assert.assertEquals("Test Note1", action2.getNotes());
         List<String> recipients2 = action2.getRecipients();

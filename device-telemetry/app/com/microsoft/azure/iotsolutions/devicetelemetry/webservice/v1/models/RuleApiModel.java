@@ -13,12 +13,13 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.Calculat
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.ConditionServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.RuleServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.SeverityType;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.IAction;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.IActionServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.Version;
 
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.concurrent.CompletionException;
 
 /**
@@ -39,9 +40,9 @@ public final class RuleApiModel {
     private String severity;
     private String calculation;
     private String timePeriod;
-    private ArrayList<ActionApiModel> actions;
     private ArrayList<ConditionApiModel> conditions;
     private Boolean deleted;
+    private List<ActionApiModel> actions;
 
     public RuleApiModel() {
 
@@ -76,9 +77,9 @@ public final class RuleApiModel {
         String severity,
         String calculation,
         String timePeriod,
-        ArrayList<ActionApiModel> actions,
         ArrayList<ConditionApiModel> conditions,
-        Boolean deleted
+        Boolean deleted,
+        List<ActionApiModel> actions
     ) {
         this.eTag = eTag;
         this.id = id;
@@ -94,6 +95,7 @@ public final class RuleApiModel {
         this.actions = actions;
         this.conditions = conditions;
         this.deleted = deleted;
+        this.actions = actions;
     }
 
     /**
@@ -118,22 +120,18 @@ public final class RuleApiModel {
                 this.deleted = rule.getDeleted();
             }
 
-            // create listAsync of ActionApiModel from  IAction listAsync
-            this.actions = new ArrayList<>();
-            if (rule.getActions() != null) {
-                for (IAction action : rule.getActions()) {
-                    this.actions.add(new ActionApiModel(action));
-                }
-            }
-
-            if (includeDeleted) {
-                this.deleted = rule.getDeleted();
-            }
             // create listAsync of ConditionApiModel from ConditionServiceModel listAsync
             this.conditions = new ArrayList<>();
             if (rule.getConditions() != null) {
                 for (ConditionServiceModel condition : rule.getConditions()) {
                     this.conditions.add(new ConditionApiModel(condition));
+                }
+            }
+
+            this.actions = new ArrayList<>();
+            if (rule.getActions() != null) {
+                for (IActionServiceModel action : rule.getActions()) {
+                    this.actions.add(new ActionApiModel(action));
                 }
             }
         }
@@ -229,15 +227,6 @@ public final class RuleApiModel {
         return this.timePeriod;
     }
 
-    @JsonDeserialize(as = ArrayList.class, contentAs = ActionApiModel.class)
-    public ArrayList<ActionApiModel> getActions() {
-        return this.actions;
-    }
-
-    public void setActions(ArrayList<ActionApiModel> actions) {
-        this.actions = actions;
-    }
-
     @JsonDeserialize(as = ArrayList.class, contentAs = ConditionApiModel.class)
     public ArrayList<ConditionApiModel> getConditions() {
         return this.conditions;
@@ -256,6 +245,13 @@ public final class RuleApiModel {
         this.deleted = deleted;
     }
 
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @JsonDeserialize(as = List.class, contentAs = ActionApiModel.class)
+    public List<ActionApiModel> getActions() {
+        return this.actions;
+    }
+
+    public void setActions(List<ActionApiModel> actions) { this.actions = actions; }
 
     @JsonProperty("$metadata")
     public Dictionary<String, String> getMetadata() {
@@ -272,22 +268,24 @@ public final class RuleApiModel {
      * @return
      */
     public RuleServiceModel toServiceModel(String idOverride) {
-        ArrayList<IAction> actionServiceModels = new ArrayList<IAction>();
-        if (this.actions != null) {
-            for (ActionApiModel action : this.actions) {
-                try {
-                    actionServiceModels.add(action.toServiceModel());
-                } catch (Exception e) {
-                    throw new CompletionException(new InvalidInputException("Invalid action"));
-                }
-            }
-        }
         ArrayList<ConditionServiceModel> conditionServiceModels = new ArrayList<ConditionServiceModel>();
         if (this.conditions != null) {
             for (ConditionApiModel condition : this.conditions) {
                 conditionServiceModels.add(condition.toServiceModel());
             }
         }
+
+        List<IActionServiceModel> actionServiceModels = new ArrayList<>();
+        if (this.actions != null) {
+            for (ActionApiModel action : this.actions) {
+                try {
+                    actionServiceModels.add(action.toServiceModel());
+                } catch (InvalidInputException e) {
+                    throw new CompletionException(e);
+                }
+            }
+        }
+
         SeverityType severity = null;
         CalculationType calculation = null;
         Long timePeriod = null;
@@ -325,9 +323,9 @@ public final class RuleApiModel {
             severity,
             calculation,
             timePeriod,
-            actionServiceModels,
             conditionServiceModels,
-            this.deleted == null ? false : this.deleted
+            this.deleted == null ? false : this.deleted,
+            actionServiceModels
         );
     }
 

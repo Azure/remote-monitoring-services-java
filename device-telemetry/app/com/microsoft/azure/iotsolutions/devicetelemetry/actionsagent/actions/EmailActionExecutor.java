@@ -7,7 +7,7 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.models.AsaA
 import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.models.EmailActionPayload;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ExternalDependencyException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ResourceNotFoundException;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.EmailAction;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.EmailActionServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.ActionsConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import org.apache.http.HttpStatus;
@@ -56,7 +56,7 @@ public class EmailActionExecutor implements IActionExecutor {
      * @return CompletionStage
      * @throws {@link ResourceNotFoundException}
      */
-    public CompletionStage execute(EmailAction emailAction, AsaAlarmApiModel alarm) {
+    public CompletionStage execute(EmailActionServiceModel emailAction, AsaAlarmApiModel alarm) {
         String content = this.generatePayload(emailAction, alarm);
         return this.prepareRequest()
             .post(content)
@@ -90,7 +90,7 @@ public class EmailActionExecutor implements IActionExecutor {
         return statusCode >= HttpStatus.SC_OK && statusCode < HttpStatus.SC_MULTIPLE_CHOICES;
     }
 
-    private String generatePayload(EmailAction emailAction, AsaAlarmApiModel alarm) {
+    private String generatePayload(EmailActionServiceModel emailAction, AsaAlarmApiModel alarm) {
         DateTime alarmDate = new DateTime(Long.parseLong(alarm.getDateCreated()));
         String emailBody = this.emailTemplate.replace("${subject}", emailAction.getSubject())
             .replace("${notes}", emailAction.getNotes())

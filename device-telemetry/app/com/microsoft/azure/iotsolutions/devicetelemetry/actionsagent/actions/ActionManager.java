@@ -5,8 +5,8 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.actions;
 import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.models.AsaAlarmApiModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ResourceNotFoundException;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.EmailAction;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.IAction;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.EmailActionServiceModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.IActionServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import play.libs.ws.WSClient;
 
@@ -29,10 +29,10 @@ public class ActionManager implements IActionManager {
         List<CompletionStage> tasks = new ArrayList<>();
         for (AsaAlarmApiModel alarm : alarms) {
             if (alarm.getActions() != null) {
-                for (IAction action : alarm.getActions()) {
+                for (IActionServiceModel action : alarm.getActions()) {
                     switch (action.getType()) {
                         case Email:
-                            tasks.add(actionExecutor.execute((EmailAction) action, alarm));
+                            tasks.add(actionExecutor.execute((EmailActionServiceModel) action, alarm));
                             break;
                     }
                 }

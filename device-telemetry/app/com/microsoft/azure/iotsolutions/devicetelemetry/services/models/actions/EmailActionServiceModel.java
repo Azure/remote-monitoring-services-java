@@ -11,9 +11,9 @@ import play.libs.Json;
 import javax.mail.internet.InternetAddress;
 import java.util.*;
 
-@JsonDeserialize(as = EmailAction.class)
+@JsonDeserialize(as = EmailActionServiceModel.class)
 @JsonNaming(PropertyNamingStrategy.UpperCamelCaseStrategy.class)
-public final class EmailAction implements IAction {
+public final class EmailActionServiceModel implements IActionServiceModel {
 
     private ActionType type;
     private Map<String, Object> parameters;
@@ -22,32 +22,29 @@ public final class EmailAction implements IAction {
     private static final String NOTES = "Notes";
     private static final String RECIPIENTS = "Recipients";
 
-    public EmailAction() {
+    public EmailActionServiceModel(Map<String, Object> parameters) throws InvalidInputException {
         this.type = ActionType.Email;
-        this.parameters = new TreeMap<String, Object>(String.CASE_INSENSITIVE_ORDER) {{
-            put(NOTES, "");
-        }};
-    }
-
-    public EmailAction(Map<String, Object> parameters) throws InvalidInputException {
-        this(ActionType.Email, parameters);
-    }
-
-    public EmailAction(ActionType type, Map<String, Object> parameters) throws InvalidInputException {
-        this.type = type;
         this.parameters = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        this.parameters.put(NOTES, "");
 
-        if (!(parameters.containsKey(SUBJECT) && parameters.containsKey(RECIPIENTS))) {
-            throw new InvalidInputException(String.format("Error, missing parameter for email action." +
-                " Required fields are: '{%s}' and '{%s}'.", SUBJECT, RECIPIENTS));
+        // Ensure input is case insensitive
+        Map<String,Object> parametersCaseInsensitive = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        parametersCaseInsensitive.putAll(parameters);
+
+        if(!parametersCaseInsensitive.containsKey(SUBJECT)
+            || !parametersCaseInsensitive.containsKey(RECIPIENTS)) {
+            throw new InvalidInputException("Error converting recipient emails to list for action type 'Email'. " +
+                "Recipient emails provided should be an array of valid email addresses " +
+                "as strings.");
+        } else {
+            this.parameters.put(SUBJECT, parametersCaseInsensitive.get(SUBJECT));
+            this.parameters.put(RECIPIENTS,
+                this.validateAndConvertRecipientEmails(parametersCaseInsensitive.get(RECIPIENTS)));
         }
 
-        if (parameters.containsKey(NOTES)) {
-            this.parameters.put(NOTES, parameters.get(NOTES));
+        if (parametersCaseInsensitive.containsKey(NOTES)) {
+            this.parameters.put(NOTES, parametersCaseInsensitive.get(NOTES));
         }
-
-        this.parameters.put(SUBJECT, parameters.get(SUBJECT));
-        this.parameters.put(RECIPIENTS, validatAndConvertRecipientEmails(parameters.get(RECIPIENTS)));
     }
 
     public ActionType getType() {
@@ -88,22 +85,22 @@ public final class EmailAction implements IAction {
      * @param emails an object include a list of emails
      * @return a list of validated email address
      */
-    private List<String> validatAndConvertRecipientEmails(Object emails) throws InvalidInputException {
-        List<String> result;
+    private List<String> validateAndConvertRecipientEmails(Object emails) throws InvalidInputException {
+        List<String> emailList;
         try {
-            result = Json.fromJson(Json.toJson(emails), List.class);
+            emailList = Json.fromJson(Json.toJson(emails), List.class);
         } catch (Exception e) {
             throw new InvalidInputException("Error converting recipient emails to list for action type 'Email'. " +
                 "Recipient emails provided should be an array of valid email addresses" +
                 "as strings.");
         }
 
-        if (result.size() == 0) {
+        if (emailList.size() == 0) {
             throw new InvalidInputException("Error, recipient email list for action type 'Email' is empty. " +
                 "Please provide at least one valid email address.");
         }
 
-        for (String email : result) {
+        for (String email : emailList) {
             try {
                 InternetAddress mail = new InternetAddress(email);
                 mail.validate();
@@ -115,6 +112,6 @@ public final class EmailAction implements IAction {
             }
         }
 
-        return result;
+        return emailList;
     }
 }

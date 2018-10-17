@@ -10,13 +10,14 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.Rules;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ExternalDependencyException;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.IAction;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.serialization.ActionConverter;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.IActionServiceModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.serialization.ActionDeserializer;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import play.Logger;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletionException;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -39,8 +40,8 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
     private Long timePeriod = null;
     private boolean deleted = false;
 
-    private ArrayList<IAction> actions = null;
-    private ArrayList<ConditionServiceModel> conditions = null;
+    private List<ConditionServiceModel> conditions = null;
+    private List<IActionServiceModel> actions = null;
 
     public RuleServiceModel() {
     }
@@ -53,8 +54,8 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
         final SeverityType severity,
         final CalculationType calculation,
         final Long timePeriod,
-        final ArrayList<IAction> actions,
-        final ArrayList<ConditionServiceModel> conditions) {
+        final ArrayList<ConditionServiceModel> conditions,
+        final List<IActionServiceModel> actions) {
 
         this(
             "",
@@ -68,9 +69,9 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
             severity,
             calculation,
             timePeriod,
-            actions,
             conditions,
-            false
+            false,
+            actions
         );
     }
 
@@ -86,9 +87,9 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
         SeverityType severity,
         CalculationType calculation,
         Long timePeriod,
-        ArrayList<IAction> actions,
         ArrayList<ConditionServiceModel> conditions,
-        boolean deleted) {
+        boolean deleted,
+        List<IActionServiceModel> actions) {
 
         this.eTag = eTag;
         this.id = id;
@@ -104,6 +105,7 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
         this.actions = actions;
         this.conditions = conditions;
         this.deleted = deleted;
+        this.actions = actions;
     }
 
     @JsonIgnore
@@ -202,23 +204,31 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
         this.calculation = calculation;
     }
 
-    @JsonDeserialize(using = ActionConverter.class)
-    public ArrayList<IAction> getActions() { return this.actions; }
-
-    public void setActions(ArrayList<IAction> actions) { this.actions = actions; }
-
-    @JsonDeserialize(as = ArrayList.class, contentAs = ConditionServiceModel.class)
-    public ArrayList<ConditionServiceModel> getConditions() {
-        return this.conditions;
-    }
-
-    public void setConditions(ArrayList<ConditionServiceModel> conditions) {
+    public void setConditions(List<ConditionServiceModel> conditions) {
         this.conditions = conditions;
     }
 
-    public boolean getDeleted() { return this.deleted; }
+    @JsonDeserialize(as = List.class, contentAs = ConditionServiceModel.class)
+    public List<ConditionServiceModel> getConditions() {
+        return this.conditions;
+    }
 
-    public void setDeleted(boolean deleted) { this.deleted = deleted; }
+    public boolean getDeleted() {
+        return this.deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    @JsonDeserialize(using = ActionDeserializer.class)
+    public List<IActionServiceModel> getActions() {
+        return this.actions;
+    }
+
+    public void setActions(List<IActionServiceModel> actions) {
+        this.actions = actions;
+    }
 
     @Override
     public int compareTo(RuleServiceModel rule) {

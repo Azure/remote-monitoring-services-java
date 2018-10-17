@@ -2,6 +2,7 @@
 
 package webservice.test.v1.models;
 
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.CalculationType;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.SeverityType;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.ActionApiModel;
@@ -25,7 +26,7 @@ public class RuleApiModelTest {
     public RuleApiModel ruleApiModel = null;
 
     @Before
-    public void setUp() {
+    public void setUp() throws InvalidInputException {
         ArrayList<ConditionApiModel> conditionList = new ArrayList<>();
         ArrayList<ActionApiModel> actionList = new ArrayList<>();
 
@@ -56,9 +57,9 @@ public class RuleApiModelTest {
             SeverityType.WARNING.toString(),
             CalculationType.AVERAGE.toString(),
             String.valueOf(600000),
-            actionList,
             conditionList,
-            false);
+            false,
+            null);
     }
 
     @After

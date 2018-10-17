@@ -3,7 +3,7 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.IAction;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.IActionServiceModel;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ public class AsaAlarmApiModel {
     private String ruleDescription;
     private String ruleSeverity;
     private String ruleId;
-    private List<IAction> actions;
+    private List<IActionServiceModel> actions;
     private String deviceId;
     private String messageReceived;
 
@@ -62,11 +62,11 @@ public class AsaAlarmApiModel {
     }
 
     @JsonProperty("rule.actions")
-    public List<IAction> getActions() {
+    public List<IActionServiceModel> getActions() {
         return this.actions;
     }
 
-    public void setActions(List<IAction> actions) {
+    public void setActions(List<IActionServiceModel> actions) {
         this.actions = actions;
     }
 

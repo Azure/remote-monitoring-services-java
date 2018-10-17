@@ -9,7 +9,8 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.IRules;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.Rules;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.external.IDiagnosticsClient;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.*;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.IAction;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.EmailActionServiceModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.IActionServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.cosmosDb.IStorageClient;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime.Config;
@@ -25,9 +26,7 @@ import play.Logger;
 import play.libs.ws.WSClient;
 import play.mvc.Result;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -222,13 +221,17 @@ public class AlarmsByRuleControllerTest {
         ArrayList<ConditionServiceModel> sampleConditions = new ArrayList<>();
         sampleConditions.add(sampleCondition);
 
-        ArrayList<IAction> sampleActions = new ArrayList<>();
-        ArrayList<String> emails = new ArrayList<>();
-        emails.add("test@testing.com");
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("Subject", "Blank");
-        map.put("Template", "BlankTemplate");
-        map.put("Email", emails);
+        ArrayList<String> emailList = new ArrayList<>();
+        emailList.add("sampleEmail@gmail.com");
+
+        Map<String, Object> parameters = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        parameters.put("Notes", "Sample Note");
+        parameters.put("Subject", "Sample Subject");
+        parameters.put("Recipients", emailList);
+        IActionServiceModel sampleAction = new EmailActionServiceModel(parameters);
+
+        List<IActionServiceModel> sampleActions = new ArrayList<>();
+        sampleActions.add(sampleAction);
 
         RuleServiceModel sampleRule = new RuleServiceModel(
             "TestName",
@@ -238,8 +241,8 @@ public class AlarmsByRuleControllerTest {
             SeverityType.CRITICAL,
             CalculationType.INSTANT,
             Long.valueOf(60000),
-            sampleActions,
-            sampleConditions
+            sampleConditions,
+            sampleActions
         );
 
         // TODO Fix Tests https://github.com/Azure/device-telemetry-java/issues/99

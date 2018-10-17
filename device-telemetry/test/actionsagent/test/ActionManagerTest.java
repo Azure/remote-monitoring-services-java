@@ -8,8 +8,8 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.Exte
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ResourceNotFoundException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.ActionType;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.EmailAction;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.IAction;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.EmailActionServiceModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.IActionServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.ActionsConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.ServicesConfig;
 import org.junit.Before;
@@ -54,8 +54,7 @@ public class ActionManagerTest {
 
         this.mockClient = mock(WSClient.class);
         this.actionManager = new ActionManager(servicesConfig, this.mockClient);
-        IAction action = new EmailAction(
-            ActionType.Email,
+        IActionServiceModel action = new EmailActionServiceModel(
             new HashMap<String, Object>() {{
                 put("Recipients", Arrays.asList("sampleEmail@gmail.com"));
                 put("Notes", "Test Note");
