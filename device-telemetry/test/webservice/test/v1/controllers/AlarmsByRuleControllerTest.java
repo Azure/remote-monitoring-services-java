@@ -25,11 +25,11 @@ import play.libs.ws.WSClient;
 import play.mvc.Result;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.UUID;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -60,7 +60,7 @@ public class AlarmsByRuleControllerTest {
     public void setUp() {
         // setup before every test
         try {
-            IServicesConfig servicesConfig = new Config().getServicesConfig();
+            IServicesConfig servicesConfig = new Config(mock(WSClient.class)).getServicesConfig();
             IStorageClient client = mock(IStorageClient.class);
             IDiagnosticsClient diagnosticsClient = mock(IDiagnosticsClient.class);
             this.wsClient = mock(WSClient.class);
@@ -221,6 +221,14 @@ public class AlarmsByRuleControllerTest {
         ArrayList<ConditionServiceModel> sampleConditions = new ArrayList<>();
         sampleConditions.add(sampleCondition);
 
+        ArrayList<IActionServiceModel> sampleActions = new ArrayList<>();
+        ArrayList<String> emails = new ArrayList<>();
+        emails.add("test@testing.com");
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("Subject", "Blank");
+        map.put("Template", "BlankTemplate");
+        map.put("Email", emails);
+
         RuleServiceModel sampleRule = new RuleServiceModel(
             "TestName",
             true,
@@ -229,6 +237,7 @@ public class AlarmsByRuleControllerTest {
             SeverityType.CRITICAL,
             CalculationType.INSTANT,
             Long.valueOf(60000),
+            sampleActions,
             sampleConditions
         );
 

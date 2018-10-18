@@ -29,7 +29,12 @@ public class TimeSeriesClientTest {
             "http://localhost:9022/v1",
             mock(MessagesConfig.class),
             mock(AlarmsConfig.class),
-            mock(DiagnosticsConfig.class)
+            mock(DiagnosticsConfig.class),
+            "eventHubName",
+            "eventHubConnectionString",
+            10,
+            "logicAppEndpointUrl",
+            "solutionName"
         );
         this.timeSeriesClient = new TimeSeriesClient(this.servicesConfig, this.wsClient);
     }

@@ -16,4 +16,14 @@ public interface IServicesConfig {
     AlarmsConfig getAlarmsConfig();
 
     DiagnosticsConfig getDiagnosticsConfig();
+
+    String getEventHubName();
+
+    String getEventHubConnectionString();
+
+    int getEventHubOffsetTimeInMinutes();
+
+    String getLogicAppEndPointUrl();
+
+    String getSolutionName();
 }

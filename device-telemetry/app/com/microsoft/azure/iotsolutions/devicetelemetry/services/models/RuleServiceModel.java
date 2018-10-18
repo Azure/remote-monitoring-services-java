@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.Rules;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ExternalDependencyException;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.serialization.ActionConverter;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import play.Logger;
@@ -37,6 +38,7 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
     private Long timePeriod = null;
     private boolean deleted = false;
 
+    private ArrayList<IActionServiceModel> actions = null;
     private ArrayList<ConditionServiceModel> conditions = null;
 
     public RuleServiceModel() {
@@ -50,6 +52,7 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
         final SeverityType severity,
         final CalculationType calculation,
         final Long timePeriod,
+        final ArrayList<IActionServiceModel> actions,
         final ArrayList<ConditionServiceModel> conditions) {
 
         this(
@@ -64,6 +67,7 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
             severity,
             calculation,
             timePeriod,
+            actions,
             conditions,
             false
         );
@@ -81,6 +85,7 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
         SeverityType severity,
         CalculationType calculation,
         Long timePeriod,
+        ArrayList<IActionServiceModel> actions,
         ArrayList<ConditionServiceModel> conditions,
         boolean deleted) {
 
@@ -95,6 +100,7 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
         this.severity = severity;
         this.calculation = calculation;
         this.timePeriod = timePeriod;
+        this.actions = actions;
         this.conditions = conditions;
         this.deleted = deleted;
     }
@@ -195,6 +201,11 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
         this.calculation = calculation;
     }
 
+    @JsonDeserialize(using = ActionConverter.class)
+    public ArrayList<IActionServiceModel> getActions() { return this.actions; }
+
+    public void setActions(ArrayList<IActionServiceModel> actions) { this.actions = actions; }
+
     @JsonDeserialize(as = ArrayList.class, contentAs = ConditionServiceModel.class)
     public ArrayList<ConditionServiceModel> getConditions() {
         return this.conditions;
@@ -239,6 +250,7 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
             this.severity,
             this.calculation,
             this.timePeriod,
+            this.actions,
             this.conditions,
             this.deleted);
         return rule;

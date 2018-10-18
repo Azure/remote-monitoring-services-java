@@ -13,6 +13,7 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.Calculat
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.ConditionServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.RuleServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.SeverityType;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.Version;
 
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ public final class RuleApiModel {
     private String severity;
     private String calculation;
     private String timePeriod;
+    private ArrayList<ActionApiModel> actions;
     private ArrayList<ConditionApiModel> conditions;
     private Boolean deleted;
 
@@ -59,22 +61,24 @@ public final class RuleApiModel {
      * @param severity
      * @param calculation
      * @param timePeriod
+     * @param actions
      * @param conditions
      */
     public RuleApiModel(
-        String eTag,
-        String id,
-        String name,
-        String dateCreated,
-        String dateModified,
-        boolean enabled,
-        String description,
-        String groupId,
-        String severity,
-        String calculation,
-        String timePeriod,
-        ArrayList<ConditionApiModel> conditions,
-        Boolean deleted
+            String eTag,
+            String id,
+            String name,
+            String dateCreated,
+            String dateModified,
+            boolean enabled,
+            String description,
+            String groupId,
+            String severity,
+            String calculation,
+            String timePeriod,
+            ArrayList<ActionApiModel> actions,
+            ArrayList<ConditionApiModel> conditions,
+            Boolean deleted
     ) {
         this.eTag = eTag;
         this.id = id;
@@ -87,6 +91,7 @@ public final class RuleApiModel {
         this.severity = severity;
         this.calculation = calculation;
         this.timePeriod = timePeriod;
+        this.actions = actions;
         this.conditions = conditions;
         this.deleted = deleted;
     }
@@ -109,6 +114,18 @@ public final class RuleApiModel {
             this.severity = rule.getSeverity().toString();
             this.calculation = rule.getCalculation().toString();
             this.timePeriod = rule.getTimePeriod().toString();
+            if (includeDeleted) {
+                this.deleted = rule.getDeleted();
+            }
+
+            // create listAsync of ActionApiModel from  IActionServiceModel listAsync
+            this.actions = new ArrayList<>();
+            if (rule.getActions() != null) {
+                for (IActionServiceModel action : rule.getActions()) {
+                    this.actions.add(new ActionApiModel(action));
+                }
+            }
+
             if (includeDeleted) {
                 this.deleted = rule.getDeleted();
             }
@@ -212,6 +229,15 @@ public final class RuleApiModel {
         return this.timePeriod;
     }
 
+    @JsonDeserialize(as = ArrayList.class, contentAs = ActionApiModel.class)
+    public ArrayList<ActionApiModel> getActions() {
+        return this.actions;
+    }
+
+    public void setActions(ArrayList<ActionApiModel> actions) {
+        this.actions = actions;
+    }
+
     @JsonDeserialize(as = ArrayList.class, contentAs = ConditionApiModel.class)
     public ArrayList<ConditionApiModel> getConditions() {
         return this.conditions;
@@ -243,14 +269,22 @@ public final class RuleApiModel {
      * Convert to the service model
      *
      * @param idOverride Allows for overriding the Id when doing an update to ensure the Id from the route matches the one in the item being updated.
-     *
      * @return
      */
     public RuleServiceModel toServiceModel(String idOverride) {
+        ArrayList<IActionServiceModel> actionServiceModels = new ArrayList<IActionServiceModel>();
+        if (this.actions != null) {
+            for (ActionApiModel action : this.actions) {
+                try {
+                    actionServiceModels.add(action.toServiceModel());
+                } catch (Exception e) {
+                    throw new CompletionException(new InvalidInputException("Invalid action"));
+                }
+            }
+        }
         ArrayList<ConditionServiceModel> conditionServiceModels = new ArrayList<ConditionServiceModel>();
-        if (conditions != null) {
-            for (ConditionApiModel condition :
-                conditions) {
+        if (this.conditions != null) {
+            for (ConditionApiModel condition : this.conditions) {
                 conditionServiceModels.add(condition.toServiceModel());
             }
         }
@@ -280,19 +314,20 @@ public final class RuleApiModel {
                 new InvalidInputException("The value of 'TimePeriod' - '" + this.timePeriod + "' is not valid"));
         }
         return new RuleServiceModel(
-            this.eTag,
-            idOverride,
-            this.name,
-            this.dateCreated,
-            this.dateModified,
-            this.enabled,
-            this.description,
-            this.groupId,
-            severity,
-            calculation,
-            timePeriod,
-            conditionServiceModels,
-            this.deleted == null ? false : this.deleted
+                this.eTag,
+                idOverride,
+                this.name,
+                this.dateCreated,
+                this.dateModified,
+                this.enabled,
+                this.description,
+                this.groupId,
+                severity,
+                calculation,
+                timePeriod,
+                actionServiceModels,
+                conditionServiceModels,
+                this.deleted == null ? false : this.deleted
         );
     }
 

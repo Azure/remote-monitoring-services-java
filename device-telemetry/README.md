@@ -4,8 +4,7 @@
 
 # Device Telemetry Overview
 
-This service provides a RESTful endpoint for read access to device telemetry,
-full CRUD for rules, and read/write for alarms from storage.
+This service provides a RESTful endpoint for read access to device telemetry, full CRUD for rules, and read/write for alarms from storage.
 
 ## Why?
 
@@ -20,6 +19,7 @@ More information [here][rm-arch-url].
 * Gets a single alarm
 * Modifies alarm status
 * Create/Read/Update/Delete Rules
+* Supports alert triggered notifications
 
 ## Documentation
 
@@ -56,6 +56,13 @@ for more information. More information on environment variables
   * `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
   * `PCS_AUTH_WEBSERVICE_URL` = http://localhost:9001/v1
   * `PCS_DIAGNOSTICS_WEBSERVICE_URL` (optional) = http://localhost:9006/v1
+  * `PCS_TELEMETRY_EVENTHUB_NAME` = {the name of your Azure Eventhub for notification-related alert outputs}
+  * `PCS_TELEMETRY_LOGICAPP_ENDPOINT_URL` = {the POST request of your Azure LogicApp configured for notifications}
+  * `PCS_TELEMETRY_EVENTHUB_CONNSTRING` = {your Azure Eventhub connection string}
+  * `PCS_TELEMETRY_DATA_AZUREBLOB_KEY` = {your Azure Blob Storage key}
+  * `PCS_TELEMETRY_DATA_AZUREBLOB_ACCOUNT` = {the name of your Azure Blob Storage account}
+  * `PCS_TELEMETRY_DATA_AZUREBLOB_ENDPOINT_SUFFIX` = {the endpoint suffix of your Azure Blob Storage account}
+  * `PCS_SOLUTION_NAME` = {your deployed solution name}
 
 # Running the service in an IDE
 

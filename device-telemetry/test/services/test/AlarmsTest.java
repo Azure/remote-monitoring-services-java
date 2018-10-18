@@ -8,6 +8,9 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.IAlarms;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidConfigurationException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.cosmosDb.IStorageClient;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.AlarmsConfig;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.ServicesConfig;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.StorageConfig;
 import helpers.UnitTest;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,7 +63,12 @@ public class AlarmsTest {
             new DiagnosticsConfig(
                 "diagnosticsUrl",
                 3
-            )
+            ),
+            "eventHubName",
+            "eventHubConnectionString",
+            0,
+            "logicAppEndPointUrl",
+            "solutionName"
         );
 
         this.storageClientMock = Mockito.mock(IStorageClient.class);

@@ -22,7 +22,6 @@ import play.Logger;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-// TODO: use StorageClient
 public final class Messages implements IMessages {
 
     private static final Logger.ALogger log = Logger.of(Messages.class);

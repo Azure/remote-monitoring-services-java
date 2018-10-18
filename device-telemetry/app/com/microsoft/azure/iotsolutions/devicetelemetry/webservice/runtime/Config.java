@@ -2,11 +2,18 @@
 
 package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime;
 
+import com.google.inject.Inject;
+import com.microsoft.azure.eventprocessorhost.IEventProcessorFactory;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidConfigurationException;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.*;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.eventhub.EventProcessorHostWrapper;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.eventhub.IEventProcessorHostWrapper;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.eventhub.NotificationEventProcessorFactory;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.ClientAuthConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.IClientAuthConfig;
 import com.typesafe.config.ConfigFactory;
+import play.libs.ws.WSClient;
 
 import java.time.Duration;
 import java.util.Collections;
@@ -52,6 +59,19 @@ public class Config implements IConfig {
     private final String ALARMS_DOCDB_COLLECTION_KEY = APPLICATION_KEY + "alarms.cosmosDb.collection";
     private final String ALARMS_DOCDB_DELETE_RETRIES = APPLICATION_KEY + "alarms.cosmosDb.maxDeleteRetries";
 
+    private final String MESSAGES_DOCDB_CONN_STRING_KEY = APPLICATION_KEY + "messages.documentDb.connString";
+
+    private final String ALARMS_DOCDB_CONN_STRING_KEY = APPLICATION_KEY + "alarms.documentDb.connString";
+
+    private final String ACTIONS_EVENTHUB_NAME = APPLICATION_KEY + "actions.eventHubName";
+    private final String ACTIONS_LOGIC_APP_ENDPOINT_URL = APPLICATION_KEY + "actions.logicAppEndPointUrl";
+    private final String ACTIONS_EVENTHUB_CONNECTION_STRING = APPLICATION_KEY + "actions.eventHubConnectionString";
+    private final String ACTIONS_EVENTHUB_OFFSET_TIME_IN_MINUTES = APPLICATION_KEY + "actions.eventHubOffsetTimeInMinutes";
+    private final String ACTIONS_BLOB_STORAGE_ACCOUNT_KEY = APPLICATION_KEY + "actions.blobStorageAccountKey";
+    private final String ACTIONS_BLOB_STORAGE_ACCOUNT_NAME = APPLICATION_KEY + "actions.blobStorageAccountName";
+    private final String ACTIONS_BLOB_STORAGE_ENDPOINT_SUFFIX = APPLICATION_KEY + "actions.blobStorageEndpointSuffix";
+    private final String ACTIONS_EVENTHUB_CONTAINER = APPLICATION_KEY + "actions.eventHubContainer";
+    private final String ACTIONS_SOLUTION_NAME = APPLICATION_KEY + "actions.solutionName";
 
     private final String CLIENT_AUTH_KEY = APPLICATION_KEY + "client-auth.";
     private final String AUTH_WEB_SERVICE_URL_KEY = CLIENT_AUTH_KEY + "auth_webservice_url";
@@ -72,7 +92,14 @@ public class Config implements IConfig {
     private IServicesConfig servicesConfig;
     private IClientAuthConfig clientAuthConfig;
 
-    public Config() {
+    private IBlobStorageConfig blobStorageConfig;
+    private IEventProcessorHostWrapper eventProcessorHostWrapper;
+    private IEventProcessorFactory eventProcessorFactory;
+    private WSClient client;
+
+    @Inject
+    public Config(WSClient client) {
+        this.client = client;
         this.data = ConfigFactory.load();
     }
 
@@ -80,7 +107,6 @@ public class Config implements IConfig {
      * Service layer configuration
      */
     public IServicesConfig getServicesConfig() throws InvalidConfigurationException {
-
         if (this.servicesConfig != null) return this.servicesConfig;
 
         String storageConnectionString = this.data.getString(STORAGE_CONN_STRING_KEY);
@@ -132,13 +158,49 @@ public class Config implements IConfig {
                 diagnosticsUrl,
                 data.getInt(DIAGNOSTICS_MAX_LOG_RETRIES));
 
+
         this.servicesConfig = new ServicesConfig(
             keyValueStorageUrl,
             messagesConfig,
             alarmsConfig,
-            diagnosticsConfig);
+            diagnosticsConfig,
+            data.getString(ACTIONS_EVENTHUB_NAME),
+            data.getString(ACTIONS_EVENTHUB_CONNECTION_STRING),
+            data.getInt(ACTIONS_EVENTHUB_OFFSET_TIME_IN_MINUTES),
+            data.getString(ACTIONS_LOGIC_APP_ENDPOINT_URL),
+            data.getString(ACTIONS_SOLUTION_NAME));
 
         return this.servicesConfig;
+    }
+
+    @Override
+    public IBlobStorageConfig getBlobStorageConfig() {
+        if (this.blobStorageConfig != null) return this.blobStorageConfig;
+
+        this.blobStorageConfig = new BlobStorageConfig(
+            data.getString(ACTIONS_BLOB_STORAGE_ACCOUNT_NAME),
+            data.getString(ACTIONS_BLOB_STORAGE_ACCOUNT_KEY),
+            data.getString(ACTIONS_BLOB_STORAGE_ENDPOINT_SUFFIX),
+            data.getString(ACTIONS_EVENTHUB_CONTAINER));
+        return this.blobStorageConfig;
+    }
+
+    @Override
+    public IEventProcessorHostWrapper getEventProcessorHostWrapper() {
+        if (this.eventProcessorHostWrapper != null) return this.eventProcessorHostWrapper;
+
+        this.eventProcessorHostWrapper = new EventProcessorHostWrapper();
+        return this.eventProcessorHostWrapper;
+    }
+
+    @Override
+    public IEventProcessorFactory getEventProcessorFactory() throws InvalidConfigurationException {
+        if (this.eventProcessorFactory != null) return this.eventProcessorFactory;
+
+        INotificationImplementationWrapper wrapper = new NotificationImplementationWrapper(this.client, this.getServicesConfig());
+        INotification notification = new Notification(wrapper);
+        this.eventProcessorFactory = new NotificationEventProcessorFactory(notification);
+        return this.eventProcessorFactory;
     }
 
     /**
@@ -151,6 +213,7 @@ public class Config implements IConfig {
         Boolean authRequired = !data.hasPath(AUTH_REQUIRED_KEY)
             || data.getString(AUTH_REQUIRED_KEY).isEmpty()
             || data.getBoolean(AUTH_REQUIRED_KEY);
+
 
         String authServiceUrl = data.getString(AUTH_WEB_SERVICE_URL_KEY);
 
@@ -202,3 +265,4 @@ public class Config implements IConfig {
         return this.clientAuthConfig;
     }
 }
+

@@ -39,7 +39,6 @@ public class MessagesControllerTest {
     public void itGetsAllMessages() throws
         InvalidInputException,
         InvalidConfigurationException,
-        ExternalDependencyException,
         TimeSeriesParseException {
 
         // Arrange
