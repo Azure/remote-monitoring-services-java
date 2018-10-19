@@ -2,17 +2,25 @@
 
 package com.microsoft.azure.iotsolutions.uiconfig.services;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.BaseException;
+import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.ResourceNotFoundException;
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.IStorageAdapterClient;
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.ValueApiModel;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.DeviceGroup;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.Logo;
+import com.microsoft.azure.iotsolutions.uiconfig.services.models.Package;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.Theme;
 import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.IServicesConfig;
+import com.microsoft.azure.sdk.iot.service.Configuration;
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormatter;
 import play.Logger;
 import play.libs.Json;
 
@@ -22,17 +30,22 @@ import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import static org.joda.time.format.DateTimeFormat.forPattern;
+
 @Singleton
 public class Storage implements IStorage {
 
     private static final Logger.ALogger log = Logger.of(Storage.class);
 
-    static String SolutionCollectionId = "solution-settings";
-    static String ThemeKey = "theme";
-    static String LogoKey = "logo";
-    static String UserCollectionId = "user-settings";
-    static String DeviceGroupCollectionId = "devicegroups";
-    static String AzureMapsKey = "AzureMapsKey";
+    private static String SolutionCollectionId = "solution-settings";
+    private static String ThemeKey = "theme";
+    private static String LogoKey = "logo";
+    private static String UserCollectionId = "user-settings";
+    private static String DeviceGroupCollectionId = "devicegroups";
+    private static String PackagesCollectionId = "packages";
+    private static final DateTimeFormatter DATE_FORMAT =
+            forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
+    private static final String AzureMapsKey = "AzureMapsKey";
     private final IStorageAdapterClient client;
     private final IServicesConfig config;
 
@@ -55,7 +68,7 @@ public class Storage implements IStorage {
         String data = toJson(Theme.Default);
         try {
             String serverData = client.getAsync(SolutionCollectionId, ThemeKey).toCompletableFuture().get().getData();
-            if (serverData != null && serverData.trim() != "") {
+            if (serverData != null && StringUtils.isNotBlank(serverData)) {
                 data = serverData;
             }
         } catch (Exception ex) {
@@ -76,7 +89,7 @@ public class Storage implements IStorage {
 
         return client.updateAsync(SolutionCollectionId, ThemeKey, value, "*").thenApplyAsync(m -> {
                     String data = "{}";
-                    if (m.getData() != null && m.getData().trim() != "") {
+                    if (m.getData() != null && StringUtils.isNotBlank(m.getData())) {
                         data = m.getData();
                     }
                     ObjectNode themeOut = (ObjectNode) Json.parse(data);
@@ -146,7 +159,9 @@ public class Storage implements IStorage {
     @Override
     public CompletionStage<Iterable<DeviceGroup>> getAllDeviceGroupsAsync() throws BaseException {
         return client.getAllAsync(DeviceGroupCollectionId).thenApplyAsync(m -> {
-            return StreamSupport.stream(m.Items.spliterator(), false).map(Storage::createGroup).collect(Collectors.toList());
+            return StreamSupport.stream(m.Items.spliterator(), false)
+                                .map(Storage::createGroup)
+                                .collect(Collectors.toList());
         });
     }
 
@@ -178,10 +193,69 @@ public class Storage implements IStorage {
         return client.deleteAsync(DeviceGroupCollectionId, id);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CompletionStage<Iterable<Package>> getAllPackagesAsync() throws BaseException {
+        return this.client.getAllAsync(PackagesCollectionId).thenApplyAsync(p -> {
+            return StreamSupport.stream(p.Items.spliterator(), false)
+                    .map(Storage::createPackage)
+                    .collect(Collectors.toList());
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CompletionStage<Package> getPackageAsync(String id) throws BaseException {
+        return this.client.getAsync(PackagesCollectionId, id).thenApplyAsync(p -> {
+           return Storage.createPackage(p);
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CompletionStage<Package> addPackageAsync(Package input) throws BaseException {
+        try {
+            Configuration config = fromJson(input.getContent(), Configuration.class);
+            if (config.getContent() == null) {
+                throw new InvalidInputException("Manifest provided is valid json but not a valid manifest");
+            }
+        } catch(Exception e) {
+            final String message = "Package provided is not a valid deployment manifest";
+            log.error(message, e);
+            throw new InvalidInputException(message);
+        }
+
+        input.setDateCreated(Storage.DATE_FORMAT.print(DateTime.now().toDateTime(DateTimeZone.UTC)));
+        final String value = toJson(input);
+        return client.createAsync(PackagesCollectionId, value).thenApplyAsync(p ->
+            Storage.createPackage(p)
+        );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CompletionStage deletePackageAsync(String id) throws BaseException {
+        return client.deleteAsync(PackagesCollectionId, id);
+    }
+
     private static DeviceGroup createGroup(ValueApiModel input) {
         DeviceGroup output = fromJson(input.getData(), DeviceGroup.class);
         output.setId(input.getKey());
         output.setETag(input.getETag());
+        return output;
+    }
+
+    private static Package createPackage(ValueApiModel input) {
+        Package output = fromJson(input.getData(), Package.class);
+        output.setId(input.getKey());
         return output;
     }
 
