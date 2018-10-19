@@ -5,7 +5,7 @@ Starting Microservices on local environment
 1) Run the [start.cmd or start.sh](https://github.com/Azure/remote-monitoring-services-java/blob/master/scripts/local/launch/) script (depending on your OS) located under launch *(scripts/local/launch)* folder.    
 2) Run the following script to set environment variables. The script is located under *(scripts/local/launch/os)* folder.\
     i. [set-env-uri.cmd or set-env-uri.sh](https://github.com/Azure/remote-monitoring-services-java/tree/master/scripts/local/launch/os)\
-![start](https://user-images.githubusercontent.com/39531904/44435771-6ab08280-a566-11e8-93c9-e6f35e5df247.PNG)
+![start_new_java](https://user-images.githubusercontent.com/39531904/46707719-0918a600-cbf0-11e8-96d4-b5d89d957962.PNG)
 
 **Please Note:**
 1) *If you have cloned azure-iot-pcs-remote-monitoring-java repository, the scripts folder is present under services submodule (folder).*
@@ -17,8 +17,9 @@ For users who have already created the required azure resources, please do one o
 1) Set the environment variables globally on your machine.
 2) **Intellji:** Set the environment variables in the "Edit configurations" vizard of the IDE. (The steps for creating the configurations are given below.)
 
-*Although not recommended, environment variables can also be set in application.conf file present under webservice package for each of the microservices.*
-
+**Please Note:**
+1) *Although not recommended, environment variables can also be set in appsettings.ini file present under WebService folder for each of the microservices.*
+2) *Build tasks depend upon env variables. If env variables are being set in IDE configurations OR in appsettings file, the tasks may not work. You will have to build services separately by settings env variables.*
 
 ### Walk through for importing new Solution in IDE
 ##### Intellji
