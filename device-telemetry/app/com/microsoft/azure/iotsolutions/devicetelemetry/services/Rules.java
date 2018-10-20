@@ -15,7 +15,7 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.external.IDiagn
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.AlarmCountByRuleServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.AlarmServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.RuleServiceModel;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServiceConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.serialization.JsonHelper;
 import org.apache.http.HttpStatus;
 import org.joda.time.DateTime;
@@ -47,7 +47,7 @@ public final class Rules implements IRules {
 
     @Inject
     public Rules(
-        final IServicesConfig servicesConfig,
+        final IServiceConfig servicesConfig,
         final WSClient wsClient,
         final IAlarms alarmsService,
         final IDiagnosticsClient diagnosticsClient) {

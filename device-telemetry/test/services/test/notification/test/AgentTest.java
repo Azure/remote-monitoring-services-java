@@ -6,8 +6,8 @@ import com.microsoft.azure.eventprocessorhost.IEventProcessorFactory;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.Agent;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.IAgent;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.eventhub.IEventProcessorHostWrapper;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IBlobStorageConfig;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.ActionsConfig;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServiceConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.ServicesConfig;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,9 +16,8 @@ import org.mockito.Mockito;
 import java.util.concurrent.CompletableFuture;
 
 public class AgentTest {
-    private IServicesConfig servicesConfigMock;
+    private IServiceConfig servicesConfigMock;
     private IEventProcessorHostWrapper eventProcessorHostWrapperMock;
-    private IBlobStorageConfig blobStorageConfigMock;
     private IEventProcessorFactory eventProcessorFactoryMock;
     private IAgent notificationSystemAgent;
 
@@ -26,22 +25,30 @@ public class AgentTest {
     public void setUp() {
         this.servicesConfigMock = Mockito.mock(ServicesConfig.class);
         this.eventProcessorHostWrapperMock = Mockito.mock(IEventProcessorHostWrapper.class);
-        this.blobStorageConfigMock = Mockito.mock(IBlobStorageConfig.class);
         this.eventProcessorFactoryMock = Mockito.mock(IEventProcessorFactory.class);
 
         this.notificationSystemAgent = new Agent(
-                this.servicesConfigMock,
-                this.blobStorageConfigMock,
-                this.eventProcessorHostWrapperMock,
-                this.eventProcessorFactoryMock);
+            this.servicesConfigMock,
+            this.eventProcessorHostWrapperMock,
+            this.eventProcessorFactoryMock);
     }
 
     @Test
     public void RegisterEventProcessorFactory() {
+        Mockito.when(this.servicesConfigMock.getActionsConfig()).thenReturn(new ActionsConfig(
+            "eventHubName",
+            "eventHubConnectionString",
+            0,
+            "blobStorageConnectionString",
+            "checkpointContainerName",
+            "logicAppEndPointUrl",
+            "solutionWebsiteUrl",
+            "./data"
+        ));
         Mockito.when(this.notificationSystemAgent.runAsync()).thenReturn(CompletableFuture.completedFuture(true));
         this.notificationSystemAgent.runAsync();
         Mockito.verify(this.eventProcessorHostWrapperMock, Mockito.times(1)).registerEventProcessorFactoryAsync(
-                Mockito.any(),
-                Mockito.any(IEventProcessorFactory.class));
+            Mockito.any(),
+            Mockito.any(IEventProcessorFactory.class));
     }
 }

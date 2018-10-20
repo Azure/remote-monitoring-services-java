@@ -9,7 +9,7 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.IRules;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.Rules;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.external.IDiagnosticsClient;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.*;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServiceConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.cosmosDb.IStorageClient;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime.Config;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsByRuleController;
@@ -60,7 +60,7 @@ public class AlarmsByRuleControllerTest {
     public void setUp() {
         // setup before every test
         try {
-            IServicesConfig servicesConfig = new Config(mock(WSClient.class)).getServicesConfig();
+            IServiceConfig servicesConfig = new Config(mock(WSClient.class)).getServicesConfig();
             IStorageClient client = mock(IStorageClient.class);
             IDiagnosticsClient diagnosticsClient = mock(IDiagnosticsClient.class);
             this.wsClient = mock(WSClient.class);

@@ -31,8 +31,8 @@ public class Config implements IConfig {
     private final String APPLICATION_KEY = Namespace + "telemetry.";
 
     // Storage dependency settings
-    private final String STORAGE_KEY = APPLICATION_KEY + "cosmosDb.";
-    private final String STORAGE_CONN_STRING_KEY = STORAGE_KEY + "connString";
+    private final String COSMOS_DB_CONN_STRING_KEY = APPLICATION_KEY + "cosmosDb.connString";
+    private final String BLOB_STORAGE_CONN_STRING_KEY = APPLICATION_KEY + "blobStorage.connString";
     private final String TIME_SERIES_KEY = APPLICATION_KEY + "timeSeriesInsights.";
     private final String TIME_SERIES_FQDN_KEY = TIME_SERIES_KEY + "fqdn";
     private final String AAD_TENANT_KEY = TIME_SERIES_KEY + "aadTenant";
@@ -45,8 +45,8 @@ public class Config implements IConfig {
     private final String KEY_VALUE_STORAGE_URL_KEY = KEY_VALUE_STORAGE_KEY + "url";
 
     private final String MESSAGES_STORAGE_TYPE_KEY = APPLICATION_KEY + "messages.storageType";
-    private final String MESSAGES_DOCDB_DATABASE_KEY = APPLICATION_KEY + "messages.cosmosDb.database";
-    private final String MESSAGES_DOCDB_COLLECTION_KEY = APPLICATION_KEY + "messages.cosmosDb.collection";
+    private final String MESSAGES_COSMOS_DATABASE_KEY = APPLICATION_KEY + "messages.cosmosDb.database";
+    private final String MESSAGES_COSMOS_COLLECTION_KEY = APPLICATION_KEY + "messages.cosmosDb.collection";
     private final String MESSAGES_TSI_API_VERSION_KEY = APPLICATION_KEY + "messages.timeSeriesInsights.apiVersion";
     private final String MESSAGES_TSI_DATE_FORMAT_KEY = APPLICATION_KEY + "messages.timeSeriesInsights.dateFormat";
     private final String MESSAGES_TSI_TIMEOUT_KEY = APPLICATION_KEY + "messages.timeSeriesInsights.timeOutInSeconds";
@@ -59,19 +59,14 @@ public class Config implements IConfig {
     private final String ALARMS_DOCDB_COLLECTION_KEY = APPLICATION_KEY + "alarms.cosmosDb.collection";
     private final String ALARMS_DOCDB_DELETE_RETRIES = APPLICATION_KEY + "alarms.cosmosDb.maxDeleteRetries";
 
-    private final String MESSAGES_DOCDB_CONN_STRING_KEY = APPLICATION_KEY + "messages.documentDb.connString";
-
-    private final String ALARMS_DOCDB_CONN_STRING_KEY = APPLICATION_KEY + "alarms.documentDb.connString";
-
-    private final String ACTIONS_EVENTHUB_NAME = APPLICATION_KEY + "actions.eventHubName";
-    private final String ACTIONS_LOGIC_APP_ENDPOINT_URL = APPLICATION_KEY + "actions.logicAppEndPointUrl";
-    private final String ACTIONS_EVENTHUB_CONNECTION_STRING = APPLICATION_KEY + "actions.eventHubConnectionString";
-    private final String ACTIONS_EVENTHUB_OFFSET_TIME_IN_MINUTES = APPLICATION_KEY + "actions.eventHubOffsetTimeInMinutes";
-    private final String ACTIONS_BLOB_STORAGE_ACCOUNT_KEY = APPLICATION_KEY + "actions.blobStorageAccountKey";
-    private final String ACTIONS_BLOB_STORAGE_ACCOUNT_NAME = APPLICATION_KEY + "actions.blobStorageAccountName";
-    private final String ACTIONS_BLOB_STORAGE_ENDPOINT_SUFFIX = APPLICATION_KEY + "actions.blobStorageEndpointSuffix";
-    private final String ACTIONS_EVENTHUB_CONTAINER = APPLICATION_KEY + "actions.eventHubContainer";
-    private final String ACTIONS_SOLUTION_NAME = APPLICATION_KEY + "actions.solutionName";
+    private final String ACTIONS_KEY = APPLICATION_KEY + "actions.";
+    private final String ACTIONS_EVENTHUB_NAME_KEY = ACTIONS_KEY + "eventHubName";
+    private final String ACTIONS_EVENTHUB_CONNECTION_STRING_KEY = ACTIONS_KEY + "eventHubConnectionString";
+    private final String ACTIONS_EVENTHUB_OFFSET_TIME_IN_MINUTES_KEY = ACTIONS_KEY + "eventHubOffsetTimeInMinutes";
+    private final String ACTIONS_EVENTHUB_CHECKPOINT_CONTAINER_KEY = ACTIONS_KEY + "eventHubCheckpointContainerName";
+    private final String ACTIONS_LOGIC_APP_ENDPOINT_URL_KEY = ACTIONS_KEY + "logicAppEndPointUrl";
+    private final String ACTIONS_SOLUTION_WEBSITE_URL_KEY = ACTIONS_KEY + "solutionWebsiteUrl";
+    private final String ACTIONS_TEMPLATE_FOLDER_KEY = ACTIONS_KEY + "templateFolder";
 
     private final String CLIENT_AUTH_KEY = APPLICATION_KEY + "client-auth.";
     private final String AUTH_WEB_SERVICE_URL_KEY = CLIENT_AUTH_KEY + "auth_webservice_url";
@@ -89,10 +84,9 @@ public class Config implements IConfig {
     private final String DIAGNOSTICS_MAX_LOG_RETRIES = DIAGNOSTICS_KEY + "max_log_retries";
 
     private com.typesafe.config.Config data;
-    private IServicesConfig servicesConfig;
+    private IServiceConfig servicesConfig;
     private IClientAuthConfig clientAuthConfig;
 
-    private IBlobStorageConfig blobStorageConfig;
     private IEventProcessorHostWrapper eventProcessorHostWrapper;
     private IEventProcessorFactory eventProcessorFactory;
     private WSClient client;
@@ -106,17 +100,17 @@ public class Config implements IConfig {
     /**
      * Service layer configuration
      */
-    public IServicesConfig getServicesConfig() throws InvalidConfigurationException {
+    public IServiceConfig getServicesConfig() throws InvalidConfigurationException {
         if (this.servicesConfig != null) return this.servicesConfig;
 
-        String storageConnectionString = this.data.getString(STORAGE_CONN_STRING_KEY);
+        String storageConnectionString = this.data.getString(COSMOS_DB_CONN_STRING_KEY);
         String keyValueStorageUrl = this.data.getString(KEY_VALUE_STORAGE_URL_KEY);
 
         String messageStorageType = data.getString(MESSAGES_STORAGE_TYPE_KEY).toLowerCase();
         StorageConfig messagesStorageConfig = new StorageConfig(
             storageConnectionString,
-            data.getString(MESSAGES_DOCDB_DATABASE_KEY),
-            data.getString(MESSAGES_DOCDB_COLLECTION_KEY));
+            data.getString(MESSAGES_COSMOS_DATABASE_KEY),
+            data.getString(MESSAGES_COSMOS_COLLECTION_KEY));
 
         TimeSeriesConfig timeSeriesConfig = null;
         if (messageStorageType.equalsIgnoreCase("tsi")) {
@@ -149,6 +143,16 @@ public class Config implements IConfig {
             alarmsStorageConfig,
             data.getInt(ALARMS_DOCDB_DELETE_RETRIES));
 
+        ActionsConfig actionsConfig = new ActionsConfig(
+            data.getString(ACTIONS_EVENTHUB_NAME_KEY),
+            data.getString(ACTIONS_EVENTHUB_CONNECTION_STRING_KEY),
+            data.getInt(ACTIONS_EVENTHUB_OFFSET_TIME_IN_MINUTES_KEY),
+            data.getString(BLOB_STORAGE_CONN_STRING_KEY),
+            data.getString(ACTIONS_EVENTHUB_CHECKPOINT_CONTAINER_KEY),
+            data.getString(ACTIONS_LOGIC_APP_ENDPOINT_URL_KEY),
+            data.getString(ACTIONS_SOLUTION_WEBSITE_URL_KEY),
+            data.getString(ACTIONS_TEMPLATE_FOLDER_KEY));
+
         String diagnosticsUrl = "";
         if (data.hasPath(DIAGNOSTICS_URL_KEY)) {
             diagnosticsUrl = data.getString(DIAGNOSTICS_URL_KEY);
@@ -163,26 +167,10 @@ public class Config implements IConfig {
             keyValueStorageUrl,
             messagesConfig,
             alarmsConfig,
-            diagnosticsConfig,
-            data.getString(ACTIONS_EVENTHUB_NAME),
-            data.getString(ACTIONS_EVENTHUB_CONNECTION_STRING),
-            data.getInt(ACTIONS_EVENTHUB_OFFSET_TIME_IN_MINUTES),
-            data.getString(ACTIONS_LOGIC_APP_ENDPOINT_URL),
-            data.getString(ACTIONS_SOLUTION_NAME));
+            actionsConfig,
+            diagnosticsConfig);
 
         return this.servicesConfig;
-    }
-
-    @Override
-    public IBlobStorageConfig getBlobStorageConfig() {
-        if (this.blobStorageConfig != null) return this.blobStorageConfig;
-
-        this.blobStorageConfig = new BlobStorageConfig(
-            data.getString(ACTIONS_BLOB_STORAGE_ACCOUNT_NAME),
-            data.getString(ACTIONS_BLOB_STORAGE_ACCOUNT_KEY),
-            data.getString(ACTIONS_BLOB_STORAGE_ENDPOINT_SUFFIX),
-            data.getString(ACTIONS_EVENTHUB_CONTAINER));
-        return this.blobStorageConfig;
     }
 
     @Override

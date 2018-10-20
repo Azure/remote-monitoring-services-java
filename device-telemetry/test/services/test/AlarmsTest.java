@@ -60,15 +60,20 @@ public class AlarmsTest {
                         "collection"
                     ),
                 3),
+            new ActionsConfig(
+                "eventHubName",
+                "eventHubConnectionString",
+                0,
+                "blobStorageConnectionString",
+                "checkpointContainerName",
+                "logicAppEndPointUrl",
+                "solutionWebsiteUrl",
+                "./data"
+            ),
             new DiagnosticsConfig(
                 "diagnosticsUrl",
                 3
-            ),
-            "eventHubName",
-            "eventHubConnectionString",
-            0,
-            "logicAppEndPointUrl",
-            "solutionName"
+            )
         );
 
         this.storageClientMock = Mockito.mock(IStorageClient.class);

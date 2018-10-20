@@ -14,12 +14,14 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import play.libs.ws.WSClient;
 
+import javax.swing.*;
+
 import static org.mockito.Mockito.mock;
 
 public class TimeSeriesClientTest {
 
     private WSClient wsClient;
-    private IServicesConfig servicesConfig;
+    private IServiceConfig servicesConfig;
     private ITimeSeriesClient timeSeriesClient;
 
     @Before
@@ -29,13 +31,8 @@ public class TimeSeriesClientTest {
             "http://localhost:9022/v1",
             mock(MessagesConfig.class),
             mock(AlarmsConfig.class),
-            mock(DiagnosticsConfig.class),
-            "eventHubName",
-            "eventHubConnectionString",
-            10,
-            "logicAppEndpointUrl",
-            "solutionName"
-        );
+            mock(ActionsConfig.class),
+            mock(DiagnosticsConfig.class));
         this.timeSeriesClient = new TimeSeriesClient(this.servicesConfig, this.wsClient);
     }
 

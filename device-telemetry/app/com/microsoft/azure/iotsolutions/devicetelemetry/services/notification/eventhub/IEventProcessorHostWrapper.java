@@ -9,18 +9,18 @@ import com.microsoft.azure.eventprocessorhost.IEventProcessorFactory;
 import java.util.concurrent.CompletionStage;
 
 public interface IEventProcessorHostWrapper {
-    public EventProcessorHost createEventProcessorHost(
+    EventProcessorHost createEventProcessorHost(
             String eventHubPath,
             String consumerGroupName,
             String eventHubConnectionString,
             String storageConnectionString,
             String leaseContainerName);
 
-    public CompletionStage registerEventProcessorFactoryAsync(
+    CompletionStage registerEventProcessorFactoryAsync(
             EventProcessorHost host,
             IEventProcessorFactory factory);
 
-    public CompletionStage registerEventProcessorFactoryAsync(
+    CompletionStage registerEventProcessorFactoryAsync(
             EventProcessorHost host,
             IEventProcessorFactory factory,
             EventProcessorOptions options);

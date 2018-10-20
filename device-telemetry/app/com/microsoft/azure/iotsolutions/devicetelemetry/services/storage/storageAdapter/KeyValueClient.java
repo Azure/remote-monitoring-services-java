@@ -4,7 +4,7 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.storag
 
 import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.Status;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServiceConfig;
 import org.apache.http.HttpStatus;
 import play.libs.ws.WSClient;
 import play.libs.ws.WSRequest;
@@ -15,13 +15,13 @@ import java.util.concurrent.CompletionStage;
 
 public class KeyValueClient implements IKeyValueClient {
 
-    private final IServicesConfig servicesConfig;
+    private final IServiceConfig servicesConfig;
     private String storageAdapterWebserviceUrl;
 
     private WSClient wsClient;
 
     @Inject
-    public KeyValueClient(final IServicesConfig config, WSClient wsClient) {
+    public KeyValueClient(final IServiceConfig config, WSClient wsClient) {
         this.servicesConfig = config;
         this.storageAdapterWebserviceUrl = servicesConfig.getKeyValueStorageUrl();
         this.wsClient = wsClient;

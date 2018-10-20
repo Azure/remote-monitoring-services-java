@@ -6,7 +6,7 @@ import com.google.inject.Inject;
 import com.microsoft.azure.documentdb.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.Status;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidConfigurationException;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServiceConfig;
 import play.Logger;
 import play.mvc.Http;
 
@@ -17,7 +17,7 @@ public class StorageClient implements IStorageClient {
 
     private static final Logger.ALogger log = Logger.of(StorageClient.class);
 
-    private final IServicesConfig servicesConfig;
+    private final IServiceConfig servicesConfig;
 
     private String storageHostName;
     private String storagePrimaryKey;
@@ -25,7 +25,7 @@ public class StorageClient implements IStorageClient {
     private DocumentClient client;
 
     @Inject
-    public StorageClient(final IServicesConfig config) throws Exception {
+    public StorageClient(final IServiceConfig config) throws Exception {
         this.servicesConfig = config;
         parseConnectionString();
         this.client = getDocumentClient();

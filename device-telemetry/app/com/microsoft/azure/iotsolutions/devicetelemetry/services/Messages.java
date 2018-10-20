@@ -12,7 +12,7 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.Time
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.helpers.QueryBuilder;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.MessageListServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.MessageServiceModel;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServiceConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.MessagesConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.StorageType;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.timeSeries.ITimeSeriesClient;
@@ -34,7 +34,7 @@ public final class Messages implements IMessages {
     private ITimeSeriesClient timeSeriesClient;
 
     @Inject
-    public Messages(IServicesConfig servicesConfig, ITimeSeriesClient timeSeriesClient) {
+    public Messages(IServiceConfig servicesConfig, ITimeSeriesClient timeSeriesClient) {
         MessagesConfig messageConfig = servicesConfig.getMessagesConfig();
         this.timeSeriesClient = timeSeriesClient;
         this.storageType = messageConfig.getStorageType();

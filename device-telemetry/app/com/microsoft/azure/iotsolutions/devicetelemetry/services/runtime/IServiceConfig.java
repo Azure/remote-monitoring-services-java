@@ -5,7 +5,7 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime;
 import com.google.inject.ImplementedBy;
 
 @ImplementedBy(ServicesConfig.class)
-public interface IServicesConfig {
+public interface IServiceConfig {
     /**
      * Get key value storage dependency url
      */
@@ -15,15 +15,7 @@ public interface IServicesConfig {
 
     AlarmsConfig getAlarmsConfig();
 
+    ActionsConfig getActionsConfig();
+
     DiagnosticsConfig getDiagnosticsConfig();
-
-    String getEventHubName();
-
-    String getEventHubConnectionString();
-
-    int getEventHubOffsetTimeInMinutes();
-
-    String getLogicAppEndPointUrl();
-
-    String getSolutionName();
 }

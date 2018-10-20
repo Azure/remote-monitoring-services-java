@@ -6,28 +6,24 @@ import com.microsoft.azure.eventprocessorhost.IEventProcessorFactory;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.Agent;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.IAgent;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.eventhub.IEventProcessorHostWrapper;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IBlobStorageConfig;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServiceConfig;
 
 import java.util.concurrent.CompletableFuture;
 
 @Singleton
 public class RecurringTasks implements IRecurringTasks {
     private IAgent notificationAgent;
-    private IServicesConfig servicesConfig;
-    private IBlobStorageConfig blobStorageConfig;
+    private IServiceConfig servicesConfig;
     private IEventProcessorHostWrapper eventProcessorHostWrapper;
     private IEventProcessorFactory notificationEventProcessorFactory;
 
     @Inject
     public RecurringTasks(
-            IServicesConfig servicesConfig,
-            IBlobStorageConfig blobStorageConfig,
+            IServiceConfig servicesConfig,
             IEventProcessorHostWrapper eventProcessorHostWrapper,
             IEventProcessorFactory notificationEventProcessorFactory )
     {
         this.servicesConfig = servicesConfig;
-        this.blobStorageConfig = blobStorageConfig;
         this.eventProcessorHostWrapper = eventProcessorHostWrapper;
         this.notificationEventProcessorFactory = notificationEventProcessorFactory;
         CompletableFuture.runAsync(() -> this.run());
@@ -39,7 +35,7 @@ public class RecurringTasks implements IRecurringTasks {
     }
 
     private void tryMethod(){
-        this.notificationAgent = new Agent(servicesConfig, blobStorageConfig, eventProcessorHostWrapper, notificationEventProcessorFactory);
+        this.notificationAgent = new Agent(servicesConfig, eventProcessorHostWrapper, notificationEventProcessorFactory);
         notificationAgent.runAsync();
     }
 }

@@ -1,13 +1,14 @@
 // Copyright (c) Microsoft. All rights reserved.
 
 package com.microsoft.azure.iotsolutions.devicetelemetry.services.notification;
+
 import com.google.inject.Inject;
 import com.microsoft.azure.eventprocessorhost.EventProcessorHost;
 import com.microsoft.azure.eventprocessorhost.EventProcessorOptions;
 import com.microsoft.azure.eventprocessorhost.IEventProcessorFactory;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.eventhub.IEventProcessorHostWrapper;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IBlobStorageConfig;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.ActionsConfig;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServiceConfig;
 import play.Logger;
 
 import java.util.concurrent.CompletableFuture;
@@ -16,8 +17,7 @@ import java.util.concurrent.CompletionStage;
 
 public class Agent implements IAgent {
     private static final Logger.ALogger logger = Logger.of(Agent.class);
-    private IServicesConfig servicesConfig;
-    private IBlobStorageConfig blobStorageConfig;
+    private IServiceConfig serviceConfig;
     private IEventProcessorFactory notificationEventProcessorFactory;
     private IEventProcessorHostWrapper eventProcessorHostWrapper;
     private EventProcessorOptions eventProcessorOptions;
@@ -25,13 +25,10 @@ public class Agent implements IAgent {
 
     @Inject
     public Agent(
-            IServicesConfig servicesConfig,
-            IBlobStorageConfig blobStorageConfig,
-            IEventProcessorHostWrapper eventProcessorHostWrapper,
-            IEventProcessorFactory notificationEventProcessorFactory )
-    {
-        this.servicesConfig = servicesConfig;
-        this.blobStorageConfig = blobStorageConfig;
+        IServiceConfig serviceConfig,
+        IEventProcessorHostWrapper eventProcessorHostWrapper,
+        IEventProcessorFactory notificationEventProcessorFactory) {
+        this.serviceConfig = serviceConfig;
         this.eventProcessorHostWrapper = eventProcessorHostWrapper;
         this.notificationEventProcessorFactory = notificationEventProcessorFactory;
     }
@@ -50,18 +47,13 @@ public class Agent implements IAgent {
 
     private CompletionStage setUpEventHubAsync() {
         try {
-            String storageConnectionString = String
-                    .format("DefaultEndpointsProtocol=https;AccountName=%s;AccountKey=%s;EndpointSuffix=%s",
-                            this.blobStorageConfig.getAccountName(),
-                            this.blobStorageConfig.getAccountKey(),
-                            this.blobStorageConfig.getEndpointSuffix());
+            ActionsConfig actionsConfig = this.serviceConfig.getActionsConfig();
             EventProcessorHost host = this.eventProcessorHostWrapper.createEventProcessorHost(
-                    this.servicesConfig.getEventHubName(),
-                    DEFAULT,
-                    this.servicesConfig.getEventHubConnectionString(),
-                    storageConnectionString,
-                    this.blobStorageConfig.getEventHubContainer()
-            );
+                actionsConfig.getEventHubName(),
+                DEFAULT,
+                actionsConfig.getEventHubConnectionString(),
+                actionsConfig.getBlobStorageConnectionString(),
+                actionsConfig.getEventHubCheckpointContainerName());
             this.eventProcessorHostWrapper.registerEventProcessorFactoryAsync(host, this.notificationEventProcessorFactory);
             return CompletableFuture.completedFuture(true);
         } catch (Exception e) {

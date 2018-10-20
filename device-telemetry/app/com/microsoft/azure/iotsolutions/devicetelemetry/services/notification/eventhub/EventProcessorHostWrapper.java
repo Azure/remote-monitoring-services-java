@@ -19,19 +19,18 @@ public class EventProcessorHostWrapper implements IEventProcessorHostWrapper {
 
     @Override
     public EventProcessorHost createEventProcessorHost(
-            String eventHubPath,
-            String consumerGroupName,
-            String eventHubConnectionString,
-            String storageConnectionString,
-            String leaseContainerName)
-    {
+        String eventHubPath,
+        String consumerGroupName,
+        String eventHubConnectionString,
+        String storageConnectionString,
+        String leaseContainerName) {
         return new EventProcessorHost(
-                EventProcessorHost.createHostName(DEFAULT_STRING),
-                eventHubPath,
-                consumerGroupName,
-                eventHubConnectionString,
-                storageConnectionString,
-                leaseContainerName);
+            EventProcessorHost.createHostName(DEFAULT_STRING),
+            eventHubPath,
+            consumerGroupName,
+            eventHubConnectionString,
+            storageConnectionString,
+            leaseContainerName);
     }
 
     @Override
@@ -46,9 +45,9 @@ public class EventProcessorHostWrapper implements IEventProcessorHostWrapper {
 
     @Override
     public CompletionStage registerEventProcessorFactoryAsync(
-            EventProcessorHost host,
-            IEventProcessorFactory factory,
-            EventProcessorOptions options) {
+        EventProcessorHost host,
+        IEventProcessorFactory factory,
+        EventProcessorOptions options) {
         try {
             host.registerEventProcessorFactory(factory, options);
             return CompletableFuture.completedFuture(true);
