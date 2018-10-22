@@ -13,7 +13,7 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.Calculat
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.ConditionServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.RuleServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.SeverityType;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.*;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.IAction;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.Version;
 
 import java.util.ArrayList;
@@ -118,10 +118,10 @@ public final class RuleApiModel {
                 this.deleted = rule.getDeleted();
             }
 
-            // create listAsync of ActionApiModel from  IActionServiceModel listAsync
+            // create listAsync of ActionApiModel from  IAction listAsync
             this.actions = new ArrayList<>();
             if (rule.getActions() != null) {
-                for (IActionServiceModel action : rule.getActions()) {
+                for (IAction action : rule.getActions()) {
                     this.actions.add(new ActionApiModel(action));
                 }
             }
@@ -272,7 +272,7 @@ public final class RuleApiModel {
      * @return
      */
     public RuleServiceModel toServiceModel(String idOverride) {
-        ArrayList<IActionServiceModel> actionServiceModels = new ArrayList<IActionServiceModel>();
+        ArrayList<IAction> actionServiceModels = new ArrayList<IAction>();
         if (this.actions != null) {
             for (ActionApiModel action : this.actions) {
                 try {

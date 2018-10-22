@@ -1,13 +1,13 @@
 // Copyright (c) Microsoft. All rights reserved.
 
-package services.test.notification.test;
+package actionsagent.test;
 
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.INotificationImplementationWrapper;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.INotification;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.Notification;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.implementation.INotificationImplementation;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.models.ActionAsaModel;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.models.AlarmNotificationAsaModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.INotificationImplementationWrapper;
+import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.INotification;
+import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.Notification;
+import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.actions.IActionExecutor;
+import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.models.ActionAsaModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.models.AsaAlarmsApiModel;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -22,12 +22,12 @@ import java.util.concurrent.CompletableFuture;
 public class NotificationTest {
     private static final Logger.ALogger log = Logger.of(NotificationTest.class);
     private INotificationImplementationWrapper implementationWrapperMock;
-    private INotificationImplementation implementationMock;
+    private IActionExecutor implementationMock;
 
     @Before
     public void setUp(){
         this.implementationWrapperMock = Mockito.mock(INotificationImplementationWrapper.class);
-        this.implementationMock = Mockito.mock(INotificationImplementation.class);
+        this.implementationMock = Mockito.mock(IActionExecutor.class);
     }
 
     @Test
@@ -57,7 +57,7 @@ public class NotificationTest {
     public void ShouldNotCallExecuteWhenAlertHasNoActions(){
         Notification notification = new Notification(this.implementationWrapperMock);
 
-        AlarmNotificationAsaModel alarm = new AlarmNotificationAsaModel();
+        AsaAlarmsApiModel alarm = new AsaAlarmsApiModel();
         alarm.setActions(new ArrayList<>());
         notification.setAlarm(alarm);
         notification.executeAsync();
@@ -75,13 +75,13 @@ public class NotificationTest {
     }
 
 
-    private AlarmNotificationAsaModel getSampleAlarmWithNActions(int n){
+    private AsaAlarmsApiModel getSampleAlarmWithNActions(int n){
         List<ActionAsaModel> actionList = new ArrayList<>();
         for(int i = 0; i < n; i++){
             actionList.add(this.getSampleAction());
         }
 
-        AlarmNotificationAsaModel model = new AlarmNotificationAsaModel();
+        AsaAlarmsApiModel model = new AsaAlarmsApiModel();
         model.setActions(actionList);
         model.setRuleId("12345");
         model.setRuleDescription("Sample Description");

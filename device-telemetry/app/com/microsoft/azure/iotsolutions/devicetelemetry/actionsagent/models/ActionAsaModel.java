@@ -1,20 +1,20 @@
 // Copyright (c) Microsoft. All rights reserved.
 
-package com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.models;
+package com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class ActionAsaModel implements IActionAsaModel{
-    @JsonProperty("Type")
+public class ActionAsaModel implements IAction {
+    @JsonProperty("ActionType")
     private String actionType = "";
 
     @JsonProperty("Parameters")
     private Map<String, Object> parameters = new HashMap<>();
 
-    @JsonProperty("Type")
+    @JsonProperty("ActionType")
     @Override
     public String getActionType() {
         return this.actionType;

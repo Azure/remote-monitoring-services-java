@@ -103,7 +103,7 @@ public class DiagnosticsClient implements IDiagnosticsClient {
 
         WSRequest wsRequest = this.wsClient
             .url(url)
-            .addHeader("Content-Type", "application/json");
+            .addHeader("Content-ActionType", "application/json");
 
         return wsRequest;
     }

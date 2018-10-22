@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft. All rights reserved.
 
-package com.microsoft.azure.iotsolutions.devicetelemetry.services.models;
+package com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -8,17 +8,17 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import java.util.Map;
 
-@JsonSerialize(as = IActionServiceModel.class)
+@JsonSerialize(as = IAction.class)
 @JsonNaming(PropertyNamingStrategy.UpperCamelCaseStrategy.class)
-public interface IActionServiceModel {
+public interface IAction {
 
-    enum Type {
+    enum ActionType {
         Email
     }
 
-    Type getType();
+    ActionType getType();
 
-    void setType(IActionServiceModel.Type Type);
+    void setType(ActionType Type);
 
     Map<String, Object> getParameters();
 }

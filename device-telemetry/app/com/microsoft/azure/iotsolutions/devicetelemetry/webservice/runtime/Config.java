@@ -4,11 +4,14 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime;
 
 import com.google.inject.Inject;
 import com.microsoft.azure.eventprocessorhost.IEventProcessorFactory;
+import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.INotification;
+import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.INotificationImplementationWrapper;
+import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.Notification;
+import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.NotificationImplementationWrapper;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidConfigurationException;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.*;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.eventhub.EventProcessorHostWrapper;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.eventhub.IEventProcessorHostWrapper;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.eventhub.NotificationEventProcessorFactory;
+import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.eventhub.EventProcessorHostWrapper;
+import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.eventhub.IEventProcessorHostWrapper;
+import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.eventhub.ActionsEventProcessorFactory;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.ClientAuthConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.IClientAuthConfig;
@@ -187,7 +190,7 @@ public class Config implements IConfig {
 
         INotificationImplementationWrapper wrapper = new NotificationImplementationWrapper(this.client, this.getServicesConfig());
         INotification notification = new Notification(wrapper);
-        this.eventProcessorFactory = new NotificationEventProcessorFactory(notification);
+        this.eventProcessorFactory = new ActionsEventProcessorFactory(notification);
         return this.eventProcessorFactory;
     }
 

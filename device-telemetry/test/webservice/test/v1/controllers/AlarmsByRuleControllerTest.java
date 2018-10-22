@@ -9,6 +9,7 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.IRules;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.Rules;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.external.IDiagnosticsClient;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.*;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.IAction;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServiceConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.cosmosDb.IStorageClient;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime.Config;
@@ -221,7 +222,7 @@ public class AlarmsByRuleControllerTest {
         ArrayList<ConditionServiceModel> sampleConditions = new ArrayList<>();
         sampleConditions.add(sampleCondition);
 
-        ArrayList<IActionServiceModel> sampleActions = new ArrayList<>();
+        ArrayList<IAction> sampleActions = new ArrayList<>();
         ArrayList<String> emails = new ArrayList<>();
         emails.add("test@testing.com");
         HashMap<String, Object> map = new HashMap<>();

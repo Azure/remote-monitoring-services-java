@@ -1,11 +1,11 @@
 // Copyright (c) Microsoft. All rights reserved.
 
-package com.microsoft.azure.iotsolutions.devicetelemetry.services.notification;
+package com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent;
 
 import com.google.inject.Inject;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.implementation.INotificationImplementation;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.models.ActionAsaModel;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.models.AlarmNotificationAsaModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.actions.IActionExecutor;
+import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.models.ActionAsaModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.models.AsaAlarmsApiModel;
 
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
@@ -15,8 +15,8 @@ import java.util.concurrent.CompletionStage;
 public class Notification implements INotification {
     private INotification.EmailImplementationTypes EMAIL_IMPLEMENTATION_TYPE = INotification.EmailImplementationTypes.LogicApp;
     private INotificationImplementationWrapper implementationWrapper;
-    private INotificationImplementation implementation;
-    private AlarmNotificationAsaModel alarm;
+    private IActionExecutor implementation;
+    private AsaAlarmsApiModel alarm;
     private static final String EMAIL = "Email";
     private static final String TEMPLATE = "Template";
 
@@ -26,12 +26,12 @@ public class Notification implements INotification {
     }
 
     @Override
-    public AlarmNotificationAsaModel getAlarm() {
+    public AsaAlarmsApiModel getAlarm() {
         return this.alarm;
     }
 
     @Override
-    public void setAlarm(AlarmNotificationAsaModel model) {
+    public void setAlarm(AsaAlarmsApiModel model) {
         this.alarm = model;
     }
 

@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft. All rights reserved.
 
-package com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.eventhub;
+package com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.eventhub;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
@@ -8,16 +8,16 @@ import com.microsoft.azure.eventhubs.EventData;
 import com.microsoft.azure.eventprocessorhost.CloseReason;
 import com.microsoft.azure.eventprocessorhost.IEventProcessor;
 import com.microsoft.azure.eventprocessorhost.PartitionContext;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.INotification;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.models.AlarmNotificationAsaModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.models.AsaAlarmsApiModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.INotification;
 import play.Logger;
 
-public class NotificationEventProcessor implements IEventProcessor {
-    private static final Logger.ALogger logger = Logger.of(NotificationEventProcessor.class);
+public class ActionsEventProcessor implements IEventProcessor {
+    private static final Logger.ALogger logger = Logger.of(ActionsEventProcessor.class);
     private INotification notification;
 
     @Inject
-    public NotificationEventProcessor(INotification notification) {
+    public ActionsEventProcessor(INotification notification) {
         this.notification = notification;
     }
 
@@ -36,7 +36,7 @@ public class NotificationEventProcessor implements IEventProcessor {
     public void onEvents(PartitionContext context, Iterable<EventData> events) throws Exception {
         for(EventData eventData : events) {
             String data = new String(eventData.getBytes(), "UTF8");
-            AlarmNotificationAsaModel model = new ObjectMapper().readValue(data, AlarmNotificationAsaModel.class);
+            AsaAlarmsApiModel model = new ObjectMapper().readValue(data, AsaAlarmsApiModel.class);
             this.notification.setAlarm(model);
             notification.executeAsync();
         }

@@ -1,27 +1,24 @@
 // Copyright (c) Microsoft. All rights reserved.
 
-package com.microsoft.azure.iotsolutions.devicetelemetry.services.notification;
+package com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent;
 
 import com.google.inject.Inject;
 import com.microsoft.azure.eventprocessorhost.EventProcessorHost;
-import com.microsoft.azure.eventprocessorhost.EventProcessorOptions;
 import com.microsoft.azure.eventprocessorhost.IEventProcessorFactory;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.eventhub.IEventProcessorHostWrapper;
+import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.eventhub.IEventProcessorHostWrapper;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.ActionsConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServiceConfig;
 import play.Logger;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 
 public class Agent implements IAgent {
     private static final Logger.ALogger logger = Logger.of(Agent.class);
     private IServiceConfig serviceConfig;
-    private IEventProcessorFactory notificationEventProcessorFactory;
+    private IEventProcessorFactory actionsEventProcessorFactory;
     private IEventProcessorHostWrapper eventProcessorHostWrapper;
-    private EventProcessorOptions eventProcessorOptions;
-    private static final String DEFAULT = "$Default";
+    private static final String DEFAULT_CONSUMER_GROUP_NAME = "$Default";
 
     @Inject
     public Agent(
@@ -30,19 +27,13 @@ public class Agent implements IAgent {
         IEventProcessorFactory notificationEventProcessorFactory) {
         this.serviceConfig = serviceConfig;
         this.eventProcessorHostWrapper = eventProcessorHostWrapper;
-        this.notificationEventProcessorFactory = notificationEventProcessorFactory;
+        this.actionsEventProcessorFactory = notificationEventProcessorFactory;
     }
 
     @Override
     public CompletionStage runAsync() {
-        this.logger.info("Notification system running");
-        try {
-            setUpEventHubAsync().thenRun(() -> this.logger.info("Set up eventhub complete"));
-            return CompletableFuture.completedFuture(true);
-        } catch (Exception e) {
-            this.logger.error(e.getMessage());
-            throw new CompletionException(e);
-        }
+        this.logger.info("Actions Agent started");
+        return setUpEventHubAsync();
     }
 
     private CompletionStage setUpEventHubAsync() {
@@ -50,13 +41,13 @@ public class Agent implements IAgent {
             ActionsConfig actionsConfig = this.serviceConfig.getActionsConfig();
             EventProcessorHost host = this.eventProcessorHostWrapper.createEventProcessorHost(
                 actionsConfig.getEventHubName(),
-                DEFAULT,
+                DEFAULT_CONSUMER_GROUP_NAME,
                 actionsConfig.getEventHubConnectionString(),
                 actionsConfig.getBlobStorageConnectionString(),
                 actionsConfig.getEventHubCheckpointContainerName());
-            this.eventProcessorHostWrapper.registerEventProcessorFactoryAsync(host, this.notificationEventProcessorFactory);
-            return CompletableFuture.completedFuture(true);
+            return this.eventProcessorHostWrapper.registerEventProcessorFactoryAsync(host, this.actionsEventProcessorFactory);
         } catch (Exception e) {
+            this.logger.error("Received error setting up event hub. Will not receive information from the eventhub", e);
             throw new CompletionException(e);
         }
     }

@@ -1,34 +1,20 @@
 // Copyright (c) Microsoft. All rights reserved.
 
-package com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.models;
+package com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
-public class AlarmNotificationAsaModel {
-    @JsonProperty("created")
+public class AsaAlarmsApiModel {
+
     private String dateCreated;
-
-    @JsonProperty("modified")
     private String dateModified;
-
-    @JsonProperty("rule.description")
     private String ruleDescription;
-
-    @JsonProperty("rule.severity")
     private String ruleSeverity;
-
-    @JsonProperty("rule.id")
     private String ruleId;
-
-    @JsonProperty("rule.actions")
     private List<ActionAsaModel> actions;
-
-    @JsonProperty("device.id")
     private String deviceId;
-
-    @JsonProperty("device.msg.received")
     private String messageReceived;
 
     @JsonProperty("created")

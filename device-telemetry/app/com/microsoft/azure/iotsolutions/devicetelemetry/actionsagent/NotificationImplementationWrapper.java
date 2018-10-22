@@ -1,11 +1,11 @@
 // Copyright (c) Microsoft. All rights reserved.
 
-package com.microsoft.azure.iotsolutions.devicetelemetry.services.notification;
+package com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent;
 
 import com.google.inject.Inject;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.INotification.EmailImplementationTypes;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.implementation.INotificationImplementation;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.implementation.LogicApp;
+import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.actions.IActionExecutor;
+import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.actions.EmailActionExecutor;
+import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.INotification.EmailImplementationTypes;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServiceConfig;
 import play.libs.ws.WSClient;
 
@@ -20,10 +20,10 @@ public class NotificationImplementationWrapper implements INotificationImplement
     }
 
     @Override
-    public INotificationImplementation getImplementationType(EmailImplementationTypes actionType) {
+    public IActionExecutor getImplementationType(EmailImplementationTypes actionType) {
         switch (actionType) {
             case LogicApp:
-                return new LogicApp(
+                return new EmailActionExecutor(
                     this.servicesConfig.getActionsConfig().getLogicAppEndpointUrl(),
                     this.servicesConfig.getActionsConfig().getSolutionWebsiteUrl(),
                     this.client);

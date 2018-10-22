@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft. All rights reserved.
 
-package com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.eventhub;
+package com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.eventhub;
 
 import com.microsoft.azure.eventprocessorhost.EventProcessorHost;
 import com.microsoft.azure.eventprocessorhost.EventProcessorOptions;
@@ -11,7 +11,7 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 
 public class EventProcessorHostWrapper implements IEventProcessorHostWrapper {
-    private static final String DEFAULT_STRING = "defaultString";
+    private static final String DEFAULT_HOST_NAME_PREFIX = "actions-host";
 
     public EventProcessorHostWrapper() {
         // empty constructor
@@ -25,7 +25,7 @@ public class EventProcessorHostWrapper implements IEventProcessorHostWrapper {
         String storageConnectionString,
         String leaseContainerName) {
         return new EventProcessorHost(
-            EventProcessorHost.createHostName(DEFAULT_STRING),
+            EventProcessorHost.createHostName(DEFAULT_HOST_NAME_PREFIX),
             eventHubPath,
             consumerGroupName,
             eventHubConnectionString,

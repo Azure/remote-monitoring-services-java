@@ -5,7 +5,7 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime;
 import com.google.inject.ImplementedBy;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidConfigurationException;
 import com.microsoft.azure.eventprocessorhost.IEventProcessorFactory;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.eventhub.IEventProcessorHostWrapper;
+import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.eventhub.IEventProcessorHostWrapper;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServiceConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.IClientAuthConfig;
 

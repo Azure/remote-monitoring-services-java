@@ -1,11 +1,11 @@
 // Copyright (c) Microsoft. All rights reserved.
 
-package services.test.notification.test;
+package actionsagent.test;
 
 import com.microsoft.azure.eventprocessorhost.IEventProcessorFactory;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.Agent;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.IAgent;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.notification.eventhub.IEventProcessorHostWrapper;
+import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.Agent;
+import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.IAgent;
+import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.eventhub.IEventProcessorHostWrapper;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.ActionsConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServiceConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.ServicesConfig;
