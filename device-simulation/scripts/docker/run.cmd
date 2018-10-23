@@ -21,9 +21,8 @@ IF %ERRORLEVEL% NEQ 0 GOTO FAIL
 :: Start the application
 echo Starting Device Simulation ...
 docker run -it -p 9003:9003 ^
-    --network host ^
     -e PCS_IOTHUB_CONNSTRING ^
-    -e PCS_STORAGEADAPTER_WEBSERVICE_URL ^
+    -e PCS_STORAGEADAPTER_WEBSERVICE_URL="http://host.docker.internal:9022/v1" ^
     -e PCS_SUBSCRIPTION_ID ^
     %DOCKER_IMAGE%:testing
 
