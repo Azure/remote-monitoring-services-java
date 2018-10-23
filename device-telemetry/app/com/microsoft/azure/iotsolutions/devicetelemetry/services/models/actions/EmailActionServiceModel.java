@@ -1,15 +1,22 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions;
 
-import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.exceptions.BadRequestException;
-import sun.awt.image.BadDepthException;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidInputException;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.serialization.EmailActionParametersDeserializer;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import java.util.*;
 
+@JsonDeserialize(as = EmailActionServiceModel.class)
+@JsonNaming(PropertyNamingStrategy.UpperCamelCaseStrategy.class)
 public class EmailActionServiceModel implements IActionServiceModel {
 
     private ActionType type;
+
     private Map<String, Object> parameters;
 
     private static final String SUBJECT = "Subject";
@@ -21,7 +28,7 @@ public class EmailActionServiceModel implements IActionServiceModel {
         this.parameters = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     }
 
-    public EmailActionServiceModel(Map<String, Object> parameters) throws BadRequestException {
+    public EmailActionServiceModel(Map<String, Object> parameters) throws InvalidInputException {
         this.type = ActionType.Email;
         this.parameters = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         this.parameters.put(NOTES, "");
@@ -31,7 +38,7 @@ public class EmailActionServiceModel implements IActionServiceModel {
 
         if(!parametersCaseInsensitive.containsKey(SUBJECT)
             || !parametersCaseInsensitive.containsKey(RECIPIENTS)) {
-            throw new BadRequestException("Error converting recipient emails to list for action type 'Email'. " +
+            throw new InvalidInputException("Error converting recipient emails to list for action type 'Email'. " +
                     "Recipient emails provided should be an array of valid email addresses" +
                     "as strings.");
         }
@@ -46,27 +53,29 @@ public class EmailActionServiceModel implements IActionServiceModel {
     }
 
     @Override
+    @JsonProperty("Type")
     public ActionType getType() {
         return this.type;
     }
 
     @Override
+    @JsonProperty("Parameters")
     public Map<String, Object> getParameters() {
         return this.parameters;
     }
 
-    private List<String> ValidateAndConvertRecipientEmails(Object emails) throws BadRequestException {
-        List<String> result;
+    private List<String> ValidateAndConvertRecipientEmails(Object emails) throws InvalidInputException {
+        List<String> result = new ArrayList<>();
         try {
             result = (ArrayList<String>) emails;
         } catch (Exception e) {
-            throw new BadRequestException("Error converting recipient emails to list for action type 'Email'. " +
+            throw new InvalidInputException("Error converting recipient emails to list for action type 'Email'. " +
                     "Recipient emails provided should be an array of valid email addresses" +
                     "as strings.");
         }
 
         if (result.size() == 0) {
-            throw new BadRequestException("Error, recipient email list for action type 'Email' is empty. " +
+            throw new InvalidInputException("Error, recipient email list for action type 'Email' is empty. " +
                     "Please provide at least one valid email address.");
         }
 
@@ -75,7 +84,7 @@ public class EmailActionServiceModel implements IActionServiceModel {
                 InternetAddress mail = new InternetAddress(email);
                 mail.validate();
             } catch (AddressException e) {
-                throw new BadRequestException("Error with recipient email format for action type 'Email'." +
+                throw new InvalidInputException("Error with recipient email format for action type 'Email'." +
                         "Invalid email provided. Please ensure at least one recipient " +
                         "email address is provided and that all recipient email addresses " +
                         "are valid.");

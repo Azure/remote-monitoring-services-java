@@ -13,11 +13,13 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.Calculat
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.ConditionServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.RuleServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.SeverityType;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.IActionServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.Version;
 
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.concurrent.CompletionException;
 
 /**
@@ -40,6 +42,7 @@ public final class RuleApiModel {
     private String timePeriod;
     private ArrayList<ConditionApiModel> conditions;
     private Boolean deleted;
+    private List<ActionApiModel> actions;
 
     public RuleApiModel() {
 
@@ -74,7 +77,8 @@ public final class RuleApiModel {
         String calculation,
         String timePeriod,
         ArrayList<ConditionApiModel> conditions,
-        Boolean deleted
+        Boolean deleted,
+        List<ActionApiModel> actions
     ) {
         this.eTag = eTag;
         this.id = id;
@@ -89,6 +93,7 @@ public final class RuleApiModel {
         this.timePeriod = timePeriod;
         this.conditions = conditions;
         this.deleted = deleted;
+        this.actions = actions;
     }
 
     /**
@@ -117,6 +122,12 @@ public final class RuleApiModel {
             if (rule.getConditions() != null) {
                 for (ConditionServiceModel condition : rule.getConditions()) {
                     this.conditions.add(new ConditionApiModel(condition));
+                }
+            }
+            this.actions = new ArrayList<>();
+            if (rule.getActions() != null) {
+                for (IActionServiceModel action : rule.getActions()) {
+                    this.actions.add(new ActionApiModel(action));
                 }
             }
         }
@@ -230,6 +241,11 @@ public final class RuleApiModel {
         this.deleted = deleted;
     }
 
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @JsonDeserialize(as = ArrayList.class, contentAs = ActionApiModel.class)
+    public List<ActionApiModel> getActions() { return this.actions; }
+
+    public void setActions(List<ActionApiModel> actions) { this.actions = actions; }
 
     @JsonProperty("$metadata")
     public Dictionary<String, String> getMetadata() {
@@ -249,11 +265,18 @@ public final class RuleApiModel {
     public RuleServiceModel toServiceModel(String idOverride) {
         ArrayList<ConditionServiceModel> conditionServiceModels = new ArrayList<ConditionServiceModel>();
         if (conditions != null) {
-            for (ConditionApiModel condition :
-                conditions) {
+            for (ConditionApiModel condition : conditions) {
                 conditionServiceModels.add(condition.toServiceModel());
             }
         }
+
+        List<IActionServiceModel> actionServiceModels = new ArrayList<>();
+        if (this.actions != null) {
+            for (ActionApiModel action : this.actions) {
+                actionServiceModels.add(action.toServiceModel());
+            }
+        }
+
         SeverityType severity = null;
         CalculationType calculation = null;
         Long timePeriod = null;
@@ -292,7 +315,8 @@ public final class RuleApiModel {
             calculation,
             timePeriod,
             conditionServiceModels,
-            this.deleted == null ? false : this.deleted
+            this.deleted == null ? false : this.deleted,
+            actionServiceModels
         );
     }
 
