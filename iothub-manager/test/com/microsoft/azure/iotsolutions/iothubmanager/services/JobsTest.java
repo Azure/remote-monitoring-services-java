@@ -239,7 +239,8 @@ public class JobsTest {
                 };
                 TwinProperties properties = new TwinProperties(desired, null);
                 TwinServiceModel twin = new TwinServiceModel(eTag, deviceId, properties, tags, true);
-                DeviceServiceModel device = new DeviceServiceModel(eTag, deviceId, 0, null, false, true, null, twin, null, null);
+                DeviceServiceModel device = new DeviceServiceModel(eTag, deviceId, 0, null, false, true,
+                        false, null, twin, null, null);
                 DeviceServiceModel newDevice = deviceService.createAsync(device).toCompletableFuture().get();
                 testDevices.add(newDevice);
                 System.out.println(deviceId + " created");
