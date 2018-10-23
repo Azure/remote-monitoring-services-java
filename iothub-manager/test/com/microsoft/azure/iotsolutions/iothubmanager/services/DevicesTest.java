@@ -224,7 +224,7 @@ public class DevicesTest {
             put("Building", "Building40");
             put("Floor", "1F");
         }};
-        AuthenticationMechanismServiceModel authModel = new AuthenticationMechanismServiceModel(AuthenticationType.SelfSinged);
+        AuthenticationMechanismServiceModel authModel = new AuthenticationMechanismServiceModel(AuthenticationType.SelfSigned);
 
         TwinServiceModel twin = new TwinServiceModel(eTag, deviceId, null, tags, true);
         DeviceServiceModel device = new DeviceServiceModel(eTag, deviceId, 0, null, false, true, false, null,
