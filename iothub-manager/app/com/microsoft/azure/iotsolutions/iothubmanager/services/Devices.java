@@ -171,6 +171,13 @@ public final class Devices implements IDevices {
     public CompletionStage<DeviceServiceModel> createAsync(
         final DeviceServiceModel device)
         throws InvalidInputException, ExternalDependencyException {
+        if (device.getIsEdgeDevice() &&
+                device.getAuthentication() != null &&
+                !device.getAuthentication().getAuthenticationType().equals(AuthenticationType.Sas))
+        {
+            throw new InvalidInputException("Edge devices only support symmetric key authentication.");
+        }
+
         if (device.getId() == null || device.getId().isEmpty()) {
             device.setId(UUID.randomUUID().toString());
         }
