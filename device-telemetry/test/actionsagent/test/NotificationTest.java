@@ -2,20 +2,8 @@
 
 package actionsagent.test;
 
-import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.actions.ActionManager;
-import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.actions.IActionManager;
-import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.actions.IActionExecutor;
-import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.models.AsaAlarmsApiModel;
 import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mockito;
 import play.Logger;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 public class NotificationTest {
     private static final Logger.ALogger log = Logger.of(NotificationTest.class);
@@ -55,7 +43,7 @@ public class NotificationTest {
 //    public void ShouldNotCallExecuteWhenAlertHasNoActions(){
 //        ActionManager notification = new ActionManager(this.implementationWrapperMock);
 //
-//        AsaAlarmsApiModel alarm = new AsaAlarmsApiModel();
+//        AsaAlarmApiModel alarm = new AsaAlarmApiModel();
 //        alarm.setActions(new ArrayList<>());
 //        notification.setAlarm(alarm);
 //        notification.executeAsync();
@@ -73,13 +61,13 @@ public class NotificationTest {
 //    }
 //
 //
-//    private AsaAlarmsApiModel getSampleAlarmWithNActions(int n){
+//    private AsaAlarmApiModel getSampleAlarmWithNActions(int n){
 //        List<ActionAsaModel> actionList = new ArrayList<>();
 //        for(int i = 0; i < n; i++){
 //            actionList.add(this.getSampleAction());
 //        }
 //
-//        AsaAlarmsApiModel model = new AsaAlarmsApiModel();
+//        AsaAlarmApiModel model = new AsaAlarmApiModel();
 //        model.setActions(actionList);
 //        model.setRuleId("12345");
 //        model.setRuleDescription("Sample Description");

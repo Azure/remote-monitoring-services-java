@@ -9,12 +9,10 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.ClientAu
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.IClientAuthConfig;
 import com.typesafe.config.ConfigFactory;
 
+import java.net.URL;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.HashSet;
-
-// TODO: documentation
-// TODO: handle exceptions
 
 public class Config implements IConfig {
 
@@ -137,8 +135,8 @@ public class Config implements IConfig {
             data.getInt(ACTIONS_EVENTHUB_OFFSET_TIME_IN_MINUTES_KEY),
             data.getString(BLOB_STORAGE_CONN_STRING_KEY),
             data.getString(ACTIONS_EVENTHUB_CHECKPOINT_CONTAINER_KEY),
-            data.getString(ACTIONS_LOGIC_APP_ENDPOINT_URL_KEY),
-            data.getString(ACTIONS_SOLUTION_WEBSITE_URL_KEY),
+            validateUrl(data.getString(ACTIONS_LOGIC_APP_ENDPOINT_URL_KEY)),
+            validateUrl(data.getString(ACTIONS_SOLUTION_WEBSITE_URL_KEY)),
             data.getString(ACTIONS_TEMPLATE_FOLDER_KEY));
 
         String diagnosticsUrl = "";
@@ -147,9 +145,8 @@ public class Config implements IConfig {
         }
 
         DiagnosticsConfig diagnosticsConfig = new DiagnosticsConfig(
-                diagnosticsUrl,
-                data.getInt(DIAGNOSTICS_MAX_LOG_RETRIES));
-
+            diagnosticsUrl,
+            data.getInt(DIAGNOSTICS_MAX_LOG_RETRIES));
 
         this.servicesConfig = new ServicesConfig(
             keyValueStorageUrl,
@@ -221,6 +218,21 @@ public class Config implements IConfig {
             jwtClockSkew);
 
         return this.clientAuthConfig;
+    }
+
+    /**
+     * Validate Url format and return same value if passed
+     * @param url to be validated against URL format
+     * @return the same value of input
+     * @throws {@link InvalidConfigurationException}
+     */
+    private String validateUrl(String url) throws InvalidConfigurationException {
+        try {
+            new URL(url);
+        } catch (Exception e) {
+            throw new InvalidConfigurationException(String.format("Malformed Url: %s", url), e);
+        }
+        return url;
     }
 }
 

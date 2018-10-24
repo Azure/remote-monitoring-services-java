@@ -3,18 +3,17 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.serialization.ActionConverter;
 
 import java.util.Map;
 
 @JsonSerialize(as = IAction.class)
+@JsonDeserialize(using = ActionConverter.class)
 @JsonNaming(PropertyNamingStrategy.UpperCamelCaseStrategy.class)
 public interface IAction {
-
-    enum ActionType {
-        Email
-    }
 
     ActionType getType();
 
@@ -24,3 +23,4 @@ public interface IAction {
 
     void setParameters(Map<String, Object> parameters);
 }
+

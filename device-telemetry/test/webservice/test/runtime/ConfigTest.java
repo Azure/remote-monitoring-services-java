@@ -30,7 +30,7 @@ public class ConfigTest {
     @Test(timeout = 5000)
     @Category({UnitTest.class})
     public void providesCosmosDbConnectionString() throws InvalidConfigurationException {
-        Config target = new Config(mock(WSClient.class));
+        Config target = new Config();
         AlarmsConfig alarmsConfig = target.getServicesConfig().getAlarmsConfig();
         String connectionString = alarmsConfig.getStorageConfig().getCosmosDbConnString();
         assertNotNull(connectionString);
@@ -39,7 +39,7 @@ public class ConfigTest {
     @Test(timeout = 10000)
     @Category({UnitTest.class})
     public void provideKeyValueWebserviceUrl() throws InvalidConfigurationException {
-        Config target = new Config(mock(WSClient.class));
+        Config target = new Config();
         String url = target.getServicesConfig().getKeyValueStorageUrl();
     }
 }

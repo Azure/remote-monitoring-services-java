@@ -3,7 +3,7 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.actions;
 
 import com.google.inject.Inject;
-import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.models.AsaAlarmsApiModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.models.AsaAlarmApiModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ResourceNotFoundException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.EmailAction;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.IAction;
@@ -25,22 +25,25 @@ public class ActionManager implements IActionManager {
         this.actionExecutor = new EmailActionExecutor(servicesConfig, wsClient);
     }
 
-    public CompletionStage executeAsync(List<AsaAlarmsApiModel> alarms) {
+    public CompletionStage executeAsync(List<AsaAlarmApiModel> alarms) {
         List<CompletionStage> tasks = new ArrayList<>();
-        for (AsaAlarmsApiModel alarm : alarms) {
-            for (IAction action : alarm.getActions()) {
-                switch (action.getType()) {
-                    case Email:
-                        tasks.add(actionExecutor.execute((EmailAction) action, alarm));
-                        break;
+        for (AsaAlarmApiModel alarm : alarms) {
+            if (alarm.getActions() != null) {
+                for (IAction action : alarm.getActions()) {
+                    switch (action.getType()) {
+                        case Email:
+                            tasks.add(actionExecutor.execute((EmailAction) action, alarm));
+                            break;
+                    }
                 }
             }
         }
 
-        List<CompletableFuture> results = tasks.stream()
+        CompletableFuture[] futures = tasks.stream()
             .map(t -> t.toCompletableFuture())
-            .collect(Collectors.toList());
+            .collect(Collectors.toList())
+            .toArray(new CompletableFuture[tasks.size()]);
 
-        return CompletableFuture.allOf((CompletableFuture<?>) results);
+        return CompletableFuture.allOf(futures);
     }
 }

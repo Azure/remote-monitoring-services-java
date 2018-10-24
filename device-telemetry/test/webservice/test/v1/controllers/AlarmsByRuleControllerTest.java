@@ -61,7 +61,7 @@ public class AlarmsByRuleControllerTest {
     public void setUp() {
         // setup before every test
         try {
-            IServiceConfig servicesConfig = new Config(mock(WSClient.class)).getServicesConfig();
+            IServiceConfig servicesConfig = new Config().getServicesConfig();
             IStorageClient client = mock(IStorageClient.class);
             IDiagnosticsClient diagnosticsClient = mock(IDiagnosticsClient.class);
             this.wsClient = mock(WSClient.class);

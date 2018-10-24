@@ -237,23 +237,4 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
                     "Could not write object as json string"));
         }
     }
-
-    public RuleServiceModel overrideEtagAndId(String eTag, String id) {
-        RuleServiceModel rule = new RuleServiceModel(
-            eTag,
-            id,
-            this.name,
-            this.dateCreated,
-            this.dateModified,
-            this.enabled,
-            this.description,
-            this.groupId,
-            this.severity,
-            this.calculation,
-            this.timePeriod,
-            this.actions,
-            this.conditions,
-            this.deleted);
-        return rule;
-    }
 }

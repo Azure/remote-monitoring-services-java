@@ -397,7 +397,7 @@ public final class Rules implements IRules {
 
         WSRequest wsRequest = this.wsClient
             .url(url)
-            .addHeader("Content-ActionType", "application/json");
+            .addHeader("Content-Type", "application/json");
 
         return wsRequest;
     }

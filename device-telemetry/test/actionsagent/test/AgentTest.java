@@ -19,7 +19,7 @@ public class AgentTest {
     private IServiceConfig servicesConfigMock;
     private IEventProcessorHostWrapper eventProcessorHostWrapperMock;
     private IEventProcessorFactory eventProcessorFactoryMock;
-    private IAgent notificationSystemAgent;
+    private IAgent agent;
 
     @Before
     public void setUp() {
@@ -27,7 +27,7 @@ public class AgentTest {
         this.eventProcessorHostWrapperMock = Mockito.mock(IEventProcessorHostWrapper.class);
         this.eventProcessorFactoryMock = Mockito.mock(IEventProcessorFactory.class);
 
-        this.notificationSystemAgent = new Agent(
+        this.agent = new Agent(
             this.servicesConfigMock,
             this.eventProcessorHostWrapperMock,
             this.eventProcessorFactoryMock);
@@ -45,8 +45,8 @@ public class AgentTest {
             "solutionWebsiteUrl",
             "./data"
         ));
-        Mockito.when(this.notificationSystemAgent.runAsync()).thenReturn(CompletableFuture.completedFuture(true));
-        this.notificationSystemAgent.runAsync();
+        Mockito.when(this.agent.runAsync()).thenReturn(CompletableFuture.completedFuture(true));
+        this.agent.runAsync();
         Mockito.verify(this.eventProcessorHostWrapperMock, Mockito.times(1)).registerEventProcessorFactoryAsync(
             Mockito.any(),
             Mockito.any(IEventProcessorFactory.class));

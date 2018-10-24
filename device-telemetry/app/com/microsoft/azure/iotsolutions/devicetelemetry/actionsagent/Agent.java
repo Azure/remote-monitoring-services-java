@@ -36,9 +36,8 @@ public class Agent implements IAgent {
     }
 
     public CompletionStage runAsync() {
-        return setUpEventHubAsync()
-            .toCompletableFuture()
-            .thenRun(() -> this.logger.info("Actions Agent started"));
+        this.logger.info("Actions Agent started");
+        return setUpEventHubAsync();
     }
 
     private CompletionStage setUpEventHubAsync() {

@@ -2,6 +2,7 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidInputException;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.ActionType;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.EmailAction;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.IAction;
 
@@ -18,7 +19,7 @@ public final class ActionApiModel {
     }
 
     public ActionApiModel(IAction action) {
-        this.type = action.getType().toString();
+        this.type = String.valueOf(action.getType());
         this.parameters = action.getParameters();
     }
 
@@ -46,9 +47,9 @@ public final class ActionApiModel {
     }
 
     public IAction toServiceModel() throws InvalidInputException {
-        IAction.ActionType retType;
+        ActionType retType;
         try {
-            retType = IAction.ActionType.valueOf(this.type);
+            retType = ActionType.valueOf(this.type);
             switch(retType){
                 case Email:
                     return new EmailAction(retType, this.parameters);

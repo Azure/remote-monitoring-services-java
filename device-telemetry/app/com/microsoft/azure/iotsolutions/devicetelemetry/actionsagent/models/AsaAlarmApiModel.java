@@ -7,7 +7,7 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.
 
 import java.util.List;
 
-public class AsaAlarmsApiModel {
+public class AsaAlarmApiModel {
 
     private String dateCreated;
     private String dateModified;

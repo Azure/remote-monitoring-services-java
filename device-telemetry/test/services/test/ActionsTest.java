@@ -1,6 +1,7 @@
 package services.test;
 
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidInputException;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.ActionType;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.EmailAction;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.IAction;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.ActionApiModel;
@@ -8,7 +9,6 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -25,7 +25,7 @@ public class ActionsTest {
     private static final String PARAM_ACTION_TYPE = "Email";
 
     @Test
-    public void ShouldReturnActionModelWhenValidActionType() throws InvalidInputException {
+    public void Should_ReturnActionModel_When_ValidActionType() throws InvalidInputException {
         // Arrange
         Map<String, Object> parameters = new HashMap<>();
         parameters.put(PARAM_SUBJECT_KEY, PARAM_SUBJECT_VALUE);
@@ -39,13 +39,13 @@ public class ActionsTest {
         EmailAction emailAction = new EmailAction(parameters);
 
         // Assert
-        assertEquals(IAction.ActionType.Email, emailAction.getType());
+        assertEquals(ActionType.Email, emailAction.getType());
         assertEquals(PARAM_NOTES_VALUE, emailAction.getParameters().get(PARAM_NOTES_KEY));
         assertTrue(emailAction.getParameters().containsKey(PARAM_RECIPIENTS_KEY));
     }
 
     @Test(expected = InvalidInputException.class)
-    public void ShouldThrowInvalidInputException_WhenActionTypeIsEmailAndInvalidEmail() throws InvalidInputException {
+    public void Should_ThrowInvalidInputException_When_ActionTypeIsEmailAndInvalidEmail() throws InvalidInputException {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put(PARAM_SUBJECT_KEY, PARAM_SUBJECT_VALUE);
         parameters.put(PARAM_NOTES_KEY, PARAM_NOTES_VALUE);
@@ -54,7 +54,7 @@ public class ActionsTest {
         list.add("sampleEmailgmail.com");
         parameters.put(PARAM_RECIPIENTS_KEY, list);
 
-        EmailAction model = new EmailAction(IAction.ActionType.Email, parameters);
+        EmailAction emailAction = new EmailAction(ActionType.Email, parameters);
     }
 
     @Test(expected = InvalidInputException.class)
@@ -63,7 +63,7 @@ public class ActionsTest {
         parameters.put(PARAM_SUBJECT_KEY, PARAM_SUBJECT_VALUE);
         parameters.put(PARAM_NOTES_KEY, PARAM_NOTES_VALUE);
 
-        EmailAction model = new EmailAction(IAction.ActionType.Email, parameters);
+        EmailAction emailAction = new EmailAction(ActionType.Email, parameters);
     }
 
     @Test(expected = Exception.class)
@@ -73,7 +73,7 @@ public class ActionsTest {
         parameters.put(PARAM_NOTES_KEY, PARAM_NOTES_VALUE);
         parameters.put(PARAM_RECIPIENTS_KEY, PARAM_RECIPIENTS_VALUE);
 
-        EmailAction model = new EmailAction(IAction.ActionType.Email, parameters);
+        EmailAction emailAction = new EmailAction(ActionType.Email, parameters);
     }
 
     @Test
@@ -87,8 +87,10 @@ public class ActionsTest {
         parameters.put(PARAM_RECIPIENTS_KEY, list);
 
         ActionApiModel model = new ActionApiModel(PARAM_ACTION_TYPE, parameters);
-        IAction returnedModel = model.toServiceModel();
-        assertEquals(this.doesEmailServiceModelCorrespondToApiModel(model, returnedModel), true);
+        IAction action = model.toServiceModel();
+        assertEquals(model.getParameters().get(PARAM_NOTES_KEY), action.getParameters().get(PARAM_NOTES_KEY));
+        assertEquals(model.getParameters().get(PARAM_SUBJECT_KEY), action.getParameters().get(PARAM_SUBJECT_KEY));
+        assertEquals(model.getType(), PARAM_ACTION_TYPE);
     }
 
     @Test(expected = InvalidInputException.class)
@@ -102,24 +104,6 @@ public class ActionsTest {
         parameters.put(PARAM_RECIPIENTS_KEY, list);
 
         ActionApiModel model = new ActionApiModel("", parameters);
-        IAction returnedModel = model.toServiceModel();
-    }
-
-    private Boolean doesEmailServiceModelCorrespondToApiModel(ActionApiModel apiModel, IAction serviceModel) {
-        Boolean equalTemplate = apiModel.getParameters().get(PARAM_NOTES_KEY).equals(serviceModel.getParameters().get(PARAM_NOTES_KEY));
-        Boolean equalSubject = apiModel.getParameters().get(PARAM_SUBJECT_KEY).equals(serviceModel.getParameters().get(PARAM_SUBJECT_KEY));
-        Boolean correctType = serviceModel.getType().toString().equals(PARAM_ACTION_TYPE);
-        return equalTemplate && equalSubject && correctType;
-    }
-
-    private Boolean isListOfEmailEqual(List<String> emailList) {
-        ArrayList<String> checkList = new ArrayList<>();
-        checkList.add(PARAM_RECIPIENTS_VALUE);
-        for (String email : checkList) {
-            if (!emailList.contains(email)) {
-                return false;
-            }
-        }
-        return true;
+        IAction action = model.toServiceModel();
     }
 }

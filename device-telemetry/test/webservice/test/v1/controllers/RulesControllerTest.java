@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.IRules;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.*;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.ActionType;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.EmailAction;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.IAction;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.RulesController;
@@ -60,7 +61,7 @@ public class RulesControllerTest {
         map.put("Email", emails);
 
         try {
-            sampleActions.add(new EmailAction(IAction.ActionType.Email, map));
+            sampleActions.add(new EmailAction(ActionType.Email, map));
         } catch (InvalidInputException e) {
             e.printStackTrace();
         }

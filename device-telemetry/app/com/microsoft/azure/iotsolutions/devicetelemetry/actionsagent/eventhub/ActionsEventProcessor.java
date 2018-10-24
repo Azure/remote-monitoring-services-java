@@ -8,7 +8,7 @@ import com.microsoft.azure.eventprocessorhost.CloseReason;
 import com.microsoft.azure.eventprocessorhost.IEventProcessor;
 import com.microsoft.azure.eventprocessorhost.PartitionContext;
 import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.actions.AlarmParser;
-import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.models.AsaAlarmsApiModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.models.AsaAlarmApiModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.actions.IActionManager;
 import play.Logger;
 
@@ -39,7 +39,7 @@ public class ActionsEventProcessor implements IEventProcessor {
     public void onEvents(PartitionContext context, Iterable<EventData> events) throws Exception {
         for (EventData eventData : events) {
             String data = new String(eventData.getBytes(), "UTF8");
-            List<AsaAlarmsApiModel> alarms = AlarmParser.parseAlarmList(data);
+            List<AsaAlarmApiModel> alarms = AlarmParser.parseAlarmList(data);
             actionManager.executeAsync(alarms).toCompletableFuture().get();
         }
         context.checkpoint().get();
