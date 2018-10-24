@@ -3,20 +3,11 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime;
 
 import com.google.inject.Inject;
-import com.microsoft.azure.eventprocessorhost.IEventProcessorFactory;
-import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.INotification;
-import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.INotificationImplementationWrapper;
-import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.Notification;
-import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.NotificationImplementationWrapper;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidConfigurationException;
-import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.eventhub.EventProcessorHostWrapper;
-import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.eventhub.IEventProcessorHostWrapper;
-import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.eventhub.ActionsEventProcessorFactory;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.ClientAuthConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.IClientAuthConfig;
 import com.typesafe.config.ConfigFactory;
-import play.libs.ws.WSClient;
 
 import java.time.Duration;
 import java.util.Collections;
@@ -41,7 +32,6 @@ public class Config implements IConfig {
     private final String AAD_TENANT_KEY = TIME_SERIES_KEY + "aadTenant";
     private final String AAD_APP_ID_KEY = TIME_SERIES_KEY + "aadAppId";
     private final String AAD_APP_SECRET_KEY = TIME_SERIES_KEY + "aadAppSecret";
-
 
     // Storage adapter webservice settings
     private final String KEY_VALUE_STORAGE_KEY = APPLICATION_KEY + "storageAdapter.";
@@ -90,13 +80,8 @@ public class Config implements IConfig {
     private IServiceConfig servicesConfig;
     private IClientAuthConfig clientAuthConfig;
 
-    private IEventProcessorHostWrapper eventProcessorHostWrapper;
-    private IEventProcessorFactory eventProcessorFactory;
-    private WSClient client;
-
     @Inject
-    public Config(WSClient client) {
-        this.client = client;
+    public Config() {
         this.data = ConfigFactory.load();
     }
 
@@ -174,24 +159,6 @@ public class Config implements IConfig {
             diagnosticsConfig);
 
         return this.servicesConfig;
-    }
-
-    @Override
-    public IEventProcessorHostWrapper getEventProcessorHostWrapper() {
-        if (this.eventProcessorHostWrapper != null) return this.eventProcessorHostWrapper;
-
-        this.eventProcessorHostWrapper = new EventProcessorHostWrapper();
-        return this.eventProcessorHostWrapper;
-    }
-
-    @Override
-    public IEventProcessorFactory getEventProcessorFactory() throws InvalidConfigurationException {
-        if (this.eventProcessorFactory != null) return this.eventProcessorFactory;
-
-        INotificationImplementationWrapper wrapper = new NotificationImplementationWrapper(this.client, this.getServicesConfig());
-        INotification notification = new Notification(wrapper);
-        this.eventProcessorFactory = new ActionsEventProcessorFactory(notification);
-        return this.eventProcessorFactory;
     }
 
     /**

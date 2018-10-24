@@ -6,8 +6,8 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidInputException;
+import play.libs.Json;
 
-import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import java.util.*;
 
@@ -16,20 +16,17 @@ import java.util.*;
 public final class EmailAction implements IAction {
 
     private ActionType type;
-    private String subject;
-    private String body;
-    private List<String> recipients;
+    private Map<String, Object> parameters;
+
     private static final String SUBJECT = "Subject";
     private static final String NOTES = "Notes";
     private static final String RECIPIENTS = "Recipients";
-    private static final String IMPROPER_EMAIL = "Improperly formatted email";
-    private static final String EMPTY_EMAIL = "Empty email list provided for actionType email";
 
     public EmailAction() {
         this.type = ActionType.Email;
-        this.subject = "";
-        this.body = "";
-        this.recipients = new ArrayList<>();
+        this.parameters = new TreeMap<String, Object>(String.CASE_INSENSITIVE_ORDER) {{
+            put(NOTES, "");
+        }};
     }
 
     public EmailAction(Map<String, Object> parameters) throws InvalidInputException {
@@ -38,20 +35,19 @@ public final class EmailAction implements IAction {
 
     public EmailAction(ActionType type, Map<String, Object> parameters) throws InvalidInputException {
         this.type = type;
-        if (parameters.containsKey(SUBJECT)) {
-            this.subject = (String) parameters.get(SUBJECT);
+        this.parameters = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+
+        if (!(parameters.containsKey(SUBJECT) && parameters.containsKey(RECIPIENTS))) {
+            throw new InvalidInputException(String.format("Error, missing parameter for email action." +
+                " Required fields are: '{%s}' and '{%s}'.", SUBJECT, RECIPIENTS));
         }
+
         if (parameters.containsKey(NOTES)) {
-            this.body = (String) parameters.get(NOTES);
+            this.parameters.put(NOTES, parameters.get(NOTES));
         }
 
-        this.recipients = (ArrayList<String>) parameters.get(RECIPIENTS);
-
-        try {
-            this.isValid();
-        } catch (Exception e) {
-            throw new InvalidInputException(IMPROPER_EMAIL);
-        }
+        this.parameters.put(SUBJECT, parameters.get(SUBJECT));
+        this.parameters.put(RECIPIENTS, validatAndConvertRecipientEmails(parameters.get(RECIPIENTS)));
     }
 
     public ActionType getType() {
@@ -63,21 +59,62 @@ public final class EmailAction implements IAction {
     }
 
     public Map<String, Object> getParameters() {
-        Map<String, Object> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);;
-        result.put(SUBJECT, subject);
-        result.put(NOTES, body);
-        result.put(RECIPIENTS, recipients);
-        return result;
+        return this.parameters;
     }
 
-    private void isValid() throws InvalidInputException, AddressException {
-        // checks for invalid email formatting or null emails
-        if (this.recipients == null) {
-            throw new InvalidInputException(EMPTY_EMAIL);
+    public void setParameters(Map<String, Object> parameters) {
+        this.parameters = parameters;
+    }
+
+    public String getNotes() {
+        if (this.parameters.containsKey(NOTES)) {
+            return this.parameters.get(NOTES).toString();
         }
-        for (String email : recipients) {
-            InternetAddress mail = new InternetAddress(email);
-            mail.validate();
+
+        return "";
+    }
+
+    public String getSubject() {
+        return this.parameters.get(SUBJECT).toString();
+    }
+
+    public List<String> getRecipients() {
+        return (List<String>) this.parameters.get(RECIPIENTS);
+    }
+
+    /**
+     * Validates recipient email addresses and converts to a list of email strings
+     *
+     * @param emails an object include a list of emails
+     * @return a list of validated email address
+     */
+    private List<String> validatAndConvertRecipientEmails(Object emails) throws InvalidInputException {
+        List<String> result;
+        try {
+            result = Json.fromJson(Json.toJson(emails), List.class);
+        } catch (Exception e) {
+            throw new InvalidInputException("Error converting recipient emails to list for action type 'Email'. " +
+                "Recipient emails provided should be an array of valid email addresses" +
+                "as strings.");
         }
+
+        if (result.size() == 0) {
+            throw new InvalidInputException("Error, recipient email list for action type 'Email' is empty. " +
+                "Please provide at least one valid email address.");
+        }
+
+        for (String email : result) {
+            try {
+                InternetAddress mail = new InternetAddress(email);
+                mail.validate();
+            } catch (Exception e) {
+                throw new InvalidInputException("Error with recipient email format for action type 'Email'." +
+                    "Invalid email provided. Please ensure at least one recipient " +
+                    "email address is provided and that all recipient email addresses " +
+                    "are valid.");
+            }
+        }
+
+        return result;
     }
 }

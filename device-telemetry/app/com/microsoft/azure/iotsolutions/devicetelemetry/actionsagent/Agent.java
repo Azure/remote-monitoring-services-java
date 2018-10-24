@@ -3,6 +3,7 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.microsoft.azure.eventprocessorhost.EventProcessorHost;
 import com.microsoft.azure.eventprocessorhost.IEventProcessorFactory;
 import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.eventhub.IEventProcessorHostWrapper;
@@ -10,10 +11,13 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.Actions
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServiceConfig;
 import play.Logger;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 
+@Singleton
 public class Agent implements IAgent {
+
     private static final Logger.ALogger logger = Logger.of(Agent.class);
     private IServiceConfig serviceConfig;
     private IEventProcessorFactory actionsEventProcessorFactory;
@@ -24,16 +28,17 @@ public class Agent implements IAgent {
     public Agent(
         IServiceConfig serviceConfig,
         IEventProcessorHostWrapper eventProcessorHostWrapper,
-        IEventProcessorFactory notificationEventProcessorFactory) {
+        IEventProcessorFactory actionEventProcessorFactory) {
         this.serviceConfig = serviceConfig;
         this.eventProcessorHostWrapper = eventProcessorHostWrapper;
-        this.actionsEventProcessorFactory = notificationEventProcessorFactory;
+        this.actionsEventProcessorFactory = actionEventProcessorFactory;
+        CompletableFuture.runAsync(() -> this.runAsync());
     }
 
-    @Override
     public CompletionStage runAsync() {
-        this.logger.info("Actions Agent started");
-        return setUpEventHubAsync();
+        return setUpEventHubAsync()
+            .toCompletableFuture()
+            .thenRun(() -> this.logger.info("Actions Agent started"));
     }
 
     private CompletionStage setUpEventHubAsync() {

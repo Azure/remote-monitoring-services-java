@@ -17,7 +17,7 @@ import static org.junit.Assert.assertTrue;
 public class ActionsTest {
 
     private static final String PARAM_SUBJECT_KEY = "Subject";
-    private static final String PARAM_SUBJECT_VALUE = "Alert Notification";
+    private static final String PARAM_SUBJECT_VALUE = "Alert ActionManager";
     private static final String PARAM_NOTES_KEY = "Notes";
     private static final String PARAM_NOTES_VALUE = "Chiller pressure is at 250 which is high";
     private static final String PARAM_RECIPIENTS_KEY = "Recipients";

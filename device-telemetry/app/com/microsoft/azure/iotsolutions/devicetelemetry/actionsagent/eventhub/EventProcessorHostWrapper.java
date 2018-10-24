@@ -6,15 +6,13 @@ import com.microsoft.azure.eventprocessorhost.EventProcessorHost;
 import com.microsoft.azure.eventprocessorhost.EventProcessorOptions;
 import com.microsoft.azure.eventprocessorhost.IEventProcessorFactory;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 
 public class EventProcessorHostWrapper implements IEventProcessorHostWrapper {
+
     private static final String DEFAULT_HOST_NAME_PREFIX = "actions-host";
 
     public EventProcessorHostWrapper() {
-        // empty constructor
     }
 
     @Override
@@ -34,13 +32,10 @@ public class EventProcessorHostWrapper implements IEventProcessorHostWrapper {
     }
 
     @Override
-    public CompletionStage registerEventProcessorFactoryAsync(EventProcessorHost host, IEventProcessorFactory factory) {
-        try {
-            host.registerEventProcessorFactory(factory);
-            return CompletableFuture.completedFuture(true);
-        } catch (Exception e) {
-            throw new CompletionException(e);
-        }
+    public CompletionStage registerEventProcessorFactoryAsync(
+        EventProcessorHost host,
+        IEventProcessorFactory factory) {
+        return host.registerEventProcessorFactory(factory);
     }
 
     @Override
@@ -48,11 +43,6 @@ public class EventProcessorHostWrapper implements IEventProcessorHostWrapper {
         EventProcessorHost host,
         IEventProcessorFactory factory,
         EventProcessorOptions options) {
-        try {
-            host.registerEventProcessorFactory(factory, options);
-            return CompletableFuture.completedFuture(true);
-        } catch (Exception e) {
-            throw new CompletionException(e);
-        }
+        return host.registerEventProcessorFactory(factory, options);
     }
 }

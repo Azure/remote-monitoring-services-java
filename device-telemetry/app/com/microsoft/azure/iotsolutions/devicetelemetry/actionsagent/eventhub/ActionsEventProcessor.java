@@ -2,45 +2,47 @@
 
 package com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.eventhub;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.microsoft.azure.eventhubs.EventData;
 import com.microsoft.azure.eventprocessorhost.CloseReason;
 import com.microsoft.azure.eventprocessorhost.IEventProcessor;
 import com.microsoft.azure.eventprocessorhost.PartitionContext;
+import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.actions.AlarmParser;
 import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.models.AsaAlarmsApiModel;
-import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.INotification;
+import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.actions.IActionManager;
 import play.Logger;
 
+import java.util.List;
+
 public class ActionsEventProcessor implements IEventProcessor {
+
     private static final Logger.ALogger logger = Logger.of(ActionsEventProcessor.class);
-    private INotification notification;
+    private IActionManager actionManager;
 
     @Inject
-    public ActionsEventProcessor(INotification notification) {
-        this.notification = notification;
+    public ActionsEventProcessor(IActionManager actionManager) {
+        this.actionManager = actionManager;
     }
 
     @Override
-    public void onOpen(PartitionContext context) throws Exception {
-        this.logger.info(String.format("Notification EventProcessor initialized. Partition: %s", context.getPartitionId()));
+    public void onOpen(PartitionContext context) {
+        this.logger.info(String.format("ActionManager EventProcessor initialized. Partition: %s", context.getPartitionId()));
     }
 
     @Override
     public void onClose(PartitionContext context, CloseReason reason) throws Exception {
-        this.logger.info(String.format("Notification EventProcessor shutting down. Parition %s, Reason: %s", context.getPartitionId(), reason.toString()));
-        context.checkpoint();
+        this.logger.info(String.format("ActionManager EventProcessor shutting down. Partition %s, Reason: %s", context.getPartitionId(), reason.toString()));
+        context.checkpoint().get();
     }
 
     @Override
     public void onEvents(PartitionContext context, Iterable<EventData> events) throws Exception {
-        for(EventData eventData : events) {
+        for (EventData eventData : events) {
             String data = new String(eventData.getBytes(), "UTF8");
-            AsaAlarmsApiModel model = new ObjectMapper().readValue(data, AsaAlarmsApiModel.class);
-            this.notification.setAlarm(model);
-            notification.executeAsync();
+            List<AsaAlarmsApiModel> alarms = AlarmParser.parseAlarmList(data);
+            actionManager.executeAsync(alarms).toCompletableFuture().get();
         }
-        context.checkpoint();
+        context.checkpoint().get();
     }
 
     @Override

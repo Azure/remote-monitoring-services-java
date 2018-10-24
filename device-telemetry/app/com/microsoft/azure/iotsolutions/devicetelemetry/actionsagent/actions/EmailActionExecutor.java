@@ -2,120 +2,138 @@
 
 package com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.actions;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
+import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.models.AsaAlarmsApiModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.models.EmailActionPayload;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ExternalDependencyException;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ResourceNotFoundException;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.EmailAction;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.ActionsConfig;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServiceConfig;
+import org.apache.http.HttpStatus;
+import org.joda.time.DateTime;
 import play.Logger;
+import play.libs.Json;
 import play.libs.ws.WSClient;
 import play.libs.ws.WSRequest;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 
 public class EmailActionExecutor implements IActionExecutor {
-    private String endpointURL;
-    private String solutionName;
-    private String content;
-    private List<String> email;
-    private String ruleId;
-    private String ruleDescription;
-    private static final int LOGIC_OK = 202;
-    private static final Logger.ALogger log = Logger.of(EmailActionExecutor.class);
 
+    private String logicAppEndpointUrl;
+    private String solutionWebsiteUrl;
+    private String templatePath;
+    private String emailTemplate;
     private WSClient wsClient;
 
+    private static final String EMAIL_TEMPLATE_FILE_NAME = "EmailTemplate.html";
+    private static final String DATE_FORMAT_STRING = "E, dd MMM yyyy HH:mm:ss z";
+    private static final Logger.ALogger log = Logger.of(EmailActionExecutor.class);
+
     @Inject
-    public EmailActionExecutor(String endpointURL, String solutionName, final WSClient wsClient) {
-        this();
-        this.endpointURL = endpointURL;
-        this.solutionName = solutionName;
+    public EmailActionExecutor(final IServiceConfig serviceConfig, final WSClient wsClient) throws ResourceNotFoundException {
+        ActionsConfig actionsConfig = serviceConfig.getActionsConfig();
+        this.logicAppEndpointUrl = actionsConfig.getLogicAppEndpointUrl();
+        this.solutionWebsiteUrl = actionsConfig.getSolutionWebsiteUrl();
+        this.templatePath = actionsConfig.getTemplateFolder();
         this.wsClient = wsClient;
+        this.emailTemplate = loadEmailTemplate(String.format("/resources/%s/%s",
+            this.templatePath, EMAIL_TEMPLATE_FILE_NAME));
     }
 
-    public EmailActionExecutor() {
-        this.content = "";
-        this.ruleId = "";
-        this.ruleDescription = "";
-    }
-
-    @Override
-    public void setReceiver(List<String> receiver) {
-        this.email = receiver;
-    }
-
-    @Override
-    public void setMessage(String message, String ruleId, String ruleDescription) {
-        this.content = message;
-        this.ruleId = ruleId;
-        this.ruleDescription = ruleDescription;
-    }
-
-    @Override
-    public CompletionStage execute() {
-        ObjectNode jsonData = this.generatePayLoad();
+    /**
+     * Execute the given email action for the given alarm.
+     * Sends a post request to Logic App with alarm information
+     *
+     * @param emailAction send an email defined by action
+     * @param alarm       to trigger email notification
+     * @return CompletionStage
+     * @throws ResourceNotFoundException
+     */
+    public CompletionStage execute(EmailAction emailAction, AsaAlarmsApiModel alarm) {
+        String content = this.generatePayload(emailAction, alarm);
         return this.prepareRequest()
-                .post(jsonData.toString())
-                .handle((result, error) -> {
-                    if (result.getStatus() != LOGIC_OK) {
-                        log.error("Logic app error code {}",
-                                result.getStatusText());
-                        throw new CompletionException(
-                                new ExternalDependencyException(result.getStatusText()));
-                    }
+            .post(content)
+            .handle((result, error) -> {
+                if (result.getStatus() != HttpStatus.SC_ACCEPTED || result.getStatus() != HttpStatus.SC_OK) {
+                    String msg = String.format("Could not execute email action against logic app: %s", result.getStatusText());
+                    log.error(msg);
+                    throw new CompletionException(new ExternalDependencyException(msg));
+                }
 
-                    if (error != null) {
-                        log.error("Logic app request error: {}",
-                                error.getMessage());
-                        throw new CompletionException(
-                                new ExternalDependencyException(
-                                        "Could not connect to logic app " +
-                                                error.getMessage()));
-                    }
+                if (error != null) {
+                    String msg = String.format("Could not connect to logic app", error.getMessage());
+                    log.error(msg);
+                    throw new CompletionException(new ExternalDependencyException(msg));
+                }
 
-                    return CompletableFuture.completedFuture(true);
-                });
+                return CompletableFuture.completedFuture(true);
+            });
     }
 
     private WSRequest prepareRequest() {
         String url = null;
         try {
-            url = URLDecoder.decode(this.endpointURL, "UTF-8");
+            url = URLDecoder.decode(this.logicAppEndpointUrl, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             log.error("Improperly formatted Logic App url");
         }
         WSRequest wsRequest = this.wsClient
-                .url(url)
-                .addHeader("Csrf-Token", "no-check")
-                .addHeader("Content-ActionType", "application/json");
+            .url(url)
+            .addHeader("Csrf-Token", "no-check")
+            .addHeader("Content-ActionType", "application/json");
 
         return wsRequest;
     }
 
-    private String generateRuleDetailUrl() {
-        return String.format("https://%s.azurewebsites.net/maintenance/rule/%s", this.solutionName, this.ruleId);
+    private String generatePayload(EmailAction emailAction, AsaAlarmsApiModel alarm) {
+        DateTime alarmDate = new DateTime(alarm.getDateCreated());
+        String emailBody = this.emailTemplate.replace("${subject}", emailAction.getSubject())
+            .replace("${notes}", emailAction.getNotes())
+            .replace("${alarmDate}", alarmDate.toString(DATE_FORMAT_STRING))
+            .replace("${ruleId}", alarm.getRuleId())
+            .replace("${ruleDescription}", alarm.getRuleDescription())
+            .replace("${ruleSeverity}", alarm.getRuleSeverity())
+            .replace("${deviceId}", alarm.getDeviceId())
+            .replace("${alarmUrl}", this.generateRuleDetailUrl(alarm.getRuleId()));
+
+        EmailActionPayload payload = new EmailActionPayload(
+            emailAction.getRecipients(),
+            emailAction.getSubject(),
+            emailBody
+        );
+
+        return Json.stringify(Json.toJson(payload));
     }
 
-    private ObjectNode generatePayLoad() {
-        String emailContent = String.format("Alarm fired for rule ID %s: %s. Custom message: %s. Alarm detail page: %s", this.ruleId, this.ruleDescription, this.content, this.generateRuleDetailUrl());
-        if (this.email == null || this.content == null) {
-            throw new IllegalArgumentException("No email receiver or content provided");
+    private String loadEmailTemplate(String path) throws ResourceNotFoundException {
+        String emailTemplate = "";
+        try (InputStream is = this.getClass().getResourceAsStream(path)) {
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
+                String line = reader.readLine();
+                while (line != null) {
+                    emailTemplate += line;
+                    line = reader.readLine();
+                }
+            }
+        } catch (Exception e) {
+            String message = String.format("Email template %s does not exist", templatePath);
+            log.error(message, e);
+            throw new ResourceNotFoundException(message, e);
         }
+        return emailTemplate;
+    }
 
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode jsonData = mapper.createObjectNode();
-        ArrayNode array = mapper.createArrayNode();
-
-        this.email.stream().forEach(e -> array.add(e));
-
-        jsonData.putPOJO("emailAddress", array);
-        jsonData.put("template", emailContent);
-        return jsonData;
+    private String generateRuleDetailUrl(String ruleId) {
+        return String.format("%s/maintenance/rule/%s", this.solutionWebsiteUrl, ruleId);
     }
 }
 
