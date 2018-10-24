@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft. All rights reserved.
+
 package services.test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,14 +21,18 @@ public class ActionDeserializerTest {
 
     @Test
     public void ReturnsEmailAction_WhenEmailActionJsonPassed() throws IOException {
+        // Arrange
         String testString = "{\"Type\":\"Email\"," +
                 "\"Parameters\":{\"Notes\":\"" + PARAM_NOTES +
                 "\",\"Subject\":\"" + PARAM_SUBJECT +
                 "\",\"Recipients\":[\"" + PARAM_RECIPIENTS + "\"]}}";
 
         ObjectMapper mapper = new ObjectMapper();
+
+        // Act
         IActionServiceModel serviceModel = mapper.readValue(testString, IActionServiceModel.class);
 
+        // Assert
         Assert.assertEquals(IActionServiceModel.ActionType.Email, serviceModel.getType());
         Assert.assertNotNull(serviceModel.getParameters());
         Assert.assertEquals(PARAM_NOTES, serviceModel.getParameters().get(PARAM_NOTES_KEY));

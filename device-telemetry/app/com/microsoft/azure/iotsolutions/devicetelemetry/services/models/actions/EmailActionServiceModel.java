@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft. All rights reserved.
+
 package com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -43,7 +45,7 @@ public class EmailActionServiceModel implements IActionServiceModel {
 
         this.parameters.put(SUBJECT, parametersCaseInsensitive.get(SUBJECT));
         this.parameters.put(RECIPIENTS,
-                this.ValidateAndConvertRecipientEmails(parametersCaseInsensitive.get(RECIPIENTS)));
+                this.validateAndConvertRecipientEmails(parametersCaseInsensitive.get(RECIPIENTS)));
     }
 
     @Override
@@ -58,7 +60,7 @@ public class EmailActionServiceModel implements IActionServiceModel {
         return this.parameters;
     }
 
-    private List<String> ValidateAndConvertRecipientEmails(Object emails) throws InvalidInputException {
+    private List<String> validateAndConvertRecipientEmails(Object emails) throws InvalidInputException {
         List<String> result;
         try {
             result = (ArrayList<String>) emails;

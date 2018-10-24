@@ -1,8 +1,8 @@
+// Copyright (c) Microsoft. All rights reserved.
+
 package com.microsoft.azure.iotsolutions.devicetelemetry.services.serialization;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
@@ -26,7 +26,7 @@ public class ActionDeserializer extends JsonDeserializer<IActionServiceModel> {
     private static final Logger.ALogger log = Logger.of(ActionDeserializer.class);
 
     @Override
-    public IActionServiceModel deserialize(JsonParser parser, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+    public IActionServiceModel deserialize(JsonParser parser, DeserializationContext ctxt) throws IOException {
         ObjectCodec oc = parser.getCodec();
         JsonNode node = oc.readTree(parser);
         ActionType type = ActionType.valueOf(node.get(TYPE).asText());

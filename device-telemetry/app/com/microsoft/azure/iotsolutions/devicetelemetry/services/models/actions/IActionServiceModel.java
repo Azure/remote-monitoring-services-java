@@ -17,7 +17,6 @@ import java.util.Map;
 /// information required for any given action type.
 /// </summary>
 @JsonDeserialize(using = ActionDeserializer.class)
-@JsonSerialize(as = IActionServiceModel.class)
 @JsonNaming(PropertyNamingStrategy.UpperCamelCaseStrategy.class)
 public interface IActionServiceModel {
     enum ActionType {

@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft. All rights reserved.
+
 package services.test;
 
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidInputException;
