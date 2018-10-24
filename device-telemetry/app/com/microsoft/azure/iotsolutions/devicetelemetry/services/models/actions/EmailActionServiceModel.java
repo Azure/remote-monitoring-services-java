@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidInputException;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.serialization.EmailActionParametersDeserializer;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
@@ -23,11 +22,6 @@ public class EmailActionServiceModel implements IActionServiceModel {
     private static final String NOTES = "Notes";
     private static final String RECIPIENTS = "Recipients";
 
-    public EmailActionServiceModel() {
-        this.type = ActionType.Email;
-        this.parameters = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-    }
-
     public EmailActionServiceModel(Map<String, Object> parameters) throws InvalidInputException {
         this.type = ActionType.Email;
         this.parameters = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
@@ -39,7 +33,7 @@ public class EmailActionServiceModel implements IActionServiceModel {
         if(!parametersCaseInsensitive.containsKey(SUBJECT)
             || !parametersCaseInsensitive.containsKey(RECIPIENTS)) {
             throw new InvalidInputException("Error converting recipient emails to list for action type 'Email'. " +
-                    "Recipient emails provided should be an array of valid email addresses" +
+                    "Recipient emails provided should be an array of valid email addresses " +
                     "as strings.");
         }
 
@@ -65,12 +59,12 @@ public class EmailActionServiceModel implements IActionServiceModel {
     }
 
     private List<String> ValidateAndConvertRecipientEmails(Object emails) throws InvalidInputException {
-        List<String> result = new ArrayList<>();
+        List<String> result;
         try {
             result = (ArrayList<String>) emails;
         } catch (Exception e) {
             throw new InvalidInputException("Error converting recipient emails to list for action type 'Email'. " +
-                    "Recipient emails provided should be an array of valid email addresses" +
+                    "Recipient emails provided should be an array of valid email addresses " +
                     "as strings.");
         }
 

@@ -4,7 +4,10 @@ package webservice.test.v1.controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.IRules;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.*;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.EmailActionServiceModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.IActionServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.RulesController;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.RuleApiModel;
 import helpers.UnitTest;
@@ -18,6 +21,8 @@ import play.mvc.Http;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.CompletionStage;
 
 import static org.hamcrest.core.Is.is;
@@ -33,7 +38,7 @@ public class RulesControllerTest {
     private RuleServiceModel sampleNewRuleServiceModel;
 
     @Before
-    public void setUp() {
+    public void setUp() throws InvalidInputException {
         // something before every test
 
         ConditionServiceModel sampleCondition = new ConditionServiceModel(
@@ -41,8 +46,21 @@ public class RulesControllerTest {
             OperatorType.EQUALS,
             "TestValue"
         );
+
         ArrayList<ConditionServiceModel> sampleConditions = new ArrayList<>();
         sampleConditions.add(sampleCondition);
+
+        ArrayList<String> emailList = new ArrayList<>();
+        emailList.add("sampleEmail@gmail.com");
+
+        Map<String, Object> parameters = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        parameters.put("Notes", "Sample Note");
+        parameters.put("Subject", "Sample Subject");
+        parameters.put("Recipients", emailList);
+        IActionServiceModel sampleAction = new EmailActionServiceModel(parameters);
+
+        List<IActionServiceModel> sampleActions = new ArrayList<>();
+        sampleActions.add(sampleAction);
 
         this.sampleNewRuleServiceModel = new RuleServiceModel(
             "TestName",
@@ -52,7 +70,8 @@ public class RulesControllerTest {
             SeverityType.CRITICAL,
             CalculationType.INSTANT,
             Long.valueOf(60000),
-            sampleConditions
+            sampleConditions,
+            sampleActions
         );
     }
 
@@ -165,6 +184,7 @@ public class RulesControllerTest {
             assertTrue(responseBody.hasNonNull("GroupId"));
             assertTrue(responseBody.hasNonNull("Severity"));
             assertTrue(responseBody.hasNonNull("Conditions"));
+            assertTrue(responseBody.hasNonNull("Actions"));
 
             return null;
         });
@@ -200,6 +220,7 @@ public class RulesControllerTest {
             assertTrue(responseBody.hasNonNull("GroupId"));
             assertTrue(responseBody.hasNonNull("Severity"));
             assertTrue(responseBody.hasNonNull("Conditions"));
+            assertTrue(responseBody.hasNonNull("Actions"));
 
             return null;
         });

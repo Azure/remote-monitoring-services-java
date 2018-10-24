@@ -2,6 +2,7 @@
 
 package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.IRules;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.Authorize;
@@ -96,6 +97,7 @@ public class RulesController extends Controller {
     @Authorize("CreateRules")
     public CompletionStage<Result> postAsync() {
         log.info("Trying to create a new rule.");
+        JsonNode requestBody = request().body().asJson();
         RuleApiModel ruleApiModel = fromJson(request().body().asJson(), RuleApiModel.class);
         if (ruleApiModel == null) {
             badRequest(request().body().asText());

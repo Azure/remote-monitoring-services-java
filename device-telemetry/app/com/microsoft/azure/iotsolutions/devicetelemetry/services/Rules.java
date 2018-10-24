@@ -4,6 +4,7 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ExternalDependencyException;
@@ -232,7 +233,9 @@ public final class Rules implements IRules {
         ruleServiceModel.setDateCreated(DateTime.now(DateTimeZone.UTC).toString(DATE_FORMAT));
         ruleServiceModel.setDateModified(ruleServiceModel.getDateCreated());
 
-        ObjectNode jsonData = new ObjectMapper().createObjectNode();
+        ObjectNode jsonData = new ObjectMapper()
+                .setPropertyNamingStrategy(new PropertyNamingStrategy.UpperCamelCaseStrategy())
+                .createObjectNode();
         jsonData.put("Data", ruleServiceModel.toJsonString());
 
         return this.prepareRequest(null)

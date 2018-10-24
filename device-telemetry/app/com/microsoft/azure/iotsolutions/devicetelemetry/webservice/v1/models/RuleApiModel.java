@@ -15,6 +15,7 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.RuleServ
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.SeverityType;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.IActionServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.Version;
+import scala.concurrent.java8.FuturesConvertersImpl;
 
 import java.util.ArrayList;
 import java.util.Dictionary;
@@ -273,7 +274,11 @@ public final class RuleApiModel {
         List<IActionServiceModel> actionServiceModels = new ArrayList<>();
         if (this.actions != null) {
             for (ActionApiModel action : this.actions) {
-                actionServiceModels.add(action.toServiceModel());
+                try {
+                    actionServiceModels.add(action.toServiceModel());
+                } catch (InvalidInputException e) {
+                    throw new CompletionException(e);
+                }
             }
         }
 

@@ -54,7 +54,8 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
         final SeverityType severity,
         final CalculationType calculation,
         final Long timePeriod,
-        final ArrayList<ConditionServiceModel> conditions) {
+        final ArrayList<ConditionServiceModel> conditions,
+        final List<IActionServiceModel> actions) {
 
         this(
             "",
@@ -70,7 +71,7 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
             timePeriod,
             conditions,
             false,
-            null
+            actions
         );
     }
 

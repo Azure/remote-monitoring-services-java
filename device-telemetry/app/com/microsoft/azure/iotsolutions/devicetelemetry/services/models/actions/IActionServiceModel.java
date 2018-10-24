@@ -5,6 +5,7 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.serialization.ActionDeserializer;
 
 import java.util.Map;
@@ -16,6 +17,7 @@ import java.util.Map;
 /// information required for any given action type.
 /// </summary>
 @JsonDeserialize(using = ActionDeserializer.class)
+@JsonSerialize(as = IActionServiceModel.class)
 @JsonNaming(PropertyNamingStrategy.UpperCamelCaseStrategy.class)
 public interface IActionServiceModel {
     enum ActionType {
