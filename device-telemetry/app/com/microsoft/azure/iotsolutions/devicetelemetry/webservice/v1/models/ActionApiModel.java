@@ -54,17 +54,25 @@ public class ActionApiModel {
 
     public IActionServiceModel toServiceModel() throws InvalidInputException {
         IActionServiceModel.ActionType actionType;
+
+        IActionServiceModel.ActionType[] actionTypes =  IActionServiceModel.ActionType.values();
+        String validActionTypes = actionTypes.length > 0 ? actionTypes[0].toString() : "";
+        for(int i = 1; i < actionTypes.length; i++) {
+            validActionTypes += ", " + actionTypes[i].toString();
+        }
+        String invalidActionError = "The action type " + this.type + " is not valid. Valid type(s): " + validActionTypes;
+
         try {
             actionType = IActionServiceModel.ActionType.valueOf(this.type);
         } catch (Exception e) {
-            throw new InvalidInputException();
+            throw new InvalidInputException(invalidActionError);
         }
 
         switch (actionType) {
             case Email:
                 return new EmailActionServiceModel(this.parameters);
             default:
-                throw new InvalidInputException("");
+                throw new InvalidInputException(invalidActionError);
         }
     }
 }
