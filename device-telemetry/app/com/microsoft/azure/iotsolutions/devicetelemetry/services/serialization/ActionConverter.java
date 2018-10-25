@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.TreeMap;
 
-
 public class ActionConverter extends JsonDeserializer<IAction> {
 
     private static final String TYPE_NODE_NAME = "Type";
@@ -24,7 +23,7 @@ public class ActionConverter extends JsonDeserializer<IAction> {
         JsonNode rootNode = parser.getCodec().readTree(parser);
         IAction action = new EmailAction();
         ActionType actionType = ActionType.from(rootNode.get(TYPE_NODE_NAME).asText());
-        switch(actionType) {
+        switch (actionType) {
             case Email:
                 HashMap parameters = Json.fromJson(rootNode.get(PARAMETERS_NODE_NAME), HashMap.class);
                 TreeMap caseInsensitiveParameters = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);

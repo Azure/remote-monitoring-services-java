@@ -65,20 +65,20 @@ public final class RuleApiModel {
      * @param conditions
      */
     public RuleApiModel(
-            String eTag,
-            String id,
-            String name,
-            String dateCreated,
-            String dateModified,
-            boolean enabled,
-            String description,
-            String groupId,
-            String severity,
-            String calculation,
-            String timePeriod,
-            ArrayList<ActionApiModel> actions,
-            ArrayList<ConditionApiModel> conditions,
-            Boolean deleted
+        String eTag,
+        String id,
+        String name,
+        String dateCreated,
+        String dateModified,
+        boolean enabled,
+        String description,
+        String groupId,
+        String severity,
+        String calculation,
+        String timePeriod,
+        ArrayList<ActionApiModel> actions,
+        ArrayList<ConditionApiModel> conditions,
+        Boolean deleted
     ) {
         this.eTag = eTag;
         this.id = id;
@@ -314,20 +314,20 @@ public final class RuleApiModel {
                 new InvalidInputException("The value of 'TimePeriod' - '" + this.timePeriod + "' is not valid"));
         }
         return new RuleServiceModel(
-                this.eTag,
-                idOverride,
-                this.name,
-                this.dateCreated,
-                this.dateModified,
-                this.enabled,
-                this.description,
-                this.groupId,
-                severity,
-                calculation,
-                timePeriod,
-                actionServiceModels,
-                conditionServiceModels,
-                this.deleted == null ? false : this.deleted
+            this.eTag,
+            idOverride,
+            this.name,
+            this.dateCreated,
+            this.dateModified,
+            this.enabled,
+            this.description,
+            this.groupId,
+            severity,
+            calculation,
+            timePeriod,
+            actionServiceModels,
+            conditionServiceModels,
+            this.deleted == null ? false : this.deleted
         );
     }
 

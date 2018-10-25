@@ -67,15 +67,15 @@ public class RulesControllerTest {
         }
 
         this.sampleNewRuleServiceModel = new RuleServiceModel(
-                "TestName",
-                true,
-                "Test Description",
-                "TestGroup",
-                SeverityType.CRITICAL,
-                CalculationType.INSTANT,
-                Long.valueOf(60000),
-                sampleActions,
-                sampleConditions
+            "TestName",
+            true,
+            "Test Description",
+            "TestGroup",
+            SeverityType.CRITICAL,
+            CalculationType.INSTANT,
+            Long.valueOf(60000),
+            sampleActions,
+            sampleConditions
         );
     }
 
