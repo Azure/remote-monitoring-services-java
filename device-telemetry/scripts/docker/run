@@ -26,6 +26,11 @@ run_container() {
         -e PCS_AAD_APPSECRET \
         -e PCS_TELEMETRY_STORAGE_TYPE \
         -e PCS_TSI_FQDN \
+        -e PCS_AZUREBLOB_CONNSTRING \
+        -e PCS_ACTION_EVENTHUB_CONNSTRING \
+        -e PCS_ACTION_EVENTHUB_NAME \
+        -e PCS_LOGICAPP_ENDPOINT_URL \
+        -e PCS_SOLUTION_NAME \
         "$DOCKER_IMAGE:testing"
 }
 
