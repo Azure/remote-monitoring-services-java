@@ -21,8 +21,6 @@ public class ActionDeserializer extends JsonDeserializer<IActionServiceModel> {
     private static final String TYPE = "Type";
     private static final String PARAMETERS = "Parameters";
     private static final String RECIPIENTS_KEY = "Recipients";
-
-
     private static final Logger.ALogger log = Logger.of(ActionDeserializer.class);
 
     @Override
@@ -44,6 +42,8 @@ public class ActionDeserializer extends JsonDeserializer<IActionServiceModel> {
                     this.log.error("Cannot deserialize email action parameters");
                 }
                 break;
+            default:
+                this.log.error("Unknown action " + type.toString() + ", cannot deserialize action");
         }
 
         // If could not deserialize, return null

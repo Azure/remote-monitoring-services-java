@@ -64,21 +64,21 @@ public class EmailActionServiceModel implements IActionServiceModel {
 
     // Validates recipient email addresses and converts to a list of email strings
     private List<String> validateAndConvertRecipientEmails(Object emails) throws InvalidInputException {
-        List<String> result;
+        List<String> results;
         try {
-            result = (ArrayList<String>) emails;
+            results = (ArrayList<String>) emails;
         } catch (Exception e) {
             throw new InvalidInputException("Error converting recipient emails to list for action type 'Email'. " +
                     "Recipient emails provided should be an array of valid email addresses " +
                     "as strings.");
         }
 
-        if (result.size() == 0) {
+        if (results.size() == 0) {
             throw new InvalidInputException("Error, recipient email list for action type 'Email' is empty. " +
                     "Please provide at least one valid email address.");
         }
 
-        for (String email: result) {
+        for (String email: results) {
             try {
                 InternetAddress mail = new InternetAddress(email);
                 mail.validate();
@@ -90,6 +90,6 @@ public class EmailActionServiceModel implements IActionServiceModel {
             }
         }
 
-        return result;
+        return results;
     }
 }
