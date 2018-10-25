@@ -7,7 +7,7 @@ import com.microsoft.azure.documentdb.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ExternalDependencyException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.helpers.QueryBuilder;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.AlarmServiceModel;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServiceConfig;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.cosmosDb.IStorageClient;
 import org.apache.http.HttpStatus;
 import org.joda.time.DateTime;
@@ -39,7 +39,7 @@ public class Alarms implements IAlarms {
     private static final String ALARM_STATUS_ACKNOWLEDGED = "acknowledged";
 
     @Inject
-    public Alarms(IServiceConfig servicesConfig, IStorageClient storageClient) {
+    public Alarms(IServicesConfig servicesConfig, IStorageClient storageClient) {
         this.storageClient = storageClient;
         this.databaseName = servicesConfig.getAlarmsConfig().getStorageConfig().getCosmosDbDatabase();
         this.collectionId = servicesConfig.getAlarmsConfig().getStorageConfig().getCosmosDbCollection();

@@ -5,7 +5,7 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime;
 import com.google.inject.ImplementedBy;
 
 @ImplementedBy(ServicesConfig.class)
-public interface IServiceConfig {
+public interface IServicesConfig {
     /**
      * Get key value storage dependency url
      */

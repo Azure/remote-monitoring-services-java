@@ -7,7 +7,7 @@ import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.Rules;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ExternalDependencyException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.DiagnosticsRequestModel;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServiceConfig;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import org.apache.http.HttpStatus;
 import play.Logger;
 import play.libs.ws.WSClient;
@@ -30,7 +30,7 @@ public class DiagnosticsClient implements IDiagnosticsClient {
     private static final Logger.ALogger log = Logger.of(Rules.class);
 
     @Inject
-    public DiagnosticsClient(final WSClient wsClient, final IServiceConfig servicesConfig) {
+    public DiagnosticsClient(final WSClient wsClient, final IServicesConfig servicesConfig) {
         this.wsClient = wsClient;
         this.diagnosticsEndpointUrl = servicesConfig.getDiagnosticsConfig().getApiUrl();
         if(this.diagnosticsEndpointUrl == null || this.diagnosticsEndpointUrl.length() == 0) {

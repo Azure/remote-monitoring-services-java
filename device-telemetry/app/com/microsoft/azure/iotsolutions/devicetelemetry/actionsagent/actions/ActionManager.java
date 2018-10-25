@@ -7,7 +7,7 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.models.AsaA
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ResourceNotFoundException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.EmailAction;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.IAction;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServiceConfig;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import play.libs.ws.WSClient;
 
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ public class ActionManager implements IActionManager {
     private IActionExecutor actionExecutor;
 
     @Inject
-    public ActionManager(IServiceConfig servicesConfig, WSClient wsClient) throws ResourceNotFoundException {
+    public ActionManager(IServicesConfig servicesConfig, WSClient wsClient) throws ResourceNotFoundException {
         this.actionExecutor = new EmailActionExecutor(servicesConfig, wsClient);
     }
 

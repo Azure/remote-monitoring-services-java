@@ -8,27 +8,28 @@ import com.microsoft.azure.eventprocessorhost.EventProcessorHost;
 import com.microsoft.azure.eventprocessorhost.IEventProcessorFactory;
 import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.eventhub.IEventProcessorHostWrapper;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.ActionsConfig;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServiceConfig;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import play.Logger;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
 
 @Singleton
 public class Agent implements IAgent {
 
     private static final Logger.ALogger logger = Logger.of(Agent.class);
-    private IServiceConfig serviceConfig;
+    private IServicesConfig serviceConfig;
     private IEventProcessorFactory actionsEventProcessorFactory;
     private IEventProcessorHostWrapper eventProcessorHostWrapper;
     private static final String DEFAULT_CONSUMER_GROUP_NAME = "$Default";
 
     @Inject
     public Agent(
-        IServiceConfig serviceConfig,
+        IServicesConfig serviceConfig,
         IEventProcessorHostWrapper eventProcessorHostWrapper,
-        IEventProcessorFactory actionEventProcessorFactory) {
+        IEventProcessorFactory actionEventProcessorFactory) throws ExecutionException, InterruptedException {
         this.serviceConfig = serviceConfig;
         this.eventProcessorHostWrapper = eventProcessorHostWrapper;
         this.actionsEventProcessorFactory = actionEventProcessorFactory;

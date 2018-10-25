@@ -9,7 +9,7 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.Exte
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ResourceNotFoundException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.EmailAction;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.ActionsConfig;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServiceConfig;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import org.apache.http.HttpStatus;
 import org.joda.time.DateTime;
 import play.Logger;
@@ -37,7 +37,7 @@ public class EmailActionExecutor implements IActionExecutor {
     private static final Logger.ALogger log = Logger.of(EmailActionExecutor.class);
 
     @Inject
-    public EmailActionExecutor(final IServiceConfig serviceConfig, final WSClient wsClient) throws ResourceNotFoundException {
+    public EmailActionExecutor(final IServicesConfig serviceConfig, final WSClient wsClient) throws ResourceNotFoundException {
         ActionsConfig actionsConfig = serviceConfig.getActionsConfig();
         this.logicAppEndpointUrl = actionsConfig.getLogicAppEndpointUrl();
         this.solutionWebsiteUrl = actionsConfig.getSolutionWebsiteUrl();

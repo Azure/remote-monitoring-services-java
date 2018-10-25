@@ -75,7 +75,7 @@ public class Config implements IConfig {
     private final String DIAGNOSTICS_MAX_LOG_RETRIES = DIAGNOSTICS_KEY + "max_log_retries";
 
     private com.typesafe.config.Config data;
-    private IServiceConfig servicesConfig;
+    private IServicesConfig servicesConfig;
     private IClientAuthConfig clientAuthConfig;
 
     @Inject
@@ -86,7 +86,7 @@ public class Config implements IConfig {
     /**
      * Service layer configuration
      */
-    public IServiceConfig getServicesConfig() throws InvalidConfigurationException {
+    public IServicesConfig getServicesConfig() throws InvalidConfigurationException {
         if (this.servicesConfig != null) return this.servicesConfig;
 
         String storageConnectionString = this.data.getString(COSMOS_DB_CONN_STRING_KEY);

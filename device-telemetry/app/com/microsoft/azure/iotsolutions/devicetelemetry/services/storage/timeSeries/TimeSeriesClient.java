@@ -11,7 +11,7 @@ import com.microsoft.aad.adal4j.ClientCredential;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.Status;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.MessageListServiceModel;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServiceConfig;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.MessagesConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.TimeSeriesConfig;
 import org.apache.http.HttpStatus;
@@ -68,7 +68,7 @@ public class TimeSeriesClient implements ITimeSeriesClient {
     private static AuthenticationResult authenticationResult;
 
     @Inject
-    public TimeSeriesClient(IServiceConfig config, WSClient wsClient)
+    public TimeSeriesClient(IServicesConfig config, WSClient wsClient)
         throws InvalidConfigurationException {
         this.wsClient = wsClient;
 

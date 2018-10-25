@@ -5,7 +5,7 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime;
 /**
  * Service layer configuration
  */
-public class ServicesConfig implements IServiceConfig {
+public class ServicesConfig implements IServicesConfig {
 
     private final String keyValueStorageUrl;
 
