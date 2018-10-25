@@ -50,6 +50,7 @@ public class ActionDeserializer extends JsonDeserializer<IActionServiceModel> {
         return null;
     }
 
+    // Deserialize given parameters dictionary into email parameters.
     private Map<String, Object> deserializeEmailParameters(Map<String, Object> parameters) {
         Map<String,Object> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         result.putAll(parameters);
@@ -58,6 +59,7 @@ public class ActionDeserializer extends JsonDeserializer<IActionServiceModel> {
             List<String> recipientsList = (ArrayList<String>)result.get(RECIPIENTS_KEY);
             result.put(RECIPIENTS_KEY, recipientsList);
         }
+
         return result;
     }
 }

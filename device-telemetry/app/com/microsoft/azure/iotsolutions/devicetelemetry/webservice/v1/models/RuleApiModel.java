@@ -15,7 +15,6 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.RuleServ
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.SeverityType;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.IActionServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.Version;
-import scala.concurrent.java8.FuturesConvertersImpl;
 
 import java.util.ArrayList;
 import java.util.Dictionary;
@@ -118,6 +117,7 @@ public final class RuleApiModel {
             if (includeDeleted) {
                 this.deleted = rule.getDeleted();
             }
+
             // create listAsync of ConditionApiModel from ConditionServiceModel listAsync
             this.conditions = new ArrayList<>();
             if (rule.getConditions() != null) {
@@ -125,6 +125,7 @@ public final class RuleApiModel {
                     this.conditions.add(new ConditionApiModel(condition));
                 }
             }
+
             this.actions = new ArrayList<>();
             if (rule.getActions() != null) {
                 for (IActionServiceModel action : rule.getActions()) {

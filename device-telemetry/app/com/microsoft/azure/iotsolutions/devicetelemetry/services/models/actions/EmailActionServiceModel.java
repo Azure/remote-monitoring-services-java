@@ -18,6 +18,7 @@ public class EmailActionServiceModel implements IActionServiceModel {
 
     private ActionType type;
 
+    // Parameters should always be case-insensitive
     private Map<String, Object> parameters;
 
     private static final String SUBJECT = "Subject";
@@ -29,6 +30,7 @@ public class EmailActionServiceModel implements IActionServiceModel {
         this.parameters = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         this.parameters.put(NOTES, "");
 
+        // Ensure input is case insensitive
         Map<String,Object> parametersCaseInsensitive = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         parametersCaseInsensitive.putAll(parameters);
 
@@ -60,6 +62,7 @@ public class EmailActionServiceModel implements IActionServiceModel {
         return this.parameters;
     }
 
+    // Validates recipient email addresses and converts to a list of email strings
     private List<String> validateAndConvertRecipientEmails(Object emails) throws InvalidInputException {
         List<String> result;
         try {
@@ -86,6 +89,7 @@ public class EmailActionServiceModel implements IActionServiceModel {
                         "are valid.");
             }
         }
+
         return result;
     }
 }

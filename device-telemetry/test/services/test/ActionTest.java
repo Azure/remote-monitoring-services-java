@@ -113,7 +113,6 @@ public class ActionTest {
         IActionServiceModel action = new EmailActionServiceModel(parameters);
     }
 
-
     private Map<String, Object> createDefaultParameters() {
         ArrayList<String> emailList = new ArrayList<>();
         emailList.add(PARAM_RECIPIENTS);

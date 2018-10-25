@@ -48,19 +48,10 @@ public class ActionApiModel {
     @JsonProperty("Parameters")
     public Map<String, Object> getParameters() { return this.parameters; }
 
-    public void setType(String type) { this.type = type; }
-
-    public void setParameters(Map<String, Object> parameters) { this.parameters = parameters; }
-
     public IActionServiceModel toServiceModel() throws InvalidInputException {
         IActionServiceModel.ActionType actionType;
 
-        IActionServiceModel.ActionType[] actionTypes =  IActionServiceModel.ActionType.values();
-        String validActionTypes = actionTypes.length > 0 ? actionTypes[0].toString() : "";
-        for(int i = 1; i < actionTypes.length; i++) {
-            validActionTypes += ", " + actionTypes[i].toString();
-        }
-        String invalidActionError = "The action type " + this.type + " is not valid. Valid type(s): " + validActionTypes;
+        String invalidActionError = this.createInvalidActionErrorMessage();
 
         try {
             actionType = IActionServiceModel.ActionType.valueOf(this.type);
@@ -74,5 +65,15 @@ public class ActionApiModel {
             default:
                 throw new InvalidInputException(invalidActionError);
         }
+    }
+
+    private String createInvalidActionErrorMessage() {
+        IActionServiceModel.ActionType[] actionTypes =  IActionServiceModel.ActionType.values();
+        String validActionTypes = actionTypes.length > 0 ? actionTypes[0].toString() : "";
+        for(int i = 1; i < actionTypes.length; i++) {
+            validActionTypes += ", " + actionTypes[i].toString();
+        }
+
+        return "The action type " + this.type + " is not valid. Valid type(s): " + validActionTypes;
     }
 }
