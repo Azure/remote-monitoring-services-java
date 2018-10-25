@@ -34,7 +34,7 @@ public final class Messages implements IMessages {
     private ITimeSeriesClient timeSeriesClient;
 
     @Inject
-    public Messages(IServicesConfig servicesConfig, ITimeSeriesClient timeSeriesClient) {
+    public Messages(IServicesConfig servicesConfig, ITimeSeriesClient timeSeriesClient) throws InvalidConfigurationException {
         MessagesConfig messageConfig = servicesConfig.getMessagesConfig();
         this.timeSeriesClient = timeSeriesClient;
         this.storageType = messageConfig.getStorageType();

@@ -28,7 +28,6 @@ public class AlarmParser {
             try {
                 BufferedReader sr = new BufferedReader(new StringReader(alarms));
                 String line = sr.readLine();
-                logger.info(line);
                 while (line != null) {
                     alarmList.add(Json.fromJson(Json.parse(line), AsaAlarmApiModel.class));
                     line = sr.readLine();
