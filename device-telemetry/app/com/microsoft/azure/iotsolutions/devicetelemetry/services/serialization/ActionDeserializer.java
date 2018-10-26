@@ -33,7 +33,7 @@ public class ActionDeserializer extends JsonDeserializer<IActionServiceModel> {
         Map<String, Object> parameters = objectMapper.readValue(node.get(PARAMETERS).toString(), Map.class);
 
         switch (type) {
-            // If more action types are added, this switch will grow
+            // If more action types are added to ActionType enum, add new cases to switch
             case Email:
                 parameters = this.deserializeEmailParameters(parameters);
                 try {

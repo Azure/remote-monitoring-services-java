@@ -54,7 +54,6 @@ public class ActionTest {
         List<String> recipients = (List<String>)action.getParameters().get(PARAM_RECIPIENTS_KEY);
         Assert.assertEquals(1, recipients.size());
         Assert.assertEquals(PARAM_RECIPIENTS, recipients.get(0));
-
     }
 
     @Test
@@ -78,7 +77,6 @@ public class ActionTest {
         Assert.assertEquals(1, recipients.size());
         Assert.assertEquals(PARAM_RECIPIENTS, recipients.get(0));
     }
-
 
     @Test(expected = InvalidInputException.class)
     public void Should_ThrowInvalidInputException_WhenEmailInvalid() throws InvalidInputException {
