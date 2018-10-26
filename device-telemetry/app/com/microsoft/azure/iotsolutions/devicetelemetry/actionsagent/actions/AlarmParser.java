@@ -3,6 +3,7 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.actions;
 
 import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.models.AsaAlarmApiModel;
+import org.apache.commons.lang3.StringUtils;
 import play.Logger;
 import play.libs.Json;
 
@@ -24,7 +25,7 @@ public class AlarmParser {
      */
     public static List<AsaAlarmApiModel> parseAlarmList(String alarms) {
         List<AsaAlarmApiModel> alarmList = new ArrayList<>();
-        if (alarms != null && !alarms.isEmpty()) {
+        if (StringUtils.isNotEmpty(alarms)) {
             try {
                 BufferedReader sr = new BufferedReader(new StringReader(alarms));
                 String line = sr.readLine();

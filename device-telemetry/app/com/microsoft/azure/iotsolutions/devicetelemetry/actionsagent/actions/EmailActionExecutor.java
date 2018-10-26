@@ -61,7 +61,7 @@ public class EmailActionExecutor implements IActionExecutor {
         return this.prepareRequest()
             .post(content)
             .handle((result, error) -> {
-                if (isSuccess(result.getStatus())) {
+                if (!isSuccess(result.getStatus())) {
                     String msg = String.format("Could not execute email action against logic app: %s", result.getStatusText());
                     log.error(msg);
                     throw new CompletionException(new ExternalDependencyException(msg));

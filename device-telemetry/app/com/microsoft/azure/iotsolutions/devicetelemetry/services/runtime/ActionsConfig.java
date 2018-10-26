@@ -33,34 +33,34 @@ public class ActionsConfig {
     }
 
     public String getEventHubName() {
-        return eventHubName;
+        return this.eventHubName;
     }
 
     public String getEventHubConnectionString() {
-        return eventHubConnectionString;
+        return this.eventHubConnectionString;
     }
 
     public int getEventHubOffsetTimeInMinutes() {
-        return eventHubOffsetTimeInMinutes;
+        return this.eventHubOffsetTimeInMinutes;
     }
 
     public String getLogicAppEndpointUrl() {
-        return logicAppEndpointUrl;
+        return this.logicAppEndpointUrl;
     }
 
     public String getSolutionWebsiteUrl() {
-        return solutionWebsiteUrl;
+        return this.solutionWebsiteUrl;
     }
 
     public String getTemplateFolder() {
-        return templateFolder;
+        return this.templateFolder;
     }
 
     public String getBlobStorageConnectionString() {
-        return blobStorageConnectionString;
+        return this.blobStorageConnectionString;
     }
 
     public String getEventHubCheckpointContainerName() {
-        return eventHubCheckpointContainerName;
+        return this.eventHubCheckpointContainerName;
     }
 }

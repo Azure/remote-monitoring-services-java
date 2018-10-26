@@ -24,7 +24,5 @@ public interface IActionServiceModel {
     void setType(ActionType Type);
 
     Map<String, Object> getParameters();
-
-    void setParameters(Map<String, Object> parameters);
 }
 

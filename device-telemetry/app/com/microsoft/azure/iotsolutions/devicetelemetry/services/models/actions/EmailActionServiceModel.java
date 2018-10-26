@@ -3,7 +3,6 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidInputException;
 import play.libs.Json;
@@ -11,7 +10,6 @@ import play.libs.Json;
 import javax.mail.internet.InternetAddress;
 import java.util.*;
 
-@JsonDeserialize(as = EmailActionServiceModel.class)
 @JsonNaming(PropertyNamingStrategy.UpperCamelCaseStrategy.class)
 public final class EmailActionServiceModel implements IActionServiceModel {
 
@@ -48,7 +46,7 @@ public final class EmailActionServiceModel implements IActionServiceModel {
     }
 
     public ActionType getType() {
-        return type;
+        return this.type;
     }
 
     public void setType(ActionType Type) {
@@ -57,10 +55,6 @@ public final class EmailActionServiceModel implements IActionServiceModel {
 
     public Map<String, Object> getParameters() {
         return this.parameters;
-    }
-
-    public void setParameters(Map<String, Object> parameters) {
-        this.parameters = parameters;
     }
 
     public String getNotes() {
