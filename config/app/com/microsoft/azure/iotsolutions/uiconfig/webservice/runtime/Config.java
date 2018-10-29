@@ -33,6 +33,13 @@ public class Config implements IConfig {
     private final String JWT_AUDIENCE_KEY = JWT_KEY + "audience";
     private final String JWT_CLOCK_SKEW_KEY = JWT_KEY + "clock_skew_seconds";
 
+    private final String ACTIONS_KEY = APPLICATION_KEY + "actions.";
+    private final String OFFICE365_LOGIC_APP_URL_KEY = ACTIONS_KEY + "office365-logic-app-url";
+    private final String RESOURCE_GROUP_KEY = ACTIONS_KEY + "resource-group";
+    private final String SUBSCRIPTION_ID_KEY = ACTIONS_KEY + "subscription-id";
+    private final String MANAGEMENT_API_VERSION_KEY = ACTIONS_KEY + "management-api-version";
+    private final String ARM_ENDPOINT_URL_KEY = ACTIONS_KEY + "arm-endpoint-url";
+
     private com.typesafe.config.Config data;
     private IServicesConfig servicesConfig;
     private IClientAuthConfig clientAuthConfig;
