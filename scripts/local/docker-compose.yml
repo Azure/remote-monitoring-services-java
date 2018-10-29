@@ -126,6 +126,10 @@ services:
       - PCS_CORS_WHITELIST
       - PCS_APPLICATION_SECRET
       - PCS_SEED_TEMPLATE
+      - PCS_OFFICE365_CONNECTION_URL
+      - PCS_SOLUTION_NAME
+      - PCS_SUBSCRIPTION_ID
+      - PCS_ARM_ENDPOINT_URL
 
   storageadapter:
     image: azureiotpcs/pcs-storage-adapter-java:testing
