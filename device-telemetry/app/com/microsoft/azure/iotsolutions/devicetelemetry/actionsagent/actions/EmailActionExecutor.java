@@ -117,12 +117,12 @@ public class EmailActionExecutor implements IActionExecutor {
     }
 
     private String loadEmailTemplate(String path) throws ResourceNotFoundException {
-        String emailTemplate = "";
+        StringBuilder emailTemplate = new StringBuilder();
         try (InputStream is = this.getClass().getResourceAsStream(path)) {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"))) {
                 String line = reader.readLine();
                 while (line != null) {
-                    emailTemplate += line;
+                    emailTemplate.append(line);
                     line = reader.readLine();
                 }
             }
@@ -131,7 +131,7 @@ public class EmailActionExecutor implements IActionExecutor {
             log.error(message, e);
             throw new ResourceNotFoundException(message, e);
         }
-        return emailTemplate;
+        return emailTemplate.toString();
     }
 
     private String generateRuleDetailUrl(String ruleId) {
