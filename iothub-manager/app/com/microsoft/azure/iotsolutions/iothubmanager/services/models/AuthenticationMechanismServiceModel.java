@@ -31,7 +31,7 @@ public class AuthenticationMechanismServiceModel {
                 this.secondaryKey = azureModel.getSymmetricKey().getSecondaryKey();
                 break;
             case SELF_SIGNED:
-                this.authenticationType = AuthenticationType.SelfSinged;
+                this.authenticationType = AuthenticationType.SelfSigned;
                 this.primaryThumbprint = azureModel.getPrimaryThumbprint();
                 this.secondaryThumbprint = azureModel.getSecondaryThumbprint();
                 break;
@@ -52,7 +52,7 @@ public class AuthenticationMechanismServiceModel {
                 this.secondaryKey = device.getSymmetricKey().getSecondaryKey();
                 break;
             case SELF_SIGNED:
-                this.authenticationType = AuthenticationType.SelfSinged;
+                this.authenticationType = AuthenticationType.SelfSigned;
                 this.primaryThumbprint = device.getPrimaryThumbprint();
                 this.secondaryThumbprint = device.getSecondaryThumbprint();
                 break;
@@ -115,7 +115,7 @@ public class AuthenticationMechanismServiceModel {
                 key.setSecondaryKey(this.secondaryKey);
                 auth = new AuthenticationMechanism(key);
                 break;
-            case SelfSinged:
+            case SelfSigned:
                 auth = new AuthenticationMechanism(this.primaryThumbprint, this.secondaryThumbprint);
                 auth.setAuthenticationType(com.microsoft.azure.sdk.iot.service.auth.AuthenticationType.SELF_SIGNED);
                 break;
