@@ -7,7 +7,6 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.models.AsaA
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ExternalDependencyException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ResourceNotFoundException;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.ActionType;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.EmailActionServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.IActionServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.ActionsConfig;
@@ -23,6 +22,7 @@ import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;

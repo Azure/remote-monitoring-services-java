@@ -8,6 +8,7 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.models.Emai
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ExternalDependencyException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ResourceNotFoundException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.EmailActionServiceModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.IActionServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.ActionsConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import org.apache.http.HttpStatus;
@@ -51,13 +52,18 @@ public class EmailActionExecutor implements IActionExecutor {
      * Execute the given email action for the given alarm.
      * Sends a post request to Logic App with alarm information
      *
-     * @param emailAction send an email defined by action
+     * @param action send an email defined by action
      * @param alarm       to trigger email notification
      * @return CompletionStage
      * @throws {@link ResourceNotFoundException}
      */
-    public CompletionStage execute(EmailActionServiceModel emailAction, AsaAlarmApiModel alarm) {
-        String content = this.generatePayload(emailAction, alarm);
+    public CompletionStage execute(IActionServiceModel action, AsaAlarmApiModel alarm) {
+        if (!(action instanceof EmailActionServiceModel)) {
+            String errorMessage = "Email action execution expects EmailActionServiceModel, will not send email";
+            this.log.error(errorMessage);
+            return CompletableFuture.completedFuture(false);
+        }
+        String content = this.generatePayload((EmailActionServiceModel)action, alarm);
         return this.prepareRequest()
             .post(content)
             .handle((result, error) -> {

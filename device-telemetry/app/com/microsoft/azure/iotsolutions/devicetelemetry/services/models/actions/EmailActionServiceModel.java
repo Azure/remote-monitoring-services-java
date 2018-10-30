@@ -26,19 +26,19 @@ public final class EmailActionServiceModel implements IActionServiceModel {
         this.parameters.put(NOTES, "");
 
         // Ensure input is case insensitive
-        Map<String,Object> parametersCaseInsensitive = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        Map<String, Object> parametersCaseInsensitive = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         parametersCaseInsensitive.putAll(parameters);
 
-        if(!parametersCaseInsensitive.containsKey(SUBJECT)
+        if (!parametersCaseInsensitive.containsKey(SUBJECT)
             || !parametersCaseInsensitive.containsKey(RECIPIENTS)) {
             throw new InvalidInputException("Error converting recipient emails to list for action type 'Email'. " +
                 "Recipient emails provided should be an array of valid email addresses " +
                 "as strings.");
-        } else {
-            this.parameters.put(SUBJECT, parametersCaseInsensitive.get(SUBJECT));
-            this.parameters.put(RECIPIENTS,
-                this.validateAndConvertRecipientEmails(parametersCaseInsensitive.get(RECIPIENTS)));
         }
+
+        this.parameters.put(SUBJECT, parametersCaseInsensitive.get(SUBJECT));
+        this.parameters.put(RECIPIENTS,
+            this.validateAndConvertRecipientEmails(parametersCaseInsensitive.get(RECIPIENTS)));
 
         if (parametersCaseInsensitive.containsKey(NOTES)) {
             this.parameters.put(NOTES, parametersCaseInsensitive.get(NOTES));
@@ -47,10 +47,6 @@ public final class EmailActionServiceModel implements IActionServiceModel {
 
     public ActionType getType() {
         return this.type;
-    }
-
-    public void setType(ActionType Type) {
-        this.type = Type;
     }
 
     public Map<String, Object> getParameters() {
@@ -85,7 +81,7 @@ public final class EmailActionServiceModel implements IActionServiceModel {
             emailList = Json.fromJson(Json.toJson(emails), List.class);
         } catch (Exception e) {
             throw new InvalidInputException("Error converting recipient emails to list for action type 'Email'. " +
-                "Recipient emails provided should be an array of valid email addresses" +
+                "Recipient emails provided should be an array of valid email addresses " +
                 "as strings.");
         }
 

@@ -169,7 +169,6 @@ public class Config implements IConfig {
             || data.getString(AUTH_REQUIRED_KEY).isEmpty()
             || data.getBoolean(AUTH_REQUIRED_KEY);
 
-
         String authServiceUrl = data.getString(AUTH_WEB_SERVICE_URL_KEY);
 
         // Default to JWT
