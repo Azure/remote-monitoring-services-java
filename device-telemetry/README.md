@@ -4,7 +4,8 @@
 
 # Device Telemetry Overview
 
-This service provides a RESTful endpoint for read access to device telemetry, full CRUD for rules, and read/write for alarms from storage.
+This service provides a RESTful endpoint for read access to device telemetry,
+full CRUD for rules, and read/write for alarms from storage.
 
 ## Why?
 

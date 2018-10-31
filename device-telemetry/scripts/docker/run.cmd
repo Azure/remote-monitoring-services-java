@@ -35,7 +35,7 @@ docker run -it -p 9004:9004 ^
     -e PCS_ACTION_EVENTHUB_CONNSTRING ^
     -e PCS_ACTION_EVENTHUB_NAME ^
     -e PCS_LOGICAPP_ENDPOINT_URL ^
-    -e PCS_SOLUTION_NAME ^
+    -e PCS_SOLUTION_WEBSITE_URL ^
     %DOCKER_IMAGE%:testing
 
 :: - - - - - - - - - - - - - -

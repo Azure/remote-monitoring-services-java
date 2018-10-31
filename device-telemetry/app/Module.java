@@ -25,7 +25,7 @@ public class Module extends AbstractModule {
     @Override
     public void configure() {
         // Note: this method should be empty
-        // Try to use use JIT binding and @ImplementedBy instead'
+        // Try to use use JIT binding and @ImplementedBy instead
         bind(IEventProcessorFactory.class).to(ActionsEventProcessorFactory.class);
         bind(IAgent.class).to(Agent.class).asEagerSingleton();
     }
