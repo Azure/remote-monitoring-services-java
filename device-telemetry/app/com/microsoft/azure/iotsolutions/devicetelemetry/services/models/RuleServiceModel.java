@@ -221,7 +221,6 @@ public final class RuleServiceModel implements Comparable<RuleServiceModel> {
         this.deleted = deleted;
     }
 
-    @JsonDeserialize(using = ActionDeserializer.class)
     public List<IActionServiceModel> getActions() {
         return this.actions;
     }

@@ -12,6 +12,7 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.IActionServiceModel;
 import play.Logger;
 import play.libs.Json;
+import play.shaded.ahc.io.netty.util.internal.StringUtil;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -32,7 +33,9 @@ public class ActionDeserializer extends JsonDeserializer<IActionServiceModel> {
     @Override
     public IActionServiceModel deserialize(JsonParser parser, DeserializationContext context) throws IOException {
         JsonNode rootNode = parser.getCodec().readTree(parser);
-        ActionType actionType = ActionType.from(rootNode.get(TYPE_NODE_NAME).asText());
+        JsonNode typeNode = rootNode.get(TYPE_NODE_NAME);
+        if (typeNode == null || StringUtil.isNullOrEmpty(typeNode.asText())) return null;
+        ActionType actionType = ActionType.from(typeNode.asText());
 
         IActionServiceModel action = null;
         switch (actionType) {
