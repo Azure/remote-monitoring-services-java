@@ -53,7 +53,7 @@ public class EmailActionExecutor implements IActionExecutor {
      * Sends a post request to Logic App with alarm information
      *
      * @param action send an email defined by action
-     * @param alarm       to trigger email notification
+     * @param alarm  to trigger email notification
      * @return CompletionStage
      * @throws {@link ResourceNotFoundException}
      */
@@ -63,12 +63,14 @@ public class EmailActionExecutor implements IActionExecutor {
             this.log.error(errorMessage);
             return CompletableFuture.completedFuture(false);
         }
-        String content = this.generatePayload((EmailActionServiceModel)action, alarm);
+
+        String content = this.generatePayload((EmailActionServiceModel) action, alarm);
         return this.prepareRequest()
             .post(content)
             .handle((result, error) -> {
                 if (!isSuccess(result.getStatus())) {
-                    String msg = String.format("Could not execute email action against logic app: %s", result.getStatusText());
+                    String msg = String.format("Could not execute email action against logic app: %s, %s",
+                        result.getStatusText(), result.getBody());
                     log.error(msg);
                     throw new CompletionException(new ExternalDependencyException(msg));
                 }
