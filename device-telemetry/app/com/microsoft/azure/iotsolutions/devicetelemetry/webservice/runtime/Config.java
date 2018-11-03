@@ -10,6 +10,7 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.IClientA
 import com.typesafe.config.ConfigFactory;
 
 import java.net.URL;
+import java.net.URLDecoder;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.HashSet;
@@ -228,10 +229,11 @@ public class Config implements IConfig {
     private String validateUrl(String url) throws InvalidConfigurationException {
         try {
             new URL(url);
+            // Decode the url since WSClient might encode the url into incorrect format
+            return URLDecoder.decode(url, "UTF-8");
         } catch (Exception e) {
             throw new InvalidConfigurationException(String.format("Malformed Url: %s", url), e);
         }
-        return url;
     }
 }
 
