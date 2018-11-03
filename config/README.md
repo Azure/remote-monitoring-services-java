@@ -125,7 +125,7 @@ Steps using IntelliJ IDEA Community, with SBT plugin enabled:
 * Either from the toolbar or the Run menu, execute the configuration just
   created, using the Debug command/button
 * Test that the service is up and running pointing your browser to
-  http://127.0.0.1:9004/v1/status
+  http://127.0.0.1:9005/v1/status
 
 ## Running the service with Eclipse
 The integration with Eclipse requires the
@@ -140,9 +140,9 @@ Steps using Eclipse Oxygen ("Eclipse for Java Developers" package):
   required by Eclipse to recognize the project.
 * Open Eclipse, and from the Welcome screen "Import" an existing project,
   navigating to the root folder of the project.
-* From the console run `sbt -jvm-debug 9999 "run 9004"` to start the project
+* From the console run `sbt -jvm-debug 9999 "run 9005"` to start the project
 * Test that the service is up and running pointing your browser to
-  http://127.0.0.1:9004/v1/status
+  http://127.0.0.1:9005/v1/status
 * In Eclipse, select "Run -> Debug Configurations" and add a "Remote Java
   Application", using "localhost" and port "9999".
 * After saving this configuration, you can click "Debug" to connect to the

@@ -89,6 +89,13 @@ public final class SolutionSettingsController extends Controller {
                 });
     }
 
+    public CompletionStage<Result> getActionsSettingsAsync() throws BaseException {
+        Http.Response response = response();
+
+        // TODO Actions
+        return null;
+    }
+
     // Given logo and response, sets the body of the response to be the logo image,
     // if not null.
     // Also sets the following headers in response:
