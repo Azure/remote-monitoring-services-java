@@ -8,6 +8,7 @@ import com.microsoft.azure.iotsolutions.uiconfig.services.IStorage;
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.BaseException;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.auth.Authorize;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.PackageType;
+import com.microsoft.azure.iotsolutions.uiconfig.services.models.PackageConfigType;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.exceptions.BadRequestException;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models.PackageApiModel;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models.PackageListApiModel;
@@ -31,6 +32,7 @@ public class PackageController extends Controller {
 
     private final IStorage storage;
     private static final String PACKAGE_TYPE_PARAM = "Type";
+    private static final String PACKAGE_CONFIG_TYPE_PARAM = "Config";
     private static final String FILE_PARAM = "Package";
 
     @Inject
@@ -75,6 +77,13 @@ public class PackageController extends Controller {
                     "parameter", PACKAGE_TYPE_PARAM));
         }
 
+        if(!data.containsKey(PACKAGE_CONFIG_TYPE_PARAM) ||
+                ArrayUtils.isEmpty(data.get(PACKAGE_CONFIG_TYPE_PARAM)) ||
+                StringUtils.isEmpty(data.get(PACKAGE_CONFIG_TYPE_PARAM)[0])) {
+            throw new BadRequestException(String.format("Package config type not provided. Please specify %s " +
+                    "parameter", PACKAGE_CONFIG_TYPE_PARAM));
+        }
+
         final MultipartFormData.FilePart<File> file = formData.getFile(FILE_PARAM);
         if (file == null) {
             throw new BadRequestException(String.format("Package not provided. Please upload a file with " +
@@ -83,8 +92,12 @@ public class PackageController extends Controller {
 
         final String content = new String(Files.readAllBytes(file.getFile().toPath()));
         final String packageType = data.get(PACKAGE_TYPE_PARAM)[0];
+        final String packageConfigType = data.get(PACKAGE_CONFIG_TYPE_PARAM)[0];
         final PackageApiModel input = new PackageApiModel(file.getFilename(),
-                EnumUtils.getEnumIgnoreCase(PackageType.class, packageType), content);
+                EnumUtils.getEnumIgnoreCase(PackageType.class, packageType),
+                EnumUtils.getEnumIgnoreCase(PackageConfigType.class, packageType),
+                content);
+
         return storage.addPackageAsync(input.ToServiceModel()).thenApplyAsync(m -> ok(toJson(new
                 PackageApiModel(m))));
     }

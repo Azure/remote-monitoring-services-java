@@ -9,20 +9,23 @@ public class Package {
     private String id;
     private String name;
     private PackageType type;
+    private PackageConfigType configType;
     private String content;
     private String dateCreated;
 
     public Package() {
     }
 
-    public Package(String id, String name, PackageType type, String content) {
-        this(id, name, type, content, StringUtils.EMPTY);
+    public Package(String id, String name, PackageType type, PackageConfigType configType, String content) {
+        this(id, name, type, configType, content, StringUtils.EMPTY);
     }
 
-    public Package(String id, String name, PackageType type, String content, String dateCreated) {
+    public Package(String id, String name, PackageType type, PackageConfigType configType,
+                   String content, String dateCreated) {
         this.id = id;
         this.name = name;
         this.type = type;
+        this.configType = configType
         this.content = content;
         this.dateCreated = dateCreated;
     }
@@ -53,6 +56,11 @@ public class Package {
     public void setType(PackageType type) {
         this.type = type;
     }
+
+    @JsonProperty("Config")
+    public PackageConfigType getPackageConfig() { return this.configType; }
+
+    public void setPackageConfig(PackageConfigType configType) { this.configType = configType; }
 
     @JsonProperty("Content")
     public String getContent() {
