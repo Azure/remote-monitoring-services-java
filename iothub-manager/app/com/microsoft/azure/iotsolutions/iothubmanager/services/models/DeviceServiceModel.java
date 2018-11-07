@@ -52,27 +52,25 @@ public final class DeviceServiceModel {
     }
 
     public DeviceServiceModel(final Device device, final TwinServiceModel twin, String iotHubHostName) {
-        this(
-                device,
-                twin,
-                iotHubHostName,
-                false);
+        this(device,
+             twin,
+             iotHubHostName,
+             false);
     }
 
     public DeviceServiceModel(final Device device, final TwinServiceModel twin, String iotHubHostName,
                               boolean isConnectedEdgeDevice) {
-        this(
-                device.geteTag(),
-                device.getDeviceId(),
-                device.getCloudToDeviceMessageCount(),
-                device.getLastActivityTime() == null ? null : DateTime.parse(device.getLastActivityTime(), ISODateTimeFormat.dateTimeParser().withZoneUTC()),
-                isConnectedEdgeDevice || device.getConnectionState() == DeviceConnectionState.Connected,
-                device.getStatus() == DeviceStatus.Enabled,
-                device.getCapabilities() != null ? device.getCapabilities().isIotEdge() : twin.getIsEdgeDevice(),
-                device.getStatusUpdatedTime() == null ? null : DateTime.parse(device.getStatusUpdatedTime(), ISODateTimeFormat.dateTimeParser().withZoneUTC()),
-                twin,
-                new AuthenticationMechanismServiceModel(device),
-                iotHubHostName);
+        this(device.geteTag(),
+             device.getDeviceId(),
+             device.getCloudToDeviceMessageCount(),
+             device.getLastActivityTime() == null ? null : DateTime.parse(device.getLastActivityTime(), ISODateTimeFormat.dateTimeParser().withZoneUTC()),
+             isConnectedEdgeDevice || device.getConnectionState() == DeviceConnectionState.Connected,
+             device.getStatus() == DeviceStatus.Enabled,
+             device.getCapabilities() != null ? device.getCapabilities().isIotEdge() : twin.getIsEdgeDevice(),
+             device.getStatusUpdatedTime() == null ? null : DateTime.parse(device.getStatusUpdatedTime(), ISODateTimeFormat.dateTimeParser().withZoneUTC()),
+             twin,
+             new AuthenticationMechanismServiceModel(device),
+             iotHubHostName);
     }
 
     public String getETag() {
