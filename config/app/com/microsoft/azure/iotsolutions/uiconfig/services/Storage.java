@@ -10,11 +10,11 @@ import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.BaseExcepti
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.ResourceNotFoundException;
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.IStorageAdapterClient;
+import com.microsoft.azure.iotsolutions.uiconfig.services.external.PackageValidation.IPackageValidator;
+import com.microsoft.azure.iotsolutions.uiconfig.services.external.PackageValidation.PackageValidatorFactory;
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.ValueApiModel;
-import com.microsoft.azure.iotsolutions.uiconfig.services.models.DeviceGroup;
-import com.microsoft.azure.iotsolutions.uiconfig.services.models.Logo;
+import com.microsoft.azure.iotsolutions.uiconfig.services.models.*;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.Package;
-import com.microsoft.azure.iotsolutions.uiconfig.services.models.Theme;
 import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.IServicesConfig;
 import com.microsoft.azure.sdk.iot.service.Configuration;
 import org.apache.commons.lang3.StringUtils;
@@ -43,6 +43,7 @@ public class Storage implements IStorage {
     private static String UserCollectionId = "user-settings";
     private static String DeviceGroupCollectionId = "devicegroups";
     private static String PackagesCollectionId = "packages";
+    private static String packagesConfigurationsKey = "configurations";
     private static final DateTimeFormatter DATE_FORMAT =
             forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
     private static final String AzureMapsKey = "AzureMapsKey";
@@ -209,9 +210,23 @@ public class Storage implements IStorage {
      * {@inheritDoc}
      */
     @Override
+    public CompletionStage<PackageConfigurations> getAllConfigurationsAsync() throws BaseException {
+        try {
+            return this.client.getAsync(PackagesCollectionId, packagesConfigurationsKey).thenApplyAsync(p -> {
+                return fromJson(p.getData(), PackageConfigurations.class);
+            });
+        } catch (Exception e) {
+            return CompletableFuture.completedFuture(new PackageConfigurations());
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public CompletionStage<Package> getPackageAsync(String id) throws BaseException {
         return this.client.getAsync(PackagesCollectionId, id).thenApplyAsync(p -> {
-           return Storage.createPackage(p);
+            return Storage.createPackage(p);
         });
     }
 
@@ -220,6 +235,14 @@ public class Storage implements IStorage {
      */
     @Override
     public CompletionStage<Package> addPackageAsync(Package input) throws BaseException {
+
+        boolean isValidPackage = ValidatePackage(input);
+        if (!isValidPackage)
+        {
+            throw new InvalidInputException("Package provided is not a valid deployment manifest " +
+                    "for type {package.Type} and config type {package.Config}");
+        }
+
         try {
             Configuration config = fromJson(input.getContent(), Configuration.class);
             if (config.getContent() == null) {
@@ -236,6 +259,35 @@ public class Storage implements IStorage {
         return client.createAsync(PackagesCollectionId, value).thenApplyAsync(p ->
             Storage.createPackage(p)
         );
+    }
+
+    private Boolean ValidatePackage(Package input) {
+        IPackageValidator validator = PackageValidatorFactory.GetValidator(input.getType(), input.getConfig());
+        if (validator == null)
+        {
+            return true;//Bypass validation for custom config type
+        }
+        return validator.validate();
+    }
+
+    public void updatePackageConfigsAsync(String customConfig) throws BaseException {
+        PackageConfigurations list;
+
+        try
+        {
+            CompletionStage<PackageConfigurations> configs = this.client.getAsync(PackagesCollectionId, packagesConfigurationsKey).thenApplyAsync(p -> {
+                return fromJson(p.getData(), PackageConfigurations.class);
+            });
+            list = configs.toCompletableFuture().get();
+        }
+        catch(Exception e)
+        {
+            //TODO: Logging
+            list = new PackageConfigurations();
+        }
+
+        list.add(customConfig);
+        client.updateAsync(PackagesCollectionId, packagesConfigurationsKey, toJson(list), "*");
     }
 
     /**

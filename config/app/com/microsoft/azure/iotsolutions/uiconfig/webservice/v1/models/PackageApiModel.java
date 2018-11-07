@@ -12,7 +12,7 @@ public class PackageApiModel {
     private String id;
     private String name;
     private PackageType type;
-    private PackageConfigType configType;
+    private String config;
     private String dateCreated;
     private String content;
 
@@ -39,14 +39,12 @@ public class PackageApiModel {
         return this.type;
     }
 
-    public void setType(PackageType type) {
-        this.type = type;
-    }
+    public void setType(PackageType type) { this.type = type;}
 
     @JsonProperty("Config")
-    public PackageConfigType getPackageConfig() { return this.configType; }
+    public String getConfig() { return this.config; }
 
-    public void setPackageConfig(PackageConfigType configType) { this.configType = configType; }
+    public void setConfig(String config) { this.config = config; }
 
     @JsonProperty("Content")
     public String getContent() {
@@ -70,19 +68,29 @@ public class PackageApiModel {
         this.id = model.getId();
         this.name = model.getName();
         this.type = model.getType();
-        this.configType = model.getPackageConfig();
+        this.config = model.getConfig();
         this.content = model.getContent();
         this.dateCreated = model.getDateCreated();
     }
 
-    public PackageApiModel(String name, PackageType type, PackageConfigType configType, String content) {
+    public PackageApiModel(
+            String name,
+            PackageType type,
+            String config,
+            String content) {
         this.name = name;
         this.type = type;
-        this.configType = configType;
+        this.config = config;
         this.content = content;
     }
 
     public Package ToServiceModel() {
-        return new Package(this.id, this.name, this.type, this.configType, this.content, this.dateCreated);
+        return new Package(
+                this.id,
+                this.name,
+                this.type,
+                this.config,
+                this.content,
+                this.dateCreated);
     }
 }

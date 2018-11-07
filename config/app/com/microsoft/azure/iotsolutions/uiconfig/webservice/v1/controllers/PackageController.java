@@ -11,6 +11,7 @@ import com.microsoft.azure.iotsolutions.uiconfig.services.models.PackageType;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.PackageConfigType;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.exceptions.BadRequestException;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models.PackageApiModel;
+import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models.PackageConfigListApiModel;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models.PackageListApiModel;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.EnumUtils;
@@ -33,7 +34,9 @@ public class PackageController extends Controller {
     private final IStorage storage;
     private static final String PACKAGE_TYPE_PARAM = "Type";
     private static final String PACKAGE_CONFIG_TYPE_PARAM = "Config";
+    private static final String PACKAGE_CUSTOM_CONFIG_PARAM = "CustomConfig";
     private static final String FILE_PARAM = "Package";
+
 
     @Inject
     public PackageController(IStorage storage) {
@@ -49,12 +52,29 @@ public class PackageController extends Controller {
     }
 
     /**
+     * Retrieve all previously uploaded packages
+     * @return {@link PackageListApiModel}
+     */
+    public CompletionStage<Result> getFilteredAsync(String type, String config) throws BaseException {
+        return storage.getAllPackagesAsync().thenApplyAsync(m -> ok(toJson(new PackageListApiModel(m, type, config))));
+    }
+
+    /**
      * Get a previously created from storage.
      * @param id The id of the package to retrieve from storage.
      * @return {@link PackageApiModel}
      */
     public CompletionStage<Result> getAsync(String id) throws BaseException {
         return storage.getPackageAsync(id).thenApplyAsync(m -> ok(toJson(new PackageApiModel(m))));
+    }
+
+    /**
+     * Get a previously created from storage.
+     * @param id The id of the package to retrieve from storage.
+     * @return {@link PackageApiModel}
+     */
+    public CompletionStage<Result> getListAsync() throws BaseException {
+        return storage.getAllConfigurationsAsync().thenApplyAsync(m -> ok(toJson(new PackageConfigListApiModel(m))));
     }
 
     /**
@@ -93,10 +113,23 @@ public class PackageController extends Controller {
         final String content = new String(Files.readAllBytes(file.getFile().toPath()));
         final String packageType = data.get(PACKAGE_TYPE_PARAM)[0];
         final String packageConfigType = data.get(PACKAGE_CONFIG_TYPE_PARAM)[0];
+        final String customConfig = data.get(PACKAGE_CUSTOM_CONFIG_PARAM)[0];
+
+        String config = packageConfigType;
+        if (config.equals(PackageConfigType.custom.toString()))
+        {
+            config = appendCustomConfig(packageConfigType, customConfig);
+        }
+
         final PackageApiModel input = new PackageApiModel(file.getFilename(),
                 EnumUtils.getEnumIgnoreCase(PackageType.class, packageType),
-                EnumUtils.getEnumIgnoreCase(PackageConfigType.class, packageType),
+                config,
                 content);
+
+        if (packageConfigType.equals(PackageConfigType.custom.toString()))
+        {
+            storage.updatePackageConfigsAsync(customConfig);
+        }
 
         return storage.addPackageAsync(input.ToServiceModel()).thenApplyAsync(m -> ok(toJson(new
                 PackageApiModel(m))));
@@ -109,5 +142,10 @@ public class PackageController extends Controller {
     @Authorize("DeletePackages")
     public CompletionStage<Result> deleteAsync(String id) throws BaseException {
         return storage.deletePackageAsync(id).thenApplyAsync(m -> ok());
+    }
+
+    private String appendCustomConfig(String packageConfigType, String customConfig)
+    {
+        return packageConfigType.trim() + " - " + customConfig.trim();
     }
 }

@@ -7,6 +7,7 @@ import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.BaseExcepti
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.DeviceGroup;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.Logo;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.Package;
+import com.microsoft.azure.iotsolutions.uiconfig.services.models.PackageConfigurations;
 
 import java.util.concurrent.CompletionStage;
 
@@ -42,6 +43,12 @@ public interface IStorage {
     CompletionStage<Iterable<Package>> getAllPackagesAsync() throws BaseException;
 
     /**
+     * Retrieves all configurations that have been previous uploaded.
+     * @return All configurations which can be iterated over
+     */
+    CompletionStage<PackageConfigurations> getAllConfigurationsAsync() throws BaseException;
+
+    /**
      * Retrieves a single uploaded package by its unique Id.
      * @param id Unique identifier which was returned when creating a package
      * @return All packages which can be iterated over
@@ -54,6 +61,12 @@ public interface IStorage {
      * @return The created package along with id, and dateCreated.
      */
     CompletionStage<Package> addPackageAsync(Package input) throws BaseException;
+
+    /**
+     * Updates a previously created configurations.
+     * @param customConfig The customConfig of the package to be maintained.
+     */
+    void updatePackageConfigsAsync(String customConfig) throws BaseException;
 
     /**
      * Deletes a previously uploaded package.

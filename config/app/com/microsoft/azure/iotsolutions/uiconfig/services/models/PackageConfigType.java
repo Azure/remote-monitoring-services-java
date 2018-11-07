@@ -6,7 +6,7 @@ public enum PackageConfigType {
     firmwareUpdateMxChip("FirmwareUpdateMxChip"),
     custom("Custom");
 
-    private String value;
+    private final String value;
 
     PackageConfigType(String value) {
         this.value = value;
@@ -17,6 +17,7 @@ public enum PackageConfigType {
         return value;
     }
 
+    @Override
     public String toString() {
         return getValue();
     }

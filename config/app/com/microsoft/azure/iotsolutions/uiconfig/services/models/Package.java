@@ -9,23 +9,33 @@ public class Package {
     private String id;
     private String name;
     private PackageType type;
-    private PackageConfigType configType;
+    private String config;
     private String content;
     private String dateCreated;
 
     public Package() {
     }
 
-    public Package(String id, String name, PackageType type, PackageConfigType configType, String content) {
-        this(id, name, type, configType, content, StringUtils.EMPTY);
+    public Package(
+            String id,
+            String name,
+            PackageType type,
+            String config,
+            String content) {
+        this(id, name, type, config, content, StringUtils.EMPTY);
     }
 
-    public Package(String id, String name, PackageType type, PackageConfigType configType,
-                   String content, String dateCreated) {
+    public Package(
+            String id,
+            String name,
+            PackageType type,
+            String config,
+            String content,
+            String dateCreated) {
         this.id = id;
         this.name = name;
         this.type = type;
-        this.configType = configType
+        this.config = config;
         this.content = content;
         this.dateCreated = dateCreated;
     }
@@ -49,18 +59,16 @@ public class Package {
     }
 
     @JsonProperty("Type")
-    public PackageType getType() {
-        return this.type;
-    }
+    public PackageType getType() { return this.type; }
 
     public void setType(PackageType type) {
         this.type = type;
     }
 
     @JsonProperty("Config")
-    public PackageConfigType getPackageConfig() { return this.configType; }
+    public String getConfig() { return this.config; }
 
-    public void setPackageConfig(PackageConfigType configType) { this.configType = configType; }
+    public void setConfig(String configType) { this.config = configType; }
 
     @JsonProperty("Content")
     public String getContent() {

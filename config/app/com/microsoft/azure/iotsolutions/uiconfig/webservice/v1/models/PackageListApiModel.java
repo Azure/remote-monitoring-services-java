@@ -43,4 +43,19 @@ public class PackageListApiModel {
         this.metadata.put("$type", String.format("Package;%s", Version.Number));
         this.metadata.put("$url", String.format("/%s/packages", Version.Path));
     }
+
+    public PackageListApiModel(Iterable<Package> models, String type, String config) {
+
+        this.items = StreamSupport.stream(models.spliterator(), false)
+                .map(m -> new PackageApiModel(m))
+                .filter(p -> (
+                        p.getType() != null
+                        && p.getConfig() != null
+                        && p.getType().toString().toLowerCase().equals(type.toLowerCase().trim())
+                        && p.getConfig().toLowerCase().equals(config.toLowerCase().trim())))
+                .collect(Collectors.toList());
+        this.metadata = new Hashtable<String, String>();
+        this.metadata.put("$type", String.format("Package;%s", Version.Number));
+        this.metadata.put("$url", String.format("/%s/packages", Version.Path));
+    }
 }
