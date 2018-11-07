@@ -8,12 +8,12 @@ import com.microsoft.azure.iotsolutions.storageadapter.services.exceptions.Creat
 import com.microsoft.azure.iotsolutions.storageadapter.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.storageadapter.services.helpers.DocumentIdHelper;
 import com.microsoft.azure.iotsolutions.storageadapter.services.helpers.QueryBuilder;
+import com.microsoft.azure.iotsolutions.storageadapter.services.models.StatusResultServiceModel;
 import com.microsoft.azure.iotsolutions.storageadapter.services.models.ValueServiceModel;
 import com.microsoft.azure.iotsolutions.storageadapter.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.storageadapter.services.wrappers.IFactory;
 import play.Logger;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -107,17 +107,22 @@ public class DocDBKeyValueContainer implements IKeyValueContainer {
     }
 
 
-    public Status ping() throws CreateResourceException {
-        createDocumentClientLazily();
-        URI response = null;
-        if (this.client != null) {
-            response = this.client.getReadEndpoint();
+    public StatusResultServiceModel ping() {
+        StatusResultServiceModel result = new StatusResultServiceModel(false, "Storage check failed");
+        try {
+            createDocumentClientLazily();
+            DatabaseAccount response = null;
+            if (this.client != null) {
+                response = this.client.getDatabaseAccount();
+            }
+
+            if (response != null) {
+                result = new StatusResultServiceModel(true, "Alive and well!");
+            }
+        } catch (DocumentClientException | CreateResourceException e) {
+            log.info(e.getMessage());
         }
-        if (response != null) {
-            return new Status(true, "Alive and Well!");
-        } else {
-            return new Status(false, "Could not connect to DocumentDb." + collectionLink);
-        }
+        return result;
     }
 
 }

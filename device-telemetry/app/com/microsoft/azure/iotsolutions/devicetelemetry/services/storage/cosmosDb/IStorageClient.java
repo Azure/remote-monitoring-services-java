@@ -4,10 +4,12 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.cosmos
 
 import com.google.inject.ImplementedBy;
 import com.microsoft.azure.documentdb.*;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.Status;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidConfigurationException;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.StatusResultServiceModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.StatusServiceModel;
 
 import java.util.ArrayList;
+import java.util.concurrent.CompletionStage;
 
 @ImplementedBy(StorageClient.class)
 public interface IStorageClient {
@@ -21,5 +23,5 @@ public interface IStorageClient {
 
     ArrayList<Document> queryDocuments(String databaseName, String colId, FeedOptions queryOptions, SqlQuerySpec querySpec, int skip) throws Exception;
 
-    Status ping();
+    StatusResultServiceModel ping();
 }

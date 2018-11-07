@@ -4,10 +4,9 @@ package com.microsoft.azure.iotsolutions.storageadapter.webservice.v1.controller
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.microsoft.azure.iotsolutions.storageadapter.services.DocDBKeyValueContainer;
-import com.microsoft.azure.iotsolutions.storageadapter.services.IKeyValueContainer;
-import com.microsoft.azure.iotsolutions.storageadapter.services.Status;
-import com.microsoft.azure.iotsolutions.storageadapter.services.exceptions.CreateResourceException;
+import com.microsoft.azure.iotsolutions.storageadapter.services.IStatusService;
+import com.microsoft.azure.iotsolutions.storageadapter.services.models.StatusServiceModel;
+import com.microsoft.azure.iotsolutions.storageadapter.webservice.runtime.IConfig;
 import com.microsoft.azure.iotsolutions.storageadapter.webservice.v1.models.StatusApiModel;
 import play.mvc.Result;
 
@@ -21,18 +20,21 @@ import static play.mvc.Results.ok;
 @Singleton
 public final class StatusController {
 
-    private final IKeyValueContainer storageClient;
+    private final IConfig config;
+    private final IStatusService statusService;
 
     @Inject
-    public StatusController(DocDBKeyValueContainer storageClient) {
-        this.storageClient = storageClient;
+    public StatusController(IConfig config, IStatusService statusService) {
+        this.config = config;
+        this.statusService = statusService;
     }
 
     /**
      * @return Service health details.
      */
     public Result index() throws Exception {
-        Status status = storageClient.ping();
-        return ok(toJson(new StatusApiModel(status)));
+        StatusServiceModel statusServiceModel = this.statusService.GetStatusAsync().toCompletableFuture().get();
+        statusServiceModel.addProperty("Port", String.valueOf(config.getPort()));
+        return ok(toJson(new StatusApiModel(statusServiceModel)));
     }
 }

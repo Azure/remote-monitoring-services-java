@@ -8,9 +8,10 @@ import com.google.inject.Inject;
 import com.microsoft.aad.adal4j.AuthenticationContext;
 import com.microsoft.aad.adal4j.AuthenticationResult;
 import com.microsoft.aad.adal4j.ClientCredential;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.Status;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.MessageListServiceModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.StatusResultServiceModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.StatusServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.MessagesConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.TimeSeriesConfig;
@@ -26,9 +27,7 @@ import play.libs.ws.WSResponse;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 public class TimeSeriesClient implements ITimeSeriesClient {
@@ -69,7 +68,7 @@ public class TimeSeriesClient implements ITimeSeriesClient {
 
     @Inject
     public TimeSeriesClient(IServicesConfig config, WSClient wsClient)
-        throws InvalidConfigurationException {
+            throws InvalidConfigurationException {
         this.wsClient = wsClient;
 
         MessagesConfig messagesConfig = config.getMessagesConfig();
@@ -97,37 +96,38 @@ public class TimeSeriesClient implements ITimeSeriesClient {
     }
 
     @Override
-    public Status ping() {
-        String name = "TimeSeriesInsights";
+    public StatusResultServiceModel ping() {
+        StatusResultServiceModel result = new StatusResultServiceModel(false, "TimeSeriesInsights check failed");
+
         try {
             WSRequest request = this.PrepareRequest(
-                this.dataAccessFqdn,
-                AVAILABILITY_KEY,
-                this.acquireAccessToken());
+                    this.dataAccessFqdn,
+                    AVAILABILITY_KEY,
+                    this.acquireAccessToken());
 
-            WSResponse response = request
-                .get()
-                .toCompletableFuture()
-                .get();
+            WSResponse response = request.get().toCompletableFuture().get();
 
-            if (response.getStatus() == HttpStatus.SC_OK) {
-                return new Status(name, true, "Time Series Insights alive and well!");
+            if (response.getStatus() != 200) {
+                result.setMessage("Status code: " + response.getStatus() + ", Response: " + response.getBody());
             } else {
-                return new Status(name, false, response.getStatusText());
+                result.setIsHealthy(true);
+                result.setMessage("Alive and well!");
             }
         } catch (Exception e) {
-            return new Status(name, false, e.getMessage());
+            this.log.error(e.getMessage());
         }
+
+        return result;
     }
 
     @Override
     public MessageListServiceModel queryEvents(
-        DateTime from,
-        DateTime to,
-        String order,
-        int skip,
-        int limit,
-        String[] deviceIds) throws TimeSeriesParseException, InvalidConfigurationException {
+            DateTime from,
+            DateTime to,
+            String order,
+            int skip,
+            int limit,
+            String[] deviceIds) throws TimeSeriesParseException, InvalidConfigurationException {
 
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode queryObjectNode = mapper.createObjectNode();
@@ -140,41 +140,41 @@ public class TimeSeriesClient implements ITimeSeriesClient {
         }
 
         queryObjectNode.putObject(SEARCH_SPAN_KEY)
-            .put(FROM_KEY, from.toString(this.dateFormat))
-            .put(TO_KEY, to.toString(this.dateFormat));
+                .put(FROM_KEY, from.toString(this.dateFormat))
+                .put(TO_KEY, to.toString(this.dateFormat));
 
         if (deviceIds != null && deviceIds.length > 0) {
             List<String> devicePredicates = Arrays.asList(deviceIds).stream()
-                .map(id -> String.format("[%s].String='%s'", DEVICE_ID_KEY, id))
-                .collect(Collectors.toList());
+                    .map(id -> String.format("[%s].String='%s'", DEVICE_ID_KEY, id))
+                    .collect(Collectors.toList());
             queryObjectNode.putObject(PREDICATE_KEY)
-                .put(PREDICATE_STRING_KEY, String.join(" OR ", devicePredicates));
+                    .put(PREDICATE_STRING_KEY, String.join(" OR ", devicePredicates));
         }
 
         ObjectNode topObject = queryObjectNode.putObject(TOP_KEY);
         ObjectNode sortObject = mapper.createObjectNode();
 
         sortObject.putObject(SORT_INPUT_KEY)
-            .put(BUILT_IN_PROP_KEY, BUILT_IN_PROP_VALUE);
+                .put(BUILT_IN_PROP_KEY, BUILT_IN_PROP_VALUE);
         sortObject.put(SORT_ORDER_KEY, order);
 
         topObject.putArray(SORT_KEY)
-            .add(sortObject);
+                .add(sortObject);
         topObject.put(COUNT_KEY, skip + limit);
 
         try {
             WSRequest request = this.PrepareRequest(
-                this.dataAccessFqdn,
-                EVENTS_KEY,
-                this.acquireAccessToken());
+                    this.dataAccessFqdn,
+                    EVENTS_KEY,
+                    this.acquireAccessToken());
 
             WSResponse response = request
-                .post(queryObjectNode.toString())
-                .toCompletableFuture()
-                .get();
+                    .post(queryObjectNode.toString())
+                    .toCompletableFuture()
+                    .get();
 
             EventListApiModel valueList = Json.fromJson(Json.parse(response.getBody()),
-                EventListApiModel.class);
+                    EventListApiModel.class);
 
             return valueList.toMessageList(skip);
         } catch (TimeSeriesParseException e) {
@@ -205,12 +205,12 @@ public class TimeSeriesClient implements ITimeSeriesClient {
         try {
             service = Executors.newFixedThreadPool(1);
             context = new AuthenticationContext(
-                String.format("%s%s", this.authorityUrl, this.aadTenantId),
-                false, service);
+                    String.format("%s%s", this.authorityUrl, this.aadTenantId),
+                    false, service);
             Future<AuthenticationResult> future = context.acquireToken(
-                this.audienceUrl,
-                new ClientCredential(this.applicationId, this.applicationSecret),
-                null
+                    this.audienceUrl,
+                    new ClientCredential(this.applicationId, this.applicationSecret),
+                    null
             );
             result = future.get();
         } catch (Exception e) {
@@ -228,16 +228,16 @@ public class TimeSeriesClient implements ITimeSeriesClient {
     }
 
     private WSRequest PrepareRequest(
-        String fqdn,
-        String path,
-        String accessToken) {
+            String fqdn,
+            String path,
+            String accessToken) {
 
         String url = String.format("https://%s/%s?api-version=%s&timeout=PT%sS",
-            fqdn, path, this.apiVersion, this.timeoutInSeconds);
+                fqdn, path, this.apiVersion, this.timeoutInSeconds);
 
         WSRequest request = this.wsClient.url(url)
-            .addHeader("x-ms-client-application-name", this.applicationId)
-            .addHeader("Authorization", "Bearer " + accessToken);
+                .addHeader("x-ms-client-application-name", this.applicationId)
+                .addHeader("Authorization", "Bearer " + accessToken);
 
         return request;
     }

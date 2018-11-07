@@ -28,7 +28,7 @@ public class ValueListApiModel {
         Items = result.iterator();
 
         $metadata = new Hashtable<String, String>() {{
-            put("$type", "Status;" + Version.Number);
+            put("$type", "StatusService;" + Version.Number);
             put("$uri", "/" + Version.Path + "/collections/" + collectionId + "/values");
         }};
     }

@@ -9,6 +9,8 @@ public class ServicesConfig implements IServicesConfig {
 
     private final String keyValueStorageUrl;
 
+    private final String userManagementApiUrl;
+
     private final MessagesConfig messagesConfig;
 
     private final AlarmsConfig alarmsConfig;
@@ -17,10 +19,12 @@ public class ServicesConfig implements IServicesConfig {
 
     public ServicesConfig(
         final String keyValueStorageUrl,
+        final String userManagementApiUrl,
         MessagesConfig messagesConfig,
         AlarmsConfig alarmsConfig,
         DiagnosticsConfig diagnosticsConfig) {
         this.keyValueStorageUrl = keyValueStorageUrl;
+        this.userManagementApiUrl = userManagementApiUrl;
         this.messagesConfig = messagesConfig;
         this.alarmsConfig = alarmsConfig;
         this.diagnosticsConfig = diagnosticsConfig;
@@ -33,6 +37,15 @@ public class ServicesConfig implements IServicesConfig {
      */
     public String getKeyValueStorageUrl() {
         return this.keyValueStorageUrl;
+    }
+
+    /**
+     * Get user management dependency url
+     *
+     * @return url for user management endpoint
+     */
+    public String getUserManagementApiUrl() {
+        return this.userManagementApiUrl;
     }
 
     public MessagesConfig getMessagesConfig() {

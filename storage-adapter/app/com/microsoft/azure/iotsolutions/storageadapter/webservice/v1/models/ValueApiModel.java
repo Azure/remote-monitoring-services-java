@@ -13,7 +13,7 @@ import org.joda.time.format.DateTimeFormatter;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
-@JsonPropertyOrder({"Status", "CurrentTime", "StartTime", "UpTime", "Properties", "Dependencies", "$metadata"})
+@JsonPropertyOrder({"StatusService", "CurrentTime", "StartTime", "UpTime", "Properties", "Dependencies", "$metadata"})
 public final class ValueApiModel {
 
     private String key;
@@ -27,7 +27,7 @@ public final class ValueApiModel {
         this.data = model.Data;
         this.etag = model.ETag;
         this.$metadata = new Hashtable<String, String>() {{
-            put("$type", "Status;" + Version.Number);
+            put("$type", "StatusService;" + Version.Number);
             put("$modified", dateFormat.print(model.Timestamp.toDateTime(DateTimeZone.UTC)));
             put("$uri", "/" + Version.Path + "/collections/" + model.CollectionId + "/values/" + model.Key);
         }};

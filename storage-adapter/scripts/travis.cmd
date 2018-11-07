@@ -9,7 +9,7 @@
 ::  travis monitor --pro
 ::  travis settings
 ::  travis show
-::  travis status
+::  travis statusService
 ::  travis token --pro
 ::  travis whatsup --pro
 

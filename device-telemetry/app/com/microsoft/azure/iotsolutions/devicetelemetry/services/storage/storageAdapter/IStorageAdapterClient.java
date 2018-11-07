@@ -3,11 +3,10 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.storageAdapter;
 
 import com.google.inject.ImplementedBy;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.Status;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.StatusServiceModel;
 
 import java.util.concurrent.CompletionStage;
 
-@ImplementedBy(KeyValueClient.class)
-public interface IKeyValueClient {
-    CompletionStage<Status> pingAsync();
+@ImplementedBy(StorageAdapterClient.class)
+public interface IStorageAdapterClient {
 }
