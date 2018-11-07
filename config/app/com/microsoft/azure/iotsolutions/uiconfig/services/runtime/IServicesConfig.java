@@ -2,8 +2,6 @@
 
 package com.microsoft.azure.iotsolutions.uiconfig.services.runtime;
 
-import java.util.List;
-
 public interface IServicesConfig {
 
     String getAzureMapsKey();
@@ -17,4 +15,6 @@ public interface IServicesConfig {
     String getTelemetryApiUrl();
 
     String getUserManagementApiUrl();
+
+    IActionsConfig getActionsConfig();
 }

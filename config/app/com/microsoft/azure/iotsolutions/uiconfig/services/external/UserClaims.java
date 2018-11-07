@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft. All rights reserved.
 
-package com.microsoft.azure.iotsolutions.uiconfig.webservice.auth;
+package com.microsoft.azure.iotsolutions.uiconfig.services.external;
 
 import java.util.List;
 

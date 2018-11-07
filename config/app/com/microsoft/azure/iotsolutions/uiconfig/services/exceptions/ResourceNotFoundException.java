@@ -5,8 +5,8 @@ package com.microsoft.azure.iotsolutions.uiconfig.services.exceptions;
 /**
  * Checked exception for request errors.
  *
- * This exception is thrown when a client is requesting a resource that
- * doesn't exist yet.
+ * This exception is thrown when a client is requesting
+ * a resource and they do not have the correct permissions.
  */
 public class ResourceNotFoundException extends BaseException {
     public ResourceNotFoundException() {

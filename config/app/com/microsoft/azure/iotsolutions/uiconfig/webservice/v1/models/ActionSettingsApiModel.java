@@ -3,6 +3,10 @@
 package com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.microsoft.azure.iotsolutions.uiconfig.services.models.actions.IActionSettings;
+
+import java.util.Map;
+import java.util.TreeMap;
 
 public class ActionSettingsApiModel {
 
@@ -19,13 +23,16 @@ public class ActionSettingsApiModel {
     }
 
     @JsonProperty("Settings")
-    public Map<String, Object> getSettings() { return this.settings; }
+    public Map<String, Object> getSettings() {
+        return this.settings;
+    }
 
     public void setSettings(Map settings) {
         this.settings = settings;
     }
 
-    public ActionSettingsApiModel() {
-        this.Type =
+    public ActionSettingsApiModel(IActionSettings actionSettings) {
+        this.type = actionSettings.getType().name();
+        this.settings = new TreeMap<String, Object>(actionSettings.getSettings());
     }
 }
