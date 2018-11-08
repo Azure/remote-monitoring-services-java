@@ -25,9 +25,6 @@ public class StatusService implements IStatusService {
     private final String diagnosticsName = "Diagnostics";
     private final String authName = "Auth";
 
-    private final boolean ALLOW_INSECURE_SSL_SERVER = true;
-    private final int timeoutMS = 10000;
-
     private final IStorageClient storageClient;
     private final ITimeSeriesClient timeSeriesClient;
     private final WsRequestBuilder wsRequestBuilder;
