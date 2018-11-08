@@ -39,7 +39,7 @@ goto :USAGE
     git config --local core.eol lf
     git config --local apply.whitespace fix
 
-    git config --local alias.st statusService
+    git config --local alias.st status
     git config --local alias.co checkout
     git config --local alias.ci commit
 
