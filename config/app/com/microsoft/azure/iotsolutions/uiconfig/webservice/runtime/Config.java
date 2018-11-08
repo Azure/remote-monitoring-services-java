@@ -16,6 +16,7 @@ public class Config implements IConfig {
 
     private final String NAMESPACE = "com.microsoft.azure.iotsolutions.";
     private final String APPLICATION_KEY = NAMESPACE + "uiconfig.";
+    private final String PORT_KEY = APPLICATION_KEY + "webservice_port";
     private final String STORAGE_ADAPTER_WEBSERVICE_URL = APPLICATION_KEY + "storageadapter-webservice-url";
     private final String DEVICESIMULATION_WEBSERVICE_URL = APPLICATION_KEY + "devicesimulation-webservice-url";
     private final String TELEMETRY_WEBSERVICE_URL = APPLICATION_KEY + "telemetry-webservice-url";
@@ -43,10 +44,22 @@ public class Config implements IConfig {
         this.data = ConfigFactory.load();
     }
 
+    /**
+     * Get the TCP port number where the service listen for requests.
+     *
+     * @return TCP port number
+     */
+    public int getPort() {
+        return data.getInt(PORT_KEY);
+    }
+
     /// <summary>Service layer configuration</summary>
     public IServicesConfig getServicesConfig() {
         if (this.servicesConfig != null) return this.servicesConfig;
-        this.servicesConfig = new ServicesConfig(this.data.getString(TELEMETRY_WEBSERVICE_URL), this.data.getString(STORAGE_ADAPTER_WEBSERVICE_URL),
+        this.servicesConfig = new ServicesConfig(
+                this.data.getString(TELEMETRY_WEBSERVICE_URL),
+                this.data.getString(STORAGE_ADAPTER_WEBSERVICE_URL),
+                this.data.getString(DEVICESIMULATION_WEBSERVICE_URL),
                 this.data.getString(DEVICESIMULATION_WEBSERVICE_URL),
                 this.data.getString(SEED_TEMPLATEKEY),
                 this.data.getString(AZUREMAPS_KEY));

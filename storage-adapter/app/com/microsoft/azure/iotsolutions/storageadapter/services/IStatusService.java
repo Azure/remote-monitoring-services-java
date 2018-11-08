@@ -9,5 +9,5 @@ import java.util.concurrent.CompletionStage;
 
 @ImplementedBy(StatusService.class)
 public interface IStatusService {
-    CompletionStage<StatusServiceModel> GetStatusAsync();
+    StatusServiceModel getStatus();
 }

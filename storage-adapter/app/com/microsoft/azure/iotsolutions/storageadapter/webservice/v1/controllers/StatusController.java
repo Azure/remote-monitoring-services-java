@@ -33,7 +33,7 @@ public final class StatusController {
      * @return Service health details.
      */
     public Result index() throws Exception {
-        StatusServiceModel statusServiceModel = this.statusService.GetStatusAsync().toCompletableFuture().get();
+        StatusServiceModel statusServiceModel = this.statusService.getStatus();
         statusServiceModel.addProperty("Port", String.valueOf(config.getPort()));
         return ok(toJson(new StatusApiModel(statusServiceModel)));
     }

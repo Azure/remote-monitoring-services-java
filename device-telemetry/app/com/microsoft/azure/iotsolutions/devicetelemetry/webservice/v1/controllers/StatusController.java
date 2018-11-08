@@ -30,9 +30,7 @@ public final class StatusController extends Controller {
      * @return Service health details.
      */
     public Result index() throws Exception {
-        StatusServiceModel statusServiceModel = this.statusService.GetStatusAsync(
-                config.getClientAuthConfig().isAuthRequired())
-                .toCompletableFuture().get();
+        StatusServiceModel statusServiceModel = this.statusService.getStatus(config.getClientAuthConfig().isAuthRequired());
         statusServiceModel.addProperty("Port", String.valueOf(config.getPort()));
         statusServiceModel.addProperty("AuthRequired", String.valueOf(config.getClientAuthConfig().isAuthRequired()));
         return ok(toJson(new StatusApiModel(statusServiceModel)));

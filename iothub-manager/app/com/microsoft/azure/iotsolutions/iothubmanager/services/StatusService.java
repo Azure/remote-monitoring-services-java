@@ -1,16 +1,13 @@
 // Copyright (c) Microsoft. All rights reserved.
 
-package com.microsoft.azure.iotsolutions.devicetelemetry.services;
+package com.microsoft.azure.iotsolutions.iothubmanager.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.helpers.WsRequestBuilder;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.StatusResultServiceModel;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.StatusServiceModel;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.StorageType;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.cosmosDb.IStorageClient;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.timeSeries.ITimeSeriesClient;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.helpers.WsRequestBuilder;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.models.StatusResultServiceModel;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.models.StatusServiceModel;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.runtime.IServicesConfig;
 import play.Logger;
 import play.libs.ws.WSResponse;
 
@@ -22,30 +19,26 @@ import java.util.concurrent.ExecutionException;
 public class StatusService implements IStatusService {
 
     private final String storageAdapterName = "StorageAdapter";
-    private final String diagnosticsName = "Diagnostics";
     private final String authName = "Auth";
 
     private final boolean ALLOW_INSECURE_SSL_SERVER = true;
     private final int timeoutMS = 10000;
 
-    private final IStorageClient storageClient;
-    private final ITimeSeriesClient timeSeriesClient;
     private final WsRequestBuilder wsRequestBuilder;
     private final IServicesConfig servicesConfig;
+    private final IoTHubWrapper ioTHubWrapper;
 
     private static final Logger.ALogger log = Logger.of(StatusService.class);
 
     @Inject
     StatusService(
-            IStorageClient storageClient,
-            ITimeSeriesClient timeSeriesClient,
             IServicesConfig servicesConfig,
-            WsRequestBuilder wsRequestBuilder
+            WsRequestBuilder wsRequestBuilder,
+            IoTHubWrapper ioTHubWrapper
     ) {
-        this.storageClient = storageClient;
         this.wsRequestBuilder = wsRequestBuilder;
-        this.timeSeriesClient = timeSeriesClient;
         this.servicesConfig = servicesConfig;
+        this.ioTHubWrapper = ioTHubWrapper;
     }
 
     public StatusServiceModel getStatus(boolean authRequired) {
@@ -61,39 +54,16 @@ public class StatusService implements IStatusService {
             result.addProperty("UserManagementApiUrl", this.servicesConfig.getUserManagementApiUrl());
         }
 
-        // Check connection to CosmosDb
-        StatusResultServiceModel storageResult = this.storageClient.ping();
-        SetServiceStatus("Storage", storageResult, result, errors);
-
-        // Check connection to TSI
-        if (this.servicesConfig.getMessagesConfig().getStorageType() == StorageType.tsi) {
-            StatusResultServiceModel tSIResult = this.timeSeriesClient.ping();
-            SetServiceStatus("TimeSeries", tSIResult, result, errors);
-
-            String dataAccessFqdn = this.servicesConfig.getMessagesConfig().getTimeSeriesConfig().getDataAccessFqdn();
-            String environmentId = dataAccessFqdn.substring(0, dataAccessFqdn.indexOf("."));
-            String tSIurl = String.format(
-                    "%s?environmentId=%s&tid=%s",
-                    this.servicesConfig.getMessagesConfig().getTimeSeriesConfig().getExplorerUrl(),
-                    environmentId,
-                    this.servicesConfig.getMessagesConfig().getTimeSeriesConfig().getAadApplicationId());
-            result.addProperty("TimeSeriesUrl", tSIurl);
-        }
-
         // Check connection to StorageAdapter
         StatusResultServiceModel storageAdapterResult = this.PingService(
                 storageAdapterName,
-                this.servicesConfig.getKeyValueStorageUrl());
+                this.servicesConfig.getStorageAdapterServiceUrl());
         SetServiceStatus(storageAdapterName, storageAdapterResult, result, errors);
-        result.addProperty("StorageAdapterApiUrl", this.servicesConfig.getKeyValueStorageUrl());
+        result.addProperty("StorageAdapterApiUrl", this.servicesConfig.getStorageAdapterServiceUrl());
 
-        // Check connection to Diagnostics
-        StatusResultServiceModel diagnosticsResult = this.PingService(
-                diagnosticsName,
-                this.servicesConfig.getDiagnosticsConfig().getApiUrl());
-        // Note: Overall simulation service status is independent of diagnostics service
-        // Hence not using SetServiceStatus on diagnosticsResult
-        result.addDependency(diagnosticsName, diagnosticsResult);
+        // Check connection to IoTHub
+        StatusResultServiceModel ioTHubResult = this.ioTHubWrapper.ping();
+        SetServiceStatus("IoTHub", ioTHubResult, result, errors);
 
         if (errors.size() > 0) {
             result.setStatus(new StatusResultServiceModel(false, String.join("; ", errors)));

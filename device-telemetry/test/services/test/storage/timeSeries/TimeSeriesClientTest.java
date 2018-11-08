@@ -41,7 +41,7 @@ public class TimeSeriesClientTest {
     @Category({UnitTest.class})
     public void PingReturnsFalse_WhenConfigValuesAreNull() throws Throwable {
         // Act & Assert
-        StatusResultServiceModel result = this.timeSeriesClient.pingAsync().toCompletableFuture().get();
+        StatusResultServiceModel result = this.timeSeriesClient.ping();
 
         // Assert
         Assert.assertFalse(result.getIsHealthy());

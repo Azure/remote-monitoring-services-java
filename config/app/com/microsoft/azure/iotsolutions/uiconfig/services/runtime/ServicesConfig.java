@@ -19,10 +19,16 @@ public class ServicesConfig implements IServicesConfig {
     public ServicesConfig() {
     }
 
-    public ServicesConfig(String telemetryApiUrl, String storageAdapterApiUrl, String deviceSimulationApiUrl,
-                          String seedTemplate, String azureMapsKey) {
+    public ServicesConfig(
+            String telemetryApiUrl,
+            String storageAdapterApiUrl,
+            String userManagementApiUrl,
+            String deviceSimulationApiUrl,
+            String seedTemplate,
+            String azureMapsKey) {
         this.storageAdapterApiUrl = storageAdapterApiUrl;
         this.deviceSimulationApiUrl = deviceSimulationApiUrl;
+        this.userManagementApiUrl = userManagementApiUrl;
         this.seedTemplate = seedTemplate;
         this.telemetryApiUrl = telemetryApiUrl;
         this.azureMapsKey = azureMapsKey;
@@ -72,7 +78,9 @@ public class ServicesConfig implements IServicesConfig {
     }
 
     @Override
-    public String getUserManagementApiUrl() { return this.userManagementApiUrl; }
+    public String getUserManagementApiUrl() {
+        return this.userManagementApiUrl;
+    }
 
     public void setUserManagementApiUrl(String userManagementApiUrl) {
         this.userManagementApiUrl = userManagementApiUrl;

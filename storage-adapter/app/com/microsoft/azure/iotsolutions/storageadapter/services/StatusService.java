@@ -24,7 +24,7 @@ public class StatusService implements IStatusService {
         this.servicesConfig = servicesConfig;
     }
 
-    public CompletionStage<StatusServiceModel> GetStatusAsync() {
+    public StatusServiceModel getStatus() {
         StatusServiceModel result = new StatusServiceModel(true, "Alive and well!");
         ArrayList<String> errors = new ArrayList<String>();
 
@@ -37,7 +37,7 @@ public class StatusService implements IStatusService {
         }
 
         log.info("Service status request" + result.toString());
-        return CompletableFuture.completedFuture(result);
+        return result;
     }
 
     private void SetServiceStatus(

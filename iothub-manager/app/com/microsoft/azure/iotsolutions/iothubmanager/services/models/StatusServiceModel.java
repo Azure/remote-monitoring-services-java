@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft. All rights reserved.
 
-package com.microsoft.azure.iotsolutions.devicetelemetry.services.models;
+package com.microsoft.azure.iotsolutions.iothubmanager.services.models;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -28,7 +28,7 @@ public class StatusServiceModel {
     public StatusServiceModel(
             @JsonProperty("Status") StatusResultServiceModel status,
             @JsonProperty("Properties") Hashtable<String, String> properties,
-            @JsonProperty ("Dependencies") Hashtable<String, StatusResultServiceModel> dependencies) {
+            @JsonProperty("Dependencies") Hashtable<String, StatusResultServiceModel> dependencies) {
         this.status = status;
         this.properties = properties;
         this.dependencies = dependencies;

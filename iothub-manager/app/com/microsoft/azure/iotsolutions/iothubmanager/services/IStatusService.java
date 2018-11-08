@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft. All rights reserved.
 
-package com.microsoft.azure.iotsolutions.devicetelemetry.services;
+package com.microsoft.azure.iotsolutions.iothubmanager.services;
 
 import com.google.inject.ImplementedBy;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.StatusServiceModel;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.models.StatusServiceModel;
 
 @ImplementedBy(StatusService.class)
 public interface IStatusService {
