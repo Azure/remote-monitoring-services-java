@@ -74,7 +74,7 @@ public final class StatusApiModel {
     @JsonProperty("$metadata")
     public Dictionary<String, String> getMetadata() {
         return new Hashtable<String, String>() {{
-            put("$type", "StatusService;" + Version.Number);
+            put("$type", "Status;" + Version.Number);
             put("$uri", "/" + Version.Path + "/status");
         }};
     }
