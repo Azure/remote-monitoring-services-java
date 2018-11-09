@@ -10,7 +10,7 @@ public class TokenApiModel {
     private String accessTokenType;
     private String accessToken;
     private String authority;
-    private DateTime expiresOn;
+    private String expiresOn;
 
     @JsonProperty("Audience")
     public String getAudience() {
@@ -33,7 +33,7 @@ public class TokenApiModel {
     }
 
     @JsonProperty("ExpiresOn")
-    public DateTime getExpiresOn() {
+    public String getExpiresOn() {
         return this.expiresOn;
     }
 }

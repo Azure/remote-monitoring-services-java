@@ -4,6 +4,7 @@ package com.microsoft.azure.iotsolutions.uiconfig.webservice.controllers;
 
 import akka.util.ByteString;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.microsoft.azure.iotsolutions.uiconfig.services.IActions;
 import com.microsoft.azure.iotsolutions.uiconfig.services.IStorage;
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.BaseException;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.Logo;
@@ -30,6 +31,7 @@ import static junit.framework.TestCase.assertEquals;
 public class SolutionSettingsControllerTest {
 
     private IStorage mockStorage;
+    private IActions mockActions;
     private SolutionSettingsController controller;
     private Random rand;
 
@@ -39,6 +41,7 @@ public class SolutionSettingsControllerTest {
     @Before
     public void setUp() {
         mockStorage = Mockito.mock(IStorage.class);
+        mockActions = Mockito.mock(IActions.class);
         rand = new Random();
     }
 
@@ -49,7 +52,7 @@ public class SolutionSettingsControllerTest {
         String description = rand.NextString();
         Object model = Json.fromJson(Json.parse(String.format("{\"Name\":\"%s\",\"Description\":\"%s\"}", name, description)), Object.class);
         Mockito.when(mockStorage.getThemeAsync()).thenReturn(CompletableFuture.supplyAsync(() -> model));
-        controller = new SolutionSettingsController(mockStorage);
+        controller = new SolutionSettingsController(mockStorage, mockActions);
         String resultStr = TestUtils.getString(controller.getThemeAsync().toCompletableFuture().get());
         JsonNode result = Json.toJson(Json.parse(resultStr));
         assertEquals(result.get("Name").asText(), name);
@@ -63,7 +66,7 @@ public class SolutionSettingsControllerTest {
         String description = rand.NextString();
         Object model = Json.fromJson(Json.parse(String.format("{\"Name\":\"%s\",\"Description\":\"%s\"}", name, description)), Object.class);
         Mockito.when(mockStorage.setThemeAsync(Mockito.any(Object.class))).thenReturn(CompletableFuture.supplyAsync(() -> model));
-        controller = new SolutionSettingsController(mockStorage);
+        controller = new SolutionSettingsController(mockStorage, mockActions);
         TestUtils.setRequest(String.format("{\"Name\":\"%s\",\"Description\":\"%s\"}", name, description));
         String resultStr = TestUtils.getString(controller.setThemeAsync().toCompletableFuture().get());
         JsonNode result = Json.toJson(Json.parse(resultStr));
@@ -80,7 +83,7 @@ public class SolutionSettingsControllerTest {
         String name = rand.NextString();
         Logo model = new Logo(image, type, name, false);
         getLogoMockSetup(model);
-        controller = new SolutionSettingsController(mockStorage);
+        controller = new SolutionSettingsController(mockStorage, mockActions);
         Http.Response mockResponse = TestUtils.setRequest(SolutionSettingsControllerTest.LOGO_BODY);
 
         // Act
@@ -100,7 +103,7 @@ public class SolutionSettingsControllerTest {
         // Arrange
         Logo model = Logo.Default;
         getLogoMockSetup(model);
-        controller = new SolutionSettingsController(mockStorage);
+        controller = new SolutionSettingsController(mockStorage, mockActions);
         Http.Response mockResponse = TestUtils.setRequest(SolutionSettingsControllerTest.LOGO_BODY);
 
         // Act
@@ -123,7 +126,7 @@ public class SolutionSettingsControllerTest {
         String name = rand.NextString();
         Logo model = new Logo(image, type, name, false);
         setLogoMockSetup(model);
-        controller = new SolutionSettingsController(mockStorage);
+        controller = new SolutionSettingsController(mockStorage, mockActions);
         Http.Response mockResponse = TestUtils.setRequest(SolutionSettingsControllerTest.LOGO_BODY);
 
         // Act
@@ -144,7 +147,7 @@ public class SolutionSettingsControllerTest {
         String type = rand.NextString();
         Logo model = new Logo(image, type, null, false);
         setLogoMockSetup(model);
-        controller = new SolutionSettingsController(mockStorage);
+        controller = new SolutionSettingsController(mockStorage, mockActions);
         Http.Response mockResponse = TestUtils.setRequest(SolutionSettingsControllerTest.LOGO_BODY);
 
         // Act
@@ -163,7 +166,7 @@ public class SolutionSettingsControllerTest {
         String name = rand.NextString();
         Logo model = new Logo(null, null, name, false);
         setLogoMockSetup(model);
-        controller = new SolutionSettingsController(mockStorage);
+        controller = new SolutionSettingsController(mockStorage, mockActions);
         Http.Response mockResponse = TestUtils.setRequest(SolutionSettingsControllerTest.LOGO_BODY);
 
         // Act

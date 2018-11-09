@@ -64,11 +64,11 @@ public class UserManagementClient implements IUserManagementClient {
                 .handle((response, error) -> {
                     if (error != null) {
                         // If the error is 403, the user who did the deployment is not authorized
-                        // to assign the role for the application to have owner access.
+                        // to assign the role for the application to have contributor access.
                         if (response.getStatus() == HttpStatus.SC_FORBIDDEN) {
                             String message = String.format("The application is not authorized and has not been " +
-                                    "assigned owner permissions for the subscription. Go to the Azure portal and " +
-                                    "assign the application as an owner in order to retrieve the token. %s", url);
+                                    "assigned Contributor permissions for the subscription. Go to the Azure portal and " +
+                                    "assign the application as a Contributor in order to retrieve the token. %s", url);
                             log.error(message, error.getCause());
                             throw new CompletionException(new NotAuthorizedException(message));
                         } else {

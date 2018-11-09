@@ -8,11 +8,13 @@ import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.InvalidConf
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.NotAuthorizedException;
 import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.IActionsConfig;
 import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.IServicesConfig;
+import org.apache.http.HttpStatus;
 import play.Logger;
 import play.libs.ws.WSClient;
 import play.libs.ws.WSRequest;
 import play.mvc.Http;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
@@ -65,11 +67,36 @@ public class AzureResourceManagerClient implements IAzureResourceManagerClient {
                         this.resourceGroup,
                         this.managementApiVersion);
 
-        return this.createRequest(logicAppTestConnectionUri)
-                .get()
+        // Prepare request
+        WSRequest request;
+        try {
+            request = this.createRequest(logicAppTestConnectionUri).toCompletableFuture().get();
+        } catch (InterruptedException | ExecutionException e) {
+            String message = "Unable to get application token.";
+            log.error(message);
+            throw new CompletionException(new ExternalDependencyException(message));
+        }
+
+        return request.get()
                 .handle((response, error) -> {
+                    if (response != null) {
+                        // If the error is 403, the user who did the deployment is not authorized
+                        // to assign the role for the application to have Contributor access.
+                        if (response.getStatus() == HttpStatus.SC_FORBIDDEN) {
+                            String message = String.format("The application is not authorized and has not been " +
+                                    "assigned Contributor permissions for the subscription. Go to the Azure portal and " +
+                                    "assign the application as a Contributor in order to retrieve the token.");
+                            log.error(message, error.getCause());
+                            throw new CompletionException(new NotAuthorizedException(message));
+                        }
+                    }
+                    if (error != null) {
+                        String message = String.format("Failed to check status of Office365 Logic App Connector.");
+                        log.error(message, error.getCause());
+                        throw new CompletionException(message, error.getCause());
+                    }
                     if (response.getStatus() != Http.Status.OK) {
-                        log.debug(String.format("Office365 Logic App Connector is not set up: %s", error.getMessage()));
+                        log.debug(String.format("Office365 Logic App Connector is not set up."));
                         return false;
                     }
 
@@ -93,7 +120,7 @@ public class AzureResourceManagerClient implements IAzureResourceManagerClient {
      * @throws ExternalDependencyException
      * @throws NotAuthorizedException
      */
-    private WSRequest createRequest(String url) throws ExternalDependencyException, NotAuthorizedException {
+    private CompletionStage<WSRequest> createRequest(String url) throws ExternalDependencyException, NotAuthorizedException {
         WSRequest request = this.wsClient.url(url);
 
         try {
@@ -111,6 +138,6 @@ public class AzureResourceManagerClient implements IAzureResourceManagerClient {
                 throw new NotAuthorizedException(message);
             }
         }
-        return request;
+        return CompletableFuture.completedFuture(request);
     }
 }
