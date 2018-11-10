@@ -20,7 +20,7 @@ public class ActionSettingsListApiModel {
             items.add(new ActionSettingsApiModel(item));
         }
 
-        this.metadata = new Hashtable<String, String>();
+        this.metadata = new Hashtable<>();
         this.metadata.put("$type", String.format("ActionSettingsList;%s", Version.Number));
         this.metadata.put("$url", String.format("/%s/solution-settings/actions", Version.Path));
     }

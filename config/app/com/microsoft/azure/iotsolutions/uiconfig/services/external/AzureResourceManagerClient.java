@@ -14,7 +14,6 @@ import play.libs.ws.WSClient;
 import play.libs.ws.WSRequest;
 import play.mvc.Http;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
@@ -23,7 +22,6 @@ public class AzureResourceManagerClient implements IAzureResourceManagerClient {
 
     private final WSClient wsClient;
     private static final Logger.ALogger log = Logger.of(AzureResourceManagerClient.class);
-    private final String office365LogicAppUrl;
     private final String subscriptionId;
     private final String resourceGroup;
     private final String armEndpointUrl;
@@ -39,7 +37,6 @@ public class AzureResourceManagerClient implements IAzureResourceManagerClient {
         this.userManagementClient = userManagementClient;
 
         IActionsConfig actionsConfig = config.getActionsConfig();
-        this.office365LogicAppUrl = actionsConfig.getOffice365LogicAppUrl();
         this.subscriptionId = actionsConfig.getSubscriptionId();
         this.resourceGroup = actionsConfig.getResourceGroup();
         this.armEndpointUrl = actionsConfig.getArmEndpointUrl();
@@ -67,33 +64,27 @@ public class AzureResourceManagerClient implements IAzureResourceManagerClient {
                         this.resourceGroup,
                         this.managementApiVersion);
 
-        // Prepare request
-        WSRequest request;
-        try {
-            request = this.createRequest(logicAppTestConnectionUri).toCompletableFuture().get();
-        } catch (InterruptedException | ExecutionException e) {
-            String message = "Unable to get application token.";
-            log.error(message);
-            throw new CompletionException(new ExternalDependencyException(message));
-        }
+        // Gets token from auth service and adds to header
+        WSRequest request = this.createRequest(logicAppTestConnectionUri);
 
         return request.get()
                 .handle((response, error) -> {
                     if (response != null) {
                         // If the error is 403, the user who did the deployment is not authorized
                         // to assign the role for the application to have Contributor access.
-                        if (response.getStatus() == HttpStatus.SC_FORBIDDEN) {
+                        if (response.getStatus() == HttpStatus.SC_FORBIDDEN ||
+                                response.getStatus() == HttpStatus.SC_UNAUTHORIZED) {
                             String message = String.format("The application is not authorized and has not been " +
                                     "assigned Contributor permissions for the subscription. Go to the Azure portal and " +
                                     "assign the application as a Contributor in order to retrieve the token.");
-                            log.error(message, error.getCause());
+                            log.error(message);
                             throw new CompletionException(new NotAuthorizedException(message));
                         }
                     }
                     if (error != null) {
                         String message = String.format("Failed to check status of Office365 Logic App Connector.");
                         log.error(message, error.getCause());
-                        throw new CompletionException(message, error.getCause());
+                        throw new CompletionException(new ExternalDependencyException(message, error.getCause()));
                     }
                     if (response.getStatus() != Http.Status.OK) {
                         log.debug(String.format("Office365 Logic App Connector is not set up."));
@@ -120,7 +111,7 @@ public class AzureResourceManagerClient implements IAzureResourceManagerClient {
      * @throws ExternalDependencyException
      * @throws NotAuthorizedException
      */
-    private CompletionStage<WSRequest> createRequest(String url) throws ExternalDependencyException, NotAuthorizedException {
+    private WSRequest createRequest(String url) throws ExternalDependencyException, NotAuthorizedException {
         WSRequest request = this.wsClient.url(url);
 
         try {
@@ -138,6 +129,6 @@ public class AzureResourceManagerClient implements IAzureResourceManagerClient {
                 throw new NotAuthorizedException(message);
             }
         }
-        return CompletableFuture.completedFuture(request);
+        return request;
     }
 }

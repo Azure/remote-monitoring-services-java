@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
 
 public class Actions implements IActions {
 
@@ -37,7 +38,7 @@ public class Actions implements IActions {
         EmailActionSettings emailSettings = new EmailActionSettings(
                 this.azureResourceManagerClient,
                 this.config);
-        emailSettings.InitializeAsync();
+        emailSettings.Initialize();
         result.add(emailSettings);
 
         return CompletableFuture.completedFuture(result);

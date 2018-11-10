@@ -3,6 +3,7 @@
 package com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.microsoft.azure.iotsolutions.uiconfig.services.models.actions.ActionType;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.actions.IActionSettings;
 
 import java.util.Map;

@@ -65,7 +65,8 @@ public class UserManagementClient implements IUserManagementClient {
                     if (error != null) {
                         // If the error is 403, the user who did the deployment is not authorized
                         // to assign the role for the application to have contributor access.
-                        if (response.getStatus() == HttpStatus.SC_FORBIDDEN) {
+                        if (response.getStatus() == HttpStatus.SC_FORBIDDEN ||
+                                response.getStatus() == HttpStatus.SC_UNAUTHORIZED) {
                             String message = String.format("The application is not authorized and has not been " +
                                     "assigned Contributor permissions for the subscription. Go to the Azure portal and " +
                                     "assign the application as a Contributor in order to retrieve the token. %s", url);
@@ -74,7 +75,7 @@ public class UserManagementClient implements IUserManagementClient {
                         } else {
                             String message = String.format("Failed to get application token: %s", url);
                             log.error(message, error.getCause());
-                            throw new CompletionException(message, error.getCause());
+                            throw new CompletionException(new ExternalDependencyException(message, error.getCause()));
                         }
                     } else if (response.getStatus() != Http.Status.OK) {
                         String message = String.format("Failed to get application token: %s", url);
