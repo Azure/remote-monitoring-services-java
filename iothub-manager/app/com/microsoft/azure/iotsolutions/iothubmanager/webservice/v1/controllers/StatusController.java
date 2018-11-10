@@ -3,12 +3,10 @@
 package com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers;
 
 import com.google.inject.Inject;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.IIoTHubWrapper;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.IStatusService;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.StatusServiceModel;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.runtime.IConfig;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models.StatusApiModel;
-import com.microsoft.azure.sdk.iot.service.RegistryManager;
 import play.mvc.Result;
 
 import static play.libs.Json.toJson;

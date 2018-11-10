@@ -9,8 +9,6 @@ import com.microsoft.azure.iotsolutions.storageadapter.services.runtime.IService
 import play.Logger;
 
 import java.util.ArrayList;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 
 public class StatusService implements IStatusService {
 
@@ -41,10 +39,10 @@ public class StatusService implements IStatusService {
     }
 
     private void SetServiceStatus(
-            String dependencyName,
-            StatusResultServiceModel serviceResult,
-            StatusServiceModel result,
-            ArrayList<String> errors
+        String dependencyName,
+        StatusResultServiceModel serviceResult,
+        StatusServiceModel result,
+        ArrayList<String> errors
     ) {
         if (!serviceResult.getIsHealthy()) {
             errors.add(dependencyName + " check failed");
@@ -52,5 +50,4 @@ public class StatusService implements IStatusService {
         }
         result.addDependency(dependencyName, serviceResult);
     }
-
 }

@@ -8,13 +8,11 @@ import com.microsoft.azure.iotsolutions.iothubmanager.services.helpers.WsRequest
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.StatusResultServiceModel;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.StatusServiceModel;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.runtime.IServicesConfig;
+import org.apache.http.HttpStatus;
 import play.Logger;
 import play.libs.ws.WSResponse;
 
 import java.util.ArrayList;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ExecutionException;
 
 public class StatusService implements IStatusService {
 
@@ -32,9 +30,9 @@ public class StatusService implements IStatusService {
 
     @Inject
     StatusService(
-            IServicesConfig servicesConfig,
-            WsRequestBuilder wsRequestBuilder,
-            IoTHubWrapper ioTHubWrapper
+        IServicesConfig servicesConfig,
+        WsRequestBuilder wsRequestBuilder,
+        IoTHubWrapper ioTHubWrapper
     ) {
         this.wsRequestBuilder = wsRequestBuilder;
         this.servicesConfig = servicesConfig;
@@ -48,16 +46,16 @@ public class StatusService implements IStatusService {
         if (authRequired) {
             // Check connection to Auth
             StatusResultServiceModel authResult = this.PingService(
-                    authName,
-                    this.servicesConfig.getUserManagementApiUrl());
+                authName,
+                this.servicesConfig.getUserManagementApiUrl());
             SetServiceStatus(authName, authResult, result, errors);
             result.addProperty("UserManagementApiUrl", this.servicesConfig.getUserManagementApiUrl());
         }
 
         // Check connection to StorageAdapter
         StatusResultServiceModel storageAdapterResult = this.PingService(
-                storageAdapterName,
-                this.servicesConfig.getStorageAdapterServiceUrl());
+            storageAdapterName,
+            this.servicesConfig.getStorageAdapterServiceUrl());
         SetServiceStatus(storageAdapterName, storageAdapterResult, result, errors);
         result.addProperty("StorageAdapterApiUrl", this.servicesConfig.getStorageAdapterServiceUrl());
 
@@ -75,10 +73,10 @@ public class StatusService implements IStatusService {
     }
 
     private void SetServiceStatus(
-            String dependencyName,
-            StatusResultServiceModel serviceResult,
-            StatusServiceModel result,
-            ArrayList<String> errors
+        String dependencyName,
+        StatusResultServiceModel serviceResult,
+        StatusServiceModel result,
+        ArrayList<String> errors
     ) {
         if (!serviceResult.getIsHealthy()) {
             errors.add(dependencyName + " check failed");
@@ -92,19 +90,18 @@ public class StatusService implements IStatusService {
 
         try {
             WSResponse response = this.wsRequestBuilder
-                    .prepareRequest(serviceURL + "/status")
-                    .get()
-                    .toCompletableFuture()
-                    .get();
+                .prepareRequest(serviceURL + "/status")
+                .get()
+                .toCompletableFuture()
+                .get();
 
-            if (response.getStatus() != 200) {
+            if (response.getStatus() != HttpStatus.SC_OK) {
                 result.setMessage("Status code: " + response.getStatus() + ", Response: " + response.getBody());
             } else {
                 ObjectMapper mapper = new ObjectMapper();
                 StatusServiceModel data = mapper.readValue(response.getBody(), StatusServiceModel.class);
                 result.setStatusResultServiceModel(data.getStatus());
             }
-
         } catch (Exception e) {
             log.error(e.getMessage());
         }

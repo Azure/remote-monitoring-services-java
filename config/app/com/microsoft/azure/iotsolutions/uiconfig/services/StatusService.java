@@ -8,6 +8,7 @@ import com.microsoft.azure.iotsolutions.uiconfig.services.helpers.WsRequestBuild
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.StatusResultServiceModel;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.StatusServiceModel;
 import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.IServicesConfig;
+import org.apache.http.HttpStatus;
 import play.Logger;
 import play.libs.ws.WSResponse;
 
@@ -30,9 +31,8 @@ public class StatusService implements IStatusService {
 
     @Inject
     StatusService(
-            IServicesConfig servicesConfig,
-            WsRequestBuilder wsRequestBuilder
-    ) {
+        IServicesConfig servicesConfig,
+        WsRequestBuilder wsRequestBuilder) {
         this.wsRequestBuilder = wsRequestBuilder;
         this.servicesConfig = servicesConfig;
     }
@@ -43,30 +43,29 @@ public class StatusService implements IStatusService {
 
         // Check connection to Auth
         StatusResultServiceModel authResult = this.PingService(
-                authName,
-                this.servicesConfig.getUserManagementApiUrl());
+            authName,
+            this.servicesConfig.getUserManagementApiUrl());
         SetServiceStatus(authName, authResult, result, errors);
         result.addProperty("UserManagementApiUrl", this.servicesConfig.getUserManagementApiUrl());
 
-
         // Check connection to StorageAdapter
         StatusResultServiceModel storageAdapterResult = this.PingService(
-                storageAdapterName,
-                this.servicesConfig.getStorageAdapterApiUrl());
+            storageAdapterName,
+            this.servicesConfig.getStorageAdapterApiUrl());
         SetServiceStatus(storageAdapterName, storageAdapterResult, result, errors);
         result.addProperty("StorageAdapterApiUrl", this.servicesConfig.getStorageAdapterApiUrl());
 
         // Check connection to Device Telemetry
         StatusResultServiceModel telemetryResult = this.PingService(
-                telemetryName,
-                this.servicesConfig.getTelemetryApiUrl());
+            telemetryName,
+            this.servicesConfig.getTelemetryApiUrl());
         SetServiceStatus(telemetryName, telemetryResult, result, errors);
         result.addProperty("DeviceTelemetryApiUrl", this.servicesConfig.getTelemetryApiUrl());
 
         // Check connection to Device Simulation
         StatusResultServiceModel deviceSimulationResult = this.PingService(
-                simulationName,
-                this.servicesConfig.getDeviceSimulationApiUrl());
+            simulationName,
+            this.servicesConfig.getDeviceSimulationApiUrl());
         SetServiceStatus(simulationName, deviceSimulationResult, result, errors);
         result.addProperty("DeviceSimulationApiUrl", this.servicesConfig.getDeviceSimulationApiUrl());
 
@@ -76,16 +75,16 @@ public class StatusService implements IStatusService {
             result.setStatus(new StatusResultServiceModel(false, String.join("; ", errors)));
         }
 
-        log.info("Service status request" + result.toString());
+        log.info("Service status:" + result.getStatus().getMessage());
 
         return result;
     }
 
     private void SetServiceStatus(
-            String dependencyName,
-            StatusResultServiceModel serviceResult,
-            StatusServiceModel result,
-            ArrayList<String> errors
+        String dependencyName,
+        StatusResultServiceModel serviceResult,
+        StatusServiceModel result,
+        ArrayList<String> errors
     ) {
         if (!serviceResult.getIsHealthy()) {
             errors.add(dependencyName + " check failed");
@@ -99,19 +98,18 @@ public class StatusService implements IStatusService {
 
         try {
             WSResponse response = this.wsRequestBuilder
-                    .prepareRequest(serviceURL + "/status")
-                    .get()
-                    .toCompletableFuture()
-                    .get();
+                .prepareRequest(serviceURL + "/status")
+                .get()
+                .toCompletableFuture()
+                .get();
 
-            if (response.getStatus() != 200) {
+            if (response.getStatus() != HttpStatus.SC_OK) {
                 result.setMessage("Status code: " + response.getStatus() + ", Response: " + response.getBody());
             } else {
                 ObjectMapper mapper = new ObjectMapper();
                 StatusServiceModel data = mapper.readValue(response.getBody(), StatusServiceModel.class);
                 result.setStatusResultServiceModel(data.getStatus());
             }
-
         } catch (Exception e) {
             log.error(e.getMessage());
         }

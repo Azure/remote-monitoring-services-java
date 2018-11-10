@@ -6,14 +6,11 @@ import com.google.inject.Inject;
 import com.microsoft.azure.documentdb.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidConfigurationException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.StatusResultServiceModel;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.StatusServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import play.Logger;
 import play.mvc.Http;
 
-import java.net.URI;
 import java.util.ArrayList;
-import java.util.concurrent.CompletionStage;
 
 public class StorageClient implements IStorageClient {
 
@@ -151,6 +148,9 @@ public class StorageClient implements IStorageClient {
         try {
             if (this.client != null) {
                 response = this.client.getDatabaseAccount();
+            }
+            else {
+                result.setMessage("Storage client not setup properly.");
             }
             if (response != null) {
                 result = new StatusResultServiceModel(true, "Alive and well!");

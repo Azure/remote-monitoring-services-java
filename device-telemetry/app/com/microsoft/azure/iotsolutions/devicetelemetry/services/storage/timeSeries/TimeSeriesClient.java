@@ -5,24 +5,17 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.timeSe
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
-import com.microsoft.aad.adal4j.AuthenticationContext;
-import com.microsoft.aad.adal4j.AuthenticationResult;
-import com.microsoft.aad.adal4j.ClientCredential;
+import com.microsoft.aad.adal4j.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.MessageListServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.StatusResultServiceModel;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.StatusServiceModel;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.MessagesConfig;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.TimeSeriesConfig;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.*;
 import org.apache.http.HttpStatus;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import play.Logger;
 import play.libs.Json;
-import play.libs.ws.WSClient;
-import play.libs.ws.WSRequest;
-import play.libs.ws.WSResponse;
+import play.libs.ws.*;
 
 import java.time.Instant;
 import java.util.Arrays;
@@ -107,7 +100,7 @@ public class TimeSeriesClient implements ITimeSeriesClient {
 
             WSResponse response = request.get().toCompletableFuture().get();
 
-            if (response.getStatus() != 200) {
+            if (response.getStatus() != HttpStatus.SC_OK) {
                 result.setMessage("Status code: " + response.getStatus() + ", Response: " + response.getBody());
             } else {
                 result.setIsHealthy(true);

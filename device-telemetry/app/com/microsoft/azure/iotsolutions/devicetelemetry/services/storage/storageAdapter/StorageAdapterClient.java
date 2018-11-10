@@ -3,15 +3,8 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.storageAdapter;
 
 import com.google.inject.Inject;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.StatusServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
-import org.apache.http.HttpStatus;
 import play.libs.ws.WSClient;
-import play.libs.ws.WSRequest;
-import play.libs.ws.WSResponse;
-
-import java.time.Duration;
-import java.util.concurrent.CompletionStage;
 
 public class StorageAdapterClient implements IStorageAdapterClient {
 

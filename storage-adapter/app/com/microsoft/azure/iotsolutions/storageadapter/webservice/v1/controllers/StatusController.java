@@ -13,7 +13,6 @@ import play.mvc.Result;
 import static play.libs.Json.toJson;
 import static play.mvc.Results.ok;
 
-
 /**
  * Service health check endpoint.
  */

@@ -14,9 +14,7 @@ import com.microsoft.azure.iotsolutions.storageadapter.services.runtime.IService
 import com.microsoft.azure.iotsolutions.storageadapter.services.wrappers.IFactory;
 import play.Logger;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class DocDBKeyValueContainer implements IKeyValueContainer {
 
@@ -49,7 +47,6 @@ public class DocDBKeyValueContainer implements IKeyValueContainer {
         }
     }
 
-
     public java.util.Iterator<ValueServiceModel> list(String collectionId) throws CreateResourceException, InvalidInputException {
         createDocumentClientLazily();
         SqlQuerySpec sqlQuerySpec = QueryBuilder.buildQuerySpec(collectionId);
@@ -64,7 +61,6 @@ public class DocDBKeyValueContainer implements IKeyValueContainer {
         }
         return result.iterator();
     }
-
 
     public ValueServiceModel create(String collectionId, String key, ValueServiceModel input) throws DocumentClientException, CreateResourceException {
         KeyValueDocument document = new KeyValueDocument(collectionId, key, input.Data);
@@ -106,7 +102,6 @@ public class DocDBKeyValueContainer implements IKeyValueContainer {
         }
     }
 
-
     public StatusResultServiceModel ping() {
         StatusResultServiceModel result = new StatusResultServiceModel(false, "Storage check failed");
         try {
@@ -114,8 +109,9 @@ public class DocDBKeyValueContainer implements IKeyValueContainer {
             DatabaseAccount response = null;
             if (this.client != null) {
                 response = this.client.getDatabaseAccount();
+            } else {
+                result.setMessage("Storage client not setup properly.");
             }
-
             if (response != null) {
                 result = new StatusResultServiceModel(true, "Alive and well!");
             }
@@ -124,5 +120,4 @@ public class DocDBKeyValueContainer implements IKeyValueContainer {
         }
         return result;
     }
-
 }

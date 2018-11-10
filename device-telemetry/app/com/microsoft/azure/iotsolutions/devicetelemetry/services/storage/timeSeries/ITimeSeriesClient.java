@@ -7,10 +7,7 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.Inva
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.TimeSeriesParseException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.MessageListServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.StatusResultServiceModel;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.StatusServiceModel;
 import org.joda.time.DateTime;
-
-import java.util.concurrent.CompletionStage;
 
 @ImplementedBy(TimeSeriesClient.class)
 public interface ITimeSeriesClient {

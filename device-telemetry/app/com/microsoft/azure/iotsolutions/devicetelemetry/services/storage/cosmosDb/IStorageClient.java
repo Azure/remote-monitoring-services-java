@@ -6,10 +6,8 @@ import com.google.inject.ImplementedBy;
 import com.microsoft.azure.documentdb.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidConfigurationException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.StatusResultServiceModel;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.StatusServiceModel;
 
 import java.util.ArrayList;
-import java.util.concurrent.CompletionStage;
 
 @ImplementedBy(StorageClient.class)
 public interface IStorageClient {

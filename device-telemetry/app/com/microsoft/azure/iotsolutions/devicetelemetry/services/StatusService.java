@@ -11,13 +11,11 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServic
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.StorageType;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.cosmosDb.IStorageClient;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.timeSeries.ITimeSeriesClient;
+import org.apache.http.HttpStatus;
 import play.Logger;
 import play.libs.ws.WSResponse;
 
 import java.util.ArrayList;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ExecutionException;
 
 public class StatusService implements IStatusService {
 
@@ -69,12 +67,12 @@ public class StatusService implements IStatusService {
 
             String dataAccessFqdn = this.servicesConfig.getMessagesConfig().getTimeSeriesConfig().getDataAccessFqdn();
             String environmentId = dataAccessFqdn.substring(0, dataAccessFqdn.indexOf("."));
-            String tSIurl = String.format(
+            String tsiURL = String.format(
                     "%s?environmentId=%s&tid=%s",
                     this.servicesConfig.getMessagesConfig().getTimeSeriesConfig().getExplorerUrl(),
                     environmentId,
                     this.servicesConfig.getMessagesConfig().getTimeSeriesConfig().getAadApplicationId());
-            result.addProperty("TimeSeriesUrl", tSIurl);
+            result.addProperty("TimeSeriesUrl", tsiURL);
         }
 
         // Check connection to StorageAdapter
@@ -88,7 +86,7 @@ public class StatusService implements IStatusService {
         StatusResultServiceModel diagnosticsResult = this.PingService(
                 diagnosticsName,
                 this.servicesConfig.getDiagnosticsConfig().getApiUrl());
-        // Note: Overall simulation service status is independent of diagnostics service
+        // Note: Overall telemetry service status is independent of diagnostics service
         // Hence not using SetServiceStatus on diagnosticsResult
         result.addDependency(diagnosticsName, diagnosticsResult);
 
@@ -124,7 +122,7 @@ public class StatusService implements IStatusService {
                     .toCompletableFuture()
                     .get();
 
-            if (response.getStatus() != 200) {
+            if (response.getStatus() != HttpStatus.SC_OK) {
                 result.setMessage("Status code: " + response.getStatus() + ", Response: " + response.getBody());
             } else {
                 ObjectMapper mapper = new ObjectMapper();
