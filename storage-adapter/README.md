@@ -57,7 +57,7 @@ Steps using IntelliJ IDEA Community 2017, with SBT plugin enabled:
 
 * "Open" the project with IntelliJ, the IDE should automatically recognize
   the SBT structure. Wait for the IDE to download some dependencies
-  (see IntelliJ statusService bar). This may take a while, hang in there!
+  (see IntelliJ status bar). This may take a while, hang in there!
 * Create a new Run Configuration, of type "SBT Task", with any name.
   * Enter "run 9022" (including the double quotes) in Tasks. This ensures that
     the service starts using the TCP port 9022.  If you desire to use a
@@ -67,7 +67,7 @@ Steps using IntelliJ IDEA Community 2017, with SBT plugin enabled:
 * Either from the toolbar or the Run menu, execute the configuration just
   created, using the Debug command/button
 * Test that the service is up and running pointing your browser to
-  http://127.0.0.1:9022/v1/statusService
+  http://127.0.0.1:9022/v1/status
 
 And as a nice extra: if you edit the code, you don't need to stop/build/restart
 the application. Play and SBT automatically recompile the files modified on the
@@ -90,7 +90,7 @@ Steps using Eclipse Oxygen ("Eclipse for Java Developers" package):
   navigating to the root folder of the project.
 * From the console run `sbt -jvm-debug 9999 "run 900X"` to start the project
 * Test that the service is up and running pointing your browser to
-  http://127.0.0.1:900X/v1/statusService
+  http://127.0.0.1:900X/v1/status
 * In Eclipse, select "Run -> Debug Configurations" and add a "Remote Java
   Application", using "localhost" and port "9999".
 * After saving this configuration, you can click "Debug" to connect to the
