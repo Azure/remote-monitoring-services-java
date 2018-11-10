@@ -45,7 +45,6 @@ public class AzureResourceManagerClient implements IAzureResourceManagerClient {
         if (this.isNullOrEmpty(this.subscriptionId) ||
                 this.isNullOrEmpty(this.resourceGroup) ||
                 this.isNullOrEmpty(this.armEndpointUrl)) {
-
             throw new CompletionException(new InvalidConfigurationException("Subscription Id, " +
                     "Resource Group, and Arm Endpoint Url must be specified" +
                     "in the environment variable configuration for this " +
@@ -66,7 +65,6 @@ public class AzureResourceManagerClient implements IAzureResourceManagerClient {
 
         // Gets token from auth service and adds to header
         WSRequest request = this.createRequest(logicAppTestConnectionUri);
-
         return request.get()
                 .handle((response, error) -> {
                     if (response != null) {

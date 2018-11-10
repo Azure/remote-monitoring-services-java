@@ -12,8 +12,11 @@ import java.util.concurrent.CompletionStage;
 public interface IAzureResourceManagerClient {
 
     /**
+     * Checks to see if the Office 365 Logic App Connector is configured properly
+     * with a sender email address. If it is set up, then this method returns true.
+     * If there is an issue with getting a token to make the request, the method will
+     * throw a NotAuthorizedException.
      *
-     * @return
      * @throws ExternalDependencyException
      * @throws NotAuthorizedException
      */

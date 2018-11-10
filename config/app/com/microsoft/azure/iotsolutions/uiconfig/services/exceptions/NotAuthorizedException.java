@@ -3,11 +3,10 @@
 package com.microsoft.azure.iotsolutions.uiconfig.services.exceptions;
 
 /**
- * Checked exception for request errors.
+ * Exception for authorization errors.
  *
- * This exception is thrown when a client sends a request badly formatted
- * or containing invalid values. The client should fix the request before
- * retrying.
+ * This exception is thrown when the user or the application
+ * is not authorized to perform an action.
  */
 public class NotAuthorizedException extends BaseException {
     public NotAuthorizedException() {

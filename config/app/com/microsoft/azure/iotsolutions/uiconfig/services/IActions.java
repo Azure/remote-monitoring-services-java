@@ -7,7 +7,6 @@ import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.ExternalDep
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.actions.IActionSettings;
 
 import java.util.List;
-import java.util.concurrent.CompletionStage;
 
 @ImplementedBy(Actions.class)
 public interface IActions {
