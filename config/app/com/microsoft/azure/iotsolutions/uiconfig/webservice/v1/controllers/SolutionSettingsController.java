@@ -93,9 +93,8 @@ public final class SolutionSettingsController extends Controller {
                 });
     }
 
-    public CompletionStage<Result> getActionsSettingsAsync() throws BaseException {
-        return this.actions.getListAsync()
-                .thenApply(result -> ok(toJson(new ActionSettingsListApiModel(result))));
+    public Result getActionsSettings() throws BaseException {
+        return ok(toJson(new ActionSettingsListApiModel(this.actions.getList())));
     }
 
     // Given logo and response, sets the body of the response to be the logo image,

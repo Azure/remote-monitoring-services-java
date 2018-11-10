@@ -11,5 +11,5 @@ import java.util.concurrent.CompletionStage;
 
 @ImplementedBy(Actions.class)
 public interface IActions {
-    CompletionStage<List<IActionSettings>> getListAsync() throws ExternalDependencyException;
+    List<IActionSettings> getList() throws ExternalDependencyException;
 }

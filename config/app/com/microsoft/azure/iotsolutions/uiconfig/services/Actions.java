@@ -12,9 +12,6 @@ import play.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ExecutionException;
 
 public class Actions implements IActions {
 
@@ -31,7 +28,7 @@ public class Actions implements IActions {
     }
 
     @Override
-    public CompletionStage<List<IActionSettings>> getListAsync() throws ExternalDependencyException {
+    public List<IActionSettings> getList() throws ExternalDependencyException {
         ArrayList<IActionSettings> result = new ArrayList<>();
 
         // Add Email Action Settings
@@ -41,6 +38,6 @@ public class Actions implements IActions {
         emailSettings.Initialize();
         result.add(emailSettings);
 
-        return CompletableFuture.completedFuture(result);
+        return result;
     }
 }
