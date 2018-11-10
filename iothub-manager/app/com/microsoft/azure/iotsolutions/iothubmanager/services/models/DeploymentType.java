@@ -5,7 +5,8 @@ package com.microsoft.azure.iotsolutions.iothubmanager.services.models;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum DeploymentType {
-    edgeManifest("EdgeManifest");
+    edgeManifest("EdgeManifest"),
+    deviceConfiguration("DeviceConfiguration");
 
     private final String value;
 

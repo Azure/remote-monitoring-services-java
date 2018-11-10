@@ -40,38 +40,47 @@ public class DeploymentServiceModel {
         this.type = type;
     }
 
-    public DeploymentServiceModel(Configuration config) throws InvalidInputException {
-        if (StringUtils.isEmpty(config.getId())) {
+    public DeploymentServiceModel(Configuration deployment) throws InvalidInputException {
+        if (StringUtils.isEmpty(deployment.getId())) {
             throw new InvalidInputException("Invalid id provided");
         }
 
-        if (!config.getLabels().containsKey(DEPLOYMENT_GROUP_ID_LABEL)) {
+        if (!deployment.getLabels().containsKey(DEPLOYMENT_GROUP_ID_LABEL)) {
             throw new InvalidInputException("Configuration is missing necessary label " + DEPLOYMENT_GROUP_ID_LABEL);
         }
 
-        if (!config.getLabels().containsKey(DEPLOYMENT_NAME_LABEL)) {
+        if (!deployment.getLabels().containsKey(DEPLOYMENT_NAME_LABEL)) {
             throw new InvalidInputException("Configuration is missing necessary label " + DEPLOYMENT_NAME_LABEL);
         }
 
-        this.id = config.getId();
-        this.name = config.getLabels().get(DEPLOYMENT_NAME_LABEL);
+        this.id = deployment.getId();
+        this.name = deployment.getLabels().get(DEPLOYMENT_NAME_LABEL);
 
-        String deviceGroupId = config.getLabels().get(DEPLOYMENT_GROUP_ID_LABEL);
+        String deviceGroupId = deployment.getLabels().get(DEPLOYMENT_GROUP_ID_LABEL);
         String deviceGroupName = StringUtils.EMPTY;
-        if (config.getLabels().containsKey(DEPLOYMENT_GROUP_NAME_LABEL)) {
-            deviceGroupName = config.getLabels().get(DEPLOYMENT_GROUP_NAME_LABEL);
+        if (deployment.getLabels().containsKey(DEPLOYMENT_GROUP_NAME_LABEL)) {
+            deviceGroupName = deployment.getLabels().get(DEPLOYMENT_GROUP_NAME_LABEL);
         }
         this.deviceGroup = new DeviceGroup(deviceGroupId, deviceGroupName, null);
 
         this.packageName = StringUtils.EMPTY;
-        if (config.getLabels().containsKey(DEPLOYMENT_PACKAGE_NAME_LABEL)) {
-            this.packageName = config.getLabels().get(DEPLOYMENT_PACKAGE_NAME_LABEL);
+        if (deployment.getLabels().containsKey(DEPLOYMENT_PACKAGE_NAME_LABEL)) {
+            this.packageName = deployment.getLabels().get(DEPLOYMENT_PACKAGE_NAME_LABEL);
         }
 
-        this.createdDateTimeUtc =  this.formatDateTimeToUTC(config.getCreatedTimeUtc());
-        this.priority = config.getPriority();
-        this.type = DeploymentType.edgeManifest;
-        this.deploymentMetrics = new DeploymentMetrics(config.getSystemMetrics(), config.getMetrics());
+        this.createdDateTimeUtc =  this.formatDateTimeToUTC(deployment.getCreatedTimeUtc());
+        this.priority = deployment.getPriority();
+
+        if (deployment.getLabels().containsKey(DeploymentType.edgeManifest.toString()))
+        {
+            this.type = DeploymentType.edgeManifest;
+        }
+        else if (deployment.getLabels().containsKey(DeploymentType.deviceConfiguration.toString()))
+        {
+            this.type = DeploymentType.deviceConfiguration;
+        }
+
+        this.deploymentMetrics = new DeploymentMetrics(deployment.getSystemMetrics(), deployment.getMetrics());
     }
 
     public String getId() {
