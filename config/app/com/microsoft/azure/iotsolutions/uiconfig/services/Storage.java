@@ -18,6 +18,7 @@ import com.microsoft.azure.iotsolutions.uiconfig.services.models.Package;
 import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.IServicesConfig;
 import com.microsoft.azure.sdk.iot.service.Configuration;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.EnumUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormatter;
@@ -256,13 +257,21 @@ public class Storage implements IStorage {
 
         input.setDateCreated(Storage.DATE_FORMAT.print(DateTime.now().toDateTime(DateTimeZone.UTC)));
         final String value = toJson(input);
-        return client.createAsync(PackagesCollectionId, value).thenApplyAsync(p ->
+
+        CompletionStage<Package> result = client.createAsync(PackagesCollectionId, value).thenApplyAsync(p ->
             Storage.createPackage(p)
         );
+
+        if (!(EnumUtils.isValidEnumIgnoreCase(PackageConfigType.class, input.getConfigType())))
+        {
+            this.updatePackageConfigsAsync(input.getConfigType());
+        }
+
+        return result;
     }
 
     private Boolean ValidatePackage(Package input) {
-        IPackageValidator validator = PackageValidatorFactory.GetValidator(input.getType(), input.getConfig());
+        IPackageValidator validator = PackageValidatorFactory.GetValidator(input.getType(), input.getConfigType());
         if (validator == null)
         {
             return true;//Bypass validation for custom config type

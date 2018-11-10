@@ -50,9 +50,9 @@ public class PackageListApiModel {
                 .map(m -> new PackageApiModel(m))
                 .filter(p -> (
                         p.getType() != null
-                        && p.getConfig() != null
+                        && p.getConfigType() != null
                         && p.getType().toString().toLowerCase().equals(type.toLowerCase().trim())
-                        && p.getConfig().toLowerCase().equals(config.toLowerCase().trim())))
+                        && p.getConfigType().toLowerCase().equals(config.toLowerCase().trim())))
                 .collect(Collectors.toList());
         this.metadata = new Hashtable<String, String>();
         this.metadata.put("$type", String.format("Package;%s", Version.Number));

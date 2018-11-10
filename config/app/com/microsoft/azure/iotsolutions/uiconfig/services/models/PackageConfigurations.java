@@ -26,7 +26,6 @@ public class PackageConfigurations {
 
     public void add(String customConfig)
     {
-        customConfig = PackageConfigType.custom.toString() + " - " + customConfig;
         this.customConfig.add(customConfig.trim());
     }
 }

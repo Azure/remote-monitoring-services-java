@@ -33,10 +33,8 @@ public class PackageController extends Controller {
 
     private final IStorage storage;
     private static final String PACKAGE_TYPE_PARAM = "Type";
-    private static final String PACKAGE_CONFIG_TYPE_PARAM = "Config";
-    private static final String PACKAGE_CUSTOM_CONFIG_PARAM = "CustomConfig";
+    private static final String PACKAGE_CONFIG_TYPE_PARAM = "ConfigType";
     private static final String FILE_PARAM = "Package";
-
 
     @Inject
     public PackageController(IStorage storage) {
@@ -70,7 +68,6 @@ public class PackageController extends Controller {
 
     /**
      * Get a previously created from storage.
-     * @param id The id of the package to retrieve from storage.
      * @return {@link PackageApiModel}
      */
     public CompletionStage<Result> getListAsync() throws BaseException {
@@ -112,24 +109,12 @@ public class PackageController extends Controller {
 
         final String content = new String(Files.readAllBytes(file.getFile().toPath()));
         final String packageType = data.get(PACKAGE_TYPE_PARAM)[0];
-        final String packageConfigType = data.get(PACKAGE_CONFIG_TYPE_PARAM)[0];
-        final String customConfig = data.get(PACKAGE_CUSTOM_CONFIG_PARAM)[0];
-
-        String config = packageConfigType;
-        if (config.equals(PackageConfigType.custom.toString()))
-        {
-            config = appendCustomConfig(packageConfigType, customConfig);
-        }
+        final String configType = data.get(PACKAGE_CONFIG_TYPE_PARAM)[0];
 
         final PackageApiModel input = new PackageApiModel(file.getFilename(),
                 EnumUtils.getEnumIgnoreCase(PackageType.class, packageType),
-                config,
+                configType,
                 content);
-
-        if (packageConfigType.equals(PackageConfigType.custom.toString()))
-        {
-            storage.updatePackageConfigsAsync(customConfig);
-        }
 
         return storage.addPackageAsync(input.ToServiceModel()).thenApplyAsync(m -> ok(toJson(new
                 PackageApiModel(m))));

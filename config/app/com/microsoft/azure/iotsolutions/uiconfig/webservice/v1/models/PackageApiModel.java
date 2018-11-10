@@ -5,14 +5,13 @@ package com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.Package;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.PackageType;
-import com.microsoft.azure.iotsolutions.uiconfig.services.models.PackageConfigType;
 
 public class PackageApiModel {
 
     private String id;
     private String name;
     private PackageType type;
-    private String config;
+    private String configType;
     private String dateCreated;
     private String content;
 
@@ -35,16 +34,14 @@ public class PackageApiModel {
     }
 
     @JsonProperty("Type")
-    public PackageType getType() {
-        return this.type;
-    }
+    public PackageType getType() { return this.type; }
 
     public void setType(PackageType type) { this.type = type;}
 
-    @JsonProperty("Config")
-    public String getConfig() { return this.config; }
+    @JsonProperty("ConfigType")
+    public String getConfigType() { return this.configType; }
 
-    public void setConfig(String config) { this.config = config; }
+    public void setConfigType(String configType) { this.configType = configType; }
 
     @JsonProperty("Content")
     public String getContent() {
@@ -68,7 +65,7 @@ public class PackageApiModel {
         this.id = model.getId();
         this.name = model.getName();
         this.type = model.getType();
-        this.config = model.getConfig();
+        this.configType = model.getConfigType();
         this.content = model.getContent();
         this.dateCreated = model.getDateCreated();
     }
@@ -80,7 +77,7 @@ public class PackageApiModel {
             String content) {
         this.name = name;
         this.type = type;
-        this.config = config;
+        this.configType = config;
         this.content = content;
     }
 
@@ -89,7 +86,7 @@ public class PackageApiModel {
                 this.id,
                 this.name,
                 this.type,
-                this.config,
+                this.configType,
                 this.content,
                 this.dateCreated);
     }
