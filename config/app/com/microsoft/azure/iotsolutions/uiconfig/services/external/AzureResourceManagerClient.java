@@ -106,7 +106,7 @@ public class AzureResourceManagerClient implements IAzureResourceManagerClient {
             log.error(message);
             throw new ExternalDependencyException(message);
         } catch (CompletionException e) {
-            if (e.getCause().getClass() == NotAuthorizedException.class) {
+            if (e.getCause() instanceof NotAuthorizedException) {
                 String message = "Unable to get application token. The application is not authorized " +
                         "and has not been assigned owner permissions for the subscription.";
                 throw new NotAuthorizedException(message);

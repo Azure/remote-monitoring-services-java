@@ -50,7 +50,7 @@ public class EmailActionSettings implements IActionSettings {
             // If there is a 403 Not Authorized exception, it means the application has not
             // been given owner permissions to make the isEnabled check. This can be configured
             // by an owner in the Azure Portal.
-            if (e.getClass() == NotAuthorizedException.class || e.getCause().getClass() == NotAuthorizedException.class) {
+            if (e instanceof NotAuthorizedException|| e.getCause() instanceof NotAuthorizedException) {
                 applicationPermissionsAssigned = false;
             } else {
                 String message = "Unable to get email action settings.";
@@ -65,7 +65,8 @@ public class EmailActionSettings implements IActionSettings {
         this.settings.put(APP_PERMISSIONS_KEY, applicationPermissionsAssigned);
         this.settings.put(OFFICE365_CONNECTOR_URL_KEY, this.config.getActionsConfig().getOffice365LogicAppUrl());
 
-        this.log.debug("Email Action Settings Retrieved. Email setup status: " + office365IsEnabled, this.settings);
+        this.log.debug(String.format("Email Action Settings Retrieved. Email setup status: %s",office365IsEnabled),
+                this.settings);
     }
 
     @Override
