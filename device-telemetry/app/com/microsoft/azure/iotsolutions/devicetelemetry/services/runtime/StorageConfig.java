@@ -2,6 +2,7 @@
 
 package com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime;
 
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidConfigurationException;
 import play.Logger;
 
 import java.util.regex.Matcher;
@@ -48,27 +49,27 @@ public class StorageConfig {
         return this.cosmosDbCollection;
     }
 
-    public String getCosmosDbUri() {
-        Pattern pattern = Pattern.compile(".*AccountEndpoint=(.*);.*");
+    public String getCosmosDbUri() throws InvalidConfigurationException {
+        Pattern pattern = Pattern.compile(".*AccountEndpoint=([^;]*);.*");
         Matcher matcher = pattern.matcher(this.getCosmosDbConnString());
         if (matcher.find()) {
             return matcher.group(1);
         } else {
-            log.error("CosmosDb AccountEndpoint not found (connection string length: {})",
-                this.getCosmosDbConnString().length());
-            return "https://ENDPOINT-NOT-FOUND.documents.azure.com:443/";
+            String message = "Invalid connection string for CosmosDB";
+            log.error(message);
+            throw new InvalidConfigurationException(message);
         }
     }
 
-    public String getCosmosDbKey() {
-        Pattern pattern = Pattern.compile(".*AccountKey=(.*);");
+    public String getCosmosDbKey() throws InvalidConfigurationException {
+        Pattern pattern = Pattern.compile(".*AccountKey=([^;]*);.*");
         Matcher matcher = pattern.matcher(this.getCosmosDbConnString());
         if (matcher.find()) {
             return matcher.group(1);
         } else {
-            log.error("CosmosDb AccountKey not found (connection string length: {})",
-                this.getCosmosDbConnString().length());
-            return "";
+            String message = "Invalid connection string for CosmosDB";
+            log.error(message);
+            throw new InvalidConfigurationException(message);
         }
     }
 }

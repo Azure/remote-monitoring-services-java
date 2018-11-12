@@ -2,27 +2,34 @@
 
 package com.microsoft.azure.iotsolutions.iothubmanager.services;
 
+import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.ExternalDependencyException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.external.IStorageAdapterClient;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.models.TwinServiceListModel;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.models.TwinServiceModel;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.models.*;
+import com.microsoft.azure.sdk.iot.deps.twin.DeviceCapabilities;
+import com.microsoft.azure.sdk.iot.service.Device;
+import com.microsoft.azure.sdk.iot.service.DeviceStatus;
 import com.microsoft.azure.sdk.iot.service.RegistryManager;
 import com.microsoft.azure.sdk.iot.service.devicetwin.*;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.experimental.theories.Theory;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.stubbing.Answer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
@@ -152,6 +159,36 @@ public class DevicesUnitTest {
         assertEquals("test", model.getItems().get(0).getDeviceId());
     }
 
+    @Test
+    @Parameters({"SelfSigned",
+                 "CertificateAuthority"})
+    public void invalidAuthenticationTypeForEdgeDeviceTest(String authTypeString) throws InvalidInputException, ExternalDependencyException {
+        // Arrange
+        final AuthenticationType authType = AuthenticationType.valueOf(authTypeString);
+
+        AuthenticationMechanismServiceModel auth = new AuthenticationMechanismServiceModel();
+        auth.setAuthenticationType(authType);
+
+        DeviceServiceModel model = new DeviceServiceModel
+            (
+                "etag",
+                "deviceId",
+                0,
+                DateTime.now(),
+                true,
+                true,
+                true,
+                DateTime.now(),
+                null,
+                auth,
+                this.iotHubHostName
+            );
+
+        // Act & Assert
+        exception.expect(InvalidInputException.class);
+        this.devices.createAsync(model);
+    }
+
     private QueryCollectionResponse<DeviceTwinDevice> createQueryResponse(String deviceId, String moduleId) {
         final QueryCollectionResponse<DeviceTwinDevice> resp = Mockito.mock(QueryCollectionResponse.class);
 
@@ -160,5 +197,14 @@ public class DevicesUnitTest {
         when(resp.getCollection()).thenReturn(respList);
 
         return resp;
+    }
+
+    private static Device createTestDevice(boolean isEdgeDevice)
+    {
+        Device dvc = Device.createFromId("deviceId", DeviceStatus.Enabled, null);
+        DeviceCapabilities capabilities = new DeviceCapabilities();
+        capabilities.setIotEdge(isEdgeDevice);
+        dvc.setCapabilities(capabilities);
+        return dvc;
     }
 }

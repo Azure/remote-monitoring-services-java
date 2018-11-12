@@ -3,6 +3,7 @@
 package com.microsoft.azure.iotsolutions.iothubmanager.services.models;
 
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidInputException;
+import com.microsoft.azure.sdk.iot.deps.twin.DeviceCapabilities;
 import com.microsoft.azure.sdk.iot.service.*;
 import com.microsoft.azure.sdk.iot.service.auth.*;
 import org.joda.time.DateTime;
@@ -16,6 +17,7 @@ public final class DeviceServiceModel {
     private final DateTime lastActivity;
     private final Boolean connected;
     private final Boolean enabled;
+    private final Boolean isEdgeDevice;
     private final DateTime lastStatusUpdated;
     private final TwinServiceModel twin;
     private final String ioTHubHostName;
@@ -28,6 +30,7 @@ public final class DeviceServiceModel {
         final DateTime lastActivity,
         final Boolean connected,
         final Boolean enabled,
+        final Boolean isEdgeDevice,
         final DateTime lastStatusUpdated,
         final TwinServiceModel twin,
         final AuthenticationMechanismServiceModel authentication,
@@ -39,6 +42,7 @@ public final class DeviceServiceModel {
         this.lastActivity = lastActivity;
         this.connected = connected;
         this.enabled = enabled;
+        this.isEdgeDevice = isEdgeDevice;
         this.lastStatusUpdated = lastStatusUpdated;
         this.twin = twin;
         this.authentication = authentication;
@@ -53,6 +57,7 @@ public final class DeviceServiceModel {
             device.getLastActivityTime() == null ? null : DateTime.parse(device.getLastActivityTime(), ISODateTimeFormat.dateTimeParser().withZoneUTC()),
             device.getConnectionState() == DeviceConnectionState.Connected,
             device.getStatus() == DeviceStatus.Enabled,
+            device.getCapabilities() != null ? device.getCapabilities().isIotEdge() : twin.getIsEdgeDevice(),
             device.getStatusUpdatedTime() == null ? null : DateTime.parse(device.getStatusUpdatedTime(), ISODateTimeFormat.dateTimeParser().withZoneUTC()),
             twin,
             new AuthenticationMechanismServiceModel(device),
@@ -87,6 +92,8 @@ public final class DeviceServiceModel {
         return enabled;
     }
 
+    public Boolean getIsEdgeDevice() { return this.isEdgeDevice; }
+
     public DateTime getLastStatusUpdated() {
         return lastStatusUpdated;
     }
@@ -105,8 +112,9 @@ public final class DeviceServiceModel {
 
     public Device toAzureModel() throws InvalidInputException {
         try {
+            final Device createdDevice;
             if (this.authentication == null || this.authentication.getAuthenticationType() == null) {
-                return Device.createFromId(
+                createdDevice = Device.createFromId(
                     this.getId(),
                     this.getEnabled() ? DeviceStatus.Enabled : DeviceStatus.Disabled,
                     new SymmetricKey());
@@ -114,18 +122,24 @@ public final class DeviceServiceModel {
                 SymmetricKey key = new SymmetricKey();
                 key.setPrimaryKey(this.authentication.getPrimaryKey());
                 key.setSecondaryKey(this.authentication.getSecondaryKey());
-                return Device.createFromId(
+                createdDevice = Device.createFromId(
                     this.getId(),
                     this.getEnabled() ? DeviceStatus.Enabled : DeviceStatus.Disabled,
                     key);
             } else {
-                Device device = Device.createDevice(this.getId(),
+                createdDevice = Device.createDevice(this.getId(),
                     AuthenticationType.toAzureModel(this.authentication.getAuthenticationType()));
-                device.setThumbprint(
+                createdDevice.setThumbprint(
                     this.getAuthentication().getPrimaryThumbprint(),
                     this.getAuthentication().getSecondaryThumbprint());
-                return device;
             }
+
+            if (this.isEdgeDevice) {
+                createdDevice.setCapabilities(new DeviceCapabilities());
+                createdDevice.getCapabilities().setIotEdge(true);
+            }
+
+            return createdDevice;
         } catch (Exception e) {
             throw new InvalidInputException("Unable to create device", e);
         }
