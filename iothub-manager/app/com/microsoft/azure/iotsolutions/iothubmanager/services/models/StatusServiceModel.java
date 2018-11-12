@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -20,18 +21,30 @@ public class StatusServiceModel {
         this.dependencies = new Hashtable<>();
     }
 
-    public StatusResultServiceModel getStatus() {
-        return this.status;
-    }
-
     @JsonCreator
     public StatusServiceModel(
-            @JsonProperty("Status") StatusResultServiceModel status,
-            @JsonProperty("Properties") Hashtable<String, String> properties,
-            @JsonProperty("Dependencies") Hashtable<String, StatusResultServiceModel> dependencies) {
+        @JsonProperty("Status") StatusResultServiceModel status,
+        @JsonProperty("Properties") Hashtable<String, String> properties,
+        @JsonProperty("Dependencies") Hashtable<String, StatusResultServiceModel> dependencies) {
         this.status = status;
         this.properties = properties;
         this.dependencies = dependencies;
+    }
+
+    public void setServiceStatus(
+        String dependencyName,
+        StatusResultServiceModel serviceResult,
+        ArrayList<String> errors) {
+        if (!serviceResult.getIsHealthy()) {
+            errors.add(dependencyName + " check failed");
+            this.status.setIsHealthy(false);
+        }
+
+        this.dependencies.put(dependencyName, serviceResult);
+    }
+
+    public StatusResultServiceModel getStatus() {
+        return this.status;
     }
 
     @JsonProperty("Status")

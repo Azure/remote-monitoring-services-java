@@ -29,12 +29,6 @@ public class DocDBKeyValueContainer implements IKeyValueContainer {
         this.collectionLink = config.getContainerName();
     }
 
-    private void createDocumentClientLazily() throws CreateResourceException {
-        if (client == null) {
-            this.client = this.clientFactory.create();
-        }
-    }
-
     public ValueServiceModel get(String collectionId, String key) throws DocumentClientException, CreateResourceException {
         createDocumentClientLazily();
         String documentLink = collectionLink + "/docs/" + DocumentIdHelper.GenerateId(collectionId, key);
@@ -119,5 +113,11 @@ public class DocDBKeyValueContainer implements IKeyValueContainer {
             log.info(e.getMessage());
         }
         return result;
+    }
+
+    private void createDocumentClientLazily() throws CreateResourceException {
+        if (client == null) {
+            this.client = this.clientFactory.create();
+        }
     }
 }

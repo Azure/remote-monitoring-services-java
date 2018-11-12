@@ -28,7 +28,7 @@ public class StatusService implements IStatusService {
 
         // Check connection to CosmosDb
         StatusResultServiceModel storageResult = this.keyValueContainer.ping();
-        SetServiceStatus("Storage", storageResult, result, errors);
+        result.setServiceStatus("Storage", storageResult, errors);
 
         if (errors.size() > 0) {
             result.setStatus(new StatusResultServiceModel(false, String.join("; ", errors)));
@@ -36,18 +36,5 @@ public class StatusService implements IStatusService {
 
         log.info("Service status request" + result.toString());
         return result;
-    }
-
-    private void SetServiceStatus(
-        String dependencyName,
-        StatusResultServiceModel serviceResult,
-        StatusServiceModel result,
-        ArrayList<String> errors
-    ) {
-        if (!serviceResult.getIsHealthy()) {
-            errors.add(dependencyName + " check failed");
-            result.getStatus().setIsHealthy(false);
-        }
-        result.addDependency(dependencyName, serviceResult);
     }
 }

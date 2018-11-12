@@ -19,7 +19,7 @@ public class WsRequestBuilder {
                 .url(url)
                 .addHeader("Content-Type", "application/json")
                 .addHeader("Cache-Control", "no-cache")
-                .addHeader("Referer", "Device Telemetry");
+                .addHeader("Referer", "Config");
         wsRequest.setRequestTimeout(Duration.ofSeconds(10));
         return wsRequest;
     }

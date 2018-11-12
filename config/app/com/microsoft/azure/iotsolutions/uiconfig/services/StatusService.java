@@ -45,28 +45,28 @@ public class StatusService implements IStatusService {
         StatusResultServiceModel authResult = this.PingService(
             authName,
             this.servicesConfig.getUserManagementApiUrl());
-        SetServiceStatus(authName, authResult, result, errors);
+        result.setServiceStatus(authName, authResult, errors);
         result.addProperty("UserManagementApiUrl", this.servicesConfig.getUserManagementApiUrl());
 
         // Check connection to StorageAdapter
         StatusResultServiceModel storageAdapterResult = this.PingService(
             storageAdapterName,
             this.servicesConfig.getStorageAdapterApiUrl());
-        SetServiceStatus(storageAdapterName, storageAdapterResult, result, errors);
+        result.setServiceStatus(storageAdapterName, storageAdapterResult, errors);
         result.addProperty("StorageAdapterApiUrl", this.servicesConfig.getStorageAdapterApiUrl());
 
         // Check connection to Device Telemetry
         StatusResultServiceModel telemetryResult = this.PingService(
             telemetryName,
             this.servicesConfig.getTelemetryApiUrl());
-        SetServiceStatus(telemetryName, telemetryResult, result, errors);
+        result.setServiceStatus(telemetryName, telemetryResult, errors);
         result.addProperty("DeviceTelemetryApiUrl", this.servicesConfig.getTelemetryApiUrl());
 
         // Check connection to Device Simulation
         StatusResultServiceModel deviceSimulationResult = this.PingService(
             simulationName,
             this.servicesConfig.getDeviceSimulationApiUrl());
-        SetServiceStatus(simulationName, deviceSimulationResult, result, errors);
+        result.setServiceStatus(simulationName, deviceSimulationResult, errors);
         result.addProperty("DeviceSimulationApiUrl", this.servicesConfig.getDeviceSimulationApiUrl());
 
         result.addProperty("SeedTemplate", this.servicesConfig.getSeedTemplate());
@@ -78,19 +78,6 @@ public class StatusService implements IStatusService {
         log.info("Service status:" + result.getStatus().getMessage());
 
         return result;
-    }
-
-    private void SetServiceStatus(
-        String dependencyName,
-        StatusResultServiceModel serviceResult,
-        StatusServiceModel result,
-        ArrayList<String> errors
-    ) {
-        if (!serviceResult.getIsHealthy()) {
-            errors.add(dependencyName + " check failed");
-            result.getStatus().setIsHealthy(false);
-        }
-        result.addDependency(dependencyName, serviceResult);
     }
 
     private StatusResultServiceModel PingService(String serviceName, String serviceURL) {

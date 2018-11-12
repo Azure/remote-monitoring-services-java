@@ -152,6 +152,7 @@ public class StorageClient implements IStorageClient {
             else {
                 result.setMessage("Storage client not setup properly.");
             }
+
             if (response != null) {
                 result = new StatusResultServiceModel(true, "Alive and well!");
             }

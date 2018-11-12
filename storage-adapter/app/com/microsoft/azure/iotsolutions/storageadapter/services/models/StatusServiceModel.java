@@ -4,6 +4,7 @@ package com.microsoft.azure.iotsolutions.storageadapter.services.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
 
 public class StatusServiceModel {
@@ -15,6 +16,18 @@ public class StatusServiceModel {
         this.status = new StatusResultServiceModel(isHealthy, message);
         this.properties = new Hashtable<String, String>();
         this.dependencies = new Hashtable<String, StatusResultServiceModel>();
+    }
+
+    public void setServiceStatus(
+        String dependencyName,
+        StatusResultServiceModel serviceResult,
+        ArrayList<String> errors) {
+        if (!serviceResult.getIsHealthy()) {
+            errors.add(dependencyName + " check failed");
+            this.status.setIsHealthy(false);
+        }
+
+        this.dependencies.put(dependencyName, serviceResult);
     }
 
     public StatusResultServiceModel getStatus() {

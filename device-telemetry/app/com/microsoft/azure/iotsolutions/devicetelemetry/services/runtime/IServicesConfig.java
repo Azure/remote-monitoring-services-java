@@ -10,6 +10,7 @@ public interface IServicesConfig {
      * Get key value storage dependency url
      */
     String getKeyValueStorageUrl();
+
     /**
      * Get user management dependency url
      */

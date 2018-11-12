@@ -7,5 +7,12 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.StatusSe
 
 @ImplementedBy(StatusService.class)
 public interface IStatusService {
+    /**
+     * Get status of dependent services.
+     *
+     * @param authRequired boolean
+     *
+     * @return Connection StatusServiceModel
+     */
     StatusServiceModel getStatus(boolean authRequired);
 }

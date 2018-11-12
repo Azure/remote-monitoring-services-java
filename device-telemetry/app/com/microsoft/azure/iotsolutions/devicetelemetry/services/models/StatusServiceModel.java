@@ -2,10 +2,9 @@
 
 package com.microsoft.azure.iotsolutions.devicetelemetry.services.models;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -20,10 +19,6 @@ public class StatusServiceModel {
         this.dependencies = new Hashtable<>();
     }
 
-    public StatusResultServiceModel getStatus() {
-        return this.status;
-    }
-
     @JsonCreator
     public StatusServiceModel(
             @JsonProperty("Status") StatusResultServiceModel status,
@@ -32,6 +27,22 @@ public class StatusServiceModel {
         this.status = status;
         this.properties = properties;
         this.dependencies = dependencies;
+    }
+
+    public void setServiceStatus(
+        String dependencyName,
+        StatusResultServiceModel serviceResult,
+        ArrayList<String> errors) {
+        if (!serviceResult.getIsHealthy()) {
+            errors.add(dependencyName + " check failed");
+            this.status.setIsHealthy(false);
+        }
+
+        this.dependencies.put(dependencyName, serviceResult);
+    }
+
+    public StatusResultServiceModel getStatus() {
+        return this.status;
     }
 
     @JsonProperty("Status")

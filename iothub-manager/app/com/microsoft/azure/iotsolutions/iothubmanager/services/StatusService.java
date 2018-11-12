@@ -48,7 +48,7 @@ public class StatusService implements IStatusService {
             StatusResultServiceModel authResult = this.PingService(
                 authName,
                 this.servicesConfig.getUserManagementApiUrl());
-            SetServiceStatus(authName, authResult, result, errors);
+            result.setServiceStatus(authName, authResult, errors);
             result.addProperty("UserManagementApiUrl", this.servicesConfig.getUserManagementApiUrl());
         }
 
@@ -56,12 +56,12 @@ public class StatusService implements IStatusService {
         StatusResultServiceModel storageAdapterResult = this.PingService(
             storageAdapterName,
             this.servicesConfig.getStorageAdapterServiceUrl());
-        SetServiceStatus(storageAdapterName, storageAdapterResult, result, errors);
+        result.setServiceStatus(storageAdapterName, storageAdapterResult, errors);
         result.addProperty("StorageAdapterApiUrl", this.servicesConfig.getStorageAdapterServiceUrl());
 
         // Check connection to IoTHub
         StatusResultServiceModel ioTHubResult = this.ioTHubWrapper.ping();
-        SetServiceStatus("IoTHub", ioTHubResult, result, errors);
+        result.setServiceStatus("IoTHub", ioTHubResult, errors);
 
         if (errors.size() > 0) {
             result.setStatus(new StatusResultServiceModel(false, String.join("; ", errors)));
@@ -70,19 +70,6 @@ public class StatusService implements IStatusService {
         log.info("Service status request" + result.toString());
 
         return result;
-    }
-
-    private void SetServiceStatus(
-        String dependencyName,
-        StatusResultServiceModel serviceResult,
-        StatusServiceModel result,
-        ArrayList<String> errors
-    ) {
-        if (!serviceResult.getIsHealthy()) {
-            errors.add(dependencyName + " check failed");
-            result.getStatus().setIsHealthy(false);
-        }
-        result.addDependency(dependencyName, serviceResult);
     }
 
     private StatusResultServiceModel PingService(String serviceName, String serviceURL) {

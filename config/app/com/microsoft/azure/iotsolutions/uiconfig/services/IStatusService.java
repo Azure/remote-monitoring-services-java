@@ -7,5 +7,10 @@ import com.microsoft.azure.iotsolutions.uiconfig.services.models.StatusServiceMo
 
 @ImplementedBy(StatusService.class)
 public interface IStatusService {
+    /**
+     * Get status of dependent services.
+     *
+     * @return Connection StatusServiceModel
+     */
     StatusServiceModel getStatus();
 }

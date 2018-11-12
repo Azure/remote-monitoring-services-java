@@ -32,11 +32,10 @@ public class StatusService implements IStatusService {
 
     @Inject
     StatusService(
-            IStorageClient storageClient,
-            ITimeSeriesClient timeSeriesClient,
-            IServicesConfig servicesConfig,
-            WsRequestBuilder wsRequestBuilder
-    ) {
+        IStorageClient storageClient,
+        ITimeSeriesClient timeSeriesClient,
+        IServicesConfig servicesConfig,
+        WsRequestBuilder wsRequestBuilder) {
         this.storageClient = storageClient;
         this.wsRequestBuilder = wsRequestBuilder;
         this.timeSeriesClient = timeSeriesClient;
@@ -50,42 +49,42 @@ public class StatusService implements IStatusService {
         if (authRequired) {
             // Check connection to Auth
             StatusResultServiceModel authResult = this.PingService(
-                    authName,
-                    this.servicesConfig.getUserManagementApiUrl());
-            SetServiceStatus(authName, authResult, result, errors);
+                authName,
+                this.servicesConfig.getUserManagementApiUrl());
+            result.setServiceStatus(authName, authResult, errors);
             result.addProperty("UserManagementApiUrl", this.servicesConfig.getUserManagementApiUrl());
         }
 
         // Check connection to CosmosDb
         StatusResultServiceModel storageResult = this.storageClient.ping();
-        SetServiceStatus("Storage", storageResult, result, errors);
+        result.setServiceStatus("Storage", storageResult, errors);
 
         // Check connection to TSI
         if (this.servicesConfig.getMessagesConfig().getStorageType() == StorageType.tsi) {
             StatusResultServiceModel tSIResult = this.timeSeriesClient.ping();
-            SetServiceStatus("TimeSeries", tSIResult, result, errors);
+            result.setServiceStatus("TimeSeries", tSIResult, errors);
 
             String dataAccessFqdn = this.servicesConfig.getMessagesConfig().getTimeSeriesConfig().getDataAccessFqdn();
             String environmentId = dataAccessFqdn.substring(0, dataAccessFqdn.indexOf("."));
             String tsiURL = String.format(
-                    "%s?environmentId=%s&tid=%s",
-                    this.servicesConfig.getMessagesConfig().getTimeSeriesConfig().getExplorerUrl(),
-                    environmentId,
-                    this.servicesConfig.getMessagesConfig().getTimeSeriesConfig().getAadApplicationId());
+                "%s?environmentId=%s&tid=%s",
+                this.servicesConfig.getMessagesConfig().getTimeSeriesConfig().getExplorerUrl(),
+                environmentId,
+                this.servicesConfig.getMessagesConfig().getTimeSeriesConfig().getAadApplicationId());
             result.addProperty("TimeSeriesUrl", tsiURL);
         }
 
         // Check connection to StorageAdapter
         StatusResultServiceModel storageAdapterResult = this.PingService(
-                storageAdapterName,
-                this.servicesConfig.getKeyValueStorageUrl());
-        SetServiceStatus(storageAdapterName, storageAdapterResult, result, errors);
+            storageAdapterName,
+            this.servicesConfig.getKeyValueStorageUrl());
+        result.setServiceStatus(storageAdapterName, storageAdapterResult, errors);
         result.addProperty("StorageAdapterApiUrl", this.servicesConfig.getKeyValueStorageUrl());
 
         // Check connection to Diagnostics
         StatusResultServiceModel diagnosticsResult = this.PingService(
-                diagnosticsName,
-                this.servicesConfig.getDiagnosticsConfig().getApiUrl());
+            diagnosticsName,
+            this.servicesConfig.getDiagnosticsConfig().getApiUrl());
         // Note: Overall telemetry service status is independent of diagnostics service
         // Hence not using SetServiceStatus on diagnosticsResult
         result.addDependency(diagnosticsName, diagnosticsResult);
@@ -99,28 +98,15 @@ public class StatusService implements IStatusService {
         return result;
     }
 
-    private void SetServiceStatus(
-            String dependencyName,
-            StatusResultServiceModel serviceResult,
-            StatusServiceModel result,
-            ArrayList<String> errors
-    ) {
-        if (!serviceResult.getIsHealthy()) {
-            errors.add(dependencyName + " check failed");
-            result.getStatus().setIsHealthy(false);
-        }
-        result.addDependency(dependencyName, serviceResult);
-    }
-
     private StatusResultServiceModel PingService(String serviceName, String serviceURL) {
         StatusResultServiceModel result = new StatusResultServiceModel(false, serviceName + " check failed");
 
         try {
             WSResponse response = this.wsRequestBuilder
-                    .prepareRequest(serviceURL + "/status")
-                    .get()
-                    .toCompletableFuture()
-                    .get();
+                .prepareRequest(serviceURL + "/status")
+                .get()
+                .toCompletableFuture()
+                .get();
 
             if (response.getStatus() != HttpStatus.SC_OK) {
                 result.setMessage("Status code: " + response.getStatus() + ", Response: " + response.getBody());
@@ -129,7 +115,6 @@ public class StatusService implements IStatusService {
                 StatusServiceModel data = mapper.readValue(response.getBody(), StatusServiceModel.class);
                 result.setStatusResultServiceModel(data.getStatus());
             }
-
         } catch (Exception e) {
             log.error(e.getMessage());
         }
