@@ -75,7 +75,7 @@ public class EmailActionSettings implements IActionSettings {
     }
 
     @Override
-    @JsonProperty("Settings ")
+    @JsonProperty("Settings")
     public TreeMap getSettings() {
         return this.settings;
     }

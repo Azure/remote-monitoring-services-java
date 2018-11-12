@@ -5,7 +5,6 @@ package com.microsoft.azure.iotsolutions.uiconfig.webservice.auth;
 import akka.stream.Materializer;
 import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.IUserManagementClient;
-import com.microsoft.azure.iotsolutions.uiconfig.services.external.UserClaims;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.auth.exceptions.*;
 import play.Logger;
 import play.libs.Json;

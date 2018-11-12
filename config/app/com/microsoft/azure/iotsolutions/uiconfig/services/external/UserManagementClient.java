@@ -4,9 +4,8 @@ package com.microsoft.azure.iotsolutions.uiconfig.services.external;
 
 import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.ExternalDependencyException;
-import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.NotAuthorizedException;
+import com.microsoft.azure.iotsolutions.uiconfig.services.helpers.WsResponseHelper;
 import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.IServicesConfig;
-import org.apache.http.HttpStatus;
 import play.Logger;
 import play.libs.Json;
 import play.libs.ws.WSClient;
@@ -62,28 +61,13 @@ public class UserManagementClient implements IUserManagementClient {
         return this.wsClient.url(url)
                 .get()
                 .handle((response, error) -> {
-                    if (error != null) {
-                        // If the error is 403, the user who did the deployment is not authorized
-                        // to assign the role for the application to have contributor access.
-                        if (response.getStatus() == HttpStatus.SC_FORBIDDEN ||
-                                response.getStatus() == HttpStatus.SC_UNAUTHORIZED) {
-                            String message = String.format("The application is not authorized and has not been " +
-                                    "assigned Contributor permissions for the subscription. Go to the Azure portal and " +
-                                    "assign the application as a Contributor in order to retrieve the token. %s", url);
-                            log.error(message, error.getCause());
-                            throw new CompletionException(new NotAuthorizedException(message));
-                        } else {
-                            String message = String.format("Failed to get application token: %s", url);
-                            log.error(message, error.getCause());
-                            throw new CompletionException(new ExternalDependencyException(message, error.getCause()));
-                        }
-                    } else if (response.getStatus() != Http.Status.OK) {
-                        String message = String.format("Failed to get application token: %s", url);
-                        log.error(message);
-                        throw new CompletionException(new ExternalDependencyException(message));
-                    } else {
-                        return Json.fromJson(response.asJson(), TokenApiModel.class).getAccessToken();
-                    }
+                    // Validate response
+                    String message = String.format("Failed to get application token: %s", url);
+                    WsResponseHelper.checkUnauthorizedStatus(response);
+                    WsResponseHelper.checkError(error, message);
+                    WsResponseHelper.checkSuccessStatusCode(response, message);
+
+                    return Json.fromJson(response.asJson(), TokenApiModel.class).getAccessToken();
                 });
     }
 }

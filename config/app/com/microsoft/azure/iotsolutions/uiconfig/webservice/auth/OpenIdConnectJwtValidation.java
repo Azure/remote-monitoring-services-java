@@ -4,7 +4,6 @@ package com.microsoft.azure.iotsolutions.uiconfig.webservice.auth;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.microsoft.azure.iotsolutions.uiconfig.services.external.UserClaims;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.auth.exceptions.*;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.jwk.source.JWKSource;

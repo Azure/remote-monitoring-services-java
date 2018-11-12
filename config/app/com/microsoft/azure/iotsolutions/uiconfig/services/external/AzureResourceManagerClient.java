@@ -6,14 +6,16 @@ import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.ExternalDependencyException;
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.InvalidConfigurationException;
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.NotAuthorizedException;
+import com.microsoft.azure.iotsolutions.uiconfig.services.helpers.WsResponseHelper;
 import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.IActionsConfig;
 import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.IServicesConfig;
-import org.apache.http.HttpStatus;
+import org.apache.commons.lang3.StringUtils;
 import play.Logger;
 import play.libs.ws.WSClient;
 import play.libs.ws.WSRequest;
 import play.mvc.Http;
 
+import java.nio.file.Paths;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
@@ -42,9 +44,9 @@ public class AzureResourceManagerClient implements IAzureResourceManagerClient {
         this.armEndpointUrl = actionsConfig.getArmEndpointUrl();
         this.managementApiVersion = actionsConfig.getManagementApiVersion();
 
-        if (this.isNullOrEmpty(this.subscriptionId) ||
-                this.isNullOrEmpty(this.resourceGroup) ||
-                this.isNullOrEmpty(this.armEndpointUrl)) {
+        if (StringUtils.isEmpty(this.subscriptionId.trim()) ||
+                StringUtils.isEmpty(this.resourceGroup.trim()) ||
+                StringUtils.isEmpty(this.armEndpointUrl.trim())) {
             throw new CompletionException(new InvalidConfigurationException("Subscription Id, " +
                     "Resource Group, and Arm Endpoint Url must be specified" +
                     "in the environment variable configuration for this " +
@@ -54,36 +56,24 @@ public class AzureResourceManagerClient implements IAzureResourceManagerClient {
 
     @Override
     public CompletionStage<Boolean> isOffice365EnabledAsync() throws ExternalDependencyException, NotAuthorizedException {
-        String logicAppTestConnectionUri = this.armEndpointUrl +
-                String.format("subscriptions/%s/resourceGroups/%s" +
-                                "/providers/Microsoft.Web/connections/" +
-                                "office365-connector/extensions/proxy/" +
-                                "testconnection?api-version=%s",
-                        this.subscriptionId,
-                        this.resourceGroup,
-                        this.managementApiVersion);
+        String logicAppTestConnectionUri = String.format("subscriptions/%s/resourceGroups/%s" +
+                        "/providers/Microsoft.Web/connections/" +
+                        "office365-connector/extensions/proxy/" +
+                        "testconnection?api-version=%s",
+                this.subscriptionId,
+                this.resourceGroup,
+                this.managementApiVersion);
+        // Join with armEndpointUrl path
+        logicAppTestConnectionUri = Paths.get(this.armEndpointUrl, logicAppTestConnectionUri).toString();
 
         // Gets token from auth service and adds to header
         WSRequest request = this.createRequest(logicAppTestConnectionUri);
         return request.get()
                 .handle((response, error) -> {
-                    if (response != null) {
-                        // If the error is 403, the user who did the deployment is not authorized
-                        // to assign the role for the application to have Contributor access.
-                        if (response.getStatus() == HttpStatus.SC_FORBIDDEN ||
-                                response.getStatus() == HttpStatus.SC_UNAUTHORIZED) {
-                            String message = String.format("The application is not authorized and has not been " +
-                                    "assigned Contributor permissions for the subscription. Go to the Azure portal and " +
-                                    "assign the application as a Contributor in order to retrieve the token.");
-                            log.error(message);
-                            throw new CompletionException(new NotAuthorizedException(message));
-                        }
-                    }
-                    if (error != null) {
-                        String message = String.format("Failed to check status of Office365 Logic App Connector.");
-                        log.error(message, error.getCause());
-                        throw new CompletionException(new ExternalDependencyException(message, error.getCause()));
-                    }
+                    // Validate response
+                    WsResponseHelper.checkUnauthorizedStatus(response);
+                    WsResponseHelper.checkError(error, "Failed to check status of Office365 Logic App Connector.");
+
                     if (response.getStatus() != Http.Status.OK) {
                         log.debug(String.format("Office365 Logic App Connector is not set up."));
                         return false;
@@ -93,14 +83,10 @@ public class AzureResourceManagerClient implements IAzureResourceManagerClient {
                 });
     }
 
-    private boolean isNullOrEmpty(String s) {
-        return s == null || s.trim().isEmpty();
-    }
-
     /**
      * Prepares a WSRequest to the Azure management APIs with an application token
      * Uses the default audience from the User Management service. If the User Management
-     * service returns a 403 Not Authorized exception, then the user deploying the application
+     * service returns a 401 or 403 unauthorized exception, then the user deploying the application
      * did not have owner permissions in order to assign the application owner permission to access
      * the Azure Management APIs.
      *
@@ -115,7 +101,6 @@ public class AzureResourceManagerClient implements IAzureResourceManagerClient {
         try {
             String token = this.userManagementClient.getTokenAsync().toCompletableFuture().get().toString();
             request.addHeader("Authorization", "Bearer " + token);
-
         } catch (InterruptedException | ExecutionException e) {
             String message = "Unable to get application token.";
             log.error(message);
