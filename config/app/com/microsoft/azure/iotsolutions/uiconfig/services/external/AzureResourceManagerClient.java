@@ -56,15 +56,14 @@ public class AzureResourceManagerClient implements IAzureResourceManagerClient {
 
     @Override
     public CompletionStage<Boolean> isOffice365EnabledAsync() throws ExternalDependencyException, NotAuthorizedException {
-        String logicAppTestConnectionUri = String.format("subscriptions/%s/resourceGroups/%s" +
+        String logicAppTestConnectionUri = String.format("%ssubscriptions/%s/resourceGroups/%s" +
                         "/providers/Microsoft.Web/connections/" +
                         "office365-connector/extensions/proxy/" +
                         "testconnection?api-version=%s",
+                this.armEndpointUrl,
                 this.subscriptionId,
                 this.resourceGroup,
                 this.managementApiVersion);
-        // Join with armEndpointUrl path
-        logicAppTestConnectionUri = Paths.get(this.armEndpointUrl, logicAppTestConnectionUri).toString();
 
         // Gets token from auth service and adds to header
         WSRequest request = this.createRequest(logicAppTestConnectionUri);
