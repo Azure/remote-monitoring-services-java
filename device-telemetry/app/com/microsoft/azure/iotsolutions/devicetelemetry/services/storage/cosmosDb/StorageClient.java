@@ -34,10 +34,10 @@ public class StorageClient implements IStorageClient {
     public DocumentClient getDocumentClient() throws InvalidConfigurationException {
         if (this.client == null) {
             this.client = new DocumentClient(
-                    storageHostName,
-                    storagePrimaryKey,
-                    ConnectionPolicy.GetDefault(),
-                    ConsistencyLevel.Session);
+                storageHostName,
+                storagePrimaryKey,
+                ConnectionPolicy.GetDefault(),
+                ConsistencyLevel.Session);
 
             if (this.client == null) {
                 // TODO add logging if connection fails (don't log connection string)
@@ -122,9 +122,9 @@ public class StorageClient implements IStorageClient {
         String collectionLink = String.format("/dbs/%s/colls/%s", databaseName, colId);
         do {
             FeedResponse<Document> queryResults = this.client.queryDocuments(
-                    collectionLink,
-                    querySpec,
-                    queryOptions);
+                collectionLink,
+                querySpec,
+                queryOptions);
 
             for (Document doc : queryResults.getQueryIterable()) {
                 if (skip == 0) {
@@ -148,8 +148,7 @@ public class StorageClient implements IStorageClient {
         try {
             if (this.client != null) {
                 response = this.client.getDatabaseAccount();
-            }
-            else {
+            } else {
                 result.setMessage("Storage client not setup properly.");
             }
 
@@ -170,20 +169,20 @@ public class StorageClient implements IStorageClient {
         String connectionString = servicesConfig.getAlarmsConfig().getStorageConfig().getCosmosDbConnString();
 
         if (!connectionString.contains(";") ||
-                !connectionString.contains(HOST_ID) ||
-                !connectionString.contains(KEY_ID)) {
+            !connectionString.contains(HOST_ID) ||
+            !connectionString.contains(KEY_ID)) {
             // TODO add logging for connection string error (don't log conn string)
             throw new InvalidConfigurationException("Connection string format: " +
-                    "accepted format \"AccountEndpoint={value};AccountKey={value}\"");
+                "accepted format \"AccountEndpoint={value};AccountKey={value}\"");
         }
 
         String[] params = connectionString.split(";");
         if (params.length > 1) {
             this.storageHostName = params[0].substring(
-                    params[0].indexOf(HOST_ID) + HOST_ID.length());
+                params[0].indexOf(HOST_ID) + HOST_ID.length());
 
             this.storagePrimaryKey = params[1].substring(
-                    params[1].indexOf(KEY_ID) + KEY_ID.length());
+                params[1].indexOf(KEY_ID) + KEY_ID.length());
         } else {
             // TODO add logging for connection string error (don't log conn string)
             throw new InvalidConfigurationException("Connection string format error");

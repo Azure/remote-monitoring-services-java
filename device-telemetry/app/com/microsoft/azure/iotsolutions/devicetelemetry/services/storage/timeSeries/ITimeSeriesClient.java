@@ -15,10 +15,10 @@ public interface ITimeSeriesClient {
     StatusResultServiceModel ping();
 
     MessageListServiceModel queryEvents(
-            DateTime from,
-            DateTime to,
-            String order,
-            int skip,
-            int limit,
-            String[] deviceIds) throws TimeSeriesParseException, InvalidConfigurationException;
+        DateTime from,
+        DateTime to,
+        String order,
+        int skip,
+        int limit,
+        String[] deviceIds) throws TimeSeriesParseException, InvalidConfigurationException;
 }
