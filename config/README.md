@@ -79,6 +79,13 @@ variables [here](#configuration-and-environment-variables).
   API Key. This can be set to "static" if you do not have one.
 * `PCS_AUTH_WEBSERVICE_URL` = the url for
    the [Auth Webservice](https://github.com/Azure/pcs-auth-dotnet)
+* `PCS_OFFICE365_CONNECTION_URL` (Optional) = the url for the Office 365 Logic App connector
+* `PCS_SOLUTION_NAME` (Optional) = The name of the resource group for the solution. Used only if
+  using logic apps for actions.
+* `PCS_SUBSCRIPTION_ID`(Optional) = The subscription id for the solution. Used only if
+  using logic apps for actions.
+  * `PCS_ARM_ENDPOINT_URL` (Optional) = the url for the Azure management APIs. Used only if
+  using logic apps for actions.
 
 # Running the service in an IDE
 
@@ -111,10 +118,14 @@ Steps using IntelliJ IDEA Community, with SBT plugin enabled:
     1. `PCS_TELEMETRY_WEBSERVICE_URL` = http://localhost:9004/v1
     1. `PCS_AZUREMAPS_KEY` = static
     1. `PCS_AUTH_WEBSERVICE_URL` = http://localhost:9001/v1
+    1. `PCS_OFFICE365_CONNECTION_URL` (Optional)
+    1. `PCS_SOLUTION_NAME` (Optional)
+    1. `PCS_SUBSCRIPTION_ID`(Optional)
+    1. `PCS_ARM_ENDPOINT_URL` (Optional)
 * Either from the toolbar or the Run menu, execute the configuration just
   created, using the Debug command/button
 * Test that the service is up and running pointing your browser to
-  http://127.0.0.1:9004/v1/status
+  http://127.0.0.1:9005/v1/status
 
 ## Running the service with Eclipse
 The integration with Eclipse requires the
@@ -129,9 +140,9 @@ Steps using Eclipse Oxygen ("Eclipse for Java Developers" package):
   required by Eclipse to recognize the project.
 * Open Eclipse, and from the Welcome screen "Import" an existing project,
   navigating to the root folder of the project.
-* From the console run `sbt -jvm-debug 9999 "run 9004"` to start the project
+* From the console run `sbt -jvm-debug 9999 "run 9005"` to start the project
 * Test that the service is up and running pointing your browser to
-  http://127.0.0.1:9004/v1/status
+  http://127.0.0.1:9005/v1/status
 * In Eclipse, select "Run -> Debug Configurations" and add a "Remote Java
   Application", using "localhost" and port "9999".
 * After saving this configuration, you can click "Debug" to connect to the
@@ -147,6 +158,10 @@ More information on environment variables
    1. `PCS_TELEMETRY_WEBSERVICE_URL` = http://localhost:9004/v1
    1. `PCS_AZUREMAPS_KEY` = static
    1. `PCS_AUTH_WEBSERVICE_URL` = http://localhost:9001/v1
+   1. `PCS_OFFICE365_CONNECTION_URL` (Optional)
+   1. `PCS_SOLUTION_NAME` (Optional)
+   1. `PCS_SUBSCRIPTION_ID`(Optional)
+   1. `PCS_ARM_ENDPOINT_URL` (Optional)
 1. Use the scripts in the [scripts](scripts) folder for many frequent tasks:
    * `build`: compile all the projects and run the tests.
    * `compile`: compile all the projects.

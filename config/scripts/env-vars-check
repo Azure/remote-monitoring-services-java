@@ -36,3 +36,17 @@ if [[ -z "$PCS_AUTH_WEBSERVICE_URL" ]]; then
     echo "Error: the PCS_AUTH_WEBSERVICE_URL environment variable is not defined."
     exit -1
 fi
+
+# Optional environment variables
+if [[ -z "$PCS_OFFICE365_CONNECTION_URL" ]]; then
+    echo "Warning: the PCS_OFFICE365_CONNECTION_URL environment variable is not defined."
+fi
+ if [[ -z "$PCS_SOLUTION_NAME" ]]; then
+    echo "Warning: the PCS_SOLUTION_NAME environment variable is not defined."
+fi
+ if [[ -z "$PCS_SUBSCRIPTION_ID" ]]; then
+    echo "Warning: the PCS_SUBSCRIPTION_ID environment variable is not defined."
+fi
+ if [[ -z "$PCS_ARM_ENDPOINT_URL" ]]; then
+    echo "Warning: the PCS_ARM_ENDPOINT_URL environment variable is not defined."
+fi
