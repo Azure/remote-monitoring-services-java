@@ -39,7 +39,7 @@ public class DevicePropertiesTest {
         mockDevices = Mockito.mock(IDevices.class);
         cacheModel = "{\"Rebuilding\": false,\"Tags\": [ \"c\", \"a\", \"y\", \"z\" ],\"Reported\": [\"1\",\"9\",\"2\",\"3\"] }";
         List<String> cacheWhiteList = Arrays.asList("tags.*", "reported.*");
-        config = new ServicesConfig(null, null, null,0, 0, cacheWhiteList);
+        config = new ServicesConfig(null, null, null, 0, 0, cacheWhiteList);
     }
 
     @Test(timeout = 100000)
