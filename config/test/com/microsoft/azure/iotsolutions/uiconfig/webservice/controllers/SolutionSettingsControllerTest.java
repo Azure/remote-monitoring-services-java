@@ -207,7 +207,7 @@ public class SolutionSettingsControllerTest {
         ActionSettingsListApiModel result = Json.fromJson(Json.parse(resultStr), ActionSettingsListApiModel.class);
 
         // Assert
-        assertFalse((((ArrayList<ActionSettingsApiModel>)result.getItems()).isEmpty()));
+        assertFalse(((ArrayList<ActionSettingsApiModel>)result.getItems()).isEmpty());
         assertFalse(result.getMetadata().isEmpty());
     }
 
