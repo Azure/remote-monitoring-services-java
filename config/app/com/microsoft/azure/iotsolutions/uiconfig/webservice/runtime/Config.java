@@ -59,7 +59,7 @@ public class Config implements IConfig {
         this.servicesConfig = new ServicesConfig(
                 this.data.getString(TELEMETRY_WEBSERVICE_URL),
                 this.data.getString(STORAGE_ADAPTER_WEBSERVICE_URL),
-                this.data.getString(DEVICESIMULATION_WEBSERVICE_URL),
+                this.data.getString(AUTH_WEB_SERVICE_URL_KEY),
                 this.data.getString(DEVICESIMULATION_WEBSERVICE_URL),
                 this.data.getString(SEED_TEMPLATEKEY),
                 this.data.getString(AZUREMAPS_KEY));
