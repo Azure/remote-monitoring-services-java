@@ -172,8 +172,8 @@ public final class Deployments implements IDeployments {
         }
 
         try {
-            final Configuration edgeConfig = ConfigurationsHelper.toHubConfiguration(deployment);
-            final Configuration result = this.registry.addConfiguration(edgeConfig);
+            final Configuration config = ConfigurationsHelper.toHubConfiguration(deployment);
+            final Configuration result = this.registry.addConfiguration(config);
             return CompletableFuture.completedFuture(new DeploymentServiceModel(result));
         }
         catch (IotHubBadFormatException e) {

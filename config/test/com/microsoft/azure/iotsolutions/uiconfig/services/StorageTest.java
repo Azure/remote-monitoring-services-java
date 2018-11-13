@@ -361,9 +361,9 @@ public class StorageTest {
 
     @Test
     @Category({UnitTest.class})
-    public void addPackageTest() throws BaseException, ExecutionException, InterruptedException {
+    public void addEdgePackageTest() throws BaseException, ExecutionException, InterruptedException {
         // Arrange
-        Package pkg = new Package(null, rand.NextString(), PackageType.edgeManifest, this.createConfiguration());
+        Package pkg = new Package(null, rand.NextString(), PackageType.edgeManifest, null, this.createConfiguration());
 
         ValueApiModel model = new ValueApiModel(rand.NextString(), null, null, null);
         model.setData(Json.stringify(Json.toJson(pkg)));
@@ -383,9 +383,96 @@ public class StorageTest {
 
     @Test
     @Category({UnitTest.class})
+    public void addADMPackageTest() throws BaseException, ExecutionException, InterruptedException {
+        // Arrange
+        Package pkg = new Package(
+                null,
+                rand.NextString(),
+                PackageType.edgeManifest,
+                PackageConfigType.firmwareUpdateMxChip.toString(),
+                this.createConfiguration());
+
+        ValueApiModel model = new ValueApiModel(rand.NextString(), null, null, null);
+        model.setData(Json.stringify(Json.toJson(pkg)));
+
+        Mockito.when(mockClient.createAsync(Mockito.eq(PACKAGES_COLLECTION_ID),
+                Mockito.any(String.class)))
+                .thenReturn(CompletableFuture.supplyAsync(() -> model));
+
+        // Act
+        Package result = storage.addPackageAsync(pkg).toCompletableFuture().get();
+
+        // Assert
+        assertEquals(pkg.getName(), result.getName());
+        assertEquals(pkg.getType(), result.getType());
+        assertEquals(pkg.getConfigType(), PackageConfigType.firmwareUpdateMxChip);
+        assertEquals(pkg.getContent(), result.getContent());
+    }
+
+    @Test
+    @Category({UnitTest.class})
+    public void addADMCustomPackageTest() throws BaseException, ExecutionException, InterruptedException {
+        // Arrange
+        final String config = "CustomConfig";
+        final String configKey = "configurations";
+
+        Package pkg = new Package(
+                null,
+                rand.NextString(),
+                PackageType.edgeManifest,
+                config,
+                this.createConfiguration());
+
+        ValueApiModel model = new ValueApiModel(rand.NextString(), null, null, null);
+        model.setData(Json.stringify(Json.toJson(pkg)));
+
+        Mockito.when(mockClient.createAsync(Mockito.eq(PACKAGES_COLLECTION_ID),
+                Mockito.any(String.class)))
+                .thenReturn(CompletableFuture.supplyAsync(() -> model));
+
+        Mockito.when(mockClient.updateAsync(
+                Mockito.eq(PACKAGES_COLLECTION_ID),
+                Mockito.eq(configKey),
+                Mockito.eq(config),
+                Mockito.any(String.class)))
+                .thenReturn(CompletableFuture.supplyAsync(() -> model));
+
+        Mockito.when(mockClient.getAsync(Mockito.eq(PACKAGES_COLLECTION_ID),
+                Mockito.eq(configKey)))
+                .thenReturn(CompletableFuture.supplyAsync(() -> model));
+
+        // Act
+        Package result = storage.addPackageAsync(pkg).toCompletableFuture().get();
+
+        // Assert
+        assertEquals(pkg.getName(), result.getName());
+        assertEquals(pkg.getType(), result.getType());
+        assertEquals(pkg.getConfigType(), config);
+        assertEquals(pkg.getContent(), result.getContent());
+    }
+
+    @Test
+    @Category({UnitTest.class})
+    public void listConfigurationsTest() throws BaseException, ExecutionException, InterruptedException {
+        // Arrange
+        final String configKey = "configurations";
+
+        Mockito.when(mockClient.getAsync(Mockito.eq(PACKAGES_COLLECTION_ID),
+                Mockito.eq(configKey)))
+                .thenThrow(new ResourceNotFoundException());
+
+        // Act
+        PackageConfigurations result = storage.getAllConfigurationsAsync().toCompletableFuture().get();
+
+        // Assert
+        assertEquals(0, result.getConfigurations().length);
+    }
+
+    @Test
+    @Category({UnitTest.class})
     public void invalidPackageTest() throws BaseException, ExecutionException, InterruptedException {
         // Arrange
-        Package pkg = new Package(null, rand.NextString(), PackageType.edgeManifest, rand.NextString());
+        Package pkg = new Package(null, rand.NextString(), PackageType.edgeManifest, null,  rand.NextString());
 
         // Act & Assert
         exception.expect(InvalidInputException.class);

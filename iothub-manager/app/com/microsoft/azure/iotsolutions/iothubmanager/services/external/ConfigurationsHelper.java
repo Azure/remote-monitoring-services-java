@@ -1,13 +1,11 @@
 package com.microsoft.azure.iotsolutions.iothubmanager.services.external;
 
-import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.ExternalDependencyException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.helpers.QueryConditionTranslator;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentServiceModel;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentType;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeviceGroup;
 import com.microsoft.azure.sdk.iot.service.Configuration;
-import com.sun.deploy.resources.Deployment;
 import org.apache.commons.lang3.StringUtils;
 import play.libs.Json;
 
@@ -56,7 +54,7 @@ public class ConfigurationsHelper {
         Map<String, String> systemMetrics = pkgConfiguration.getSystemMetrics().getQueries();
         if (systemMetrics != null)
         {
-            configuration.getSystemMetrics().setQueries(systemMetrics);
+            //configuration.getSystemMetrics().setQueries(systemMetrics);
         }
 
         Map<String, String> customMetrics = pkgConfiguration.getMetrics().getQueries();
