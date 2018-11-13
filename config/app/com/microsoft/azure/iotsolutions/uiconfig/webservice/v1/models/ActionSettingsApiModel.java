@@ -32,6 +32,8 @@ public class ActionSettingsApiModel {
         this.settings = settings;
     }
 
+    public ActionSettingsApiModel() {}
+
     public ActionSettingsApiModel(IActionSettings actionSettings) {
         this.type = actionSettings.getType().name();
         this.settings = new TreeMap<String, Object>(actionSettings.getSettings());

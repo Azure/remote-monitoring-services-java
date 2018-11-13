@@ -14,6 +14,8 @@ public class ActionSettingsListApiModel {
     private ArrayList<ActionSettingsApiModel> items;
     private Hashtable<String, String> metadata;
 
+    public ActionSettingsListApiModel() {}
+
     public ActionSettingsListApiModel(Iterable<IActionSettings> actionSettingsList) {
         this.items = new ArrayList<>();
         for (IActionSettings item : actionSettingsList) {

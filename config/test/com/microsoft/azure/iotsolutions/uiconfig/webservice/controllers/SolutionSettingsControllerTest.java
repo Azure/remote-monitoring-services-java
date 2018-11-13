@@ -7,8 +7,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.microsoft.azure.iotsolutions.uiconfig.services.IActions;
 import com.microsoft.azure.iotsolutions.uiconfig.services.IStorage;
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.BaseException;
+import com.microsoft.azure.iotsolutions.uiconfig.services.external.IAzureResourceManagerClient;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.Logo;
+import com.microsoft.azure.iotsolutions.uiconfig.services.models.actions.EmailActionSettings;
+import com.microsoft.azure.iotsolutions.uiconfig.services.models.actions.IActionSettings;
+import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.SolutionSettingsController;
+import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models.ActionSettingsApiModel;
+import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models.ActionSettingsListApiModel;
 import helpers.Random;
 import helpers.TestUtils;
 import helpers.UnitTest;
@@ -22,16 +28,20 @@ import play.mvc.Result;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 public class SolutionSettingsControllerTest {
 
     private IStorage mockStorage;
     private IActions mockActions;
+    private IServicesConfig mockServicesConfig;
+    private IAzureResourceManagerClient mockResourceManagementClient;
     private SolutionSettingsController controller;
     private Random rand;
 
@@ -40,8 +50,10 @@ public class SolutionSettingsControllerTest {
 
     @Before
     public void setUp() {
-        mockStorage = Mockito.mock(IStorage.class);
-        mockActions = Mockito.mock(IActions.class);
+        this.mockStorage = Mockito.mock(IStorage.class);
+        this.mockActions = Mockito.mock(IActions.class);
+        this.mockServicesConfig = Mockito.mock(IServicesConfig.class);
+        this.mockResourceManagementClient = Mockito.mock(IAzureResourceManagerClient.class);
         rand = new Random();
     }
 
@@ -177,6 +189,26 @@ public class SolutionSettingsControllerTest {
         assertEquals(ByteString.fromArray(bytes), ByteString.fromArray(emptyBytes));
         Mockito.verify(mockResponse).setHeader(Logo.NAME_HEADER, name);
         Mockito.verify(mockResponse).setHeader(Logo.IS_DEFAULT_HEADER, Boolean.toString(false));
+    }
+
+    @Test(timeout = SolutionSettingsControllerTest.TIMEOUT)
+    @Category({UnitTest.class})
+    public void getActionsReturnsListOfActions() throws BaseException, ExecutionException, InterruptedException {
+        // Arrange
+        this.controller = new SolutionSettingsController(mockStorage, mockActions);
+
+        IActionSettings action = new EmailActionSettings(this.mockResourceManagementClient, this.mockServicesConfig);
+        ArrayList<IActionSettings> actionSettings = new ArrayList<>();
+        actionSettings.add(action);
+        Mockito.when(mockActions.getList()).thenReturn(actionSettings);
+
+        // Act
+        String resultStr = TestUtils.getString(this.controller.getActionsSettings());
+        ActionSettingsListApiModel result = Json.fromJson(Json.parse(resultStr), ActionSettingsListApiModel.class);
+
+        // Assert
+        assertFalse((((ArrayList<ActionSettingsApiModel>)result.getItems()).isEmpty()));
+        assertFalse(result.getMetadata().isEmpty());
     }
 
     private void setLogoMockSetup(Logo model) throws BaseException{
