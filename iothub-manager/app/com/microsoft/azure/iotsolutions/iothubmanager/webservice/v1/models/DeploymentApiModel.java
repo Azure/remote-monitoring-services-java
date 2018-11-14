@@ -3,7 +3,6 @@
 package com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.models.ConfigType;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentServiceModel;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentType;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeviceGroup;
@@ -19,14 +18,14 @@ public class DeploymentApiModel {
     private String packageName;
     private int priority;
     private DeploymentType deploymentType;
-    private ConfigType configType;
+    private String configType;
     private DeploymentMetricsApiModel metrics;
 
     public DeploymentApiModel() {}
 
     public DeploymentApiModel(String deploymentName, String deviceGroupId, String deviceGroupName,
                               String deviceGroupQuery, String packageContent, String packageName,
-                              int priority, DeploymentType deploymentType, ConfigType configType) {
+                              int priority, DeploymentType deploymentType, String configType) {
         this.name = deploymentName;
         this.deviceGroupId = deviceGroupId;
         this.deviceGroupName = deviceGroupName;
@@ -100,8 +99,8 @@ public class DeploymentApiModel {
     }
 
     @JsonProperty("ConfigType")
-    public DeploymentType getConfigType() {
-        return this.deploymentType;
+    public String getConfigType() {
+        return this.configType;
     }
 
     @JsonProperty("Metrics")

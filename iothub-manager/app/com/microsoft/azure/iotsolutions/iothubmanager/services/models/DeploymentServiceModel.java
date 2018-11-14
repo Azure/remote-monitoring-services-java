@@ -21,7 +21,7 @@ public class DeploymentServiceModel {
     private int priority;
     private String createdDateTimeUtc;
     private DeploymentType deploymentType;
-    private ConfigType configType;
+    private String configType;
     private DeploymentMetrics deploymentMetrics;
 
     public DeploymentServiceModel(final String name,
@@ -30,7 +30,7 @@ public class DeploymentServiceModel {
                                   final String packageName,
                                   final int priority,
                                   final DeploymentType deploymentType,
-                                  final ConfigType configType) {
+                                  final String configType) {
         this.deviceGroup = deviceGroup;
         this.packageContent = packageContent;
         this.name = name;
@@ -86,13 +86,8 @@ public class DeploymentServiceModel {
             throw new IllegalStateException("Invalid deployment type found.");
         }
 
-        for (ConfigType type : ConfigType.values())
-        {
-            if (deployment.getLabels().containsValue(type))
-            {
-                this.configType = type;
-            }
-        }
+        this.configType = deployment.getLabels().get(ConfigurationsHelper.CONFIG_TYPE_LABEL.toString());
+
 
         this.deploymentMetrics = new DeploymentMetrics(deployment.getSystemMetrics(), deployment.getMetrics());
     }
@@ -125,7 +120,7 @@ public class DeploymentServiceModel {
         return this.deploymentType;
     }
 
-    public ConfigType getConfigType() {
+    public String getConfigType() {
         return this.configType;
     }
 
