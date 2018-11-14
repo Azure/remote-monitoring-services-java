@@ -261,7 +261,8 @@ public class Storage implements IStorage {
             Storage.createPackage(p)
         );
 
-        if (!(EnumUtils.isValidEnumIgnoreCase(ConfigType.class, input.getConfigType())))
+        if (!(StringUtils.isBlank(input.getConfigType()))
+                && !(EnumUtils.isValidEnumIgnoreCase(ConfigType.class, input.getConfigType())))
         {
             this.updatePackageConfigsAsync(input.getConfigType());
         }

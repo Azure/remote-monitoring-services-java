@@ -13,6 +13,7 @@ import com.microsoft.azure.iotsolutions.uiconfig.services.external.ValueListApiM
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.*;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.Package;
 import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.ServicesConfig;
+import com.microsoft.azure.iotsolutions.uiconfig.webservice.runtime.Config;
 import com.microsoft.azure.sdk.iot.service.Configuration;
 import com.microsoft.azure.sdk.iot.service.ConfigurationContent;
 import helpers.Random;
@@ -388,7 +389,7 @@ public class StorageTest {
         Package pkg = new Package(
                 null,
                 rand.NextString(),
-                PackageType.edgeManifest,
+                PackageType.deviceConfiguration,
                 ConfigType.firmwareUpdateMxChip.toString(),
                 this.createConfiguration());
 
@@ -405,7 +406,7 @@ public class StorageTest {
         // Assert
         assertEquals(pkg.getName(), result.getName());
         assertEquals(pkg.getType(), result.getType());
-        assertEquals(pkg.getConfigType(), ConfigType.firmwareUpdateMxChip);
+        assertEquals(pkg.getConfigType(), result.getConfigType());
         assertEquals(pkg.getContent(), result.getContent());
     }
 
@@ -486,12 +487,13 @@ public class StorageTest {
         List<Package> packages = new ArrayList<>();
         final String pkgName = "pkgName";
         final PackageType type = PackageType.edgeManifest;
+        final String configType = null;
         final String content = "{}";
         final String dateCreated =
                 StorageTest.DATE_FORMAT.print(DateTime.now().toDateTime(DateTimeZone.UTC));
 
         for (int i = 0; i < 5; i++) {
-            Package model = new Package(null, pkgName + i, type, content + i, dateCreated);
+            Package model = new Package(null, pkgName + i, type, configType, content + i, dateCreated);
             packages.add(model);
         }
 
