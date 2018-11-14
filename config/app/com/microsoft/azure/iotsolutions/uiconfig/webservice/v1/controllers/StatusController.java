@@ -3,6 +3,7 @@
 package com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers;
 
 import com.google.inject.Singleton;
+import com.microsoft.azure.iotsolutions.uiconfig.webservice.auth.Authorize;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models.StatusApiModel;
 import play.mvc.Result;
 
@@ -17,6 +18,7 @@ public final class StatusController {
     /**
      * @return Service health details.
      */
+    @Authorize("ReadAll")
     public Result index() {
         return ok(toJson(new StatusApiModel(true, "Alive and well")));
     }
