@@ -39,6 +39,7 @@ public class AlarmsController extends Controller {
      *
      * @return List of alerts.
      */
+    @Authorize("ReadAll")
     public Result list(String from, String to, String order, int skip,
                        int limit, String devices) throws Exception {
         // TODO: move this logic to the storage engine, depending on the

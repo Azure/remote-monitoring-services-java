@@ -10,6 +10,7 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.storage
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.cosmosDb.IStorageClient;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.Status;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.timeSeries.ITimeSeriesClient;
+import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.Authorize;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime.IConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.StatusApiModel;
 import play.mvc.Controller;
@@ -46,6 +47,7 @@ public final class StatusController extends Controller {
     /**
      * @return Service health details.
      */
+    @Authorize("ReadAll")
     public CompletionStage<Result> index() throws InvalidConfigurationException {
         StatusApiModel statusApiModel = new StatusApiModel();
 

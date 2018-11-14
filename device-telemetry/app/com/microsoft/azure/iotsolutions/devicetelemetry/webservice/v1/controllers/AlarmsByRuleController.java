@@ -5,6 +5,7 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controlle
 import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.IAlarms;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.IRules;
+import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.Authorize;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.helpers.DateHelper;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.AlarmByRuleListApiModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.AlarmListByRuleApiModel;
@@ -42,6 +43,7 @@ public class AlarmsByRuleController {
      *
      * @return List of alarms.
      */
+    @Authorize("ReadAll")
     public CompletionStage<Result> listAsync(String from, String to, String order, int skip,
                                              int limit, String devices) throws Exception {
         // TODO: move this logic to the storage engine, depending on the
@@ -71,6 +73,7 @@ public class AlarmsByRuleController {
     /**
      * @return A list of alarms generated from a specific rule.
      */
+    @Authorize("ReadAll")
     public Result get(String id, String from, String to, String order, int skip,
                       int limit, String devices) throws Exception {
         // TODO: move this logic to the storage engine, depending on the
