@@ -6,6 +6,7 @@ import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.IDevices;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.ExternalDependencyException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidInputException;
+import com.microsoft.azure.iotsolutions.iothubmanager.webservice.auth.Authorize;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models.TwinPropertiesApiModel;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models.TwinPropertiesListApiModel;
 import org.apache.commons.lang3.StringUtils;
@@ -34,6 +35,7 @@ public class ModulesController extends Controller {
      * @throws ExternalDependencyException
      * @throws InvalidInputException
      */
+    @Authorize("ReadAll")
     public CompletionStage<Result> getModuleTwinAsync(String deviceId, String moduleId) throws
             ExternalDependencyException, InvalidInputException {
         if (StringUtils.isEmpty(deviceId)) {
@@ -48,6 +50,7 @@ public class ModulesController extends Controller {
                 .thenApply(devices -> ok(toJson(new TwinPropertiesApiModel(deviceId, moduleId, devices.getProperties()))));
     }
 
+    @Authorize("ReadAll")
     public CompletionStage<Result> getModuleTwinsAsync(String query) throws ExternalDependencyException {
         String continuationToken = StringUtils.EMPTY;
 
@@ -58,6 +61,7 @@ public class ModulesController extends Controller {
                 .thenApply(twins -> ok(toJson(new TwinPropertiesListApiModel(twins))));
     }
 
+    @Authorize("ReadAll")
     public CompletionStage<Result> queryModuleTwinsAsync() throws ExternalDependencyException {
         String query;
         if (request().getHeaders().get(CONTENT_TYPE).isPresent() &&
