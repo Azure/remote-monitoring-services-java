@@ -40,6 +40,7 @@ public final class SolutionSettingsController extends Controller {
         this.storage = storage;
     }
 
+    @Authorize("ReadAll")
     public CompletionStage<Result> getThemeAsync() throws BaseException {
         return storage.getThemeAsync()
                 .thenApply(theme -> ok(toJson(theme)));

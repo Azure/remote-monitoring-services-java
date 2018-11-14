@@ -60,6 +60,7 @@ public class AlarmsController extends Controller {
     /**
      * @return One alert.
      */
+    @Authorize("ReadAll")
     public Result get(String id) throws Exception {
         return ok(toJson(new AlarmApiModel(this.alarms.get(id))));
     }
