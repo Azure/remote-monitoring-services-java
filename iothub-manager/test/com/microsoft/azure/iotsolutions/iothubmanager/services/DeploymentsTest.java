@@ -3,10 +3,7 @@
 package com.microsoft.azure.iotsolutions.iothubmanager.services;
 
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidInputException;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentServiceListModel;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentServiceModel;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentType;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeviceGroup;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.models.*;
 import com.microsoft.azure.sdk.iot.service.Configuration;
 import com.microsoft.azure.sdk.iot.service.RegistryManager;
 import com.microsoft.azure.sdk.iot.service.devicetwin.DeviceTwin;
@@ -35,6 +32,8 @@ import static org.mockito.Mockito.when;
 public class DeploymentsTest {
     private final Deployments deployments;
     private static final String DEPLOYMENT_NAME_LABEL = "Name";
+    private static final String DEPLOYMENT_TYPE_LABEL = "DeploymentType";
+    private static final String CONFIG_TYPE_LABEL = "ConfigType";
     private static final String DEPLOYMENT_GROUP_ID_LABEL = "DeviceGroupId";
     private static final String DEPLOYMENT_GROUP_NAME_LABEL = "DeviceGroupName";
     private static final String DEPLOYMENT_PACKAGE_NAME_LABEL = "PackageName";
@@ -74,6 +73,8 @@ public class DeploymentsTest {
 
         final Configuration config = new Configuration(registryManagerDeploymentId);
         config.setLabels(new HashMap<>());
+        config.getLabels().put(DEPLOYMENT_TYPE_LABEL, DeploymentType.edgeManifest.toString());
+        config.getLabels().put(CONFIG_TYPE_LABEL, ConfigType.edge.toString());
         config.getLabels().put(DEPLOYMENT_NAME_LABEL, deploymentName);
         config.getLabels().put(DEPLOYMENT_GROUP_ID_LABEL, deviceGroupId);
         config.getLabels().put(RM_CREATED_LABEL, "true");
@@ -85,7 +86,8 @@ public class DeploymentsTest {
                 packageContent,
                 StringUtils.EMPTY,
                 priority,
-                DeploymentType.edgeManifest);
+                DeploymentType.edgeManifest,
+                ConfigType.edge);
 
         final IsValidConfiguration isValidConfig = new IsValidConfiguration(deploymentName, deviceGroupId);
         when(this.registry.addConfiguration(argThat(isValidConfig))).thenReturn(config);
@@ -157,6 +159,8 @@ public class DeploymentsTest {
         final Configuration conf = new Configuration("test-config"+idx);
         final HashMap<String, String> labels = new HashMap<String, String>() {
             {
+                put(DEPLOYMENT_TYPE_LABEL, DeploymentType.edgeManifest.toString());
+                put(CONFIG_TYPE_LABEL, ConfigType.edge.toString());
                 put(DEPLOYMENT_NAME_LABEL, "deployment" + idx);
                 put(DEPLOYMENT_GROUP_ID_LABEL, "dvcGroupId" + idx);
                 put(DEPLOYMENT_GROUP_NAME_LABEL, "dvcGroupName" + idx);

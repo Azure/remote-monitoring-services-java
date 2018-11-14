@@ -10,6 +10,7 @@ import com.microsoft.azure.iotsolutions.iothubmanager.services.external.Configur
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentServiceListModel;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentServiceModel;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentStatus;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeviceStatusQueries;
 import com.microsoft.azure.sdk.iot.service.Configuration;
 import com.microsoft.azure.sdk.iot.service.RegistryManager;
 import com.microsoft.azure.sdk.iot.service.devicetwin.DeviceTwin;
@@ -136,7 +137,7 @@ public final class Deployments implements IDeployments {
                 Map<String, DeploymentStatus> deviceStatuses = null;
 
                 try {
-                    deviceStatuses = this.getDeviceStatuses(id);
+                    deviceStatuses = this.getDeviceStatuses(deployment);
                 } catch(Exception ex) {
                     log.error("Unable to retrieve device statuses for deployment " + id, ex);
                 }
@@ -214,13 +215,33 @@ public final class Deployments implements IDeployments {
     /**
      * Does 3 queries to the IoTHub to get the status of the deployment per device.
      *
-     * @param deploymentId - Deployment id for the deployment to query.
+     * @param deployment - Deployment id for the deployment to query.
      * @return Map of deviceId to the {@link DeploymentStatus}.
      */
-    private Map<String, DeploymentStatus> getDeviceStatuses(String deploymentId) throws IOException {
-        final Set<String> appliedDeviceIds = this.getDevicesInQuery(APPLIED_DEVICES_QUERY, deploymentId);
-        final Set<String> successfulDeviceIds = this.getDevicesInQuery(SUCCESSFUL_DEVICES_QUERY, deploymentId);
-        final Set<String> failedDeviceIds = this.getDevicesInQuery(FAILED_DEVICES_QUERY, deploymentId);
+    private Map<String, DeploymentStatus> getDeviceStatuses(Configuration deployment) throws IOException {
+
+        String deploymentType = deployment.getLabels().get(ConfigurationsHelper.DEPLOYMENT_TYPE_LABEL);
+        String configType = deployment.getLabels().get(ConfigurationsHelper.CONFIG_TYPE_LABEL);
+
+        Map<DeviceStatusQueries.QueryType, String> queries = DeviceStatusQueries.getQueries(deploymentType, configType);
+
+        if (queries == null)
+        {
+            return null;
+        }
+
+        String deploymentId = deployment.getId();
+
+        final Set<String> appliedDeviceIds = this.getDevicesInQuery(
+                queries.get(DeviceStatusQueries.QueryType.APPLIED),
+                deploymentId);
+
+        final Set<String> successfulDeviceIds = this.getDevicesInQuery(
+                queries.get(DeviceStatusQueries.QueryType.SUCCESSFUL), deploymentId);
+
+        final Set<String> failedDeviceIds = this.getDevicesInQuery(
+                queries.get(DeviceStatusQueries.QueryType.FAILED), deploymentId);
+
         Map<String,DeploymentStatus> deviceStatuses = new HashMap<>();
 
         for (String successfulDevice : successfulDeviceIds) {

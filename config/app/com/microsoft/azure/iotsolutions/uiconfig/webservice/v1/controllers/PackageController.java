@@ -10,7 +10,7 @@ import com.microsoft.azure.iotsolutions.uiconfig.webservice.auth.Authorize;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.PackageType;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.exceptions.BadRequestException;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models.PackageApiModel;
-import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models.PackageConfigListApiModel;
+import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models.ConfigTypeListApiModel;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models.PackageListApiModel;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.EnumUtils;
@@ -70,7 +70,7 @@ public class PackageController extends Controller {
      * @return {@link PackageApiModel}
      */
     public CompletionStage<Result> getListAsync() throws BaseException {
-        return storage.getAllConfigurationsAsync().thenApplyAsync(m -> ok(toJson(new PackageConfigListApiModel(m))));
+        return storage.getAllConfigurationsAsync().thenApplyAsync(m -> ok(toJson(new ConfigTypeListApiModel(m))));
     }
 
     /**

@@ -389,7 +389,7 @@ public class StorageTest {
                 null,
                 rand.NextString(),
                 PackageType.edgeManifest,
-                PackageConfigType.firmwareUpdateMxChip.toString(),
+                ConfigType.firmwareUpdateMxChip.toString(),
                 this.createConfiguration());
 
         ValueApiModel model = new ValueApiModel(rand.NextString(), null, null, null);
@@ -405,7 +405,7 @@ public class StorageTest {
         // Assert
         assertEquals(pkg.getName(), result.getName());
         assertEquals(pkg.getType(), result.getType());
-        assertEquals(pkg.getConfigType(), PackageConfigType.firmwareUpdateMxChip);
+        assertEquals(pkg.getConfigType(), ConfigType.firmwareUpdateMxChip);
         assertEquals(pkg.getContent(), result.getContent());
     }
 
@@ -462,7 +462,7 @@ public class StorageTest {
                 .thenThrow(new ResourceNotFoundException());
 
         // Act
-        PackageConfigurations result = storage.getAllConfigurationsAsync().toCompletableFuture().get();
+        ConfigTypeList result = storage.getAllConfigurationsAsync().toCompletableFuture().get();
 
         // Assert
         assertEquals(0, result.getConfigurations().length);

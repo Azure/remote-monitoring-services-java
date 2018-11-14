@@ -1,14 +1,14 @@
 package com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.microsoft.azure.iotsolutions.uiconfig.services.models.PackageConfigType;
-import com.microsoft.azure.iotsolutions.uiconfig.services.models.PackageConfigurations;
+import com.microsoft.azure.iotsolutions.uiconfig.services.models.ConfigType;
+import com.microsoft.azure.iotsolutions.uiconfig.services.models.ConfigTypeList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class PackageConfigListApiModel {
+public class ConfigTypeListApiModel {
 
     @JsonProperty("configurations")
     public String[] packageConfigurations;
@@ -18,13 +18,13 @@ public class PackageConfigListApiModel {
         return packageConfigurations;
     }
 
-    public PackageConfigListApiModel(PackageConfigurations packageConfigurations)
+    public ConfigTypeListApiModel(ConfigTypeList configTypeList)
     {
-        List<String> customConfigs = new ArrayList<String>(Arrays.asList(packageConfigurations.configurations));
+        List<String> customConfigs = new ArrayList<String>(Arrays.asList(configTypeList.configurations));
 
-        for(PackageConfigType type : PackageConfigType.values())
+        for(ConfigType type : ConfigType.values())
         {
-            if (!(type.equals(PackageConfigType.custom)))
+            if (!(type.equals(ConfigType.custom)))
             {
                 customConfigs.add(0,type.toString());
             }
@@ -33,7 +33,7 @@ public class PackageConfigListApiModel {
         this.packageConfigurations = customConfigs.toArray(new String[customConfigs.size()]);
     }
 
-    public PackageConfigListApiModel()
+    public ConfigTypeListApiModel()
     {
         this.packageConfigurations = new String[0];
     }

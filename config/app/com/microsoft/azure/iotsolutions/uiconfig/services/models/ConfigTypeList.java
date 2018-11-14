@@ -4,13 +4,13 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class PackageConfigurations {
+public class ConfigTypeList {
 
     private Set<String> customConfig = new HashSet<String>();
 
     public String[] configurations;
 
-    public PackageConfigurations()
+    public ConfigTypeList()
     {
         this.configurations = new String[0];
     }

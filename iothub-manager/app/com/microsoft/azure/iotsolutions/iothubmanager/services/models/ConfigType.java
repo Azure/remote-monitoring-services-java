@@ -1,14 +1,17 @@
-package com.microsoft.azure.iotsolutions.uiconfig.services.models;
+// Copyright (c) Microsoft. All rights reserved.
+
+package com.microsoft.azure.iotsolutions.iothubmanager.services.models;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public enum PackageConfigType {
+public enum ConfigType {
     firmwareUpdateMxChip("FirmwareUpdateMxChip"),
-    custom("Custom");
+    custom("Custom"),
+    edge("Edge");
 
     private final String value;
 
-    PackageConfigType(String value) {
+    ConfigType(String value) {
         this.value = value;
     }
 
@@ -17,7 +20,6 @@ public enum PackageConfigType {
         return value;
     }
 
-    @Override
     public String toString() {
         return getValue();
     }

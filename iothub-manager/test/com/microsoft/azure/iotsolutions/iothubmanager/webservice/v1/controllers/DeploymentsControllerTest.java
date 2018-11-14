@@ -5,10 +5,7 @@ package com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers
 import com.microsoft.azure.iotsolutions.iothubmanager.services.IDeployments;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.helpers.TestUtils;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentServiceListModel;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentServiceModel;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentType;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeviceGroup;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.models.*;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models.DeploymentApiModel;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models.DeploymentListApiModel;
 import junitparams.JUnitParamsRunner;
@@ -63,7 +60,8 @@ public class DeploymentsControllerTest {
                 PACKAGE_CONTENT,
                 PACKAGE_NAME,
                 PRIORITY,
-                DeploymentType.edgeManifest);
+                DeploymentType.edgeManifest,
+                ConfigType.edge);
 
         when(this.deployments.getAsync(DEPLOYMENT_ID, false)).thenReturn(completedFuture(deploymentModel));
 
@@ -76,7 +74,8 @@ public class DeploymentsControllerTest {
         assertEquals(DEPLOYMENT_NAME, deployment.getName());
         assertEquals(DEVICE_GROUP_ID, deployment.getDeviceGroupId());
         assertEquals(PRIORITY, deployment.getPriority());
-        assertEquals(DeploymentType.edgeManifest, deployment.getType());
+        assertEquals(DeploymentType.edgeManifest, deployment.getDeploymentType());
+        assertEquals(ConfigType.edge, deployment.getConfigType());
     }
 
     @Test
@@ -89,7 +88,8 @@ public class DeploymentsControllerTest {
                     PACKAGE_CONTENT + i,
                     PACKAGE_NAME + i,
                     PRIORITY + i,
-                    DeploymentType.edgeManifest);
+                    DeploymentType.edgeManifest,
+                    ConfigType.edge);
             deploymentsList.add(dep);
         }
 
@@ -133,13 +133,14 @@ public class DeploymentsControllerTest {
                 StringUtils.EMPTY,
                 packageContent,
                 priority,
-                DeploymentType.edgeManifest);
+                DeploymentType.edgeManifest,
+                ConfigType.edge);
         when(this.deployments.createAsync(argThat(matchesDeployment))).thenReturn(completedFuture
                 (deploymentMode));
 
         final DeploymentApiModel depApiModel = new DeploymentApiModel(deploymentName, deviceGroupId,
                 StringUtils.EMPTY, deviceGroupQuery, packageContent, StringUtils.EMPTY, priority,
-                DeploymentType.edgeManifest);
+                DeploymentType.edgeManifest, ConfigType.edge);
 
         // Act
         TestUtils.setRequest(depApiModel);
@@ -154,7 +155,7 @@ public class DeploymentsControllerTest {
             assertEquals(deploymentName, dep.getName());
             assertEquals(deviceGroupId, dep.getDeviceGroupId());
             assertEquals(priority, dep.getPriority());
-            assertEquals(DeploymentType.edgeManifest, dep.getType());
+            assertEquals(DeploymentType.edgeManifest, dep.getDeploymentType());
         }
     }
 

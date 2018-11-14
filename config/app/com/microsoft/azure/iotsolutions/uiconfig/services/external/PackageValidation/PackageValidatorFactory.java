@@ -1,6 +1,6 @@
 package com.microsoft.azure.iotsolutions.uiconfig.services.external.PackageValidation;
 
-import com.microsoft.azure.iotsolutions.uiconfig.services.models.PackageConfigType;
+import com.microsoft.azure.iotsolutions.uiconfig.services.models.ConfigType;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.PackageType;
 
 public class PackageValidatorFactory
@@ -12,7 +12,7 @@ public class PackageValidatorFactory
             return new EdgePackageValidator();
         }
 
-        if (config.equalsIgnoreCase(PackageConfigType.firmwareUpdateMxChip.toString()))
+        if (config.equalsIgnoreCase(ConfigType.firmwareUpdateMxChip.toString()))
         {
             return new FirmwareUpdateMxChipValidator();
         }

@@ -3,6 +3,7 @@
 package com.microsoft.azure.iotsolutions.iothubmanager.services.models;
 
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidInputException;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.external.ConfigurationsHelper;
 import com.microsoft.azure.sdk.iot.service.Configuration;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -10,10 +11,6 @@ import org.joda.time.DateTimeZone;
 
 public class DeploymentServiceModel {
 
-    private final static String DEPLOYMENT_NAME_LABEL = "Name";
-    private final static String DEPLOYMENT_GROUP_ID_LABEL = "DeviceGroupId";
-    private final static String DEPLOYMENT_GROUP_NAME_LABEL = "DeviceGroupName";
-    private final static String DEPLOYMENT_PACKAGE_NAME_LABEL = "PackageName";
     private final static String DATE_FORMAT_STRING = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
     private String id;
@@ -23,7 +20,8 @@ public class DeploymentServiceModel {
     private String packageName;
     private int priority;
     private String createdDateTimeUtc;
-    private DeploymentType type;
+    private DeploymentType deploymentType;
+    private ConfigType configType;
     private DeploymentMetrics deploymentMetrics;
 
     public DeploymentServiceModel(final String name,
@@ -31,13 +29,15 @@ public class DeploymentServiceModel {
                                   final String packageContent,
                                   final String packageName,
                                   final int priority,
-                                  final DeploymentType type) {
+                                  final DeploymentType deploymentType,
+                                  final ConfigType configType) {
         this.deviceGroup = deviceGroup;
         this.packageContent = packageContent;
         this.name = name;
         this.packageName = packageName;
         this.priority = priority;
-        this.type = type;
+        this.deploymentType = deploymentType;
+        this.configType = configType;
     }
 
     public DeploymentServiceModel(Configuration deployment) throws InvalidInputException {
@@ -45,27 +45,29 @@ public class DeploymentServiceModel {
             throw new InvalidInputException("Invalid id provided");
         }
 
-        if (!deployment.getLabels().containsKey(DEPLOYMENT_GROUP_ID_LABEL)) {
-            throw new InvalidInputException("Configuration is missing necessary label " + DEPLOYMENT_GROUP_ID_LABEL);
+        if (!deployment.getLabels().containsKey(ConfigurationsHelper.DEPLOYMENT_GROUP_ID_LABEL)) {
+            throw new InvalidInputException("Configuration is missing necessary label "
+                    + ConfigurationsHelper.DEPLOYMENT_GROUP_ID_LABEL);
         }
 
-        if (!deployment.getLabels().containsKey(DEPLOYMENT_NAME_LABEL)) {
-            throw new InvalidInputException("Configuration is missing necessary label " + DEPLOYMENT_NAME_LABEL);
+        if (!deployment.getLabels().containsKey(ConfigurationsHelper.DEPLOYMENT_NAME_LABEL)) {
+            throw new InvalidInputException("Configuration is missing necessary label "
+                    + ConfigurationsHelper.DEPLOYMENT_NAME_LABEL);
         }
 
         this.id = deployment.getId();
-        this.name = deployment.getLabels().get(DEPLOYMENT_NAME_LABEL);
+        this.name = deployment.getLabels().get(ConfigurationsHelper.DEPLOYMENT_NAME_LABEL);
 
-        String deviceGroupId = deployment.getLabels().get(DEPLOYMENT_GROUP_ID_LABEL);
+        String deviceGroupId = deployment.getLabels().get(ConfigurationsHelper.DEPLOYMENT_GROUP_ID_LABEL);
         String deviceGroupName = StringUtils.EMPTY;
-        if (deployment.getLabels().containsKey(DEPLOYMENT_GROUP_NAME_LABEL)) {
-            deviceGroupName = deployment.getLabels().get(DEPLOYMENT_GROUP_NAME_LABEL);
+        if (deployment.getLabels().containsKey(ConfigurationsHelper.DEPLOYMENT_GROUP_NAME_LABEL)) {
+            deviceGroupName = deployment.getLabels().get(ConfigurationsHelper.DEPLOYMENT_GROUP_NAME_LABEL);
         }
         this.deviceGroup = new DeviceGroup(deviceGroupId, deviceGroupName, null);
 
         this.packageName = StringUtils.EMPTY;
-        if (deployment.getLabels().containsKey(DEPLOYMENT_PACKAGE_NAME_LABEL)) {
-            this.packageName = deployment.getLabels().get(DEPLOYMENT_PACKAGE_NAME_LABEL);
+        if (deployment.getLabels().containsKey(ConfigurationsHelper.DEPLOYMENT_PACKAGE_NAME_LABEL)) {
+            this.packageName = deployment.getLabels().get(ConfigurationsHelper.DEPLOYMENT_PACKAGE_NAME_LABEL);
         }
 
         this.createdDateTimeUtc =  this.formatDateTimeToUTC(deployment.getCreatedTimeUtc());
@@ -73,11 +75,23 @@ public class DeploymentServiceModel {
 
         if (deployment.getLabels().containsKey(DeploymentType.edgeManifest.toString()))
         {
-            this.type = DeploymentType.edgeManifest;
+            this.deploymentType = DeploymentType.edgeManifest;
         }
         else if (deployment.getLabels().containsKey(DeploymentType.deviceConfiguration.toString()))
         {
-            this.type = DeploymentType.deviceConfiguration;
+            this.deploymentType = DeploymentType.deviceConfiguration;
+        }
+        else
+        {
+            throw new IllegalStateException("Invalid deployment type found.");
+        }
+
+        for (ConfigType type : ConfigType.values())
+        {
+            if (deployment.getLabels().containsValue(type))
+            {
+                this.configType = type;
+            }
         }
 
         this.deploymentMetrics = new DeploymentMetrics(deployment.getSystemMetrics(), deployment.getMetrics());
@@ -107,8 +121,12 @@ public class DeploymentServiceModel {
         return this.priority;
     }
 
-    public DeploymentType getType() {
-        return this.type;
+    public DeploymentType getDeploymentType() {
+        return this.deploymentType;
+    }
+
+    public ConfigType getConfigType() {
+        return this.configType;
     }
 
     public DeploymentMetrics getDeploymentMetrics() {

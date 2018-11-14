@@ -2,7 +2,6 @@
 
 package com.microsoft.azure.iotsolutions.uiconfig.services;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -211,13 +210,13 @@ public class Storage implements IStorage {
      * {@inheritDoc}
      */
     @Override
-    public CompletionStage<PackageConfigurations> getAllConfigurationsAsync() throws BaseException {
+    public CompletionStage<ConfigTypeList> getAllConfigurationsAsync() throws BaseException {
         try {
             return this.client.getAsync(PackagesCollectionId, packagesConfigurationsKey).thenApplyAsync(p -> {
-                return fromJson(p.getData(), PackageConfigurations.class);
+                return fromJson(p.getData(), ConfigTypeList.class);
             });
         } catch (Exception e) {
-            return CompletableFuture.completedFuture(new PackageConfigurations());
+            return CompletableFuture.completedFuture(new ConfigTypeList());
         }
     }
 
@@ -262,7 +261,7 @@ public class Storage implements IStorage {
             Storage.createPackage(p)
         );
 
-        if (!(EnumUtils.isValidEnumIgnoreCase(PackageConfigType.class, input.getConfigType())))
+        if (!(EnumUtils.isValidEnumIgnoreCase(ConfigType.class, input.getConfigType())))
         {
             this.updatePackageConfigsAsync(input.getConfigType());
         }
@@ -280,19 +279,19 @@ public class Storage implements IStorage {
     }
 
     public void updatePackageConfigsAsync(String customConfig) throws BaseException {
-        PackageConfigurations list;
+        ConfigTypeList list;
 
         try
         {
-            CompletionStage<PackageConfigurations> configs = this.client.getAsync(PackagesCollectionId, packagesConfigurationsKey).thenApplyAsync(p -> {
-                return fromJson(p.getData(), PackageConfigurations.class);
+            CompletionStage<ConfigTypeList> configs = this.client.getAsync(PackagesCollectionId, packagesConfigurationsKey).thenApplyAsync(p -> {
+                return fromJson(p.getData(), ConfigTypeList.class);
             });
             list = configs.toCompletableFuture().get();
         }
         catch(Exception e)
         {
             //TODO: Logging
-            list = new PackageConfigurations();
+            list = new ConfigTypeList();
         }
 
         list.add(customConfig);

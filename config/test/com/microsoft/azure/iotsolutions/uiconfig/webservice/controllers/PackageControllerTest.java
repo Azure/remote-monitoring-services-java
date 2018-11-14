@@ -1,20 +1,16 @@
 package com.microsoft.azure.iotsolutions.uiconfig.webservice.controllers;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.microsoft.azure.iotsolutions.uiconfig.services.IStorage;
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.BaseException;
-import com.microsoft.azure.iotsolutions.uiconfig.services.models.PackageConfigType;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.PackageType;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.Package;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.PackageController;
 import helpers.Random;
 import helpers.UnitTest;
-import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.experimental.categories.Category;
 import org.mockito.Mockito;
 
-import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.IntStream;
 
@@ -23,7 +19,7 @@ public class PackageControllerTest {
     private IStorage mockStorage;
     private PackageController controller;
     private Random rand;
-    private final string DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:sszzz";
+    private final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:sszzz";
 
     @Before
     public void setUp() {

@@ -17,11 +17,12 @@ import static play.libs.Json.fromJson;
 
 public class ConfigurationsHelper {
 
-    private static final String DEPLOYMENT_TYPE_LABEL = "Type";
-    private static final String DEPLOYMENT_NAME_LABEL = "Name";
-    private static final String DEPLOYMENT_GROUP_ID_LABEL = "DeviceGroupId";
-    private static final String DEPLOYMENT_GROUP_NAME_LABEL = "DeviceGroupName";
-    private static final String DEPLOYMENT_PACKAGE_NAME_LABEL = "PackageName";
+    public static final String DEPLOYMENT_TYPE_LABEL = "DeploymentType";
+    public static final String CONFIG_TYPE_LABEL = "ConfigType";
+    public static final String DEPLOYMENT_NAME_LABEL = "Name";
+    public static final String DEPLOYMENT_GROUP_ID_LABEL = "DeviceGroupId";
+    public static final String DEPLOYMENT_GROUP_NAME_LABEL = "DeviceGroupName";
+    public static final String DEPLOYMENT_PACKAGE_NAME_LABEL = "PackageName";
 
     public static final String RM_CREATED_LABEL = "RMDeployment";
 
@@ -46,16 +47,11 @@ public class ConfigurationsHelper {
         final Map<String, String> labels = configuration.getLabels();
 
         // Required labels
-        labels.put(DEPLOYMENT_TYPE_LABEL, deployment.getType().toString());
+        labels.put(DEPLOYMENT_TYPE_LABEL, deployment.getDeploymentType().toString());
+        labels.put(CONFIG_TYPE_LABEL, deployment.getConfigType().toString());
         labels.put(DEPLOYMENT_NAME_LABEL, deployment.getName());
         labels.put(DEPLOYMENT_GROUP_ID_LABEL, deploymentGroup.getId());
         labels.put(RM_CREATED_LABEL, Boolean.TRUE.toString());
-
-        Map<String, String> systemMetrics = pkgConfiguration.getSystemMetrics().getQueries();
-        if (systemMetrics != null)
-        {
-            //configuration.getSystemMetrics().setQueries(systemMetrics);
-        }
 
         Map<String, String> customMetrics = pkgConfiguration.getMetrics().getQueries();
         if (customMetrics != null)
