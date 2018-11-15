@@ -38,7 +38,7 @@ public class DeploymentsTest {
     private static final String DEPLOYMENT_GROUP_NAME_LABEL = "DeviceGroupName";
     private static final String DEPLOYMENT_PACKAGE_NAME_LABEL = "PackageName";
     private static final String RM_CREATED_LABEL = "RMDeployment";
-
+    private static final String CONFIG_TYPE="Edge";
 
     @Mock
     private RegistryManager registry;
@@ -74,7 +74,7 @@ public class DeploymentsTest {
         final Configuration config = new Configuration(registryManagerDeploymentId);
         config.setLabels(new HashMap<>());
         config.getLabels().put(DEPLOYMENT_TYPE_LABEL, DeploymentType.edgeManifest.toString());
-        config.getLabels().put(CONFIG_TYPE_LABEL, ConfigType.edge.toString());
+        config.getLabels().put(CONFIG_TYPE_LABEL, CONFIG_TYPE);
         config.getLabels().put(DEPLOYMENT_NAME_LABEL, deploymentName);
         config.getLabels().put(DEPLOYMENT_GROUP_ID_LABEL, deviceGroupId);
         config.getLabels().put(RM_CREATED_LABEL, "true");
@@ -87,7 +87,7 @@ public class DeploymentsTest {
                 StringUtils.EMPTY,
                 priority,
                 DeploymentType.edgeManifest,
-                ConfigType.edge);
+                CONFIG_TYPE);
 
         final IsValidConfiguration isValidConfig = new IsValidConfiguration(deploymentName, deviceGroupId);
         when(this.registry.addConfiguration(argThat(isValidConfig))).thenReturn(config);
@@ -160,7 +160,7 @@ public class DeploymentsTest {
         final HashMap<String, String> labels = new HashMap<String, String>() {
             {
                 put(DEPLOYMENT_TYPE_LABEL, DeploymentType.edgeManifest.toString());
-                put(CONFIG_TYPE_LABEL, ConfigType.edge.toString());
+                put(CONFIG_TYPE_LABEL, CONFIG_TYPE);
                 put(DEPLOYMENT_NAME_LABEL, "deployment" + idx);
                 put(DEPLOYMENT_GROUP_ID_LABEL, "dvcGroupId" + idx);
                 put(DEPLOYMENT_GROUP_NAME_LABEL, "dvcGroupName" + idx);

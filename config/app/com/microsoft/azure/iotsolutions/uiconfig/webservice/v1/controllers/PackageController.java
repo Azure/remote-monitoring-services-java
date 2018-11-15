@@ -93,13 +93,6 @@ public class PackageController extends Controller {
                     "parameter", PACKAGE_TYPE_PARAM));
         }
 
-        if(!data.containsKey(PACKAGE_CONFIG_TYPE_PARAM) ||
-                ArrayUtils.isEmpty(data.get(PACKAGE_CONFIG_TYPE_PARAM)) ||
-                StringUtils.isEmpty(data.get(PACKAGE_CONFIG_TYPE_PARAM)[0])) {
-            throw new BadRequestException(String.format("Package config type not provided. Please specify %s " +
-                    "parameter", PACKAGE_CONFIG_TYPE_PARAM));
-        }
-
         final MultipartFormData.FilePart<File> file = formData.getFile(FILE_PARAM);
         if (file == null) {
             throw new BadRequestException(String.format("Package not provided. Please upload a file with " +
