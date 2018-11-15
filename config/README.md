@@ -84,7 +84,7 @@ variables [here](#configuration-and-environment-variables).
   using logic apps for actions.
 * `PCS_SUBSCRIPTION_ID`(Optional) = The subscription id for the solution. Used only if
   using logic apps for actions.
-  * `PCS_ARM_ENDPOINT_URL` (Optional) = the url for the Azure management APIs. Used only if
+* `PCS_ARM_ENDPOINT_URL` (Optional) = the url for the Azure management APIs. Used only if
   using logic apps for actions.
 
 # Running the service in an IDE
