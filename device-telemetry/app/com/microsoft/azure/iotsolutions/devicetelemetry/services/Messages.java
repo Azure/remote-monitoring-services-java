@@ -5,6 +5,7 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.microsoft.azure.documentdb.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidConfigurationException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidInputException;
@@ -22,7 +23,7 @@ import play.Logger;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-// TODO: use StorageClient
+@Singleton
 public final class Messages implements IMessages {
 
     private static final Logger.ALogger log = Logger.of(Messages.class);
@@ -30,12 +31,12 @@ public final class Messages implements IMessages {
     private final String dataPrefix = "data.";
 
     private StorageType storageType;
-    private DocumentClient docDbConnection;
+    private DocumentClient documentClient;
     private String docDbCollectionLink;
     private ITimeSeriesClient timeSeriesClient;
 
     @Inject
-    public Messages(IServicesConfig servicesConfig, ITimeSeriesClient timeSeriesClient) {
+    public Messages(IServicesConfig servicesConfig, ITimeSeriesClient timeSeriesClient) throws InvalidConfigurationException {
         MessagesConfig messageConfig = servicesConfig.getMessagesConfig();
         this.timeSeriesClient = timeSeriesClient;
         this.storageType = messageConfig.getStorageType();
@@ -45,7 +46,7 @@ public final class Messages implements IMessages {
             messageConfig.getStorageConfig().getCosmosDbDatabase(),
             messageConfig.getStorageConfig().getCosmosDbCollection());
 
-        this.docDbConnection = new DocumentClient(
+        this.documentClient = new DocumentClient(
             messageConfig.getStorageConfig().getCosmosDbUri(),
             messageConfig.getStorageConfig().getCosmosDbKey(),
             ConnectionPolicy.GetDefault(),
@@ -132,7 +133,7 @@ public final class Messages implements IMessages {
         ArrayList<Document> docs = new ArrayList<>();
         String continuationToken = null;
         do {
-            FeedResponse<Document> queryResults = this.docDbConnection.queryDocuments(
+            FeedResponse<Document> queryResults = this.documentClient.queryDocuments(
                 this.docDbCollectionLink,
                 querySpec,
                 queryOptions);

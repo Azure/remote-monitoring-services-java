@@ -4,6 +4,7 @@ package com.microsoft.azure.iotsolutions.uiconfig.webservice.auth;
 
 import akka.stream.Materializer;
 import com.google.inject.Inject;
+import com.microsoft.azure.iotsolutions.uiconfig.services.external.IUserManagementClient;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.auth.exceptions.*;
 import play.Logger;
 import play.libs.Json;
@@ -106,7 +107,7 @@ public class AuthorizationFilter extends Filter {
         // from authentication service
         try {
             userClaims = this.getUserClaims(authHeader.get());
-            List<String> allowedActions = this.userManagementClient.getAllowedActions(
+            List<String> allowedActions = this.userManagementClient.getAllowedActionsAsync(
                     userClaims.getUserObjectId(),
                     userClaims.getRoles())
                     .toCompletableFuture().get();

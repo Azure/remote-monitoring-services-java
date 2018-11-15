@@ -24,6 +24,10 @@ services:
       - PCS_DEVICESIMULATION_WEBSERVICE_URL=http://devicesimlation:9003/v1
       - PCS_AZUREMAPS_KEY
       - PCS_AUTH_WEBSERVICE_URL=http://auth:9001/v1
+      - PCS_OFFICE365_CONNECTION_URL
+      - PCS_SOLUTION_NAME
+      - PCS_SUBSCRIPTION_ID
+      - PCS_ARM_ENDPOINT_URL
 
   auth:
     image: azureiotpcs/pcs-auth-dotnet:testing

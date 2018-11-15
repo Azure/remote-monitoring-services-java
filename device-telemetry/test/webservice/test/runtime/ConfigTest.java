@@ -34,7 +34,7 @@ public class ConfigTest {
         assertNotNull(connectionString);
     }
 
-    @Test(timeout = 1000)
+    @Test(timeout = 10000)
     @Category({UnitTest.class})
     public void provideKeyValueWebserviceUrl() throws InvalidConfigurationException {
         Config target = new Config();
