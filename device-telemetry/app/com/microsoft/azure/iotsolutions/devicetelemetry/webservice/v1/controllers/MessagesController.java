@@ -4,7 +4,6 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controlle
 
 import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.IMessages;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ExternalDependencyException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidConfigurationException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.TimeSeriesParseException;

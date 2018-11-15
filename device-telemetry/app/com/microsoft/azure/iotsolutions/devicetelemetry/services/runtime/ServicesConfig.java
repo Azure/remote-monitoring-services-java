@@ -13,16 +13,20 @@ public class ServicesConfig implements IServicesConfig {
 
     private final AlarmsConfig alarmsConfig;
 
+    private final ActionsConfig actionsConfig;
+
     private final DiagnosticsConfig diagnosticsConfig;
 
     public ServicesConfig(
         final String keyValueStorageUrl,
         MessagesConfig messagesConfig,
         AlarmsConfig alarmsConfig,
+        ActionsConfig actionsConfig,
         DiagnosticsConfig diagnosticsConfig) {
         this.keyValueStorageUrl = keyValueStorageUrl;
         this.messagesConfig = messagesConfig;
         this.alarmsConfig = alarmsConfig;
+        this.actionsConfig = actionsConfig;
         this.diagnosticsConfig = diagnosticsConfig;
     }
 
@@ -41,6 +45,10 @@ public class ServicesConfig implements IServicesConfig {
 
     public AlarmsConfig getAlarmsConfig() {
         return this.alarmsConfig;
+    }
+
+    public ActionsConfig getActionsConfig() {
+        return this.actionsConfig;
     }
 
     public DiagnosticsConfig getDiagnosticsConfig() {
