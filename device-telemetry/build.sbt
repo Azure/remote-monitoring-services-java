@@ -16,7 +16,13 @@ libraryDependencies ++= Seq(
   "com.microsoft.azure" % "adal4j" % "1.2.0",
 
   // https://mvnrepository.com/artifact/com.nimbusds/oauth2-oidc-sdk
-  "com.nimbusds" % "oauth2-oidc-sdk" % "5.36"
+  "com.nimbusds" % "oauth2-oidc-sdk" % "5.36",
+
+  // https://github.com/Azure/azure-event-hubs-java
+  "com.microsoft.azure" % "azure-eventhubs" % "1.0.2",
+
+  // https://search.maven.org/#search%7Cga%7C1%7Ca%3A%22azure-eventhubs-eph%22
+  "com.microsoft.azure" % "azure-eventhubs-eph" % "1.0.0"
 )
 
 // Test dependencies

@@ -50,4 +50,26 @@ IF "%PCS_TSI_FQDN%" == "" (
     exit /B 1
 )
 
+:: Settings for actions
+ IF "%PCS_ACTION_EVENTHUB_NAME%" == "" (
+    echo Error: the PCS_ACTION_EVENTHUB_NAME environment variable is not defined.
+    exit /B 1
+)
+ IF "%PCS_ACTION_EVENTHUB_CONNSTRING%" == "" (
+    echo Error: the PCS_ACTION_EVENTHUB_CONNSTRING environment variable is not defined.
+    exit /B 1
+)
+ IF "%PCS_LOGICAPP_ENDPOINT_URL%" == "" (
+    echo Error: the PCS_LOGICAPP_ENDPOINT_URL environment variable is not defined.
+    exit /B 1
+)
+ IF "%PCS_AZUREBLOB_CONNSTRING%" == "" (
+    echo Error: the PCS_AZUREBLOB_CONNSTRING environment variable is not defined.
+    exit /B 1
+)
+ IF "%PCS_SOLUTION_WEBSITE_URL%" == "" (
+    echo Error: the PCS_SOLUTION_WEBSITE_URL environment variable is not defined.
+    exit /B 1
+)
+
 endlocal
