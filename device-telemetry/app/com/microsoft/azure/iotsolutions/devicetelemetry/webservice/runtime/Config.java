@@ -2,18 +2,18 @@
 
 package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime;
 
+import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidConfigurationException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.ClientAuthConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.IClientAuthConfig;
 import com.typesafe.config.ConfigFactory;
 
+import java.net.URL;
+import java.net.URLDecoder;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.HashSet;
-
-// TODO: documentation
-// TODO: handle exceptions
 
 public class Config implements IConfig {
 
@@ -25,22 +25,21 @@ public class Config implements IConfig {
     private final String PORT_KEY = APPLICATION_KEY + "webservice_port";
 
     // Storage dependency settings
-    private final String STORAGE_KEY = APPLICATION_KEY + "cosmosDb.";
-    private final String STORAGE_CONN_STRING_KEY = STORAGE_KEY + "connString";
+    private final String COSMOS_DB_CONN_STRING_KEY = APPLICATION_KEY + "cosmosDb.connString";
+    private final String BLOB_STORAGE_CONN_STRING_KEY = APPLICATION_KEY + "blobStorage.connString";
     private final String TIME_SERIES_KEY = APPLICATION_KEY + "timeSeriesInsights.";
     private final String TIME_SERIES_FQDN_KEY = TIME_SERIES_KEY + "fqdn";
     private final String AAD_TENANT_KEY = TIME_SERIES_KEY + "aadTenant";
     private final String AAD_APP_ID_KEY = TIME_SERIES_KEY + "aadAppId";
     private final String AAD_APP_SECRET_KEY = TIME_SERIES_KEY + "aadAppSecret";
 
-
     // Storage adapter webservice settings
     private final String KEY_VALUE_STORAGE_KEY = APPLICATION_KEY + "storageAdapter.";
     private final String KEY_VALUE_STORAGE_URL_KEY = KEY_VALUE_STORAGE_KEY + "url";
 
     private final String MESSAGES_STORAGE_TYPE_KEY = APPLICATION_KEY + "messages.storageType";
-    private final String MESSAGES_DOCDB_DATABASE_KEY = APPLICATION_KEY + "messages.cosmosDb.database";
-    private final String MESSAGES_DOCDB_COLLECTION_KEY = APPLICATION_KEY + "messages.cosmosDb.collection";
+    private final String MESSAGES_COSMOS_DATABASE_KEY = APPLICATION_KEY + "messages.cosmosDb.database";
+    private final String MESSAGES_COSMOS_COLLECTION_KEY = APPLICATION_KEY + "messages.cosmosDb.collection";
     private final String MESSAGES_TSI_API_VERSION_KEY = APPLICATION_KEY + "messages.timeSeriesInsights.apiVersion";
     private final String MESSAGES_TSI_DATE_FORMAT_KEY = APPLICATION_KEY + "messages.timeSeriesInsights.dateFormat";
     private final String MESSAGES_TSI_TIMEOUT_KEY = APPLICATION_KEY + "messages.timeSeriesInsights.timeOutInSeconds";
@@ -53,6 +52,14 @@ public class Config implements IConfig {
     private final String ALARMS_DOCDB_COLLECTION_KEY = APPLICATION_KEY + "alarms.cosmosDb.collection";
     private final String ALARMS_DOCDB_DELETE_RETRIES = APPLICATION_KEY + "alarms.cosmosDb.maxDeleteRetries";
 
+    private final String ACTIONS_KEY = APPLICATION_KEY + "actions.";
+    private final String ACTIONS_EVENTHUB_NAME_KEY = ACTIONS_KEY + "eventHubName";
+    private final String ACTIONS_EVENTHUB_CONNECTION_STRING_KEY = ACTIONS_KEY + "eventHubConnectionString";
+    private final String ACTIONS_EVENTHUB_OFFSET_TIME_IN_MINUTES_KEY = ACTIONS_KEY + "eventHubOffsetTimeInMinutes";
+    private final String ACTIONS_EVENTHUB_CHECKPOINT_CONTAINER_KEY = ACTIONS_KEY + "eventHubCheckpointContainerName";
+    private final String ACTIONS_LOGIC_APP_ENDPOINT_URL_KEY = ACTIONS_KEY + "logicAppEndPointUrl";
+    private final String ACTIONS_SOLUTION_WEBSITE_URL_KEY = ACTIONS_KEY + "solutionWebsiteUrl";
+    private final String ACTIONS_TEMPLATE_FOLDER_KEY = ACTIONS_KEY + "templateFolder";
 
     private final String CLIENT_AUTH_KEY = APPLICATION_KEY + "client-auth.";
     private final String AUTH_WEB_SERVICE_URL_KEY = CLIENT_AUTH_KEY + "auth_webservice_url";
@@ -73,6 +80,7 @@ public class Config implements IConfig {
     private IServicesConfig servicesConfig;
     private IClientAuthConfig clientAuthConfig;
 
+    @Inject
     public Config() {
         this.data = ConfigFactory.load();
     }
@@ -90,17 +98,16 @@ public class Config implements IConfig {
      * Service layer configuration
      */
     public IServicesConfig getServicesConfig() throws InvalidConfigurationException {
-
         if (this.servicesConfig != null) return this.servicesConfig;
 
-        String storageConnectionString = this.data.getString(STORAGE_CONN_STRING_KEY);
+        String storageConnectionString = this.data.getString(COSMOS_DB_CONN_STRING_KEY);
         String keyValueStorageUrl = this.data.getString(KEY_VALUE_STORAGE_URL_KEY);
         String userManagementApiUrl = this.data.getString(AUTH_WEB_SERVICE_URL_KEY);
         String messageStorageType = data.getString(MESSAGES_STORAGE_TYPE_KEY).toLowerCase();
         StorageConfig messagesStorageConfig = new StorageConfig(
             storageConnectionString,
-            data.getString(MESSAGES_DOCDB_DATABASE_KEY),
-            data.getString(MESSAGES_DOCDB_COLLECTION_KEY));
+            data.getString(MESSAGES_COSMOS_DATABASE_KEY),
+            data.getString(MESSAGES_COSMOS_COLLECTION_KEY));
 
         TimeSeriesConfig timeSeriesConfig = null;
         if (messageStorageType.equalsIgnoreCase("tsi")) {
@@ -133,20 +140,31 @@ public class Config implements IConfig {
             alarmsStorageConfig,
             data.getInt(ALARMS_DOCDB_DELETE_RETRIES));
 
+        ActionsConfig actionsConfig = new ActionsConfig(
+            data.getString(ACTIONS_EVENTHUB_NAME_KEY),
+            data.getString(ACTIONS_EVENTHUB_CONNECTION_STRING_KEY),
+            data.getInt(ACTIONS_EVENTHUB_OFFSET_TIME_IN_MINUTES_KEY),
+            data.getString(BLOB_STORAGE_CONN_STRING_KEY),
+            data.getString(ACTIONS_EVENTHUB_CHECKPOINT_CONTAINER_KEY),
+            validateUrl(data.getString(ACTIONS_LOGIC_APP_ENDPOINT_URL_KEY)),
+            validateUrl(data.getString(ACTIONS_SOLUTION_WEBSITE_URL_KEY)),
+            data.getString(ACTIONS_TEMPLATE_FOLDER_KEY));
+
         String diagnosticsUrl = "";
         if (data.hasPath(DIAGNOSTICS_URL_KEY)) {
             diagnosticsUrl = data.getString(DIAGNOSTICS_URL_KEY);
         }
 
         DiagnosticsConfig diagnosticsConfig = new DiagnosticsConfig(
-                diagnosticsUrl,
-                data.getInt(DIAGNOSTICS_MAX_LOG_RETRIES));
+            diagnosticsUrl,
+            data.getInt(DIAGNOSTICS_MAX_LOG_RETRIES));
 
         this.servicesConfig = new ServicesConfig(
             keyValueStorageUrl,
             userManagementApiUrl,
             messagesConfig,
             alarmsConfig,
+            actionsConfig,
             diagnosticsConfig);
 
         return this.servicesConfig;
@@ -212,4 +230,21 @@ public class Config implements IConfig {
 
         return this.clientAuthConfig;
     }
+
+    /**
+     * Validate Url format and return same value if passed
+     * @param url to be validated against URL format
+     * @return the same value of input
+     * @throws {@link InvalidConfigurationException}
+     */
+    private String validateUrl(String url) throws InvalidConfigurationException {
+        try {
+            new URL(url);
+            // Decode the url since WSClient might encode the url into incorrect format
+            return URLDecoder.decode(url, "UTF-8");
+        } catch (Exception e) {
+            throw new InvalidConfigurationException(String.format("Malformed Url: %s", url), e);
+        }
+    }
 }
+

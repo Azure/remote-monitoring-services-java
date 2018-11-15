@@ -25,4 +25,18 @@ IF "%PCS_AUTH_WEBSERVICE_URL%" == "" (
     exit /B 1
 )
 
+:: Optional environment variables
+IF "%PCS_OFFICE365_CONNECTION_URL%" == "" (
+    echo Warning: the PCS_OFFICE365_CONNECTION_URL environment variable is not defined.
+)
+ IF "%PCS_SOLUTION_NAME%" == "" (
+    echo Warning: the $PCS_SOLUTION_NAME environment variable is not defined.
+)
+ IF "%PCS_SUBSCRIPTION_ID%" == "" (
+    echo Warning: the PCS_SUBSCRIPTION_ID environment variable is not defined.
+)
+ IF "%PCS_ARM_ENDPOINT_URL%" == "" (
+    echo Warning: the PCS_ARM_ENDPOINT_URL environment variable is not defined.
+)
+
 endlocal

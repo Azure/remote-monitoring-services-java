@@ -2,7 +2,10 @@
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.eventhub.ActionsEventProcessorFactory;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidConfigurationException;
+import com.microsoft.azure.eventprocessorhost.IEventProcessorFactory;
+import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.IClientAuthConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime.IConfig;
@@ -23,6 +26,8 @@ public class Module extends AbstractModule {
     public void configure() {
         // Note: this method should be empty
         // Try to use use JIT binding and @ImplementedBy instead
+        bind(IEventProcessorFactory.class).to(ActionsEventProcessorFactory.class);
+        bind(IAgent.class).to(Agent.class).asEagerSingleton();
     }
 
     @Provides

@@ -21,7 +21,7 @@ public class StorageClient implements IStorageClient {
     private String storageHostName;
     private String storagePrimaryKey;
 
-    private DocumentClient client;
+    private static DocumentClient client;
 
     @Inject
     public StorageClient(final IServicesConfig config) throws Exception {

@@ -32,8 +32,8 @@ public class TimeSeriesClientTest {
             "http://localhost:9001/v1",
             mock(MessagesConfig.class),
             mock(AlarmsConfig.class),
-            mock(DiagnosticsConfig.class)
-        );
+            mock(ActionsConfig.class),
+            mock(DiagnosticsConfig.class));
         this.timeSeriesClient = new TimeSeriesClient(this.servicesConfig, this.wsClient);
     }
 
