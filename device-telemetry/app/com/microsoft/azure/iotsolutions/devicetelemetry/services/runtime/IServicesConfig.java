@@ -15,5 +15,7 @@ public interface IServicesConfig {
 
     AlarmsConfig getAlarmsConfig();
 
+    ActionsConfig getActionsConfig();
+
     DiagnosticsConfig getDiagnosticsConfig();
 }

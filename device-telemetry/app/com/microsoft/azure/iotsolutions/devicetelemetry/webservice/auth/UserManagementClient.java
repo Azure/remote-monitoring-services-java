@@ -35,19 +35,19 @@ public class UserManagementClient implements IUserManagementClient {
         }
 
         return this.wsClient.url(url)
-                .post(Json.toJson(roles))
-                .handle((response, error) -> {
-                    if (error != null) {
-                        String message = String.format("Failed to get allowed actions: %s", url);
-                        log.error(message, error.getCause());
-                        throw new CompletionException(message, error.getCause());
-                    } else if (response.getStatus() != Http.Status.OK) {
-                        String message = String.format("Failed to get allowed actions: %s", url);
-                        log.error(message);
-                        throw new CompletionException(new ExternalDependencyException(message));
-                    } else {
-                        return Json.fromJson(response.asJson(), List.class);
-                    }
-                });
+            .post(Json.toJson(roles))
+            .handle((response, error) -> {
+                if (error != null) {
+                    String message = String.format("Failed to get allowed actions: %s", url);
+                    log.error(message, error.getCause());
+                    throw new CompletionException(message, error.getCause());
+                } else if (response.getStatus() != Http.Status.OK) {
+                    String message = String.format("Failed to get allowed actions: %s", url);
+                    log.error(message);
+                    throw new CompletionException(new ExternalDependencyException(message));
+                } else {
+                    return Json.fromJson(response.asJson(), List.class);
+                }
+            });
     }
 }

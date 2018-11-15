@@ -2,8 +2,10 @@
 
 package webservice.test.v1.models;
 
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.CalculationType;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.SeverityType;
+import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.ActionApiModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.ConditionApiModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.RuleApiModel;
 import helpers.UnitTest;
@@ -13,6 +15,9 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -21,13 +26,24 @@ public class RuleApiModelTest {
     public RuleApiModel ruleApiModel = null;
 
     @Before
-    public void setUp() {
+    public void setUp() throws InvalidInputException {
         ArrayList<ConditionApiModel> conditionList = new ArrayList<>();
+        ArrayList<ActionApiModel> actionList = new ArrayList<>();
 
         conditionList.add(new ConditionApiModel(
             "test-value",
             "GreaterThan",
             "7"));
+
+        List<String> emails = new ArrayList<>();
+        emails.add("test@testing.com");
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("Subject", "Blank");
+        map.put("Template", "BlankTemplate");
+        map.put("Email", emails);
+
+        actionList.add(new ActionApiModel("Email", map));
 
         ruleApiModel = new RuleApiModel(
             "kkru1d1ouqahpmg",
@@ -42,7 +58,8 @@ public class RuleApiModelTest {
             CalculationType.AVERAGE.toString(),
             String.valueOf(600000),
             conditionList,
-            false);
+            false,
+            null);
     }
 
     @After
