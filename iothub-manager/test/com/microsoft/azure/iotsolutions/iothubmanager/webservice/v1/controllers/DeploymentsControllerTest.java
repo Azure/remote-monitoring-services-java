@@ -37,6 +37,7 @@ public class DeploymentsControllerTest {
     private static final String PACKAGE_CONTENT = "packageContent";
     private static final String PACKAGE_NAME = "packageName";
     private static final String DEPLOYMENT_ID = "dvcGroupId-packageId";
+    private static final String CONFIG_TYPE_EDGE = "Edge";
     private static final int PRIORITY = 10;
 
     private final DeploymentsController deploymentsController;
@@ -61,7 +62,7 @@ public class DeploymentsControllerTest {
                 PACKAGE_NAME,
                 PRIORITY,
                 DeploymentType.edgeManifest,
-                ConfigType.edge);
+                CONFIG_TYPE_EDGE);
 
         when(this.deployments.getAsync(DEPLOYMENT_ID, false)).thenReturn(completedFuture(deploymentModel));
 
@@ -75,7 +76,7 @@ public class DeploymentsControllerTest {
         assertEquals(DEVICE_GROUP_ID, deployment.getDeviceGroupId());
         assertEquals(PRIORITY, deployment.getPriority());
         assertEquals(DeploymentType.edgeManifest, deployment.getDeploymentType());
-        assertEquals(ConfigType.edge, deployment.getConfigType());
+        assertEquals(CONFIG_TYPE_EDGE, deployment.getConfigType());
     }
 
     @Test
@@ -89,7 +90,7 @@ public class DeploymentsControllerTest {
                     PACKAGE_NAME + i,
                     PRIORITY + i,
                     DeploymentType.edgeManifest,
-                    ConfigType.edge);
+                    CONFIG_TYPE_EDGE);
             deploymentsList.add(dep);
         }
 
@@ -134,13 +135,13 @@ public class DeploymentsControllerTest {
                 packageContent,
                 priority,
                 DeploymentType.edgeManifest,
-                ConfigType.edge);
+                CONFIG_TYPE_EDGE);
         when(this.deployments.createAsync(argThat(matchesDeployment))).thenReturn(completedFuture
                 (deploymentMode));
 
         final DeploymentApiModel depApiModel = new DeploymentApiModel(deploymentName, deviceGroupId,
                 StringUtils.EMPTY, deviceGroupQuery, packageContent, StringUtils.EMPTY, priority,
-                DeploymentType.edgeManifest, ConfigType.edge);
+                DeploymentType.edgeManifest, CONFIG_TYPE_EDGE);
 
         // Act
         TestUtils.setRequest(depApiModel);
