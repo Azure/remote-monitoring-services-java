@@ -92,7 +92,6 @@ public class DeploymentServiceModel {
 
         this.configType = deployment.getLabels().get(ConfigurationsHelper.CONFIG_TYPE_LABEL.toString());
 
-
         this.deploymentMetrics = new DeploymentMetrics(deployment.getSystemMetrics(), deployment.getMetrics());
     }
 
