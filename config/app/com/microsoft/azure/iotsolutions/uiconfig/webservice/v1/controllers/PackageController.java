@@ -52,7 +52,11 @@ public class PackageController extends Controller {
      * Retrieve all previously uploaded packages
      * @return {@link PackageListApiModel}
      */
-    public CompletionStage<Result> getFilteredAsync(String type, String config) throws BaseException {
+    public CompletionStage<Result> getFilteredAsync(String type, String config) throws BaseException,
+            BadRequestException {
+        if (type == null) {
+            throw new BadRequestException("Package Type is empty");
+        }
         return storage.getAllPackagesAsync().thenApplyAsync(m -> ok(toJson(new PackageListApiModel(m, type, config))));
     }
 

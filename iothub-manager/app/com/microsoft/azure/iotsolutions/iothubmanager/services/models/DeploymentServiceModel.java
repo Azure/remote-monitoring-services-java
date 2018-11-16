@@ -81,9 +81,13 @@ public class DeploymentServiceModel {
         {
             this.deploymentType = DeploymentType.deviceConfiguration;
         }
+        else if (deployment.getContent().getModulesContent() != null)
+        {
+            this.deploymentType = DeploymentType.edgeManifest;
+        }
         else
         {
-            throw new IllegalStateException("Invalid deployment type found.");
+            this.deploymentType = DeploymentType.deviceConfiguration;
         }
 
         this.configType = deployment.getLabels().get(ConfigurationsHelper.CONFIG_TYPE_LABEL.toString());

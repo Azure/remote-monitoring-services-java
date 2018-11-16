@@ -131,19 +131,22 @@ public final class Deployments implements IDeployments {
                 throw new CompletionException(e);
             }
 
-            includeDeviceStatus = includeDeviceStatus && ConfigurationsHelper.isEdgeDeployment(deployment);
+            Map<String, DeploymentStatus> deviceStatuses = null;
+
+            try {
+                deviceStatuses = this.getDeviceStatuses(deployment);
+            } catch(Exception ex) {
+                log.error("Unable to retrieve device statuses for deployment " + id, ex);
+            }
 
             if (includeDeviceStatus) {
-                Map<String, DeploymentStatus> deviceStatuses = null;
-
-                try {
-                    deviceStatuses = this.getDeviceStatuses(deployment);
-                } catch(Exception ex) {
-                    log.error("Unable to retrieve device statuses for deployment " + id, ex);
-                }
-
                 result.getDeploymentMetrics().setDeviceStatuses(deviceStatuses);
             }
+
+            if (ConfigurationsHelper.isEdgeDeployment(deployment)) {
+                result.getDeploymentMetrics().setDeviceMetrics(this.calculateDeviceMetrics(deviceStatuses));
+            }
+
             return CompletableFuture.supplyAsync(() -> result);
         } catch (IotHubNotFoundException e) {
             throw new CompletionException(
@@ -298,5 +301,26 @@ public final class Deployments implements IDeployments {
             throw new InvalidInputException("Invalid input. Must provide a value to " +
                     argumentName);
         }
+    }
+
+
+    private Map<DeploymentStatus, Long> calculateDeviceMetrics(Map<String, DeploymentStatus> deviceStatuses)
+    {
+        if (deviceStatuses == null)
+        {
+            return null;
+        }
+
+        Map<DeploymentStatus, Long> deviceMetrics = new HashMap<DeploymentStatus, Long>();
+        deviceMetrics.put(DeploymentStatus.Succeeded, deviceStatuses.values().stream().filter(item ->
+                item == DeploymentStatus.Succeeded).count());
+
+        deviceMetrics.put(DeploymentStatus.Failed, deviceStatuses.values().stream().filter(item ->
+                item == DeploymentStatus.Failed).count());
+
+        deviceMetrics.put(DeploymentStatus.Pending, deviceStatuses.values().stream().filter(item ->
+                item == DeploymentStatus.Pending).count());
+
+        return deviceMetrics;
     }
 }

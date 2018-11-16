@@ -11,15 +11,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class DeploymentMetricsApiModel {
-    private static final String APPLIED_METRICS_KEY = "appliedCount";
-    private static final String TARGETED_METRICS_KEY = "targetedCount";
-    //private static final String SUCCESSFUL_METRICS_KEY = "reportedSuccessfulCount";
-    //private static final String FAILED_METRICS_KEY = "reportedFailedCount";
 
-    private long appliedCount;
-    //private long failedCount;
-    //private long succeededCount;
-    private long targetedCount;
+    private static final String SUCCESSFUL_METRICS_KEY = "successfullCount";
+    private static final String FAILED_METRICS_KEY = "failedCount";
+    private static final String PENDING_METRICS_KEY = "pendingCount";
+
+    private Map<String, Long> systemMetrics;
     private Map<String, Long> customMetrics;
     private Map<String, DeploymentStatus> deviceStatuses;
 
@@ -29,42 +26,24 @@ public class DeploymentMetricsApiModel {
     public DeploymentMetricsApiModel(DeploymentMetrics metricsServiceModel) {
         if (metricsServiceModel == null) return;
 
-
-
-
-        Map<String, Long> metrics = metricsServiceModel.getMetrics();
-        this.appliedCount = metrics.getOrDefault(APPLIED_METRICS_KEY,0L);
-        this.targetedCount = metrics.getOrDefault(TARGETED_METRICS_KEY,0L);
-        //this.succeededCount = metrics.getOrDefault(SUCCESSFUL_METRICS_KEY,0L);
-        //this.failedCount = metrics.getOrDefault(FAILED_METRICS_KEY,0L);
+        this.customMetrics = metricsServiceModel.getSystemMetrics();
+        this.systemMetrics = metricsServiceModel.getCustomMetrics();
         this.deviceStatuses = metricsServiceModel.getDeviceStatuses();
 
-        this.customMetrics = metrics.entrySet().stream()
-                                                .filter(metric -> !(
-                                                        metric.getKey().equals(APPLIED_METRICS_KEY) ||
-                                                        metric.getKey().equals(TARGETED_METRICS_KEY)))
-                                                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
+        if (metricsServiceModel.getDeviceMetrics() != null)
+        {
+            this.systemMetrics.put(SUCCESSFUL_METRICS_KEY,
+                    metricsServiceModel.getDeviceMetrics().get(DeploymentStatus.Succeeded));
+            this.systemMetrics.put(FAILED_METRICS_KEY,
+                    metricsServiceModel.getDeviceMetrics().get(DeploymentStatus.Failed));
+            this.systemMetrics.put(PENDING_METRICS_KEY,
+                    metricsServiceModel.getDeviceMetrics().get(DeploymentStatus.Pending));
+        }
     }
 
-    @JsonProperty("AppliedCount")
-    public long getAppliedCount() {
-        return this.appliedCount;
-    }
-
-    ///@JsonProperty("FailedCount")
-    //public long getFailedCount() {
-        //return this.failedCount;
-    //}
-
-    //@JsonProperty("SucceededCount")
-    //public long getSucceededCount() {
-        //return this.succeededCount;
-    //}
-
-    @JsonProperty("TargetedCount")
-    public long getTargetedCount() {
-        return this.targetedCount;
+    @JsonProperty("SystemMetrics")
+    public Map<String, Long> getSystemMetrics() {
+        return this.systemMetrics;
     }
 
     @JsonProperty("CustomMetrics")

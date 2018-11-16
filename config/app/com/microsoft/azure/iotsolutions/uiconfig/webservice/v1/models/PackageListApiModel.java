@@ -3,8 +3,10 @@
 package com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.microsoft.azure.iotsolutions.uiconfig.services.models.ConfigType;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.Package;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.Version;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Hashtable;
 import java.util.stream.Collectors;
@@ -37,23 +39,35 @@ public class PackageListApiModel {
     }
 
     public PackageListApiModel(Iterable<Package> models) {
-        this.items = StreamSupport.stream(models.spliterator(), false)
-                .map(m -> new PackageApiModel(m)).collect(Collectors.toList());
-        this.metadata = new Hashtable<String, String>();
-        this.metadata.put("$type", String.format("Package;%s", Version.Number));
-        this.metadata.put("$url", String.format("/%s/packages", Version.Path));
+        this(models, null, null);
     }
 
-    public PackageListApiModel(Iterable<Package> models, String type, String config) {
+    public PackageListApiModel(Iterable<Package> models, String packageType, String configType) {
 
-        this.items = StreamSupport.stream(models.spliterator(), false)
-                .map(m -> new PackageApiModel(m))
-                .filter(p -> (
-                        p.getType() != null
-                        && p.getConfigType() != null
-                        && p.getType().toString().toLowerCase().equals(type.toLowerCase().trim())
-                        && p.getConfigType().toLowerCase().equals(config.toLowerCase().trim())))
-                .collect(Collectors.toList());
+        if (StringUtils.isBlank(packageType))
+        {
+            this.items = StreamSupport.stream(models.spliterator(), false)
+                    .map(m -> new PackageApiModel(m)).collect(Collectors.toList());// Backward compatibility
+        }
+        else if (StringUtils.isBlank(configType))
+        {
+            this.items = StreamSupport.stream(models.spliterator(), false).map(m -> new PackageApiModel(m))
+                    .filter(p -> (
+                            StringUtils.isBlank(p.getType().toString())
+                            && p.getType().toString().toLowerCase().equals(packageType.toLowerCase().trim())))
+                    .collect(Collectors.toList());
+        }
+        else
+        {
+            this.items = StreamSupport.stream(models.spliterator(), false).map(m -> new PackageApiModel(m))
+                    .filter(p -> (
+                            StringUtils.isBlank(p.getType().toString())
+                                    && !StringUtils.isBlank(p.getConfigType())
+                                    && p.getType().toString().toLowerCase().equals(packageType.toLowerCase().trim())
+                                    && p.getConfigType().toLowerCase().equals(configType.toLowerCase().trim())))
+                    .collect(Collectors.toList());
+        }
+
         this.metadata = new Hashtable<String, String>();
         this.metadata.put("$type", String.format("Package;%s", Version.Number));
         this.metadata.put("$url", String.format("/%s/packages", Version.Path));

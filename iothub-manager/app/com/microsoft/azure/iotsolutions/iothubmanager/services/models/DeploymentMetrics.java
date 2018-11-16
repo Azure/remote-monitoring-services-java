@@ -10,33 +10,40 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DeploymentMetrics {
-    private Map<String, Long> metrics;
+
+    private Map<String, Long> systemMetrics;
+    private Map<String, Long> customMetrics;
     private Map<String, DeploymentStatus> deviceStatuses;
+    private Map<DeploymentStatus, Long> deviceMetrics;
 
     public DeploymentMetrics(ConfigurationMetrics systemMetrics,
                              ConfigurationMetrics customMetrics) {
-        this.metrics = new HashMap<>();
-        this.addConfigurationMetrics(systemMetrics);
-        this.addConfigurationMetrics(customMetrics);
+        this.systemMetrics = systemMetrics.getResults();
+        this.customMetrics = customMetrics.getResults();
     }
 
-    @JsonProperty("Metrics")
-    public Map<String, Long> getMetrics() {
-        return this.metrics;
+    @JsonProperty("SystemMetrics")
+    public Map<String, Long> getSystemMetrics() {
+        return this.systemMetrics;
     }
+
+    @JsonProperty("SystemMetrics")
+    public Map<String, Long> getCustomMetrics() {
+        return this.customMetrics;
+    }
+
 
     @JsonProperty("DeviceStatuses")
     public Map<String, DeploymentStatus> getDeviceStatuses() { return this.deviceStatuses; }
+
+    public Map<DeploymentStatus, Long> getDeviceMetrics() { return this.deviceMetrics; }
 
     public void setDeviceStatuses(Map<String, DeploymentStatus> deviceStatuses) {
         this.deviceStatuses = deviceStatuses;
     }
 
-    private void addConfigurationMetrics(ConfigurationMetrics metricsToAdd) {
-        if (metricsToAdd != null && MapUtils.isNotEmpty(metricsToAdd.getResults())) {
-            for (Map.Entry<String, Long> entry : metricsToAdd.getResults().entrySet()) {
-                this.metrics.put(entry.getKey(), entry.getValue());
-            }
-        }
+    public void setDeviceMetrics(Map<DeploymentStatus, Long> deviceMetrics) {
+        this.deviceMetrics = deviceMetrics;
     }
+
 }
