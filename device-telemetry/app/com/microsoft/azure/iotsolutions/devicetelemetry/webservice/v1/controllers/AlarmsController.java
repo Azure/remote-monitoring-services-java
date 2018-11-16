@@ -25,6 +25,7 @@ public class AlarmsController extends Controller {
     private final IAlarms alarms;
 
     private static final int DELETE_LIMIT = 1000;
+    private static final int DEVICE_LIMIT = 1000;
 
     @Inject
     public AlarmsController(IAlarms alarms) {
@@ -42,15 +43,15 @@ public class AlarmsController extends Controller {
     public Result list(String from, String to, String order, int skip,
                        int limit, String devices) throws Exception {
         // TODO: move this logic to the storage engine, depending on the
-        // storage type the limit will be different. 200 is CosmosDb
+        // storage type the limit will be different. DEVICE_LIMIT is CosmosDb
         // limit for the IN clause.
         String[] deviceIds = new String[0];
         if (devices != null) {
             deviceIds = devices.split(",");
         }
-        if (deviceIds.length > 200) {
+        if (deviceIds.length > DEVICE_LIMIT) {
             log.warn("The client requested too many devices: {}", deviceIds.length);
-            return badRequest("The number of devices cannot exceed 200");
+            return badRequest("The number of devices cannot exceed " + DEVICE_LIMIT);
         }
 
         return ok(toJson(new AlarmListApiModel(this.alarms.getList(DateHelper.parseDate(from), DateHelper.parseDate(to), order, skip, limit, deviceIds))));

@@ -25,6 +25,8 @@ public final class MessagesController extends Controller {
 
     private final IMessages messages;
 
+    private static final int DEVICE_LIMIT = 1000;
+
     @Inject
     public MessagesController(final IMessages messages) {
         this.messages = messages;
@@ -49,15 +51,15 @@ public final class MessagesController extends Controller {
         if (limit == null) limit = 1000;
 
         // TODO: move this logic to the storage engine, depending on the
-        // storage type the limit will be different. 200 is CosmosDb
+        // storage type the limit will be different. DEVICE_LIMIT is CosmosDb
         // limit for the IN clause.
         String[] deviceIds = new String[0];
         if (devices != null) {
             deviceIds = devices.split(",");
         }
-        if (deviceIds.length > 200) {
+        if (deviceIds.length > DEVICE_LIMIT) {
             log.warn("The client requested too many devices: {}", deviceIds.length);
-            return badRequest("The number of devices cannot exceed 200");
+            return badRequest("The number of devices cannot exceed " + DEVICE_LIMIT);
         }
 
         return ok(toJson(new MessageListApiModel(this.messages.getList(
