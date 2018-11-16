@@ -11,30 +11,30 @@ import java.util.List;
 public class ConfigTypeListApiModel {
 
     @JsonProperty("configurations")
-    public String[] packageConfigurations;
+    public String[] Items;
 
     public String[] getPackageConfigurations()
     {
-        return packageConfigurations;
+        return Items;
     }
 
     public ConfigTypeListApiModel(ConfigTypeList configTypeList)
     {
-        List<String> customConfigs = new ArrayList<String>(Arrays.asList(configTypeList.configurations));
+        List<String> configTypes = Arrays.asList(configTypeList.configurations);
 
-        for(ConfigType type : ConfigType.values())
+        for(ConfigType configType : ConfigType.values())
         {
-            if (!(type.equals(ConfigType.custom)))
+            if (!(configType.equals(ConfigType.custom)))
             {
-                customConfigs.add(0,type.toString());
+                configTypes.add(0, configType.toString());
             }
         }
 
-        this.packageConfigurations = customConfigs.toArray(new String[customConfigs.size()]);
+        this.Items = configTypes.toArray(new String[configTypes.size()]);
     }
 
     public ConfigTypeListApiModel()
     {
-        this.packageConfigurations = new String[0];
+        this.Items = new String[0];
     }
 }

@@ -44,17 +44,10 @@ public final class Deployments implements IDeployments {
     private static final String DEVICE_GROUP_ID_PARAM = "deviceGroupId";
     private static final String DEVICE_GROUP_QUERY_PARAM = "deviceGroupQuery";
     private static final String NAME_PARAM = "name";
+    private static final String CONFIG_TYPE_PARAM = "configType";
     private static final String PACKAGE_CONTENT_PARAM = "packageContent";
 
     private static final String SCHEMA_VERSION = "schemaVersion";
-    private static final String APPLIED_DEVICES_QUERY =
-            "moduleId = '$edgeAgent' and configurations.[[%s]].status = 'Applied'";
-    private static final String SUCCESSFUL_DEVICES_QUERY = APPLIED_DEVICES_QUERY +
-            " and properties.desired.$version = properties.reported.lastDesiredVersion" +
-            " and properties.reported.lastDesiredStatus.code = 200";
-    private static final String FAILED_DEVICES_QUERY = APPLIED_DEVICES_QUERY +
-            " and properties.desired.$version = properties.reported.lastDesiredVersion" +
-            " and properties.reported.lastDesiredStatus.code != 200";
 
     private final RegistryManager registry;
     private final DeviceTwin deviceTwin;
@@ -169,6 +162,7 @@ public final class Deployments implements IDeployments {
         verifyDeploymentParameter(DEVICE_GROUP_ID_PARAM, deployment.getDeviceGroup().getId());
         verifyDeploymentParameter(DEVICE_GROUP_QUERY_PARAM, deployment.getDeviceGroup().getQuery());
         verifyDeploymentParameter(NAME_PARAM, deployment.getName());
+        verifyDeploymentParameter(CONFIG_TYPE_PARAM, deployment.getConfigType());
         verifyDeploymentParameter(PACKAGE_CONTENT_PARAM, deployment.getPackageContent());
 
         if (deployment.getPriority() < 0) {

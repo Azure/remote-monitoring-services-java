@@ -27,6 +27,7 @@ import play.libs.Json;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -215,7 +216,7 @@ public class Storage implements IStorage {
             return this.client.getAsync(PackagesCollectionId, packagesConfigurationsKey).thenApplyAsync(p -> {
                 return fromJson(p.getData(), ConfigTypeList.class);
             });
-        } catch (Exception e) {
+        } catch (ResourceNotFoundException e) {
             return CompletableFuture.completedFuture(new ConfigTypeList());
         }
     }
@@ -234,9 +235,12 @@ public class Storage implements IStorage {
      * {@inheritDoc}
      */
     @Override
-    public CompletionStage<Package> addPackageAsync(Package input) throws BaseException {
+    public CompletionStage<Package> addPackageAsync(Package input) throws
+            BaseException,
+            ExecutionException,
+            InterruptedException{
 
-        boolean isValidPackage = ValidatePackage(input);
+        boolean isValidPackage = this.validatePackage(input);
         if (!isValidPackage)
         {
             throw new InvalidInputException("Package provided is not a valid deployment manifest " +
@@ -270,28 +274,34 @@ public class Storage implements IStorage {
         return result;
     }
 
-    private Boolean ValidatePackage(Package input) {
+    private Boolean validatePackage(Package input) {
         IPackageValidator validator = PackageValidatorFactory.GetValidator(input.getType(), input.getConfigType());
         if (validator == null)
         {
-            return true;//Bypass validation for custom config type
+            //Bypass validation for custom config type
+            log.info("Package of config type {%s} cannot be validated.", input.getConfigType());
+            return true;
         }
         return validator.validate();
     }
 
-    public void updatePackageConfigsAsync(String customConfig) throws BaseException {
+    public void updatePackageConfigsAsync(String customConfig) throws
+            BaseException,
+            ExecutionException,
+            InterruptedException {
         ConfigTypeList list;
 
         try
         {
-            CompletionStage<ConfigTypeList> configs = this.client.getAsync(PackagesCollectionId, packagesConfigurationsKey).thenApplyAsync(p -> {
+            CompletionStage<ConfigTypeList> configs = this.client.getAsync(PackagesCollectionId,
+                    packagesConfigurationsKey).thenApplyAsync(p -> {
                 return fromJson(p.getData(), ConfigTypeList.class);
             });
             list = configs.toCompletableFuture().get();
         }
-        catch(Exception e)
+        catch(ResourceNotFoundException e)
         {
-            //TODO: Logging
+            log.debug("List of configurations does not exist.");
             list = new ConfigTypeList();
         }
 

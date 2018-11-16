@@ -73,22 +73,17 @@ public class DeploymentServiceModel {
         this.createdDateTimeUtc =  this.formatDateTimeToUTC(deployment.getCreatedTimeUtc());
         this.priority = deployment.getPriority();
 
-        if (deployment.getLabels().containsKey(DeploymentType.edgeManifest.toString()))
+        if (deployment.getLabels().containsValue(DeploymentType.edgeManifest.toString()) ||
+                deployment.getContent().getModulesContent() != null)
         {
             this.deploymentType = DeploymentType.edgeManifest;
         }
-        else if (deployment.getLabels().containsKey(DeploymentType.deviceConfiguration.toString()))
+        else if (deployment.getLabels().containsValue(DeploymentType.deviceConfiguration.toString()) ||
+                deployment.getContent().getDeviceContent() != null)
         {
             this.deploymentType = DeploymentType.deviceConfiguration;
         }
-        else if (deployment.getContent().getModulesContent() != null)
-        {
-            this.deploymentType = DeploymentType.edgeManifest;
-        }
-        else
-        {
-            this.deploymentType = DeploymentType.deviceConfiguration;
-        }
+        
 
         this.configType = deployment.getLabels().get(ConfigurationsHelper.CONFIG_TYPE_LABEL.toString());
 

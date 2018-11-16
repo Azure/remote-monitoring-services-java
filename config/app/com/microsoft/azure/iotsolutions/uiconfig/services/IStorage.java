@@ -10,6 +10,7 @@ import com.microsoft.azure.iotsolutions.uiconfig.services.models.Package;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.ConfigTypeList;
 
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
 
 @ImplementedBy(Storage.class)
 public interface IStorage {
@@ -60,13 +61,19 @@ public interface IStorage {
      * @param input {@link Package} parameters which include the name, content and type.
      * @return The created package along with id, and dateCreated.
      */
-    CompletionStage<Package> addPackageAsync(Package input) throws BaseException;
+    CompletionStage<Package> addPackageAsync(Package input) throws
+            BaseException,
+            ExecutionException,
+            InterruptedException;
 
     /**
      * Updates a previously created configurations.
      * @param customConfig The customConfig of the package to be maintained.
      */
-    void updatePackageConfigsAsync(String customConfig) throws BaseException;
+    void updatePackageConfigsAsync(String customConfig) throws
+            BaseException,
+            ExecutionException,
+            InterruptedException;
 
     /**
      * Deletes a previously uploaded package.

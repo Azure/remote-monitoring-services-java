@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
 
 import static play.libs.Json.toJson;
 
@@ -83,7 +84,12 @@ public class PackageController extends Controller {
      * @return Returns the result in the form of {@link PackageApiModel}
      */
     @Authorize("CreatePackages")
-    public CompletionStage<Result> createAsync() throws BaseException, BadRequestException, IOException {
+    public CompletionStage<Result> createAsync() throws
+            BaseException,
+            BadRequestException,
+            IOException,
+            ExecutionException,
+            InterruptedException {
         final MultipartFormData formData = request().body().asMultipartFormData();
         if (formData == null) {
             throw new BadRequestException("Multipart form-data is empty");
@@ -125,8 +131,7 @@ public class PackageController extends Controller {
         return storage.deletePackageAsync(id).thenApplyAsync(m -> ok());
     }
 
-    private String appendCustomConfig(String packageConfigType, String customConfig)
-    {
+    private String appendCustomConfig(String packageConfigType, String customConfig){
         return packageConfigType.trim() + " - " + customConfig.trim();
     }
 }

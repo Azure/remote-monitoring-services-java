@@ -4,9 +4,6 @@ package com.microsoft.azure.iotsolutions.iothubmanager.services.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.microsoft.azure.sdk.iot.service.ConfigurationMetrics;
-import org.apache.commons.collections4.MapUtils;
-
-import java.util.HashMap;
 import java.util.Map;
 
 public class DeploymentMetrics {
@@ -18,8 +15,8 @@ public class DeploymentMetrics {
 
     public DeploymentMetrics(ConfigurationMetrics systemMetrics,
                              ConfigurationMetrics customMetrics) {
-        this.systemMetrics = systemMetrics.getResults();
-        this.customMetrics = customMetrics.getResults();
+        this.systemMetrics = systemMetrics != null ? systemMetrics.getResults() : null;
+        this.customMetrics = customMetrics != null ? customMetrics.getResults() : null;
     }
 
     @JsonProperty("SystemMetrics")

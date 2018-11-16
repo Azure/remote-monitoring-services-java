@@ -44,6 +44,7 @@ public class ConfigurationsHelper {
         if(configuration.getLabels() == null) {
             configuration.setLabels(new HashMap<>());
         }
+
         final Map<String, String> labels = configuration.getLabels();
 
         // Required labels

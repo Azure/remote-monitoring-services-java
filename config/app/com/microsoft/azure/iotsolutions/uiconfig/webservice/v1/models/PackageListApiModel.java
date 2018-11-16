@@ -42,6 +42,12 @@ public class PackageListApiModel {
         this(models, null, null);
     }
 
+    /**
+     * Filters out packages received from the source by packageType and ConfigType.
+     * @param models Package models received from the source
+     * @param packageType Type of packages to retain
+     * @param configType Config Type of packages to retain
+     */
     public PackageListApiModel(Iterable<Package> models, String packageType, String configType) {
 
         if (StringUtils.isBlank(packageType))

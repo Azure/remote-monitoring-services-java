@@ -110,6 +110,10 @@ public class DeploymentsController extends Controller {
             throw new InvalidInputException("Name must be provided");
         }
 
+        if (StringUtils.isEmpty(deployment.getConfigType())) {
+            throw new InvalidInputException("Config Type must be provided");
+        }
+
         if (deployment.getPriority() < 0) {
             throw new InvalidInputException("Priority must be greater than or equal to zero");
         }
