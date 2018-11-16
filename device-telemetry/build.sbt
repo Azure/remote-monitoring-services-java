@@ -54,6 +54,8 @@ lazy val commonSettings = Seq(
   publishArtifact in(Compile, packageSrc) := true,
   publishArtifact in(Compile, packageBin) := true,
 
+  unmanagedResourceDirectories in Compile += baseDirectory.value / "app",
+
   // Test
   testOptions in Test := Seq(Tests.Argument(TestFrameworks.JUnit, "-a", "-v")),
 
