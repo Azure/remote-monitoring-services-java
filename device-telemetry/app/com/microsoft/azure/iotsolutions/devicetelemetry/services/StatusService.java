@@ -37,9 +37,9 @@ public class StatusService implements IStatusService {
         IServicesConfig servicesConfig,
         WsRequestBuilder wsRequestBuilder) {
         this.storageClient = storageClient;
-        this.wsRequestBuilder = wsRequestBuilder;
         this.timeSeriesClient = timeSeriesClient;
         this.servicesConfig = servicesConfig;
+        this.wsRequestBuilder = wsRequestBuilder;
     }
 
     public StatusServiceModel getStatus(boolean authRequired) {
