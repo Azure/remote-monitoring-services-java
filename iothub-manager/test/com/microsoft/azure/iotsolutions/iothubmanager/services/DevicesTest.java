@@ -57,7 +57,7 @@ public class DevicesTest {
         servicesConfig = config.getServicesConfig();
         storageAdapterClient = new StorageAdapterClient(
             mockWsClient,
-            new ServicesConfig(null, MockServiceUri, 0, 0, null));
+            new ServicesConfig(null, MockServiceUri, MockServiceUri, 0, 0, null));
         ioTHubWrapper = new IoTHubWrapper(servicesConfig);
         deviceService = new Devices(ioTHubWrapper, storageAdapterClient);
 
@@ -172,7 +172,7 @@ public class DevicesTest {
         TwinProperties properties = new TwinProperties(desired, null);
         TwinServiceModel twin = new TwinServiceModel(eTag, deviceId, properties, tags, true);
         DeviceServiceModel device = new DeviceServiceModel(eTag, deviceId, 0, null, false, true, false, null,
-                twin, null, null);
+            twin, null, null);
         DeviceServiceModel newDevice = deviceService.createAsync(device).toCompletableFuture().get();
         TwinServiceModel newTwin = newDevice.getTwin();
         HashMap<String, Object> configMap = (HashMap) newTwin.getProperties().getDesired().get("Config");
@@ -203,7 +203,7 @@ public class DevicesTest {
 
         TwinServiceModel twin = new TwinServiceModel(eTag, deviceId, null, tags, true);
         DeviceServiceModel device = new DeviceServiceModel(eTag, deviceId, 0, null, false, true, false, null,
-                twin, authModel, null);
+            twin, authModel, null);
         DeviceServiceModel newDevice = deviceService.createAsync(device).toCompletableFuture().get();
 
         Assert.assertNotNull(newDevice.getId());
@@ -228,7 +228,7 @@ public class DevicesTest {
 
         TwinServiceModel twin = new TwinServiceModel(eTag, deviceId, null, tags, true);
         DeviceServiceModel device = new DeviceServiceModel(eTag, deviceId, 0, null, false, true, false, null,
-                twin, authModel, null);
+            twin, authModel, null);
         DeviceServiceModel newDevice = deviceService.createAsync(device).toCompletableFuture().get();
 
         Assert.assertNotNull(newDevice.getId());
@@ -250,7 +250,7 @@ public class DevicesTest {
         TwinProperties properties = new TwinProperties(null, null);
         TwinServiceModel twin = new TwinServiceModel(eTag, deviceId, properties, tags, true);
         DeviceServiceModel device = new DeviceServiceModel(eTag, deviceId, 0, null, false, true, false, null,
-                twin, null, null);
+            twin, null, null);
         DeviceServiceModel newDevice = deviceService.createAsync(device).toCompletableFuture().get();
         Assert.assertNotNull(newDevice.getId());
         Assert.assertTrue(deviceService.deleteAsync(newDevice.getId()).toCompletableFuture().get());
@@ -285,7 +285,7 @@ public class DevicesTest {
         TwinProperties properties = new TwinProperties(desired, reported);
         TwinServiceModel twin = new TwinServiceModel(eTag, deviceId, properties, tags, true);
         DeviceServiceModel device = new DeviceServiceModel(eTag, deviceId, 0, null, false, true, false, null,
-                twin, null, null);
+            twin, null, null);
         DeviceServiceModel newDevice = deviceService.createOrUpdateAsync(device.getId(), device, cacheUpdateCallBack).toCompletableFuture().get();
         TwinServiceModel newTwin = newDevice.getTwin();
         HashMap<String, Object> configMap = (HashMap) newTwin.getProperties().getDesired().get("Config");
@@ -302,7 +302,7 @@ public class DevicesTest {
         String eTag = "etagxx==";
         TwinServiceModel twin = new TwinServiceModel(eTag, "MismatchedDeviceID", null, null, true);
         DeviceServiceModel device = new DeviceServiceModel(eTag, "MismatchedDeviceID", 0, null, false,
-                true, false, null, twin, null, null);
+            true, false, null, twin, null, null);
         deviceService.createOrUpdateAsync(deviceId, device, cacheUpdateCallBack).toCompletableFuture().get();
     }
 
@@ -313,7 +313,7 @@ public class DevicesTest {
         String eTag = "etagxx==";
         TwinServiceModel twin = new TwinServiceModel(eTag, "", null, null, true);
         DeviceServiceModel device = new DeviceServiceModel(eTag, "", 0, null, false, true, false, null, twin,
-                null, null);
+            null, null);
         deviceService.createOrUpdateAsync(deviceId, device, cacheUpdateCallBack).toCompletableFuture().get();
     }
 
@@ -379,7 +379,7 @@ public class DevicesTest {
                 TwinProperties properties = new TwinProperties(desired, null);
                 TwinServiceModel twin = new TwinServiceModel(eTag, deviceId, properties, tags, true);
                 DeviceServiceModel device = new DeviceServiceModel(eTag, deviceId, 0, null, false, true,
-                        false, null, twin, null, null);
+                    false, null, twin, null, null);
                 DeviceServiceModel newDevice = deviceService.createAsync(device).toCompletableFuture().get();
                 testDevices.add(newDevice);
                 System.out.println(deviceId + " created");

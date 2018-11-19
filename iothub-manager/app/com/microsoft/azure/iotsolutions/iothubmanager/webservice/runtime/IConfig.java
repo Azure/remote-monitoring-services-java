@@ -10,6 +10,13 @@ import com.microsoft.azure.iotsolutions.iothubmanager.webservice.auth.IClientAut
 public interface IConfig {
 
     /**
+     * Get the TCP port number where the service listen for requests.
+     *
+     * @return TCP port number
+     */
+    int getPort();
+
+    /**
      * Service layer configuration
      */
     IServicesConfig getServicesConfig();

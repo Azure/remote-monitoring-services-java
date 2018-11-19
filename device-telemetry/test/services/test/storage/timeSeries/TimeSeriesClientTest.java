@@ -2,8 +2,8 @@
 
 package services.test.storage.timeSeries;
 
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.Status;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidConfigurationException;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.StatusResultServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.timeSeries.ITimeSeriesClient;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.timeSeries.TimeSeriesClient;
@@ -13,6 +13,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import play.libs.ws.WSClient;
+
+import java.util.concurrent.CompletionStage;
 
 import static org.mockito.Mockito.mock;
 
@@ -27,6 +29,7 @@ public class TimeSeriesClientTest {
         this.wsClient = mock(WSClient.class);
         this.servicesConfig = new ServicesConfig(
             "http://localhost:9022/v1",
+            "http://localhost:9001/v1",
             mock(MessagesConfig.class),
             mock(AlarmsConfig.class),
             mock(ActionsConfig.class),
@@ -38,10 +41,10 @@ public class TimeSeriesClientTest {
     @Category({UnitTest.class})
     public void PingReturnsFalse_WhenConfigValuesAreNull() throws Throwable {
         // Act & Assert
-        Status result = this.timeSeriesClient.ping();
+        StatusResultServiceModel result = this.timeSeriesClient.ping();
 
         // Assert
-        Assert.assertFalse(result.isHealthy());
+        Assert.assertFalse(result.getIsHealthy());
     }
 
     @Test(timeout = 50000, expected = InvalidConfigurationException.class)

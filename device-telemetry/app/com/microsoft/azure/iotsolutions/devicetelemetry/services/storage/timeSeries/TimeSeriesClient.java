@@ -5,30 +5,22 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.timeSe
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
-import com.microsoft.aad.adal4j.AuthenticationContext;
-import com.microsoft.aad.adal4j.AuthenticationResult;
-import com.microsoft.aad.adal4j.ClientCredential;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.Status;
+import com.microsoft.aad.adal4j.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.MessageListServiceModel;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.MessagesConfig;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.TimeSeriesConfig;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.StatusResultServiceModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.*;
 import org.apache.http.HttpStatus;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import play.Logger;
 import play.libs.Json;
-import play.libs.ws.WSClient;
-import play.libs.ws.WSRequest;
-import play.libs.ws.WSResponse;
+import play.libs.ws.*;
 
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 public class TimeSeriesClient implements ITimeSeriesClient {
@@ -53,7 +45,6 @@ public class TimeSeriesClient implements ITimeSeriesClient {
     private final String FROM_KEY = "from";
     private final String TO_KEY = "to";
     private final String DEVICE_ID_KEY = "iothub-connection-device-id";
-
 
     private String aadTenantId;
     private String applicationId;
@@ -97,27 +88,28 @@ public class TimeSeriesClient implements ITimeSeriesClient {
     }
 
     @Override
-    public Status ping() {
-        String name = "TimeSeriesInsights";
+    public StatusResultServiceModel ping() {
+        StatusResultServiceModel result = new StatusResultServiceModel(false, "TimeSeriesInsights check failed");
+
         try {
             WSRequest request = this.PrepareRequest(
                 this.dataAccessFqdn,
                 AVAILABILITY_KEY,
                 this.acquireAccessToken());
 
-            WSResponse response = request
-                .get()
-                .toCompletableFuture()
-                .get();
+            WSResponse response = request.get().toCompletableFuture().get();
 
-            if (response.getStatus() == HttpStatus.SC_OK) {
-                return new Status(name, true, "Time Series Insights alive and well!");
+            if (response.getStatus() != HttpStatus.SC_OK) {
+                result.setMessage("Status code: " + response.getStatus() + ", Response: " + response.getBody());
             } else {
-                return new Status(name, false, response.getStatusText());
+                result.setIsHealthy(true);
+                result.setMessage("Alive and well!");
             }
         } catch (Exception e) {
-            return new Status(name, false, e.getMessage());
+            this.log.error(e.getMessage());
         }
+
+        return result;
     }
 
     @Override
