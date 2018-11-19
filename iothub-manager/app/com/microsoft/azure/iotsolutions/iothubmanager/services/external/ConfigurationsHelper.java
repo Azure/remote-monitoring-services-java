@@ -26,19 +26,32 @@ public class ConfigurationsHelper {
 
     public static final String RM_CREATED_LABEL = "RMDeployment";
 
-    public static Configuration toHubConfiguration(final DeploymentServiceModel deployment) throws InvalidInputException {
+    public static Configuration toHubConfiguration(final DeploymentServiceModel model) throws InvalidInputException {
+
+        final String packageContent = model.getPackageContent();
+        final Configuration pkgConfiguration = fromJson(Json.parse(packageContent), Configuration.class);
+
+        if (model.getDeploymentType().equals(DeploymentType.edgeManifest) &&
+                pkgConfiguration.getContent() != null && pkgConfiguration.getContent().getDeviceContent() != null)
+        {
+            throw new InvalidInputException("Deployment type does not match with package contents.");
+        }
+            else if (model.getDeploymentType().equals(DeploymentType.deviceConfiguration) &&
+                pkgConfiguration.getContent() != null && pkgConfiguration.getContent().getModulesContent() != null)
+        {
+            throw new InvalidInputException("Deployment type does not match with package contents.");
+        }
+
+
+
         final String deploymentId = UUID.randomUUID().toString();
         final Configuration configuration = new Configuration(deploymentId);
-
-        final String packageContent = deployment.getPackageContent();
-        final Configuration pkgConfiguration = fromJson(Json.parse(packageContent), Configuration.class);
         configuration.setContent(pkgConfiguration.getContent());
-
-        final DeviceGroup deploymentGroup = deployment.getDeviceGroup();
+        final DeviceGroup deploymentGroup = model.getDeviceGroup();
         final String dvcGroupQuery = deploymentGroup.getQuery();
         final String query = QueryConditionTranslator.ToQueryString(dvcGroupQuery);
         configuration.setTargetCondition(StringUtils.isNotBlank(query) ? query : "*");
-        configuration.setPriority(deployment.getPriority());
+        configuration.setPriority(model.getPriority());
         configuration.setEtag("");
 
         if(configuration.getLabels() == null) {
@@ -48,9 +61,9 @@ public class ConfigurationsHelper {
         final Map<String, String> labels = configuration.getLabels();
 
         // Required labels
-        labels.put(DEPLOYMENT_TYPE_LABEL, deployment.getDeploymentType().toString());
-        labels.put(CONFIG_TYPE_LABEL, deployment.getConfigType().toString());
-        labels.put(DEPLOYMENT_NAME_LABEL, deployment.getName());
+        labels.put(DEPLOYMENT_TYPE_LABEL, model.getDeploymentType().toString());
+        labels.put(CONFIG_TYPE_LABEL, model.getConfigType().toString());
+        labels.put(DEPLOYMENT_NAME_LABEL, model.getName());
         labels.put(DEPLOYMENT_GROUP_ID_LABEL, deploymentGroup.getId());
         labels.put(RM_CREATED_LABEL, Boolean.TRUE.toString());
 
@@ -64,8 +77,8 @@ public class ConfigurationsHelper {
         if (deploymentGroup.getName() != null) {
             labels.put(DEPLOYMENT_GROUP_NAME_LABEL, deploymentGroup.getName());
         }
-        if (deployment.getPackageName() != null) {
-            labels.put(DEPLOYMENT_PACKAGE_NAME_LABEL, deployment.getPackageName());
+        if (model.getPackageName() != null) {
+            labels.put(DEPLOYMENT_PACKAGE_NAME_LABEL, model.getPackageName());
         }
 
         return configuration;

@@ -2,14 +2,21 @@
 
 package com.microsoft.azure.iotsolutions.iothubmanager.services;
 
+import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.ExternalDependencyException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.*;
+import com.microsoft.azure.sdk.iot.device.exceptions.IotHubException;
 import com.microsoft.azure.sdk.iot.service.Configuration;
+import com.microsoft.azure.sdk.iot.service.ConfigurationContent;
 import com.microsoft.azure.sdk.iot.service.RegistryManager;
 import com.microsoft.azure.sdk.iot.service.devicetwin.DeviceTwin;
+import com.microsoft.azure.sdk.iot.service.devicetwin.Query;
+import com.microsoft.azure.sdk.iot.service.devicetwin.QueryType;
+import com.microsoft.azure.sdk.iot.service.devicetwin.SqlQuery;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.apache.commons.lang3.StringUtils;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -19,12 +26,14 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import play.libs.Json;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.argThat;
 import static org.mockito.Mockito.when;
 
@@ -129,6 +138,138 @@ public class DeploymentsTest {
             assertEquals("dvcGroupId" + i, deployment.getDeviceGroup().getId());
             assertEquals("dvcGroupName" + i, deployment.getDeviceGroup().getName());
             assertEquals("packageName" + i, deployment.getPackageName());
+        }
+    }
+
+    @Test
+    @Parameters({"true, true, true",
+    "false, true, false",
+    "true, true, false",
+    "false, true, true",
+    "true, false, false",
+    "true, false, true"})
+    public void getDeploymentTypeTest(boolean isEdgeContent, boolean addLabel, boolean isEdgeLabel) throws
+            Exception
+    {
+        // Arrange
+        ConfigurationContent depContent = new ConfigurationContent()
+        {
+            {
+                modulesContent = isEdgeContent ? new HashMap<String, Map<String, Object>>() : null;
+                deviceContent = !(isEdgeContent) ? new HashMap<String, Object>() : null;
+            }
+        };
+
+        String label = StringUtils.EMPTY;
+
+        if (addLabel)
+        {
+            label = isEdgeLabel ? DeploymentType.edgeManifest.toString() : DeploymentType.deviceConfiguration.toString();
+        }
+
+        HashMap<String, String> depLabels = new HashMap<String, String>();
+
+        depLabels.put(DEPLOYMENT_NAME_LABEL, StringUtils.EMPTY);
+        depLabels.put(DEPLOYMENT_GROUP_ID_LABEL, StringUtils.EMPTY);
+        depLabels.put(DEPLOYMENT_TYPE_LABEL, label);
+        depLabels.put(CONFIG_TYPE_LABEL, "CustomConfig");
+        depLabels.put(RM_CREATED_LABEL, Boolean.TRUE.toString());
+
+        Configuration configuration = new Configuration("test-config")
+        {
+            {
+                labels = depLabels;
+                content = depContent;
+                priority = 10;
+            }
+        };
+
+        String deploymentId = configuration.getId();
+        when(this.registry.getConfiguration(deploymentId)).thenReturn(configuration);
+        when(deviceTwin.queryTwin(anyString())).thenReturn(new Query(3, QueryType.TWIN));
+
+        // Act
+        DeploymentServiceModel returnedDeployment = this.deployments.getAsync(deploymentId, false)
+                                                        .toCompletableFuture().get();
+
+        // Assert Should returned Deployment Type according to label
+        if (addLabel)
+        {
+            if (isEdgeLabel)
+            {
+                assertEquals(DeploymentType.edgeManifest, returnedDeployment.getDeploymentType());
+            }
+            else
+            {
+                assertEquals(DeploymentType.deviceConfiguration, returnedDeployment.getDeploymentType());
+            }
+        }
+        else
+        {
+            if (isEdgeContent)
+            {
+                assertEquals(DeploymentType.edgeManifest, returnedDeployment.getDeploymentType());
+            }
+            else
+            {
+                assertEquals(DeploymentType.deviceConfiguration, returnedDeployment.getDeploymentType());
+            }
+        }
+    }
+
+    @Test
+    @Parameters({
+        "true", "false"
+    })
+    public void getDeploymentMetricsTest(boolean isEdgeDeployment) throws Exception
+    {
+        // Arrange
+        ConfigurationContent depContent = new ConfigurationContent()
+        {
+            {
+                modulesContent = isEdgeDeployment ? new HashMap<String, Map<String, Object>>() : null;
+                deviceContent = !(isEdgeDeployment) ? new HashMap<String, Object>() : null;
+            }
+        };
+
+        String label = isEdgeDeployment ? DeploymentType.edgeManifest.toString() : DeploymentType.deviceConfiguration.toString();
+
+        String firmwareUpdateMxChip = "FirmwareUpdateMxChip";
+
+        HashMap<String, String> depLabels = new HashMap<String, String>();
+
+        depLabels.put(DEPLOYMENT_NAME_LABEL, StringUtils.EMPTY);
+        depLabels.put(DEPLOYMENT_GROUP_ID_LABEL, StringUtils.EMPTY);
+        depLabels.put(DEPLOYMENT_TYPE_LABEL, label);
+        depLabels.put(CONFIG_TYPE_LABEL, firmwareUpdateMxChip );
+        depLabels.put(RM_CREATED_LABEL, Boolean.TRUE.toString());
+
+        Configuration configuration = new Configuration("test-config")
+        {
+            {
+                labels = depLabels;
+                content = depContent;
+                priority = 10;
+            }
+        };
+
+        String deploymentId = configuration.getId();
+
+        when(this.registry.getConfiguration(deploymentId)).thenReturn(configuration);
+        when(deviceTwin.queryTwin(anyString())).thenReturn(new Query(3, QueryType.TWIN));
+
+        // Act
+        DeploymentServiceModel returnedDeployment = this.deployments.getAsync(deploymentId, false)
+                                                        .toCompletableFuture().get();;
+
+        // Assert Should returned Deployment Type according to label
+        if (isEdgeDeployment)
+        {
+            Assert.assertNull(returnedDeployment.getDeploymentMetrics().getDeviceMetrics());
+        }
+        else
+        {
+            Assert.assertNotNull(returnedDeployment.getDeploymentMetrics().getDeviceMetrics());
         }
     }
 

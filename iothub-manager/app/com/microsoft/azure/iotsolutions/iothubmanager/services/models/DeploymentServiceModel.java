@@ -73,17 +73,30 @@ public class DeploymentServiceModel {
         this.createdDateTimeUtc =  this.formatDateTimeToUTC(deployment.getCreatedTimeUtc());
         this.priority = deployment.getPriority();
 
-        if (deployment.getLabels().containsValue(DeploymentType.edgeManifest.toString()) ||
-                deployment.getContent().getModulesContent() != null)
+        if (deployment.getLabels().containsKey(ConfigurationsHelper.DEPLOYMENT_TYPE_LABEL) &&
+            !(StringUtils.isBlank(deployment.getLabels().get(ConfigurationsHelper.DEPLOYMENT_TYPE_LABEL))))
         {
-            this.deploymentType = DeploymentType.edgeManifest;
+            if (deployment.getLabels().containsValue(DeploymentType.edgeManifest.toString()))
+            {
+                this.deploymentType = DeploymentType.edgeManifest;
+            }
+            else if (deployment.getLabels().containsValue(DeploymentType.deviceConfiguration.toString()))
+            {
+                this.deploymentType = DeploymentType.deviceConfiguration;
+            }
         }
-        else if (deployment.getLabels().containsValue(DeploymentType.deviceConfiguration.toString()) ||
-                deployment.getContent().getDeviceContent() != null)
+        else
         {
-            this.deploymentType = DeploymentType.deviceConfiguration;
+            if (deployment.getContent().getModulesContent() != null)
+            {
+                this.deploymentType = DeploymentType.edgeManifest;
+            }
+            else if (deployment.getContent().getDeviceContent() != null)
+            {
+                this.deploymentType = DeploymentType.deviceConfiguration;
+            }
         }
-        
+
 
         this.configType = deployment.getLabels().get(ConfigurationsHelper.CONFIG_TYPE_LABEL.toString());
 

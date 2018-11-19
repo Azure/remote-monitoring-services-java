@@ -136,7 +136,7 @@ public final class Deployments implements IDeployments {
                 result.getDeploymentMetrics().setDeviceStatuses(deviceStatuses);
             }
 
-            if (ConfigurationsHelper.isEdgeDeployment(deployment)) {
+            if (!(ConfigurationsHelper.isEdgeDeployment(deployment))) {
                 result.getDeploymentMetrics().setDeviceMetrics(this.calculateDeviceMetrics(deviceStatuses));
             }
 

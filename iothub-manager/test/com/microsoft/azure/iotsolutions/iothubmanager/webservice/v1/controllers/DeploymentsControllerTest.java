@@ -111,6 +111,7 @@ public class DeploymentsControllerTest {
             assertEquals(DEVICE_GROUP_NAME + i, deployment.getDeviceGroupName());
             assertEquals(PACKAGE_NAME + i, deployment.getPackageName());
             assertEquals(PRIORITY + i, deployment.getPriority());
+            assertEquals(5, deployment.getMetrics().getSystemMetrics().size());
         }
     }
 
