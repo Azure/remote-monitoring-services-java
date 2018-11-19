@@ -6,10 +6,7 @@ import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.IAlarms;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.Authorize;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.helpers.DateHelper;
-import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.AlarmApiModel;
-import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.AlarmIdListApiModel;
-import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.AlarmListApiModel;
-import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.AlarmStatus;
+import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.*;
 import play.Logger;
 import play.libs.Json;
 import play.mvc.Controller;
@@ -17,7 +14,9 @@ import play.mvc.Result;
 
 import java.util.ArrayList;
 
+import static play.libs.Json.fromJson;
 import static play.libs.Json.toJson;
+import static play.mvc.Http.Context.Implicit.request;
 
 public class AlarmsController extends Controller {
     private static final Logger.ALogger log = Logger.of(AlarmsController.class);
@@ -42,20 +41,38 @@ public class AlarmsController extends Controller {
      */
     public Result list(String from, String to, String order, int skip,
                        int limit, String devices) throws Exception {
-        // TODO: move this logic to the storage engine, depending on the
-        // storage type the limit will be different. DEVICE_LIMIT is CosmosDb
-        // limit for the IN clause.
         String[] deviceIds = new String[0];
         if (devices != null) {
             deviceIds = devices.split(",");
         }
-        if (deviceIds.length > DEVICE_LIMIT) {
-            log.warn("The client requested too many devices: {}", deviceIds.length);
-            return badRequest("The number of devices cannot exceed " + DEVICE_LIMIT);
-        }
 
-        return ok(toJson(new AlarmListApiModel(this.alarms.getList(DateHelper.parseDate(from), DateHelper.parseDate(to), order, skip, limit, deviceIds))));
+        return this.listAlarmsHelper(from, to, order, skip, limit, deviceIds);
     }
+
+    /**
+     * Return a list of alerts. The list of alerts can be paginated, and
+     * filtered by device, period of time, status. The list is sorted
+     * chronologically, by default starting from the oldest alert, and
+     * optionally from the most recent.
+     *
+     * @return List of alerts.
+     */
+    public Result post() throws Exception {
+        QueryApiModel body = fromJson(request().body().asJson(), QueryApiModel.class);
+
+        String[] deviceIds = body.getDevices() == null
+                ? new String[0]
+                : body.getDevices().toArray(new String[body.getDevices().size()]);
+
+        return this.listAlarmsHelper(
+                body.getFrom(),
+                body.getTo(),
+                body.getOrder(),
+                body.getSkip(),
+                body.getLimit(),
+                deviceIds);
+    }
+
 
     /**
      * @return One alert.
@@ -121,5 +138,18 @@ public class AlarmsController extends Controller {
         }
         this.alarms.delete(items);
         return ok();
+    }
+
+    private Result listAlarmsHelper(String from, String to, String order, int skip,
+                                    int limit, String[] deviceIds) throws Exception {
+        // TODO: move this logic to the storage engine, depending on the
+        // storage type the limit will be different. DEVICE_LIMIT is CosmosDb
+        // limit for the IN clause.
+        if (deviceIds.length > DEVICE_LIMIT) {
+            log.warn("The client requested too many devices: {}", deviceIds.length);
+            return badRequest("The number of devices cannot exceed " + DEVICE_LIMIT);
+        }
+
+        return ok(toJson(new AlarmListApiModel(this.alarms.getList(DateHelper.parseDate(from), DateHelper.parseDate(to), order, skip, limit, deviceIds))));
     }
 }
