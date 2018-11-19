@@ -3,13 +3,6 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers;
 
 import com.google.inject.Inject;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.Status;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidConfigurationException;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.MessagesConfig;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.StorageType;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.cosmosDb.IStorageClient;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.storageAdapter.IKeyValueClient;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.timeSeries.ITimeSeriesClient;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.Authorize;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.IStatusService;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.StatusServiceModel;
