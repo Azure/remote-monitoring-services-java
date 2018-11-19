@@ -4,25 +4,18 @@ package actionsagent.test;
 
 import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.actions.ActionManager;
 import com.microsoft.azure.iotsolutions.devicetelemetry.actionsagent.models.AsaAlarmApiModel;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ExternalDependencyException;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidInputException;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.ResourceNotFoundException;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.EmailActionServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.actions.IActionServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.ActionsConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.ServicesConfig;
 import org.junit.Before;
 import org.junit.Test;
-import play.libs.ws.WSClient;
-import play.libs.ws.WSRequest;
-import play.libs.ws.WSResponse;
+import play.libs.ws.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.*;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -37,6 +30,7 @@ public class ActionManagerTest {
     public void setUp() throws ResourceNotFoundException, InvalidInputException {
         ServicesConfig servicesConfig = new ServicesConfig(
             "keyValueStorageUrl",
+            "userManagementApiUrl",
             null,
             null,
             new ActionsConfig(

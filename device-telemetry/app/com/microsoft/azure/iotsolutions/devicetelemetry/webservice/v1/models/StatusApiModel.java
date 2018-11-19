@@ -4,7 +4,7 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.Status;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.StatusServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime.Uptime;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.Version;
 import org.joda.time.DateTime;
@@ -12,33 +12,32 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Dictionary;
+import java.util.Hashtable;
 
-@JsonPropertyOrder({"Name", "Status", "CurrentTime", "StartTime", "UpTime", "Properties", "Dependencies", "$metadata"})
+@JsonPropertyOrder({"Name", "Status", "CurrentTime", "StartTime", "UID", "UpTime", "Properties", "Dependencies", "$metadata"})
 public final class StatusApiModel {
-
-    private String status;
+    private StatusResultApiModel status;
+    private Hashtable<String, String> properties;
+    private Hashtable<String, StatusResultApiModel> dependencies;
     private DateTimeFormatter dateFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
-    private List<Status> statusList;
-    private HashMap<String, String> properties = new HashMap<String, String>() {{
-        put("Simulation", "on");
-        put("Region", "US");
-        put("DebugMode", "off");
-    }};
 
-    public StatusApiModel() {
-        this.statusList = new ArrayList<>();
-        setStatusMessage();
+    public StatusApiModel(final StatusServiceModel statusServiceModel) {
+        this.status = new StatusResultApiModel(statusServiceModel.getStatus());
+        this.dependencies = new Hashtable<>();
+        statusServiceModel.getDependencies().forEach((k, v) -> {
+            this.dependencies.put(k,new StatusResultApiModel(v));
+        });
+        this.properties = statusServiceModel.getProperties();
     }
 
     @JsonProperty("Name")
     public String getName() {
-        return "telemetry";
+        return "Device Telemetry";
     }
 
     @JsonProperty("Status")
-    public String getStatus() {
+    public StatusResultApiModel getStatus() {
         return this.status;
     }
 
@@ -63,45 +62,20 @@ public final class StatusApiModel {
     }
 
     @JsonProperty("Properties")
-    public HashMap<String, String> getProperties() {
+    public Dictionary<String, String> getProperties() {
         return this.properties;
     }
 
     @JsonProperty("Dependencies")
-    public HashMap<String, String> getDependencies() {
-        HashMap<String, String> dependencies = new HashMap<>();
-
-        this.statusList.stream()
-            .forEach(s -> {
-                String dependencyStatusMessage = s.isHealthy() ? "OK" : "ERROR";
-                dependencies.put(s.getName(), dependencyStatusMessage + ": " + s.getStatusMessage());
-            });
-        return dependencies;
+    public Dictionary<String, StatusResultApiModel> getDependencies() {
+        return this.dependencies;
     }
 
     @JsonProperty("$metadata")
-    public HashMap<String, String> getMetadata() {
-        return new HashMap<String, String>() {{
-            put("$type", "Status;" + Version.NAME);
-            put("$uri", "/" + Version.NAME + "/status");
+    public Dictionary<String, String> getMetadata() {
+        return new Hashtable<String, String>() {{
+            put("$type", "Status;" + Version.NUMBER);
+            put("$uri", "/" + Version.PATH + "/status");
         }};
-    }
-
-    public void addStatus(Status status) {
-        this.statusList.add(status);
-        this.setStatusMessage();
-    }
-
-    private void setStatusMessage() {
-        // check dependency health
-        boolean isHealthy = this.statusList.stream()
-            .allMatch(s -> s.isHealthy());
-
-        this.status = isHealthy ? "OK:Alive and well" : String.join(";",
-            this.statusList.stream()
-                .filter(s -> !s.isHealthy())
-                .map(s -> s.getStatusMessage())
-                .collect(Collectors.toList())
-        );
     }
 }

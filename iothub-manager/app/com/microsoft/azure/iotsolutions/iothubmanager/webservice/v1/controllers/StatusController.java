@@ -5,8 +5,10 @@ package com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers
 import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.IIoTHubWrapper;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.auth.Authorize;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.IStatusService;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.models.StatusServiceModel;
+import com.microsoft.azure.iotsolutions.iothubmanager.webservice.runtime.IConfig;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models.StatusApiModel;
-import com.microsoft.azure.sdk.iot.service.RegistryManager;
 import play.mvc.Result;
 
 import static play.libs.Json.toJson;
@@ -17,11 +19,13 @@ import static play.mvc.Results.ok;
  */
 public final class StatusController {
 
-    private final IIoTHubWrapper ioTHubWrapper;
+    private final IConfig config;
+    private final IStatusService statusService;
 
     @Inject
-    public StatusController(IIoTHubWrapper ioTHubWrapper) {
-        this.ioTHubWrapper = ioTHubWrapper;
+    public StatusController(IStatusService statusService, IConfig config) {
+        this.statusService = statusService;
+        this.config = config;
     }
 
     /**
@@ -29,14 +33,9 @@ public final class StatusController {
      */
     @Authorize("ReadAll")
     public Result get() {
-        StatusApiModel status = new StatusApiModel(true, "Alive and well");
-        try {
-            RegistryManager registry = this.ioTHubWrapper.getRegistryManagerClient();
-        } catch (Exception e) {
-            status = new StatusApiModel(false, e.getMessage());
-            status.getDependencies().put("IoTHub", "ERROR:" + e.getMessage());
-        } finally {
-            return ok(toJson(status));
-        }
+        StatusServiceModel statusServiceModel = this.statusService.getStatus(config.getClientAuthConfig().isAuthRequired());
+        statusServiceModel.addProperty("Port", String.valueOf(config.getPort()));
+        statusServiceModel.addProperty("AuthRequired", String.valueOf(config.getClientAuthConfig().isAuthRequired()));
+        return ok(toJson(new StatusApiModel(statusServiceModel)));
     }
 }

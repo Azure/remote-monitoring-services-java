@@ -24,10 +24,10 @@ public class AgentTest {
 
     @Before
     public void setUp() throws ExecutionException, InterruptedException {
-        // this.servicesConfigMock = Mockito.mock(ServicesConfig.class);
         this.eventProcessorHostWrapperMock = Mockito.mock(IEventProcessorHostWrapper.class);
         this.eventProcessorFactoryMock = Mockito.mock(IEventProcessorFactory.class);
         this.servicesConfigMock = new ServicesConfig(
+            "",
             "",
             null,
             null,
