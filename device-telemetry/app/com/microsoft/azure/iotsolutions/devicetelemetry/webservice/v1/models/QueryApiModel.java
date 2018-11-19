@@ -16,18 +16,18 @@ public class QueryApiModel {
     public QueryApiModel() {
         this.from = "";
         this.to = "";
-        this.order = null;
-        this.skip = null;
-        this.limit = null;
-        this.devices = new ArrayList<>();
+        this.order = "asc";
+        this.skip = 0;
+        this.limit = 1000;
+        this.devices = null;
     }
 
     public QueryApiModel(String from, String to, String order, Integer skip, Integer limit, List<String> devices) {
         this.from = from;
         this.to = to;
-        this.order = order;
-        this.skip = skip;
-        this.limit = limit;
+        this.order = order == null ? "asc" : order;
+        this.skip = skip == null ? 0 : skip;
+        this.limit = limit == null ? 1000 : limit;
         this.devices = devices;
     }
 
