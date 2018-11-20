@@ -10,6 +10,7 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.Ala
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.AlarmListByRuleApiModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.QueryApiModel;
 import play.Logger;
+import play.mvc.Controller;
 import play.mvc.Result;
 
 import java.util.concurrent.CompletableFuture;
@@ -17,12 +18,9 @@ import java.util.concurrent.CompletionStage;
 
 import static play.libs.Json.fromJson;
 import static play.libs.Json.toJson;
-import static play.mvc.Http.Context.Implicit.request;
-import static play.mvc.Results.badRequest;
-import static play.mvc.Results.ok;
 
 // TODO: Review and see if we can either extend the Alarm API or the Rules API.
-public class AlarmsByRuleController {
+public class AlarmsByRuleController extends Controller {
     private static final Logger.ALogger log = Logger.of(AlarmsByRuleController.class);
 
     private final IAlarms alarmsService;
@@ -61,7 +59,8 @@ public class AlarmsByRuleController {
      * Return a list of alarms grouped by the rule from which the alarm is
      * created. The list can be paginated, and filtered by device, period of
      * time, status. The list is sorted chronologically, by default starting
-     * from the oldest alarm, and optionally from the most recent.
+     * from the oldest alarm, and optionally from the most recent. Query parameters
+     * are in the body of the request, in the format of QueryApiModel
      * <p>
      * The list can also contain zero alarms and only a count of occurrences,
      * for instance to know how many alarms are generated for each rule.
@@ -83,6 +82,10 @@ public class AlarmsByRuleController {
                 deviceIds);
     }
 
+    /**
+     * @return A list of alarms generated from a specific rule. May be filtered
+     * based on query parameters in body of request.
+     */
     public Result post(String id) throws Exception {
         QueryApiModel body = fromJson(request().body().asJson(), QueryApiModel.class);
         String[] deviceIds = body.getDevices() == null

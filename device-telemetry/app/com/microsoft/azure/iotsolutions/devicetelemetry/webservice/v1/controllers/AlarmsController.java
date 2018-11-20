@@ -16,7 +16,6 @@ import java.util.ArrayList;
 
 import static play.libs.Json.fromJson;
 import static play.libs.Json.toJson;
-import static play.mvc.Http.Context.Implicit.request;
 
 public class AlarmsController extends Controller {
     private static final Logger.ALogger log = Logger.of(AlarmsController.class);

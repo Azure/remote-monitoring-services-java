@@ -53,7 +53,7 @@ public final class MessagesController extends Controller {
             deviceIds = devices.split(",");
         }
 
-        return this.listMessages(fromDate, toDate, order, skip, limit, deviceIds);
+        return this.listMessagesHelper(fromDate, toDate, order, skip, limit, deviceIds);
     }
 
     public Result post() throws InvalidConfigurationException, InvalidInputException, TimeSeriesParseException {
@@ -66,7 +66,7 @@ public final class MessagesController extends Controller {
         DateTime fromDate = DateHelper.parseDate(body.getFrom());
         DateTime toDate = DateHelper.parseDate(body.getTo());
 
-        return this.listMessages(
+        return this.listMessagesHelper(
                 fromDate,
                 toDate,
                 body.getOrder(),
@@ -75,7 +75,7 @@ public final class MessagesController extends Controller {
                 deviceIds);
     }
 
-    private Result listMessages(
+    private Result listMessagesHelper(
             DateTime from,
             DateTime to,
             String order,
