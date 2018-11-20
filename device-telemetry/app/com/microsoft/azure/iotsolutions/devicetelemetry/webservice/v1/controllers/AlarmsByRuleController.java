@@ -46,7 +46,7 @@ public class AlarmsByRuleController extends Controller {
      *
      * @return List of alarms.
      */
-     @Authorize("ReadAll")
+    @Authorize("ReadAll")
     public CompletionStage<Result> getAsync(String from, String to, String order, int skip,
                                              int limit, String devices) throws Exception {
         String[] deviceIds = new String[0];
