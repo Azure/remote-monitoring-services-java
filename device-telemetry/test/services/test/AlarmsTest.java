@@ -32,6 +32,7 @@ public class AlarmsTest {
 
         ServicesConfig servicesConfig = new ServicesConfig(
             "keyValueStorageUrl",
+            "userManagementUrl",
             new MessagesConfig(
                 "tsi",
                 new StorageConfig(

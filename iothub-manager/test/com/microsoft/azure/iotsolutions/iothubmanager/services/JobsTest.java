@@ -53,7 +53,7 @@ public class JobsTest {
         servicesConfig = config.getServicesConfig();
         storageAdapterClient = new StorageAdapterClient(
             mockWsClient,
-            new ServicesConfig(null, MockServiceUri, 0, 0, null));
+            new ServicesConfig(null, MockServiceUri, MockServiceUri, 0, 0, null));
         ioTHubWrapper = new IoTHubWrapper(servicesConfig);
         deviceService = new Devices(ioTHubWrapper, storageAdapterClient);
         mockDeviceProperties = new DeviceProperties(storageAdapterClient, servicesConfig, deviceService);
@@ -240,7 +240,7 @@ public class JobsTest {
                 TwinProperties properties = new TwinProperties(desired, null);
                 TwinServiceModel twin = new TwinServiceModel(eTag, deviceId, properties, tags, true);
                 DeviceServiceModel device = new DeviceServiceModel(eTag, deviceId, 0, null, false, true,
-                        false, null, twin, null, null);
+                    false, null, twin, null, null);
                 DeviceServiceModel newDevice = deviceService.createAsync(device).toCompletableFuture().get();
                 testDevices.add(newDevice);
                 System.out.println(deviceId + " created");

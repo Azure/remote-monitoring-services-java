@@ -22,6 +22,7 @@ public class Config implements IConfig {
 
     // Settings about this application
     private final String APPLICATION_KEY = Namespace + "telemetry.";
+    private final String PORT_KEY = APPLICATION_KEY + "webservice_port";
 
     // Storage dependency settings
     private final String COSMOS_DB_CONN_STRING_KEY = APPLICATION_KEY + "cosmosDb.connString";
@@ -85,6 +86,15 @@ public class Config implements IConfig {
     }
 
     /**
+     * Get the TCP port number where the service listen for requests.
+     *
+     * @return TCP port number
+     */
+    public int getPort() {
+        return data.getInt(PORT_KEY);
+    }
+
+    /**
      * Service layer configuration
      */
     public IServicesConfig getServicesConfig() throws InvalidConfigurationException {
@@ -92,7 +102,7 @@ public class Config implements IConfig {
 
         String storageConnectionString = this.data.getString(COSMOS_DB_CONN_STRING_KEY);
         String keyValueStorageUrl = this.data.getString(KEY_VALUE_STORAGE_URL_KEY);
-
+        String userManagementApiUrl = this.data.getString(AUTH_WEB_SERVICE_URL_KEY);
         String messageStorageType = data.getString(MESSAGES_STORAGE_TYPE_KEY).toLowerCase();
         StorageConfig messagesStorageConfig = new StorageConfig(
             storageConnectionString,
@@ -151,6 +161,7 @@ public class Config implements IConfig {
 
         this.servicesConfig = new ServicesConfig(
             keyValueStorageUrl,
+            userManagementApiUrl,
             messagesConfig,
             alarmsConfig,
             actionsConfig,

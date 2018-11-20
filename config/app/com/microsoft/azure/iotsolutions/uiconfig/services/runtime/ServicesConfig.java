@@ -20,13 +20,14 @@ public class ServicesConfig implements IServicesConfig {
 
     public ServicesConfig(String telemetryApiUrl,
                           String storageAdapterApiUrl,
+                          String userManagementApiUrl,
                           String deviceSimulationApiUrl,
                           String seedTemplate,
                           String azureMapsKey,
-                          String userManagementApiUrl,
                           IActionsConfig actionsConfig) {
         this.storageAdapterApiUrl = storageAdapterApiUrl;
         this.deviceSimulationApiUrl = deviceSimulationApiUrl;
+        this.userManagementApiUrl = userManagementApiUrl;
         this.seedTemplate = seedTemplate;
         this.telemetryApiUrl = telemetryApiUrl;
         this.azureMapsKey = azureMapsKey;

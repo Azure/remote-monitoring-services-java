@@ -7,9 +7,19 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1;
  */
 public final class Version {
     /**
+     * Number used for routing HTTP requests.
+     */
+    public static final String NUMBER = "1";
+
+    /**
      * Name used for routing HTTP requests.
      */
     public static final String NAME = "v1";
+
+    /**
+     * Path used for routing HTTP requests.
+     */
+    public static final String PATH = "v" + NUMBER;
 
     /**
      * Date when the API version has been published.
