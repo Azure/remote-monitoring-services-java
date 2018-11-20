@@ -4,6 +4,7 @@ package com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.microsoft.azure.iotsolutions.uiconfig.webservice.auth.Authorize;
 import com.microsoft.azure.iotsolutions.uiconfig.services.IStatusService;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.StatusServiceModel;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.runtime.IConfig;
@@ -30,6 +31,7 @@ public final class StatusController {
     /**
      * @return Service health status.
      */
+    @Authorize("ReadAll")
     public Result index() {
         StatusServiceModel statusServiceModel = this.statusService.getStatus();
         statusServiceModel.addProperty("Port", String.valueOf(config.getPort()));

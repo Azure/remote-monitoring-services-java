@@ -7,6 +7,7 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.IMessages;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidConfigurationException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.TimeSeriesParseException;
+import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.Authorize;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.helpers.DateHelper;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.MessageListApiModel;
 import org.joda.time.DateTime;
@@ -30,6 +31,7 @@ public final class MessagesController extends Controller {
         this.messages = messages;
     }
 
+    @Authorize("ReadAll")
     public Result list(
         String from,
         String to,

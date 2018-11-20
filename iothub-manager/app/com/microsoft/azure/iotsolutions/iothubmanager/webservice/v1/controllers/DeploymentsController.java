@@ -35,6 +35,7 @@ public class DeploymentsController extends Controller {
      * @throws ExternalDependencyException thrown if there is an issue querying the RegistryManager. Details
      *      * are provided in the inner exception.
      */
+    @Authorize("ReadAll")
     public CompletionStage<Result> getDeploymentsAsync() throws ExternalDependencyException {
         return this.deploymentsService.listAsync()
                 .thenApply(deployments -> ok(toJson(new DeploymentListApiModel(deployments))));
@@ -49,6 +50,7 @@ public class DeploymentsController extends Controller {
      * @throws ExternalDependencyException thrown if there is an issue querying the RegistryManager. Details
      * are provided in the inner exception.
      */
+    @Authorize("ReadAll")
     public CompletionStage<Result> getDeployment(final String id, boolean includeDeviceStatus) throws
             ExternalDependencyException, InvalidInputException {
         if (StringUtils.isEmpty(id)) {

@@ -39,6 +39,7 @@ public class AlarmsController extends Controller {
      *
      * @return List of alerts.
      */
+    @Authorize("ReadAll")
     public Result list(String from, String to, String order, int skip,
                        int limit, String devices) throws Exception {
         // TODO: move this logic to the storage engine, depending on the
@@ -59,6 +60,7 @@ public class AlarmsController extends Controller {
     /**
      * @return One alert.
      */
+    @Authorize("ReadAll")
     public Result get(String id) throws Exception {
         return ok(toJson(new AlarmApiModel(this.alarms.get(id))));
     }
