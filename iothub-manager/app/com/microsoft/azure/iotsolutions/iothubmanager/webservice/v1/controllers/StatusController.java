@@ -3,6 +3,7 @@
 package com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.controllers;
 
 import com.google.inject.Inject;
+import com.microsoft.azure.iotsolutions.iothubmanager.webservice.auth.Authorize;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.IStatusService;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.StatusServiceModel;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.runtime.IConfig;
@@ -29,6 +30,7 @@ public final class StatusController {
     /**
      * @return Service health status.
      */
+    @Authorize("ReadAll")
     public Result get() {
         StatusServiceModel statusServiceModel = this.statusService.getStatus(config.getClientAuthConfig().isAuthRequired());
         statusServiceModel.addProperty("Port", String.valueOf(config.getPort()));

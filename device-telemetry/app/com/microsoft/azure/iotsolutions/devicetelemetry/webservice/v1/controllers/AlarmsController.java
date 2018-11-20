@@ -38,6 +38,7 @@ public class AlarmsController extends Controller {
      *
      * @return List of alerts.
      */
+    @Authorize("ReadAll")
     public Result list(String from, String to, String order, int skip,
                        int limit, String devices) throws Exception {
         String[] deviceIds = new String[0];
@@ -76,6 +77,7 @@ public class AlarmsController extends Controller {
     /**
      * @return One alert.
      */
+    @Authorize("ReadAll")
     public Result get(String id) throws Exception {
         return ok(toJson(new AlarmApiModel(this.alarms.get(id))));
     }

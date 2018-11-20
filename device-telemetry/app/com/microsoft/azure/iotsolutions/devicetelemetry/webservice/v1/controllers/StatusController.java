@@ -3,6 +3,7 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers;
 
 import com.google.inject.Inject;
+import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.Authorize;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.IStatusService;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.StatusServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime.IConfig;
@@ -29,6 +30,7 @@ public final class StatusController extends Controller {
     /**
      * @return Service health details.
      */
+     @Authorize("ReadAll")
     public Result index() throws Exception {
         StatusServiceModel statusServiceModel = this.statusService.getStatus(config.getClientAuthConfig().isAuthRequired());
         statusServiceModel.addProperty("Port", String.valueOf(config.getPort()));
