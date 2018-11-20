@@ -58,6 +58,7 @@ public final class MessagesController extends Controller {
         return this.listMessagesHelper(fromDate, toDate, order, skip, limit, deviceIds);
     }
 
+    @Authorize("ReadAll")
     public Result post() throws InvalidConfigurationException, InvalidInputException, TimeSeriesParseException {
 
         QueryApiModel body = fromJson(request().body().asJson(), QueryApiModel.class);

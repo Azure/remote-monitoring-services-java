@@ -69,6 +69,7 @@ public class AlarmsByRuleController extends Controller {
      *
      * @return List of alarms.
      */
+    @Authorize("ReadAll")
     public CompletionStage<Result> postAsync() throws Exception {
         QueryApiModel body = fromJson(request().body().asJson(), QueryApiModel.class);
         String[] deviceIds = body.getDevices() == null
@@ -88,6 +89,7 @@ public class AlarmsByRuleController extends Controller {
      * @return A list of alarms generated from a specific rule. May be filtered
      * based on query parameters in body of request.
      */
+    @Authorize("ReadAll")
     public Result post(String id) throws Exception {
         QueryApiModel body = fromJson(request().body().asJson(), QueryApiModel.class);
         String[] deviceIds = body.getDevices() == null

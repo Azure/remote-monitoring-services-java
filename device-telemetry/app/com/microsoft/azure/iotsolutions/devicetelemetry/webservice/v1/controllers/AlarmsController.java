@@ -57,6 +57,7 @@ public class AlarmsController extends Controller {
      *
      * @return List of alerts.
      */
+    @Authorize("ReadAll")
     public Result post() throws Exception {
         QueryApiModel body = fromJson(request().body().asJson(), QueryApiModel.class);
 
