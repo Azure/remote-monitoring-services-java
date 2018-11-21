@@ -13,7 +13,6 @@ import com.microsoft.azure.iotsolutions.uiconfig.services.external.ValueListApiM
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.*;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.Package;
 import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.ServicesConfig;
-import com.microsoft.azure.iotsolutions.uiconfig.webservice.runtime.Config;
 import com.microsoft.azure.sdk.iot.service.Configuration;
 import com.microsoft.azure.sdk.iot.service.ConfigurationContent;
 import helpers.Random;
@@ -463,7 +462,7 @@ public class StorageTest {
                 .thenThrow(new ResourceNotFoundException());
 
         // Act
-        ConfigTypeList result = storage.getAllConfigurationsAsync().toCompletableFuture().get();
+        ConfigTypeList result = storage.getAllConfigTypesAsync().toCompletableFuture().get();
 
         // Assert
         assertEquals(0, result.getConfigurations().length);

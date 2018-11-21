@@ -47,37 +47,10 @@ public class DeploymentMetricsApiModel {
             this.systemMetrics.put(TARGETED_METRICS_KEY, 0L);
         }
 
-        if (this.systemMetrics.get(SUCCESSFUL_METRICS_KEY) != null)
-        {
-            this.systemMetrics.put(SUCCESSFUL_METRICS_KEY, this.systemMetrics.get(SUCCESSFUL_METRICS_KEY));
-        }
-        else
-        {
-            this.systemMetrics.put(SUCCESSFUL_METRICS_KEY, 0L);
-        }
-
-        if (this.systemMetrics.get(FAILED_METRICS_KEY) != null)
-        {
-            this.systemMetrics.put(FAILED_METRICS_KEY, this.systemMetrics.get(FAILED_METRICS_KEY));
-        }
-        else
-        {
-            this.systemMetrics.put(FAILED_METRICS_KEY, 0L);
-        }
-
-        if (this.systemMetrics.get(PENDING_METRICS_KEY) != null)
-        {
-            this.systemMetrics.put(PENDING_METRICS_KEY, this.systemMetrics.get(PENDING_METRICS_KEY));
-        }
-        else
-        {
-            this.systemMetrics.put(PENDING_METRICS_KEY, 0L);
-        }
-
         if (metricsServiceModel == null) return;
 
-        this.customMetrics = metricsServiceModel.getSystemMetrics();
-        this.systemMetrics = metricsServiceModel.getCustomMetrics();
+        this.customMetrics = metricsServiceModel.getCustomMetrics();
+        this.systemMetrics = metricsServiceModel.getSystemMetrics();
         this.deviceStatuses = metricsServiceModel.getDeviceStatuses();
 
         if (metricsServiceModel.getDeviceMetrics() != null)

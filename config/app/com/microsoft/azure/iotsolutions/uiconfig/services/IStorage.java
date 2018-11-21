@@ -47,7 +47,7 @@ public interface IStorage {
      * Retrieves all configurations that have been previous uploaded.
      * @return All configurations which can be iterated over
      */
-    CompletionStage<ConfigTypeList> getAllConfigurationsAsync() throws BaseException;
+    CompletionStage<ConfigTypeList> getAllConfigTypesAsync() throws BaseException;
 
     /**
      * Retrieves a single uploaded package by its unique Id.
@@ -70,7 +70,7 @@ public interface IStorage {
      * Updates a previously created configurations.
      * @param customConfig The customConfig of the package to be maintained.
      */
-    void updatePackageConfigsAsync(String customConfig) throws
+    void updateConfigTypeAsync(String customConfig) throws
             BaseException,
             ExecutionException,
             InterruptedException;

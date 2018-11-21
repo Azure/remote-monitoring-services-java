@@ -93,7 +93,7 @@ public class DeploymentApiModel {
         return this.priority;
     }
 
-    @JsonProperty("Type")
+    @JsonProperty("PackageType")
     public DeploymentType getDeploymentType() {
         return this.deploymentType;
     }

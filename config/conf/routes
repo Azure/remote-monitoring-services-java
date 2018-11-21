@@ -18,14 +18,15 @@ PUT           /v1/devicegroups/:id                  @com.microsoft.azure.iotsolu
 
 DELETE        /v1/devicegroups/:id                  @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.DeviceGroupController.deleteAsync(id)
 
-GET           /v1/packages/configurations           @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.PackageController.getListAsync
-GET           /v1/packages/configurations/          @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.PackageController.getListAsync
+GET           /v1/packages/configTypes              @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.PackageController.getListAsync
+GET           /v1/packages/configTypes/             @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.PackageController.getListAsync
 
-GET           /v1/packages/:type/:config            @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.PackageController.getFilteredAsync(type,config)
+GET           /v1/packages/:type/:config     @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.PackageController.getFilteredAsync(type,config)
 
 GET           /v1/packages/:id                      @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.PackageController.getAsync(id)
 
 GET           /v1/packages/                         @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.PackageController.getAllAsync
+GET           /v1/packages                          @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.PackageController.getAllAsync
 
 POST          /v1/packages                          @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.PackageController.createAsync
 POST          /v1/packages/                         @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.PackageController.createAsync

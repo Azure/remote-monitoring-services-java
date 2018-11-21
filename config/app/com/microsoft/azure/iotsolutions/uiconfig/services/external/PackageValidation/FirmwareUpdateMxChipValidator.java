@@ -2,7 +2,7 @@ package com.microsoft.azure.iotsolutions.uiconfig.services.external.PackageValid
 
 public class FirmwareUpdateMxChipValidator extends PackageValidator {
 
-    //TODO: Implement Edge validation
+    //TODO: Implement validation for Firmware Update for MxChip packages
     @Override
     public Boolean validate() {
         return true;

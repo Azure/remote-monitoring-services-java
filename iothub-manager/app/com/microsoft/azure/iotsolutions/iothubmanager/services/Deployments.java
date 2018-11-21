@@ -7,10 +7,7 @@ import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.Extern
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.ResourceNotFoundException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.external.ConfigurationsHelper;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentServiceListModel;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentServiceModel;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentStatus;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeviceStatusQueries;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.models.*;
 import com.microsoft.azure.sdk.iot.service.Configuration;
 import com.microsoft.azure.sdk.iot.service.RegistryManager;
 import com.microsoft.azure.sdk.iot.service.devicetwin.DeviceTwin;
@@ -222,10 +219,7 @@ public final class Deployments implements IDeployments {
 
         Map<DeviceStatusQueries.QueryType, String> queries = DeviceStatusQueries.getQueries(deploymentType, configType);
 
-        if (queries == null)
-        {
-            return null;
-        }
+        Map<String,DeploymentStatus> deviceStatuses = new HashMap<>();
 
         String deploymentId = deployment.getId();
 
@@ -233,13 +227,22 @@ public final class Deployments implements IDeployments {
                 queries.get(DeviceStatusQueries.QueryType.APPLIED),
                 deploymentId);
 
+        if (!(ConfigurationsHelper.isEdgeDeployment(deployment)) &&
+                !(configType.equals(ConfigType.firmwareUpdateMxChip.toString())))
+        {
+            for (String devices : appliedDeviceIds)
+            {
+                deviceStatuses.put(devices, DeploymentStatus.Unknown);
+            }
+
+            return deviceStatuses;
+        }
+
         final Set<String> successfulDeviceIds = this.getDevicesInQuery(
                 queries.get(DeviceStatusQueries.QueryType.SUCCESSFUL), deploymentId);
 
         final Set<String> failedDeviceIds = this.getDevicesInQuery(
                 queries.get(DeviceStatusQueries.QueryType.FAILED), deploymentId);
-
-        Map<String,DeploymentStatus> deviceStatuses = new HashMap<>();
 
         for (String successfulDevice : successfulDeviceIds) {
             deviceStatuses.put(successfulDevice, DeploymentStatus.Succeeded);
@@ -263,8 +266,8 @@ public final class Deployments implements IDeployments {
 
         try {
             // TODO: Add pagination
-            twinQuery = deviceTwin.queryTwin(sqlQuery.getQuery());
-        } catch (IotHubException ex) {
+            twinQuery = deviceTwin.queryTwin(query);
+        } catch (IotHubException | IOException ex) {
             log.error(String.format("Unable to get devices with query %s in deployment %s", query,
                     deploymentId), ex);
             return deviceIds;

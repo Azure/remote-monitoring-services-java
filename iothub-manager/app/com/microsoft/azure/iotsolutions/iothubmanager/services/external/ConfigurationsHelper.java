@@ -17,7 +17,7 @@ import static play.libs.Json.fromJson;
 
 public class ConfigurationsHelper {
 
-    public static final String DEPLOYMENT_TYPE_LABEL = "DeploymentType";
+    public static final String DEPLOYMENT_TYPE_LABEL = "Type";
     public static final String CONFIG_TYPE_LABEL = "ConfigType";
     public static final String DEPLOYMENT_NAME_LABEL = "Name";
     public static final String DEPLOYMENT_GROUP_ID_LABEL = "DeviceGroupId";

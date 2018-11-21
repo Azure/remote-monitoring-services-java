@@ -32,7 +32,7 @@ import static play.libs.Json.toJson;
 public class PackageController extends Controller {
 
     private final IStorage storage;
-    private static final String PACKAGE_TYPE_PARAM = "Type";
+    private static final String PACKAGE_TYPE_PARAM = "PackageType";
     private static final String PACKAGE_CONFIG_TYPE_PARAM = "ConfigType";
     private static final String FILE_PARAM = "Package";
 
@@ -75,7 +75,7 @@ public class PackageController extends Controller {
      * @return {@link PackageApiModel}
      */
     public CompletionStage<Result> getListAsync() throws BaseException {
-        return storage.getAllConfigurationsAsync().thenApplyAsync(m -> ok(toJson(new ConfigTypeListApiModel(m))));
+        return storage.getAllConfigTypesAsync().thenApplyAsync(m -> ok(toJson(new ConfigTypeListApiModel(m))));
     }
 
     /**
@@ -95,6 +95,11 @@ public class PackageController extends Controller {
             throw new BadRequestException("Multipart form-data is empty");
         }
 
+        /**
+         * HTML form can have multi-select dropdown. Hence to get data from the form
+         * for single-select drop downs the selected value is the first element of the
+         * array.
+         */
         final Map<String, String[]> data = formData.asFormUrlEncoded();
         if(!data.containsKey(PACKAGE_TYPE_PARAM) ||
                 ArrayUtils.isEmpty(data.get(PACKAGE_TYPE_PARAM)) ||

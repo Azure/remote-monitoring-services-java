@@ -1,5 +1,6 @@
 package com.microsoft.azure.iotsolutions.iothubmanager.services.models;
 
+import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeviceStatus.DefaultDeviceStatus;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeviceStatus.FirmwareUpdateMxChipStatusQueries;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeviceStatus.EdgeDeviceStatusQueries;
 import java.util.HashMap;
@@ -10,7 +11,7 @@ public class DeviceStatusQueries {
     private static Map<String, Map<DeviceStatusQueries.QueryType, String>> admQueryMapping =
             new HashMap<String, Map<DeviceStatusQueries.QueryType, String>>() {
         {
-            put("FirmwareUpdateMxChip", FirmwareUpdateMxChipStatusQueries.queries);
+            put(ConfigType.firmwareUpdateMxChip.toString(), FirmwareUpdateMxChipStatusQueries.queries);
         }
     };
 
@@ -21,7 +22,7 @@ public class DeviceStatusQueries {
             return EdgeDeviceStatusQueries.queries;
         }
 
-        return admQueryMapping.getOrDefault(String.valueOf(String), new HashMap<>());
+        return admQueryMapping.getOrDefault(String.valueOf(String), DefaultDeviceStatus.queries);
     }
 
     public enum QueryType { APPLIED, SUCCESSFUL, FAILED };

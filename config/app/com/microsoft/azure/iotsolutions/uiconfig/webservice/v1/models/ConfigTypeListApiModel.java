@@ -10,31 +10,21 @@ import java.util.List;
 
 public class ConfigTypeListApiModel {
 
-    @JsonProperty("configurations")
-    public String[] Items;
+    @JsonProperty("Items")
+    public String[] configTypes;
 
-    public String[] getPackageConfigurations()
+    public String[] getConfigTypes()
     {
-        return Items;
+        return configTypes;
     }
 
     public ConfigTypeListApiModel(ConfigTypeList configTypeList)
     {
-        List<String> configTypes = Arrays.asList(configTypeList.configurations);
-
-        for(ConfigType configType : ConfigType.values())
-        {
-            if (!(configType.equals(ConfigType.custom)))
-            {
-                configTypes.add(0, configType.toString());
-            }
-        }
-
-        this.Items = configTypes.toArray(new String[configTypes.size()]);
+        this.configTypes = configTypeList.getConfigurations();
     }
 
     public ConfigTypeListApiModel()
     {
-        this.Items = new String[0];
+        this.configTypes = new String[0];
     }
 }

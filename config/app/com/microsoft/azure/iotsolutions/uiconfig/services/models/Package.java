@@ -19,22 +19,22 @@ public class Package {
     public Package(
             String id,
             String name,
-            PackageType type,
+            PackageType packageType,
             String configType,
             String content) {
-        this(id, name, type, configType, content, StringUtils.EMPTY);
+        this(id, name, packageType, configType, content, StringUtils.EMPTY);
     }
 
     public Package(
             String id,
             String name,
-            PackageType type,
+            PackageType packageType,
             String config,
             String content,
             String dateCreated) {
         this.id = id;
         this.name = name;
-        this.type = type;
+        this.type = packageType;
         this.configType = config;
         this.content = content;
         this.dateCreated = dateCreated;

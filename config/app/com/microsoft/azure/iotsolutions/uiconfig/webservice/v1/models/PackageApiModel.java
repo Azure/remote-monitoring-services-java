@@ -33,7 +33,7 @@ public class PackageApiModel {
         this.name = name;
     }
 
-    @JsonProperty("Type")
+    @JsonProperty("PackageType")
     public PackageType getType() { return this.type; }
 
     public void setType(PackageType type) { this.type = type;}

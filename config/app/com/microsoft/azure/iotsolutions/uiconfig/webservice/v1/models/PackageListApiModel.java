@@ -59,7 +59,7 @@ public class PackageListApiModel {
         {
             this.items = StreamSupport.stream(models.spliterator(), false).map(m -> new PackageApiModel(m))
                     .filter(p -> (
-                            StringUtils.isBlank(p.getType().toString())
+                            !(StringUtils.isBlank(p.getType().toString()))
                             && p.getType().toString().toLowerCase().equals(packageType.toLowerCase().trim())))
                     .collect(Collectors.toList());
         }

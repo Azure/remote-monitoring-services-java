@@ -17,7 +17,6 @@ import com.microsoft.azure.iotsolutions.uiconfig.services.models.Package;
 import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.IServicesConfig;
 import com.microsoft.azure.sdk.iot.service.Configuration;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.EnumUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormatter;
@@ -44,7 +43,7 @@ public class Storage implements IStorage {
     private static String UserCollectionId = "user-settings";
     private static String DeviceGroupCollectionId = "devicegroups";
     private static String PackagesCollectionId = "packages";
-    private static String packagesConfigurationsKey = "configurations";
+    private static final String PackagesConfigTypeKey = "configtypes";
     private static final DateTimeFormatter DATE_FORMAT =
             forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
     private static final String AzureMapsKey = "AzureMapsKey";
@@ -202,6 +201,7 @@ public class Storage implements IStorage {
     public CompletionStage<Iterable<Package>> getAllPackagesAsync() throws BaseException {
         return this.client.getAllAsync(PackagesCollectionId).thenApplyAsync(p -> {
             return StreamSupport.stream(p.Items.spliterator(), false)
+                    .filter(pckg -> !(pckg.getKey().equals(PackagesConfigTypeKey)))
                     .map(Storage::createPackage)
                     .collect(Collectors.toList());
         });
@@ -211,12 +211,14 @@ public class Storage implements IStorage {
      * {@inheritDoc}
      */
     @Override
-    public CompletionStage<ConfigTypeList> getAllConfigurationsAsync() throws BaseException {
+    public CompletionStage<ConfigTypeList> getAllConfigTypesAsync() throws BaseException {
         try {
-            return this.client.getAsync(PackagesCollectionId, packagesConfigurationsKey).thenApplyAsync(p -> {
+            return this.client.getAsync(PackagesCollectionId, PackagesConfigTypeKey).thenApplyAsync(p -> {
                 return fromJson(p.getData(), ConfigTypeList.class);
             });
         } catch (ResourceNotFoundException e) {
+            log.debug("Config Types have not been created.");
+            // Return empty Package Config types
             return CompletableFuture.completedFuture(new ConfigTypeList());
         }
     }
@@ -243,7 +245,7 @@ public class Storage implements IStorage {
         boolean isValidPackage = this.validatePackage(input);
         if (!isValidPackage)
         {
-            throw new InvalidInputException("Package provided is not a valid deployment manifest " +
+            throw new InvalidInputException("Package provided is a invalid deployment manifest " +
                     "for type {package.Type} and config type {package.Config}");
         }
 
@@ -265,27 +267,16 @@ public class Storage implements IStorage {
             Storage.createPackage(p)
         );
 
-        if (!(StringUtils.isBlank(input.getConfigType()))
-                && !(EnumUtils.isValidEnumIgnoreCase(ConfigType.class, input.getConfigType())))
+        if (!(StringUtils.isBlank(input.getConfigType())) &&
+            input.getType().equals(PackageType.deviceConfiguration))
         {
-            this.updatePackageConfigsAsync(input.getConfigType());
+            this.updateConfigTypeAsync(input.getConfigType());
         }
 
         return result;
     }
 
-    private Boolean validatePackage(Package input) {
-        IPackageValidator validator = PackageValidatorFactory.GetValidator(input.getType(), input.getConfigType());
-        if (validator == null)
-        {
-            //Bypass validation for custom config type
-            log.info("Package of config type {%s} cannot be validated.", input.getConfigType());
-            return true;
-        }
-        return validator.validate();
-    }
-
-    public void updatePackageConfigsAsync(String customConfig) throws
+    public void updateConfigTypeAsync(String customConfig) throws
             BaseException,
             ExecutionException,
             InterruptedException {
@@ -294,19 +285,20 @@ public class Storage implements IStorage {
         try
         {
             CompletionStage<ConfigTypeList> configs = this.client.getAsync(PackagesCollectionId,
-                    packagesConfigurationsKey).thenApplyAsync(p -> {
+                    PackagesConfigTypeKey).thenApplyAsync(p -> {
                 return fromJson(p.getData(), ConfigTypeList.class);
             });
             list = configs.toCompletableFuture().get();
         }
         catch(ResourceNotFoundException e)
         {
-            log.debug("List of configurations does not exist.");
+            log.debug("Config Types have not been created.");
+            // Return empty Config types
             list = new ConfigTypeList();
         }
 
         list.add(customConfig);
-        client.updateAsync(PackagesCollectionId, packagesConfigurationsKey, toJson(list), "*");
+        client.updateAsync(PackagesCollectionId, PackagesConfigTypeKey, toJson(list), "*");
     }
 
     /**
@@ -328,6 +320,17 @@ public class Storage implements IStorage {
         Package output = fromJson(input.getData(), Package.class);
         output.setId(input.getKey());
         return output;
+    }
+
+    private Boolean validatePackage(Package input) {
+        IPackageValidator validator = PackageValidatorFactory.GetValidator(input.getType(), input.getConfigType());
+        if (validator == null)
+        {
+            // Bypass validation for custom config type
+            log.info("Package of config type {%s} cannot be validated.", input.getConfigType());
+            return true;
+        }
+        return validator.validate();
     }
 
     private void appendAzureMapsKey(ObjectNode theme) {
