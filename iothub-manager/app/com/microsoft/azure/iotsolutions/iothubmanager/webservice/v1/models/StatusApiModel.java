@@ -4,6 +4,7 @@ package com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.models.StatusServiceModel;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.runtime.Uptime;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.Version;
 import org.joda.time.DateTime;
@@ -14,33 +15,29 @@ import org.joda.time.format.DateTimeFormatter;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
-@JsonPropertyOrder({"Name", "Status", "CurrentTime", "StartTime", "UpTime", "UID", "Properties", "Dependencies", "$metadata"})
+@JsonPropertyOrder({"Name", "Status", "CurrentTime", "StartTime", "UID", "UpTime", "Properties", "Dependencies", "$metadata"})
 public final class StatusApiModel {
-
-    private String name = "IoTHubManager";
-    private String status;
-    private String uid = Uptime.getProcessId();
+    private StatusResultApiModel status;
+    private Hashtable<String, String> properties;
+    private Hashtable<String, StatusResultApiModel> dependencies;
     private DateTimeFormatter dateFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
-    private Dictionary<String, String> dependencies;
 
-    public StatusApiModel(final Boolean isOk, final String msg) {
-        this.status = isOk ? "OK" : "ERROR";
-        if (!msg.isEmpty()) {
-            this.status += ":" + msg;
-        }
-        this.dependencies = new Hashtable<String, String>() {{
-            put("IoTHub", "OK:...msg...");
-        }};
+    public StatusApiModel(final StatusServiceModel statusServiceModel) {
+        this.status = new StatusResultApiModel(statusServiceModel.getStatus());
+        this.dependencies = new Hashtable<>();
+        statusServiceModel.getDependencies().forEach((k, v) -> {
+            this.dependencies.put(k,new StatusResultApiModel(v));
+        });
+        this.properties = statusServiceModel.getProperties();
     }
 
     @JsonProperty("Name")
-    @JsonPropertyOrder()
     public String getName() {
-        return this.name;
+        return "IotHub Manager";
     }
 
     @JsonProperty("Status")
-    public String getStatus() {
+    public StatusResultApiModel getStatus() {
         return this.status;
     }
 
@@ -61,18 +58,16 @@ public final class StatusApiModel {
 
     @JsonProperty("UID")
     public String getUID() {
-        return this.uid;
+        return Uptime.getProcessId();
     }
 
     @JsonProperty("Properties")
     public Dictionary<String, String> getProperties() {
-        return new Hashtable<String, String>() {{
-            put("Foo", "Bar");
-        }};
+        return this.properties;
     }
 
     @JsonProperty("Dependencies")
-    public Dictionary<String, String> getDependencies() {
+    public Dictionary<String, StatusResultApiModel> getDependencies() {
         return this.dependencies;
     }
 

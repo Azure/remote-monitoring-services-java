@@ -14,6 +14,11 @@ public interface IServicesConfig {
     String getHubConnString();
 
     /**
+     * Get user management dependency url
+     */
+    String getUserManagementApiUrl();
+
+    /**
      * Get Storage Adapter service URL.
      *
      * @return Storage Adapter service URL

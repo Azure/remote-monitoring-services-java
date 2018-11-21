@@ -6,6 +6,7 @@ import com.google.inject.ImplementedBy;
 import com.microsoft.azure.documentdb.DocumentClientException;
 import com.microsoft.azure.iotsolutions.storageadapter.services.exceptions.CreateResourceException;
 import com.microsoft.azure.iotsolutions.storageadapter.services.exceptions.InvalidInputException;
+import com.microsoft.azure.iotsolutions.storageadapter.services.models.StatusResultServiceModel;
 import com.microsoft.azure.iotsolutions.storageadapter.services.models.ValueServiceModel;
 
 import java.util.Iterator;
@@ -50,5 +51,5 @@ public interface IKeyValueContainer {
     /**
      * Update key-value pair (create if pair does not exist)
      */
-    Status ping() throws CreateResourceException;
+    StatusResultServiceModel ping();
 }

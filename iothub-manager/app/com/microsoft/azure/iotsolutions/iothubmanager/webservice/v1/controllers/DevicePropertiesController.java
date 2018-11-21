@@ -6,6 +6,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.IDeviceProperties;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.*;
+import com.microsoft.azure.iotsolutions.iothubmanager.webservice.auth.Authorize;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models.DevicePropertiesApiModel;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -23,6 +24,7 @@ public class DevicePropertiesController extends Controller {
         this.deviceProperties = deviceProperties;
     }
 
+    @Authorize("ReadAll")
     public CompletionStage<Result> getAllAsync() throws
         ResourceNotFoundException,
         ExternalDependencyException,

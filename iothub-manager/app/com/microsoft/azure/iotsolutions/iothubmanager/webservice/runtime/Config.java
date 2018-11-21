@@ -21,6 +21,7 @@ public class Config implements IConfig {
 
     // Settings about this application
     private final String APPLICATION_KEY = NAMESPACE + "iothub-manager.";
+    private final String PORT_KEY = APPLICATION_KEY + "webservice_port";
     private final String IOTHUB_CONNSTRING_KEY = APPLICATION_KEY + "iothub.connstring";
     private final String STORAGE_ADAPTER_WEBSERVICE_URL = APPLICATION_KEY + "storageadapter-webservice-url";
     private final String DEVICE_PROPERTIES_KEY = APPLICATION_KEY + "device-properties-cache.";
@@ -50,6 +51,15 @@ public class Config implements IConfig {
     }
 
     /**
+     * Get the TCP port number where the service listen for requests.
+     *
+     * @return TCP port number
+     */
+    public int getPort() {
+        return data.getInt(PORT_KEY);
+    }
+
+    /**
      * Service layer configuration
      */
     public IServicesConfig getServicesConfig() {
@@ -57,7 +67,11 @@ public class Config implements IConfig {
 
         String cs = data.getString(IOTHUB_CONNSTRING_KEY);
         String storageadapterServiceUrl = data.getString(STORAGE_ADAPTER_WEBSERVICE_URL);
-        this.servicesConfig = new ServicesConfig(cs, storageadapterServiceUrl,
+        String userManagementApiUrl = data.getString(AUTH_WEB_SERVICE_URL_KEY);
+        this.servicesConfig = new ServicesConfig(
+            cs,
+            storageadapterServiceUrl,
+            userManagementApiUrl,
             this.data.getInt(DEVICE_PROPERTIES_TTL),
             this.data.getInt(DEVICE_PROPERTIES_REBUILD_TIMEOUT),
             this.data.getStringList(DEVICE_PROPERTIES_WHITELIST_KEY)

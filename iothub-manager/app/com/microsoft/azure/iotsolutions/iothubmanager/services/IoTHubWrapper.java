@@ -5,9 +5,11 @@ package com.microsoft.azure.iotsolutions.iothubmanager.services;
 import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.ExternalDependencyException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidConfigurationException;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.models.StatusResultServiceModel;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.runtime.IServicesConfig;
 import com.microsoft.azure.sdk.iot.service.IotHubConnectionStringBuilder;
 import com.microsoft.azure.sdk.iot.service.RegistryManager;
+import com.microsoft.azure.sdk.iot.service.RegistryStatistics;
 import com.microsoft.azure.sdk.iot.service.devicetwin.DeviceMethod;
 import com.microsoft.azure.sdk.iot.service.devicetwin.DeviceTwin;
 import com.microsoft.azure.sdk.iot.service.jobs.JobClient;
@@ -29,6 +31,24 @@ public final class IoTHubWrapper implements IIoTHubWrapper {
     @Inject
     public IoTHubWrapper(final IServicesConfig config) {
         this.config = config;
+    }
+
+    public StatusResultServiceModel ping() {
+        StatusResultServiceModel result = new StatusResultServiceModel(false, "IoTHub check failed");
+
+        try {
+            RegistryManager registry = this.getRegistryManagerClient();
+            RegistryStatistics statistics = registry.getStatistics();
+            DeviceTwin deviceTwin = this.getDeviceTwinClient();
+            DeviceMethod deviceMethod = this.getDeviceMethodClient();
+            JobClient jobClient = this.getJobClient();
+            String hostName = this.getIotHubHostName();
+            result = new StatusResultServiceModel(true, "Alive and well!");
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+
+        return result;
     }
 
     public DeviceTwin getDeviceTwinClient() throws ExternalDependencyException {
