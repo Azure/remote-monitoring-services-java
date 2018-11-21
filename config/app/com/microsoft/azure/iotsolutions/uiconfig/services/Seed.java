@@ -87,11 +87,17 @@ public class Seed implements ISeed {
             this.seedAsync(this.config.getSeedTemplate());
             this.log.info("Seed end");
             this.setCompletedFlagAsync().toCompletableFuture().get();
-            this.mutex.leaveAsync(SeedCollectionId, MutexKey).toCompletableFuture().get();
+            this.log.info("Seed completed flag set");
             return CompletableFuture.completedFuture(Optional.empty());
         } catch (Exception e) {
             log.error("Seed failed", e);
             throw new ExternalDependencyException("Seed failed", e);
+        } finally {
+            try {
+                this.mutex.leaveAsync(SeedCollectionId, MutexKey).toCompletableFuture().get();
+            } catch (Exception ex) {
+                this.log.warn("mutex.LeaveAsync failed");
+            }
         }
     }
 
