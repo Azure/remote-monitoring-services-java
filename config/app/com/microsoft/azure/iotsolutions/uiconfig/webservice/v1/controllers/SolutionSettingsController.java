@@ -10,6 +10,7 @@ import com.microsoft.azure.iotsolutions.uiconfig.services.IActions;
 import com.microsoft.azure.iotsolutions.uiconfig.services.IStorage;
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.BaseException;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.Logo;
+import com.microsoft.azure.iotsolutions.uiconfig.webservice.auth.Authorize;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models.ActionSettingsListApiModel;
 import play.Logger;
 import play.libs.Json;
@@ -43,11 +44,13 @@ public final class SolutionSettingsController extends Controller {
         this.actions = actions;
     }
 
+    @Authorize("ReadAll")
     public CompletionStage<Result> getThemeAsync() throws BaseException {
         return storage.getThemeAsync()
                 .thenApply(theme -> ok(toJson(theme)));
     }
 
+    @Authorize("ReadAll")
     public CompletionStage<Result> setThemeAsync() throws BaseException {
         Object theme = new Object();
         JsonNode node = request().body().asJson();
@@ -58,6 +61,7 @@ public final class SolutionSettingsController extends Controller {
                 .thenApply(result -> ok(toJson(result)));
     }
 
+    @Authorize("ReadAll")
     public CompletionStage<Result> getLogoAsync() throws BaseException {
         Http.Response response = response();
         return storage.getLogoAsync()
@@ -66,6 +70,7 @@ public final class SolutionSettingsController extends Controller {
                 });
     }
 
+    @Authorize("ReadAll")
     public CompletionStage<Result> setLogoAsync() throws BaseException {
         Http.RequestBody body = request().body();
         ByteString byteString = body.asBytes();

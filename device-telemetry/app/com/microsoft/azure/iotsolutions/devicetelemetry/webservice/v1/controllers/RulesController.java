@@ -38,6 +38,7 @@ public class RulesController extends Controller {
      *
      * @return List of rules
      */
+    @Authorize("ReadAll")
     public CompletionStage<Result> listAsync(
         String order,
         Integer skip,
@@ -70,6 +71,7 @@ public class RulesController extends Controller {
     /**
      * @return One rule
      */
+    @Authorize("ReadAll")
     public CompletionStage<Result> getAsync(String id) {
 
         log.info("Trying to get rule id " + id);

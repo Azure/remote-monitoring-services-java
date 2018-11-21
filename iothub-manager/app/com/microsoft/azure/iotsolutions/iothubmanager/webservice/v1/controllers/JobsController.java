@@ -34,6 +34,7 @@ public final class JobsController extends Controller {
         this.jobService = jobService;
     }
 
+    @Authorize("ReadAll")
     public CompletionStage<Result> getJobsAsync()
         throws InvalidInputException, ExternalDependencyException {
         String type = request().getQueryString("jobType");
@@ -72,6 +73,7 @@ public final class JobsController extends Controller {
             });
     }
 
+    @Authorize("ReadAll")
     public CompletionStage<Result> getJobAsync(String jobId)
         throws InvalidInputException, ExternalDependencyException {
         String includeDeviceDetails = request().getQueryString("includeDeviceDetails");

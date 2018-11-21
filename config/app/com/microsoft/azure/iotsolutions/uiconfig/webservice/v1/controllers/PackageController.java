@@ -45,6 +45,7 @@ public class PackageController extends Controller {
      * Retrieve all previously uploaded packages
      * @return {@link PackageListApiModel}
      */
+    @Authorize("ReadAll")
     public CompletionStage<Result> getAllAsync() throws BaseException {
         return storage.getAllPackagesAsync().thenApplyAsync(m -> ok(toJson(new PackageListApiModel(m))));
     }
@@ -66,6 +67,7 @@ public class PackageController extends Controller {
      * @param id The id of the package to retrieve from storage.
      * @return {@link PackageApiModel}
      */
+    @Authorize("ReadAll")
     public CompletionStage<Result> getAsync(String id) throws BaseException {
         return storage.getPackageAsync(id).thenApplyAsync(m -> ok(toJson(new PackageApiModel(m))));
     }

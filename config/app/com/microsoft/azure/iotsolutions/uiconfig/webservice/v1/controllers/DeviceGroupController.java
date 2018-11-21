@@ -29,10 +29,12 @@ public final class DeviceGroupController extends Controller {
         this.storage = storage;
     }
 
+    @Authorize("ReadAll")
     public CompletionStage<Result> getAllAsync() throws BaseException {
         return storage.getAllDeviceGroupsAsync().thenApplyAsync(m -> ok(toJson(new DeviceGroupListApiModel(m))));
     }
 
+    @Authorize("ReadAll")
     public CompletionStage<Result> getAsync(String id) throws BaseException {
         return storage.getDeviceGroupAsync(id).thenApplyAsync(m -> ok(toJson(new DeviceGroupApiModel(m))));
     }
