@@ -7,6 +7,7 @@ import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.IDeployments;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.ExternalDependencyException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidInputException;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.models.PackageType;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.auth.Authorize;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.ResourceNotFoundException;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models.DeploymentApiModel;
@@ -112,8 +113,9 @@ public class DeploymentsController extends Controller {
             throw new InvalidInputException("Name must be provided");
         }
 
-        if (StringUtils.isEmpty(deployment.getConfigType())) {
-            throw new InvalidInputException("Config Type must be provided");
+        if (deployment.getPackageType().equals(PackageType.deviceConfiguration) &&
+                StringUtils.isEmpty(deployment.getConfigType())) {
+            throw new InvalidInputException("Configuration Type must be provided");
         }
 
         if (deployment.getPriority() < 0) {

@@ -20,7 +20,7 @@ public class DeploymentServiceModel {
     private String packageName;
     private int priority;
     private String createdDateTimeUtc;
-    private DeploymentType deploymentType;
+    private PackageType packageType;
     private String configType;
     private DeploymentMetrics deploymentMetrics;
 
@@ -29,14 +29,14 @@ public class DeploymentServiceModel {
                                   final String packageContent,
                                   final String packageName,
                                   final int priority,
-                                  final DeploymentType deploymentType,
+                                  final PackageType packageType,
                                   final String configType) {
         this.deviceGroup = deviceGroup;
         this.packageContent = packageContent;
         this.name = name;
         this.packageName = packageName;
         this.priority = priority;
-        this.deploymentType = deploymentType;
+        this.packageType = packageType;
         this.configType = configType;
     }
 
@@ -73,27 +73,29 @@ public class DeploymentServiceModel {
         this.createdDateTimeUtc =  this.formatDateTimeToUTC(deployment.getCreatedTimeUtc());
         this.priority = deployment.getPriority();
 
-        if (deployment.getLabels().containsKey(ConfigurationsHelper.DEPLOYMENT_TYPE_LABEL) &&
-            !(StringUtils.isBlank(deployment.getLabels().get(ConfigurationsHelper.DEPLOYMENT_TYPE_LABEL))))
+        if (deployment.getLabels().containsKey(ConfigurationsHelper.PACKAGE_TYPE_LABEL) &&
+            !(StringUtils.isBlank(deployment.getLabels().get(ConfigurationsHelper.PACKAGE_TYPE_LABEL))))
         {
-            if (deployment.getLabels().containsValue(DeploymentType.edgeManifest.toString()))
+            if (deployment.getLabels().containsValue(PackageType.edgeManifest.toString()))
             {
-                this.deploymentType = DeploymentType.edgeManifest;
+                this.packageType = PackageType.edgeManifest;
             }
-            else if (deployment.getLabels().containsValue(DeploymentType.deviceConfiguration.toString()))
+            else if (deployment.getLabels().containsValue(PackageType.deviceConfiguration.toString()))
             {
-                this.deploymentType = DeploymentType.deviceConfiguration;
+                this.packageType = PackageType.deviceConfiguration;
             }
         }
         else
         {
+            // This is for the backward compatibility, as some of the old
+            // deployments may not have the required label.
             if (deployment.getContent().getModulesContent() != null)
             {
-                this.deploymentType = DeploymentType.edgeManifest;
+                this.packageType = PackageType.edgeManifest;
             }
             else if (deployment.getContent().getDeviceContent() != null)
             {
-                this.deploymentType = DeploymentType.deviceConfiguration;
+                this.packageType = PackageType.deviceConfiguration;
             }
         }
 
@@ -127,8 +129,8 @@ public class DeploymentServiceModel {
         return this.priority;
     }
 
-    public DeploymentType getDeploymentType() {
-        return this.deploymentType;
+    public PackageType getPackageType() {
+        return this.packageType;
     }
 
     public String getConfigType() {
@@ -137,6 +139,10 @@ public class DeploymentServiceModel {
 
     public DeploymentMetrics getDeploymentMetrics() {
         return this.deploymentMetrics;
+    }
+
+    public void setDeploymentMetrics(DeploymentMetrics metrics) {
+        this.deploymentMetrics = metrics;
     }
 
     private String formatDateTimeToUTC(String originalTime) {

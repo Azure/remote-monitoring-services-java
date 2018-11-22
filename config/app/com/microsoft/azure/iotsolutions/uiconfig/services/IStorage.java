@@ -44,8 +44,15 @@ public interface IStorage {
     CompletionStage<Iterable<Package>> getAllPackagesAsync() throws BaseException;
 
     /**
-     * Retrieves all configurations that have been previous uploaded.
-     * @return All configurations which can be iterated over
+     * Retrieves packages based on parameters provided.
+     * @return All packages which can be iterated over
+     */
+    CompletionStage<Iterable<Package>> getFilteredPackagesAsync(String packageType, String configType)
+            throws BaseException, ExecutionException, InterruptedException;
+
+    /**
+     * Retrieves all configtypes that have been previous uploaded.
+     * @return All configtypes which can be iterated over
      */
     CompletionStage<ConfigTypeList> getAllConfigTypesAsync() throws BaseException;
 
@@ -68,9 +75,9 @@ public interface IStorage {
 
     /**
      * Updates a previously created configurations.
-     * @param customConfig The customConfig of the package to be maintained.
+     * @param configTypes The customConfig of the package to be maintained.
      */
-    void updateConfigTypeAsync(String customConfig) throws
+    void updateConfigTypeAsync(String configTypes) throws
             BaseException,
             ExecutionException,
             InterruptedException;

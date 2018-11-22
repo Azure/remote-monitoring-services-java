@@ -2,17 +2,14 @@
 
 package com.microsoft.azure.iotsolutions.iothubmanager.services;
 
-import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.ExternalDependencyException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.*;
-import com.microsoft.azure.sdk.iot.device.exceptions.IotHubException;
 import com.microsoft.azure.sdk.iot.service.Configuration;
 import com.microsoft.azure.sdk.iot.service.ConfigurationContent;
 import com.microsoft.azure.sdk.iot.service.RegistryManager;
 import com.microsoft.azure.sdk.iot.service.devicetwin.DeviceTwin;
 import com.microsoft.azure.sdk.iot.service.devicetwin.Query;
 import com.microsoft.azure.sdk.iot.service.devicetwin.QueryType;
-import com.microsoft.azure.sdk.iot.service.devicetwin.SqlQuery;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.apache.commons.lang3.StringUtils;
@@ -26,7 +23,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import play.libs.Json;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,7 +37,7 @@ import static org.mockito.Mockito.when;
 public class DeploymentsTest {
     private final Deployments deployments;
     private static final String DEPLOYMENT_NAME_LABEL = "Name";
-    private static final String DEPLOYMENT_TYPE_LABEL = "DeploymentType";
+    private static final String PACKAGE_TYPE_LABEL = "Type";
     private static final String CONFIG_TYPE_LABEL = "ConfigType";
     private static final String DEPLOYMENT_GROUP_ID_LABEL = "DeviceGroupId";
     private static final String DEPLOYMENT_GROUP_NAME_LABEL = "DeviceGroupName";
@@ -82,7 +78,7 @@ public class DeploymentsTest {
 
         final Configuration config = new Configuration(registryManagerDeploymentId);
         config.setLabels(new HashMap<>());
-        config.getLabels().put(DEPLOYMENT_TYPE_LABEL, DeploymentType.edgeManifest.toString());
+        config.getLabels().put(PACKAGE_TYPE_LABEL, PackageType.edgeManifest.toString());
         config.getLabels().put(CONFIG_TYPE_LABEL, CONFIG_TYPE);
         config.getLabels().put(DEPLOYMENT_NAME_LABEL, deploymentName);
         config.getLabels().put(DEPLOYMENT_GROUP_ID_LABEL, deviceGroupId);
@@ -95,7 +91,7 @@ public class DeploymentsTest {
                 packageContent,
                 StringUtils.EMPTY,
                 priority,
-                DeploymentType.edgeManifest,
+                PackageType.edgeManifest,
                 CONFIG_TYPE);
 
         final IsValidConfiguration isValidConfig = new IsValidConfiguration(deploymentName, deviceGroupId);
@@ -152,7 +148,7 @@ public class DeploymentsTest {
             Exception
     {
         // Arrange
-        ConfigurationContent depContent = new ConfigurationContent()
+        ConfigurationContent deploymentContent = new ConfigurationContent()
         {
             {
                 modulesContent = isEdgeContent ? new HashMap<String, Map<String, Object>>() : null;
@@ -164,22 +160,22 @@ public class DeploymentsTest {
 
         if (addLabel)
         {
-            label = isEdgeLabel ? DeploymentType.edgeManifest.toString() : DeploymentType.deviceConfiguration.toString();
+            label = isEdgeLabel ? PackageType.edgeManifest.toString() : PackageType.deviceConfiguration.toString();
         }
 
-        HashMap<String, String> depLabels = new HashMap<String, String>();
+        HashMap<String, String> deploymentLabels = new HashMap<String, String>();
 
-        depLabels.put(DEPLOYMENT_NAME_LABEL, StringUtils.EMPTY);
-        depLabels.put(DEPLOYMENT_GROUP_ID_LABEL, StringUtils.EMPTY);
-        depLabels.put(DEPLOYMENT_TYPE_LABEL, label);
-        depLabels.put(CONFIG_TYPE_LABEL, "CustomConfig");
-        depLabels.put(RM_CREATED_LABEL, Boolean.TRUE.toString());
+        deploymentLabels.put(DEPLOYMENT_NAME_LABEL, StringUtils.EMPTY);
+        deploymentLabels.put(DEPLOYMENT_GROUP_ID_LABEL, StringUtils.EMPTY);
+        deploymentLabels.put(PACKAGE_TYPE_LABEL, label);
+        deploymentLabels.put(CONFIG_TYPE_LABEL, "CustomConfig");
+        deploymentLabels.put(RM_CREATED_LABEL, Boolean.TRUE.toString());
 
         Configuration configuration = new Configuration("test-config")
         {
             {
-                labels = depLabels;
-                content = depContent;
+                labels = deploymentLabels;
+                content = deploymentContent;
                 priority = 10;
             }
         };
@@ -197,22 +193,22 @@ public class DeploymentsTest {
         {
             if (isEdgeLabel)
             {
-                assertEquals(DeploymentType.edgeManifest, returnedDeployment.getDeploymentType());
+                assertEquals(PackageType.edgeManifest, returnedDeployment.getPackageType());
             }
             else
             {
-                assertEquals(DeploymentType.deviceConfiguration, returnedDeployment.getDeploymentType());
+                assertEquals(PackageType.deviceConfiguration, returnedDeployment.getPackageType());
             }
         }
         else
         {
             if (isEdgeContent)
             {
-                assertEquals(DeploymentType.edgeManifest, returnedDeployment.getDeploymentType());
+                assertEquals(PackageType.edgeManifest, returnedDeployment.getPackageType());
             }
             else
             {
-                assertEquals(DeploymentType.deviceConfiguration, returnedDeployment.getDeploymentType());
+                assertEquals(PackageType.deviceConfiguration, returnedDeployment.getPackageType());
             }
         }
     }
@@ -232,7 +228,7 @@ public class DeploymentsTest {
             }
         };
 
-        String label = isEdgeDeployment ? DeploymentType.edgeManifest.toString() : DeploymentType.deviceConfiguration.toString();
+        String label = isEdgeDeployment ? PackageType.edgeManifest.toString() : PackageType.deviceConfiguration.toString();
 
         String firmwareUpdateMxChip = "FirmwareUpdateMxChip";
 
@@ -240,7 +236,7 @@ public class DeploymentsTest {
 
         depLabels.put(DEPLOYMENT_NAME_LABEL, StringUtils.EMPTY);
         depLabels.put(DEPLOYMENT_GROUP_ID_LABEL, StringUtils.EMPTY);
-        depLabels.put(DEPLOYMENT_TYPE_LABEL, label);
+        depLabels.put(PACKAGE_TYPE_LABEL, label);
         depLabels.put(CONFIG_TYPE_LABEL, firmwareUpdateMxChip );
         depLabels.put(RM_CREATED_LABEL, Boolean.TRUE.toString());
 
@@ -300,7 +296,7 @@ public class DeploymentsTest {
         final Configuration conf = new Configuration("test-config"+idx);
         final HashMap<String, String> labels = new HashMap<String, String>() {
             {
-                put(DEPLOYMENT_TYPE_LABEL, DeploymentType.edgeManifest.toString());
+                put(PACKAGE_TYPE_LABEL, PackageType.edgeManifest.toString());
                 put(CONFIG_TYPE_LABEL, CONFIG_TYPE);
                 put(DEPLOYMENT_NAME_LABEL, "deployment" + idx);
                 put(DEPLOYMENT_GROUP_ID_LABEL, "dvcGroupId" + idx);

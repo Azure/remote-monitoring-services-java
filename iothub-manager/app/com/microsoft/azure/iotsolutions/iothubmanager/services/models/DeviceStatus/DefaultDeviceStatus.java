@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft. All rights reserved.
+
 package com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeviceStatus;
 
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeviceStatusQueries;

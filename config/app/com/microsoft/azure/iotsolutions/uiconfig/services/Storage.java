@@ -43,7 +43,7 @@ public class Storage implements IStorage {
     private static String UserCollectionId = "user-settings";
     private static String DeviceGroupCollectionId = "devicegroups";
     private static String PackagesCollectionId = "packages";
-    private static final String PackagesConfigTypeKey = "configtypes";
+    private static final String PackagesConfigTypeKey = "config-types";
     private static final DateTimeFormatter DATE_FORMAT =
             forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
     private static final String AzureMapsKey = "AzureMapsKey";
@@ -211,13 +211,69 @@ public class Storage implements IStorage {
      * {@inheritDoc}
      */
     @Override
+    public CompletionStage<Iterable<Package>> getFilteredPackagesAsync(String packageType, String configType)
+            throws BaseException, ExecutionException, InterruptedException {
+        CompletionStage<Iterable<Package>> packages =  this.client.getAllAsync(PackagesCollectionId).thenApplyAsync(p ->
+        {
+            return StreamSupport.stream(p.Items.spliterator(), false)
+                    .filter(pckg -> !(pckg.getKey().equals(PackagesConfigTypeKey)))
+                    .map(Storage::createPackage)
+                    .collect(Collectors.toList());
+        });
+
+        boolean isPackageTypeEmpty = StringUtils.isBlank(packageType);
+        boolean isConfigTypeEmpty = StringUtils.isBlank(configType);
+
+        if (!isPackageTypeEmpty && !isConfigTypeEmpty)
+        {
+            return CompletableFuture.completedFuture(StreamSupport.stream(
+                    packages.toCompletableFuture().get().spliterator(),
+                    false)
+                    .filter(pckg -> (
+                            pckg.getPackageType().toString().equals(packageType) &&
+                            pckg.getConfigType().equals(configType))
+                    )
+                    .collect(Collectors.toList()));
+        }
+        else if (!isPackageTypeEmpty && isConfigTypeEmpty)
+        {
+            return CompletableFuture.completedFuture(StreamSupport.stream(
+                    packages.toCompletableFuture().get().spliterator(),
+                    false)
+                    .filter(pckg -> (
+                            pckg.getPackageType().toString().equals(packageType)
+                    )).collect(Collectors.toList()));
+        }
+        else if (isPackageTypeEmpty && !isConfigTypeEmpty)
+        {
+            // Non-empty ConfigType with empty PackageType indicates Packages of type
+            // DeviceConfiguration
+            return CompletableFuture.completedFuture(StreamSupport.stream(
+                    packages.toCompletableFuture().get().spliterator(),
+                    false)
+                    .filter(pckg -> (
+                            pckg.getPackageType().toString().equals(PackageType.deviceConfiguration.toString()) &&
+                                    pckg.getConfigType().equals(configType))
+                    )
+                    .collect(Collectors.toList()));
+        }
+        else
+        {
+            return packages;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public CompletionStage<ConfigTypeList> getAllConfigTypesAsync() throws BaseException {
         try {
             return this.client.getAsync(PackagesCollectionId, PackagesConfigTypeKey).thenApplyAsync(p -> {
                 return fromJson(p.getData(), ConfigTypeList.class);
             });
         } catch (ResourceNotFoundException e) {
-            log.debug("Config Types have not been created.");
+            log.debug("Document config-types has not been created.");
             // Return empty Package Config types
             return CompletableFuture.completedFuture(new ConfigTypeList());
         }
@@ -245,8 +301,13 @@ public class Storage implements IStorage {
         boolean isValidPackage = this.validatePackage(input);
         if (!isValidPackage)
         {
-            throw new InvalidInputException("Package provided is a invalid deployment manifest " +
-                    "for type {package.Type} and config type {package.Config}");
+            String msg = String.format("Package provided is a invalid deployment manifest " +
+                         "for packageType %s", input.getPackageType());
+
+            msg = input.getPackageType().equals(PackageType.deviceConfiguration) ?
+                         String.format("and configuration type %s", input.getConfigType()) : StringUtils.EMPTY;;
+
+            throw new InvalidInputException(msg);
         }
 
         try {
@@ -263,12 +324,15 @@ public class Storage implements IStorage {
         input.setDateCreated(Storage.DATE_FORMAT.print(DateTime.now().toDateTime(DateTimeZone.UTC)));
         final String value = toJson(input);
 
-        CompletionStage<Package> result = client.createAsync(PackagesCollectionId, value).thenApplyAsync(p ->
-            Storage.createPackage(p)
-        );
+        CompletionStage<Package> result = client.createAsync(
+                PackagesCollectionId,
+                value)
+                .thenApplyAsync(p ->
+                    Storage.createPackage(p)
+                );
 
         if (!(StringUtils.isBlank(input.getConfigType())) &&
-            input.getType().equals(PackageType.deviceConfiguration))
+            input.getPackageType().equals(PackageType.deviceConfiguration))
         {
             this.updateConfigTypeAsync(input.getConfigType());
         }
@@ -276,7 +340,7 @@ public class Storage implements IStorage {
         return result;
     }
 
-    public void updateConfigTypeAsync(String customConfig) throws
+    public void updateConfigTypeAsync(String configTypes) throws
             BaseException,
             ExecutionException,
             InterruptedException {
@@ -297,7 +361,7 @@ public class Storage implements IStorage {
             list = new ConfigTypeList();
         }
 
-        list.add(customConfig);
+        list.add(configTypes);
         client.updateAsync(PackagesCollectionId, PackagesConfigTypeKey, toJson(list), "*");
     }
 
@@ -323,14 +387,9 @@ public class Storage implements IStorage {
     }
 
     private Boolean validatePackage(Package input) {
-        IPackageValidator validator = PackageValidatorFactory.GetValidator(input.getType(), input.getConfigType());
-        if (validator == null)
-        {
-            // Bypass validation for custom config type
-            log.info("Package of config type {%s} cannot be validated.", input.getConfigType());
-            return true;
-        }
-        return validator.validate();
+        IPackageValidator validator = PackageValidatorFactory.GetValidator(input.getPackageType(), input.getConfigType());
+        // Bypass validation for custom config type
+        return validator == null || validator.validate();
     }
 
     private void appendAzureMapsKey(ObjectNode theme) {

@@ -8,7 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 public class Package {
     private String id;
     private String name;
-    private PackageType type;
+    private PackageType packageType;
     private String configType;
     private String content;
     private String dateCreated;
@@ -34,7 +34,7 @@ public class Package {
             String dateCreated) {
         this.id = id;
         this.name = name;
-        this.type = packageType;
+        this.packageType = packageType;
         this.configType = config;
         this.content = content;
         this.dateCreated = dateCreated;
@@ -59,10 +59,10 @@ public class Package {
     }
 
     @JsonProperty("Type")
-    public PackageType getType() { return this.type; }
+    public PackageType getPackageType() { return this.packageType; }
 
-    public void setType(PackageType type) {
-        this.type = type;
+    public void setPackageType(PackageType packageType) {
+        this.packageType = packageType;
     }
 
     @JsonProperty("ConfigType")

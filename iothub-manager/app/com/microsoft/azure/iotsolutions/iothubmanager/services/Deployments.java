@@ -214,10 +214,10 @@ public final class Deployments implements IDeployments {
      */
     private Map<String, DeploymentStatus> getDeviceStatuses(Configuration deployment) throws IOException {
 
-        String deploymentType = deployment.getLabels().get(ConfigurationsHelper.DEPLOYMENT_TYPE_LABEL);
+        String packageType = deployment.getLabels().get(ConfigurationsHelper.PACKAGE_TYPE_LABEL);
         String configType = deployment.getLabels().get(ConfigurationsHelper.CONFIG_TYPE_LABEL);
 
-        Map<DeviceStatusQueries.QueryType, String> queries = DeviceStatusQueries.getQueries(deploymentType, configType);
+        Map<DeviceStatusQueries.QueryType, String> queries = DeviceStatusQueries.getQueries(packageType, configType);
 
         Map<String,DeploymentStatus> deviceStatuses = new HashMap<>();
 
@@ -228,7 +228,7 @@ public final class Deployments implements IDeployments {
                 deploymentId);
 
         if (!(ConfigurationsHelper.isEdgeDeployment(deployment)) &&
-                !(configType.equals(ConfigType.firmwareUpdateMxChip.toString())))
+                !(configType.equals(ConfigType.firmwareUpdate.toString())))
         {
             for (String devices : appliedDeviceIds)
             {

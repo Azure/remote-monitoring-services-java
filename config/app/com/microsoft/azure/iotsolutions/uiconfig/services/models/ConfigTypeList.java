@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft. All rights reserved.
+
 package com.microsoft.azure.iotsolutions.uiconfig.services.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -18,7 +20,7 @@ public class ConfigTypeList {
         this.configTypes = new String[0];
     }
 
-    public String[] getConfigurations()
+    public String[] getConfigTypes()
     {
         if (configTypes != null)
         {

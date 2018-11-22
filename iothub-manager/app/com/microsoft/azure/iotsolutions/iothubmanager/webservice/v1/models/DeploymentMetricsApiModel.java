@@ -50,7 +50,8 @@ public class DeploymentMetricsApiModel {
         if (metricsServiceModel == null) return;
 
         this.customMetrics = metricsServiceModel.getCustomMetrics();
-        this.systemMetrics = metricsServiceModel.getSystemMetrics();
+        this.systemMetrics = metricsServiceModel.getSystemMetrics() != null ?
+                metricsServiceModel.getSystemMetrics() : this.systemMetrics;
         this.deviceStatuses = metricsServiceModel.getDeviceStatuses();
 
         if (metricsServiceModel.getDeviceMetrics() != null)

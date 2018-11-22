@@ -42,28 +42,27 @@ public class PackageController extends Controller {
     }
 
     /**
-     * Retrieve all previously uploaded packages
-     * @return {@link PackageListApiModel}
+     * This function can be used to get packages with and without parameters
+     * PackageType, ConfigType. Without the query params this will return all
+     * the packages.
      */
     @Authorize("ReadAll")
-    public CompletionStage<Result> getAllAsync() throws BaseException {
-        return storage.getAllPackagesAsync().thenApplyAsync(m -> ok(toJson(new PackageListApiModel(m))));
-    }
+    public CompletionStage<Result> getFilteredAsync(String packageType, String configType) throws BaseException,
+            BadRequestException, ExecutionException, InterruptedException {
 
-    /**
-     * Retrieve all previously uploaded packages
-     * @return {@link PackageListApiModel}
-     */
-    public CompletionStage<Result> getFilteredAsync(String type, String config) throws BaseException,
-            BadRequestException {
-        if (type == null) {
+        if (packageType == null && configType == null) {
+            return storage.getAllPackagesAsync().thenApplyAsync(m -> ok(toJson(new PackageListApiModel(m))));
+        }
+
+        if (packageType == null) {
             throw new BadRequestException("Package Type is empty");
         }
-        return storage.getAllPackagesAsync().thenApplyAsync(m -> ok(toJson(new PackageListApiModel(m, type, config))));
+        return storage.getFilteredPackagesAsync(packageType, configType)
+                .thenApplyAsync(m -> ok(toJson(new PackageListApiModel(m))));
     }
 
     /**
-     * Get a previously created from storage.
+     * Get a list of previously created configTypes from storage
      * @param id The id of the package to retrieve from storage.
      * @return {@link PackageApiModel}
      */
@@ -73,15 +72,7 @@ public class PackageController extends Controller {
     }
 
     /**
-     * Get a previously created from storage.
-     * @return {@link PackageApiModel}
-     */
-    public CompletionStage<Result> getListAsync() throws BaseException {
-        return storage.getAllConfigTypesAsync().thenApplyAsync(m -> ok(toJson(new ConfigTypeListApiModel(m))));
-    }
-
-    /**
-     * Create a package form a multipart form post which expects
+     * Create a package from a multipart form post which expects
      * a "type" and a file uploaded with the name "package".
      * @return Returns the result in the form of {@link PackageApiModel}
      */
@@ -98,9 +89,9 @@ public class PackageController extends Controller {
         }
 
         /**
-         * HTML form can have multi-select dropdown. Hence to get data from the form
-         * for single-select drop downs the selected value is the first element of the
-         * array.
+         * The form is sending multipart form/data content type. This is so that the form data can handle any possible
+         * form input types that may come in. In this case it is just a single value for each field, but if we ever
+         * included multiple file select for example then it could be more values.
          */
         final Map<String, String[]> data = formData.asFormUrlEncoded();
         if(!data.containsKey(PACKAGE_TYPE_PARAM) ||
@@ -138,7 +129,4 @@ public class PackageController extends Controller {
         return storage.deletePackageAsync(id).thenApplyAsync(m -> ok());
     }
 
-    private String appendCustomConfig(String packageConfigType, String customConfig){
-        return packageConfigType.trim() + " - " + customConfig.trim();
-    }
 }

@@ -1,9 +1,11 @@
+// Copyright (c) Microsoft. All rights reserved.
+
 package com.microsoft.azure.iotsolutions.uiconfig.services.models;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum ConfigType {
-    firmwareUpdateMxChip("FirmwareUpdateMxChip"),
+    firmwareUpdate("FirmwareUpdate"),
     custom("Custom");
 
     private final String value;

@@ -1,12 +1,15 @@
+// Copyright (c) Microsoft. All rights reserved.
+
 package com.microsoft.azure.iotsolutions.iothubmanager.services.external;
 
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.helpers.QueryConditionTranslator;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentServiceModel;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentType;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.models.PackageType;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeviceGroup;
 import com.microsoft.azure.sdk.iot.service.Configuration;
 import org.apache.commons.lang3.StringUtils;
+
 import play.libs.Json;
 
 import java.util.HashMap;
@@ -17,7 +20,7 @@ import static play.libs.Json.fromJson;
 
 public class ConfigurationsHelper {
 
-    public static final String DEPLOYMENT_TYPE_LABEL = "Type";
+    public static final String PACKAGE_TYPE_LABEL = "Type";
     public static final String CONFIG_TYPE_LABEL = "ConfigType";
     public static final String DEPLOYMENT_NAME_LABEL = "Name";
     public static final String DEPLOYMENT_GROUP_ID_LABEL = "DeviceGroupId";
@@ -31,18 +34,16 @@ public class ConfigurationsHelper {
         final String packageContent = model.getPackageContent();
         final Configuration pkgConfiguration = fromJson(Json.parse(packageContent), Configuration.class);
 
-        if (model.getDeploymentType().equals(DeploymentType.edgeManifest) &&
-                pkgConfiguration.getContent() != null && pkgConfiguration.getContent().getDeviceContent() != null)
+        if (model.getPackageType().equals(PackageType.edgeManifest) &&
+                pkgConfiguration.getContent() != null && pkgConfiguration.getContent().getDeviceContent().size() != 0)
         {
             throw new InvalidInputException("Deployment type does not match with package contents.");
         }
-            else if (model.getDeploymentType().equals(DeploymentType.deviceConfiguration) &&
-                pkgConfiguration.getContent() != null && pkgConfiguration.getContent().getModulesContent() != null)
+            else if (model.getPackageType().equals(PackageType.deviceConfiguration) &&
+                pkgConfiguration.getContent() != null && pkgConfiguration.getContent().getModulesContent().size() != 0)
         {
             throw new InvalidInputException("Deployment type does not match with package contents.");
         }
-
-
 
         final String deploymentId = UUID.randomUUID().toString();
         final Configuration configuration = new Configuration(deploymentId);
@@ -61,7 +62,7 @@ public class ConfigurationsHelper {
         final Map<String, String> labels = configuration.getLabels();
 
         // Required labels
-        labels.put(DEPLOYMENT_TYPE_LABEL, model.getDeploymentType().toString());
+        labels.put(PACKAGE_TYPE_LABEL, model.getPackageType().toString());
         labels.put(CONFIG_TYPE_LABEL, model.getConfigType().toString());
         labels.put(DEPLOYMENT_NAME_LABEL, model.getName());
         labels.put(DEPLOYMENT_GROUP_ID_LABEL, deploymentGroup.getId());
@@ -90,8 +91,8 @@ public class ConfigurationsHelper {
         {
             return false;
         }
-        if (deployment.getLabels().get(DEPLOYMENT_TYPE_LABEL)
-                .equals(DeploymentType.edgeManifest.toString()))
+        if (deployment.getLabels().get(PACKAGE_TYPE_LABEL)
+                .equals(PackageType.edgeManifest.toString()))
         {
             return true;
         }

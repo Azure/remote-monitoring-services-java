@@ -21,6 +21,7 @@ import org.mockito.MockitoAnnotations;
 import play.mvc.Result;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
@@ -61,7 +62,7 @@ public class DeploymentsControllerTest {
                 PACKAGE_CONTENT,
                 PACKAGE_NAME,
                 PRIORITY,
-                DeploymentType.edgeManifest,
+                PackageType.edgeManifest,
                 CONFIG_TYPE_EDGE);
 
         when(this.deployments.getAsync(DEPLOYMENT_ID, false)).thenReturn(completedFuture(deploymentModel));
@@ -75,7 +76,7 @@ public class DeploymentsControllerTest {
         assertEquals(DEPLOYMENT_NAME, deployment.getName());
         assertEquals(DEVICE_GROUP_ID, deployment.getDeviceGroupId());
         assertEquals(PRIORITY, deployment.getPriority());
-        assertEquals(DeploymentType.edgeManifest, deployment.getDeploymentType());
+        assertEquals(PackageType.edgeManifest, deployment.getPackageType());
         assertEquals(CONFIG_TYPE_EDGE, deployment.getConfigType());
     }
 
@@ -83,14 +84,30 @@ public class DeploymentsControllerTest {
     @Parameters({"0","1","5"})
     public void getDeploymentsTest(int numDeployments) throws Exception {
         List<DeploymentServiceModel> deploymentsList = new ArrayList<>();
+        DeploymentMetrics metrics = new DeploymentMetrics(null, null)
+        {
+            {
+                setDeviceMetrics(new HashMap<DeploymentStatus, Long>()
+                {
+                    {
+                        put(DeploymentStatus.Succeeded, 0L);
+                        put(DeploymentStatus.Pending, 0L);
+                        put(DeploymentStatus.Failed, 0L);
+                    }
+                });
+            }
+        };
+
+
         for(int i = 0; i < numDeployments; i++) {
             DeploymentServiceModel dep = new DeploymentServiceModel(DEPLOYMENT_NAME + i,
                     new DeviceGroup(DEVICE_GROUP_ID + i,DEVICE_GROUP_NAME + i, DEVICE_GROUP_QUERY + i),
                     PACKAGE_CONTENT + i,
                     PACKAGE_NAME + i,
                     PRIORITY + i,
-                    DeploymentType.edgeManifest,
+                    PackageType.edgeManifest,
                     CONFIG_TYPE_EDGE);
+            dep.setDeploymentMetrics(metrics);
             deploymentsList.add(dep);
         }
 
@@ -135,14 +152,14 @@ public class DeploymentsControllerTest {
                 StringUtils.EMPTY,
                 packageContent,
                 priority,
-                DeploymentType.edgeManifest,
+                PackageType.edgeManifest,
                 CONFIG_TYPE_EDGE);
         when(this.deployments.createAsync(argThat(matchesDeployment))).thenReturn(completedFuture
                 (deploymentMode));
 
         final DeploymentApiModel depApiModel = new DeploymentApiModel(deploymentName, deviceGroupId,
                 StringUtils.EMPTY, deviceGroupQuery, packageContent, StringUtils.EMPTY, priority,
-                DeploymentType.edgeManifest, CONFIG_TYPE_EDGE);
+                PackageType.edgeManifest, CONFIG_TYPE_EDGE);
 
         // Act
         TestUtils.setRequest(depApiModel);
@@ -157,7 +174,7 @@ public class DeploymentsControllerTest {
             assertEquals(deploymentName, dep.getName());
             assertEquals(deviceGroupId, dep.getDeviceGroupId());
             assertEquals(priority, dep.getPriority());
-            assertEquals(DeploymentType.edgeManifest, dep.getDeploymentType());
+            assertEquals(PackageType.edgeManifest, dep.getPackageType());
         }
     }
 

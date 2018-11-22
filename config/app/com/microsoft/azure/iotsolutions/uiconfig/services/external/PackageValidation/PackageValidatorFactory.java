@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft. All rights reserved.
+
 package com.microsoft.azure.iotsolutions.uiconfig.services.external.PackageValidation;
 
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.ConfigType;
@@ -12,7 +14,7 @@ public class PackageValidatorFactory
             return new EdgePackageValidator();
         }
 
-        if (config.equalsIgnoreCase(ConfigType.firmwareUpdateMxChip.toString()))
+        if (config.equalsIgnoreCase(ConfigType.firmwareUpdate.toString()))
         {
             return new FirmwareUpdateMxChipValidator();
         }
