@@ -117,7 +117,7 @@ public class PackageController extends Controller {
             throw new BadRequestException("Package of type EdgeManifest cannot have parameter " +
                     "configType.");
         }
-        
+
         if (configType == null)
         {
             configType = StringUtils.EMPTY;
