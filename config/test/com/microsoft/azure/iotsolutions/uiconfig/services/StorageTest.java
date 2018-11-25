@@ -17,6 +17,7 @@ import com.microsoft.azure.sdk.iot.service.Configuration;
 import com.microsoft.azure.sdk.iot.service.ConfigurationContent;
 import helpers.Random;
 import helpers.UnitTest;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormatter;
@@ -25,12 +26,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.ExpectedException;
+import org.junit.runners.Parameterized;
 import org.mockito.Mockito;
 import play.libs.Json;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -377,7 +380,7 @@ public class StorageTest {
 
         // Assert
         assertEquals(pkg.getName(), result.getName());
-        assertEquals(pkg.getType(), result.getType());
+        assertEquals(pkg.getPackageType(), result.getPackageType());
         assertEquals(pkg.getContent(), result.getContent());
     }
 
@@ -385,11 +388,14 @@ public class StorageTest {
     @Category({UnitTest.class})
     public void addADMPackageTest() throws BaseException, ExecutionException, InterruptedException {
         // Arrange
+        final String config = ConfigType.firmwareUpdate.toString();
+        final String configKey = "config-types";
+
         Package pkg = new Package(
                 null,
                 rand.NextString(),
                 PackageType.deviceConfiguration,
-                ConfigType.firmwareUpdateMxChip.toString(),
+                config,
                 this.createConfiguration());
 
         ValueApiModel model = new ValueApiModel(rand.NextString(), null, null, null);
@@ -399,12 +405,22 @@ public class StorageTest {
                 Mockito.any(String.class)))
                 .thenReturn(CompletableFuture.supplyAsync(() -> model));
 
+        Mockito.when(mockClient.updateAsync(
+                Mockito.eq(PACKAGES_COLLECTION_ID),
+                Mockito.eq(configKey),
+                Mockito.eq(config),
+                Mockito.any(String.class)))
+                .thenReturn(CompletableFuture.supplyAsync(() -> model));
+
+        Mockito.when(mockClient.getAsync(Mockito.eq(PACKAGES_COLLECTION_ID),
+                Mockito.eq(configKey)))
+                .thenReturn(CompletableFuture.supplyAsync(() -> model));
         // Act
         Package result = storage.addPackageAsync(pkg).toCompletableFuture().get();
 
         // Assert
         assertEquals(pkg.getName(), result.getName());
-        assertEquals(pkg.getType(), result.getType());
+        assertEquals(pkg.getPackageType(), result.getPackageType());
         assertEquals(pkg.getConfigType(), result.getConfigType());
         assertEquals(pkg.getContent(), result.getContent());
     }
@@ -414,7 +430,7 @@ public class StorageTest {
     public void addADMCustomPackageTest() throws BaseException, ExecutionException, InterruptedException {
         // Arrange
         final String config = "CustomConfig";
-        final String configKey = "configurations";
+        final String configKey = "config-types";
 
         Package pkg = new Package(
                 null,
@@ -446,7 +462,7 @@ public class StorageTest {
 
         // Assert
         assertEquals(pkg.getName(), result.getName());
-        assertEquals(pkg.getType(), result.getType());
+        assertEquals(pkg.getPackageType(), result.getPackageType());
         assertEquals(pkg.getConfigType(), config);
         assertEquals(pkg.getContent(), result.getContent());
     }
@@ -455,7 +471,7 @@ public class StorageTest {
     @Category({UnitTest.class})
     public void listConfigurationsTest() throws BaseException, ExecutionException, InterruptedException {
         // Arrange
-        final String configKey = "configurations";
+        final String configKey = "config-types";
 
         Mockito.when(mockClient.getAsync(Mockito.eq(PACKAGES_COLLECTION_ID),
                 Mockito.eq(configKey)))
@@ -465,7 +481,7 @@ public class StorageTest {
         ConfigTypeList result = storage.getAllConfigTypesAsync().toCompletableFuture().get();
 
         // Assert
-        assertEquals(0, result.getConfigurations().length);
+        assertEquals(0, result.getConfigTypes().length);
     }
 
     @Test
