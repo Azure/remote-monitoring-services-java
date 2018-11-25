@@ -109,7 +109,19 @@ public class PackageController extends Controller {
 
         final String content = new String(Files.readAllBytes(file.getFile().toPath()));
         final String packageType = data.get(PACKAGE_TYPE_PARAM)[0];
-        final String configType = data.get(PACKAGE_CONFIG_TYPE_PARAM)[0];
+        String configType = data.get(PACKAGE_CONFIG_TYPE_PARAM)[0];
+
+        if (packageType.equals(PackageType.edgeManifest.toString()) &&
+                !(StringUtils.isBlank(configType)))
+        {
+            throw new BadRequestException("Package of type EdgeManifest cannot have parameter " +
+                    "configType.");
+        }
+        
+        if (configType == null)
+        {
+            configType = StringUtils.EMPTY;
+        }
 
         final PackageApiModel input = new PackageApiModel(file.getFilename(),
                 EnumUtils.getEnumIgnoreCase(PackageType.class, packageType),
