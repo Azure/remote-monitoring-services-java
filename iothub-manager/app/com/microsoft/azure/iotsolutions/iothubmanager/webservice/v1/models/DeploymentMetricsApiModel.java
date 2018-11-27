@@ -22,6 +22,21 @@ public class DeploymentMetricsApiModel {
     private Map<String, Long> customMetrics;
     private Map<String, DeploymentStatus> deviceStatuses;
 
+    @JsonProperty("SystemMetrics")
+    public Map<String, Long> getSystemMetrics() {
+        return this.systemMetrics;
+    }
+
+    @JsonProperty("CustomMetrics")
+    public Map<String, Long> getCustomMetrics() {
+        return this.customMetrics;
+    }
+
+    @JsonProperty("DeviceStatuses")
+    public Map<String, DeploymentStatus> getDeviceStatuses() {
+        return this.deviceStatuses;
+    }
+
     public DeploymentMetricsApiModel() {
     }
 
@@ -63,20 +78,30 @@ public class DeploymentMetricsApiModel {
             this.systemMetrics.put(PENDING_METRICS_KEY,
                     metricsServiceModel.getDeviceMetrics().get(DeploymentStatus.Pending));
         }
-    }
 
-    @JsonProperty("SystemMetrics")
-    public Map<String, Long> getSystemMetrics() {
-        return this.systemMetrics;
-    }
+        if (this.customMetrics != null)
+        {
+            // Override System metrics if custom metric contain same metrics
+            if (this.customMetrics.containsKey(SUCCESSFUL_METRICS_KEY))
+            {
+                this.systemMetrics.put(SUCCESSFUL_METRICS_KEY,
+                        this.customMetrics.get(SUCCESSFUL_METRICS_KEY));
+                this.customMetrics.remove(SUCCESSFUL_METRICS_KEY);
+            }
 
-    @JsonProperty("CustomMetrics")
-    public Map<String, Long> getCustomMetrics() {
-        return this.customMetrics;
-    }
+            if (this.customMetrics.containsKey(FAILED_METRICS_KEY))
+            {
+                this.systemMetrics.put(FAILED_METRICS_KEY,
+                        this.customMetrics.get(FAILED_METRICS_KEY));
+                this.customMetrics.remove(FAILED_METRICS_KEY);
+            }
 
-    @JsonProperty("DeviceStatuses")
-    public Map<String, DeploymentStatus> getDeviceStatuses() {
-        return this.deviceStatuses;
+            if (this.customMetrics.containsKey(PENDING_METRICS_KEY))
+            {
+                this.systemMetrics.put(PENDING_METRICS_KEY,
+                        this.customMetrics.get(PENDING_METRICS_KEY));
+                this.customMetrics.remove(PENDING_METRICS_KEY);
+            }
+        }
     }
 }
