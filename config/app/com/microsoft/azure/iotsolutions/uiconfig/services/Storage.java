@@ -13,7 +13,7 @@ import com.microsoft.azure.iotsolutions.uiconfig.services.external.PackageValida
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.PackageValidation.PackageValidatorFactory;
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.ValueApiModel;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.*;
-import com.microsoft.azure.iotsolutions.uiconfig.services.models.Package;
+import com.microsoft.azure.iotsolutions.uiconfig.services.models.PackageServiceModel;
 import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.IServicesConfig;
 import com.microsoft.azure.sdk.iot.service.Configuration;
 import org.apache.commons.lang3.StringUtils;
@@ -198,7 +198,7 @@ public class Storage implements IStorage {
      * {@inheritDoc}
      */
     @Override
-    public CompletionStage<Iterable<Package>> getAllPackagesAsync() throws BaseException {
+    public CompletionStage<Iterable<PackageServiceModel>> getAllPackagesAsync() throws BaseException {
         return this.client.getAllAsync(PackagesCollectionId).thenApplyAsync(p -> {
             return StreamSupport.stream(p.Items.spliterator(), false)
                     .filter(pckg -> !(pckg.getKey().equals(PackagesConfigTypeKey)))
@@ -211,9 +211,9 @@ public class Storage implements IStorage {
      * {@inheritDoc}
      */
     @Override
-    public CompletionStage<Iterable<Package>> getFilteredPackagesAsync(String packageType, String configType)
+    public CompletionStage<Iterable<PackageServiceModel>> getFilteredPackagesAsync(String packageType, String configType)
             throws BaseException, ExecutionException, InterruptedException {
-        CompletionStage<Iterable<Package>> packages =  this.client.getAllAsync(PackagesCollectionId).thenApplyAsync(p ->
+        CompletionStage<Iterable<PackageServiceModel>> packages =  this.client.getAllAsync(PackagesCollectionId).thenApplyAsync(p ->
         {
             return StreamSupport.stream(p.Items.spliterator(), false)
                     .filter(pckg -> !(pckg.getKey().equals(PackagesConfigTypeKey)))
@@ -267,15 +267,15 @@ public class Storage implements IStorage {
      * {@inheritDoc}
      */
     @Override
-    public CompletionStage<ConfigTypeList> getAllConfigTypesAsync() throws BaseException {
+    public CompletionStage<ConfigTypeListServiceModel> getAllConfigTypesAsync() throws BaseException {
         try {
             return this.client.getAsync(PackagesCollectionId, PackagesConfigTypeKey).thenApplyAsync(p -> {
-                return fromJson(p.getData(), ConfigTypeList.class);
+                return fromJson(p.getData(), ConfigTypeListServiceModel.class);
             });
         } catch (ResourceNotFoundException e) {
             log.debug("Document config-types has not been created.");
             // Return empty Package Config types
-            return CompletableFuture.completedFuture(new ConfigTypeList());
+            return CompletableFuture.completedFuture(new ConfigTypeListServiceModel());
         }
     }
 
@@ -283,7 +283,7 @@ public class Storage implements IStorage {
      * {@inheritDoc}
      */
     @Override
-    public CompletionStage<Package> getPackageAsync(String id) throws BaseException {
+    public CompletionStage<PackageServiceModel> getPackageAsync(String id) throws BaseException {
         return this.client.getAsync(PackagesCollectionId, id).thenApplyAsync(p -> {
             return Storage.createPackage(p);
         });
@@ -293,7 +293,7 @@ public class Storage implements IStorage {
      * {@inheritDoc}
      */
     @Override
-    public CompletionStage<Package> addPackageAsync(Package input) throws
+    public CompletionStage<PackageServiceModel> addPackageAsync(PackageServiceModel input) throws
             BaseException,
             ExecutionException,
             InterruptedException{
@@ -324,7 +324,7 @@ public class Storage implements IStorage {
         input.setDateCreated(Storage.DATE_FORMAT.print(DateTime.now().toDateTime(DateTimeZone.UTC)));
         final String value = toJson(input);
 
-        CompletionStage<Package> result = client.createAsync(
+        CompletionStage<PackageServiceModel> result = client.createAsync(
                 PackagesCollectionId,
                 value)
                 .thenApplyAsync(p ->
@@ -344,13 +344,13 @@ public class Storage implements IStorage {
             BaseException,
             ExecutionException,
             InterruptedException {
-        ConfigTypeList list;
+            ConfigTypeListServiceModel list;
 
         try
         {
-            CompletionStage<ConfigTypeList> configs = this.client.getAsync(PackagesCollectionId,
+            CompletionStage<ConfigTypeListServiceModel> configs = this.client.getAsync(PackagesCollectionId,
                     PackagesConfigTypeKey).thenApplyAsync(p -> {
-                return fromJson(p.getData(), ConfigTypeList.class);
+                return fromJson(p.getData(), ConfigTypeListServiceModel.class);
             });
             list = configs.toCompletableFuture().get();
         }
@@ -358,7 +358,7 @@ public class Storage implements IStorage {
         {
             log.debug("Config Types have not been created.");
             // Return empty Config types
-            list = new ConfigTypeList();
+            list = new ConfigTypeListServiceModel();
         }
 
         list.add(configTypes);
@@ -380,14 +380,16 @@ public class Storage implements IStorage {
         return output;
     }
 
-    private static Package createPackage(ValueApiModel input) {
-        Package output = fromJson(input.getData(), Package.class);
+    private static PackageServiceModel createPackage(ValueApiModel input) {
+        PackageServiceModel output = fromJson(input.getData(), PackageServiceModel.class);
         output.setId(input.getKey());
         return output;
     }
 
-    private Boolean validatePackage(Package input) {
-        IPackageValidator validator = PackageValidatorFactory.GetValidator(input.getPackageType(), input.getConfigType());
+    private Boolean validatePackage(PackageServiceModel input) {
+        IPackageValidator validator = PackageValidatorFactory.GetValidator(
+                input.getPackageType(),
+                input.getConfigType());
         // Bypass validation for custom config type
         return validator == null || validator.validate();
     }

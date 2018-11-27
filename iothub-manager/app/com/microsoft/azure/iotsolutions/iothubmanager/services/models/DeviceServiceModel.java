@@ -19,7 +19,7 @@ public final class DeviceServiceModel {
     private final DateTime lastActivity;
     private final Boolean connected;
     private final Boolean enabled;
-    private final Boolean isEdgeDevice;
+    private final boolean isEdgeDevice;
     private final DateTime lastStatusUpdated;
     private final TwinServiceModel twin;
     private final String ioTHubHostName;
@@ -32,7 +32,7 @@ public final class DeviceServiceModel {
             final DateTime lastActivity,
             final Boolean connected,
             final Boolean enabled,
-            final Boolean isEdgeDevice,
+            final boolean isEdgeDevice,
             final DateTime lastStatusUpdated,
             final TwinServiceModel twin,
             final AuthenticationMechanismServiceModel authentication,
@@ -101,7 +101,7 @@ public final class DeviceServiceModel {
         return enabled;
     }
 
-    public Boolean getIsEdgeDevice() {
+    public boolean getIsEdgeDevice() {
         return this.isEdgeDevice;
     }
 

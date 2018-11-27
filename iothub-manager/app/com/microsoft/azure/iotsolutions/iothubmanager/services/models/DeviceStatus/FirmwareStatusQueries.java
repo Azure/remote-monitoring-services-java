@@ -6,7 +6,7 @@ import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeviceStat
 import java.util.HashMap;
 import java.util.Map;
 
-public class FirmwareUpdateMxChipStatusQueries
+public class FirmwareStatusQueries
 {
     public static Map<DeviceStatusQueries.QueryType, String> queries =
             new HashMap<DeviceStatusQueries.QueryType, String>() {

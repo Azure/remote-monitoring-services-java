@@ -3,7 +3,7 @@
 package com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.microsoft.azure.iotsolutions.uiconfig.services.models.ConfigTypeList;
+import com.microsoft.azure.iotsolutions.uiconfig.services.models.ConfigTypeListServiceModel;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.Version;
 
 import java.util.Hashtable;
@@ -20,7 +20,7 @@ public class ConfigTypeListApiModel {
         return configTypes;
     }
 
-    public ConfigTypeListApiModel(ConfigTypeList configTypeList)
+    public ConfigTypeListApiModel(ConfigTypeListServiceModel configTypeList)
     {
         this.configTypes = configTypeList.getConfigTypes();
     }

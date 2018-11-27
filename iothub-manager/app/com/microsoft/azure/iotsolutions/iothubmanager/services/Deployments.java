@@ -39,6 +39,7 @@ public final class Deployments implements IDeployments {
     private static final int MAX_DEPLOYMENTS = 20;
 
     private static final String DEVICE_GROUP_ID_PARAM = "deviceGroupId";
+    private static final String DEVICE_GROUP_NAME_PARAM = "deviceGroupName";
     private static final String DEVICE_GROUP_QUERY_PARAM = "deviceGroupQuery";
     private static final String NAME_PARAM = "name";
     private static final String CONFIG_TYPE_PARAM = "configType";
@@ -157,6 +158,7 @@ public final class Deployments implements IDeployments {
             InvalidInputException, ExternalDependencyException {
 
         verifyDeploymentParameter(DEVICE_GROUP_ID_PARAM, deployment.getDeviceGroup().getId());
+        verifyDeploymentParameter(DEVICE_GROUP_NAME_PARAM, deployment.getDeviceGroup().getId());
         verifyDeploymentParameter(DEVICE_GROUP_QUERY_PARAM, deployment.getDeviceGroup().getQuery());
         verifyDeploymentParameter(NAME_PARAM, deployment.getName());
         verifyDeploymentParameter(CONFIG_TYPE_PARAM, deployment.getConfigType());
@@ -228,7 +230,7 @@ public final class Deployments implements IDeployments {
                 deploymentId);
 
         if (!(ConfigurationsHelper.isEdgeDeployment(deployment)) &&
-                !(configType.equals(ConfigType.firmwareUpdate.toString())))
+                !(configType.equals(ConfigType.firmware.toString())))
         {
             for (String devices : appliedDeviceIds)
             {

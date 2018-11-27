@@ -2,9 +2,9 @@
 
 package com.microsoft.azure.iotsolutions.uiconfig.services.external.PackageValidation;
 
-public class FirmwareUpdateMxChipValidator extends PackageValidator {
+public class FirmwareValidator extends PackageValidator {
 
-    //TODO: Implement validation for Firmware Update for MxChip packages
+    //TODO: Implement validation for Firmware Update for Firmware packages
     @Override
     public Boolean validate() {
         return true;

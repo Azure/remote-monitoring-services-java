@@ -14,9 +14,9 @@ public class PackageValidatorFactory
             return new EdgePackageValidator();
         }
 
-        if (config.equalsIgnoreCase(ConfigType.firmwareUpdate.toString()))
+        if (config.equalsIgnoreCase(ConfigType.firmware.toString()))
         {
-            return new FirmwareUpdateMxChipValidator();
+            return new FirmwareValidator();
         }
         else
         {

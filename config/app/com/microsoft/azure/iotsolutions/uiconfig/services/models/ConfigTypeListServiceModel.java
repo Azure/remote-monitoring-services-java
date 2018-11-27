@@ -8,14 +8,14 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ConfigTypeList {
+public class ConfigTypeListServiceModel {
 
     private Set<String> customConfig = new HashSet<String>();
 
     @JsonProperty("configtypes")
     public String[] configTypes;
 
-    public ConfigTypeList()
+    public ConfigTypeListServiceModel()
     {
         this.configTypes = new String[0];
     }

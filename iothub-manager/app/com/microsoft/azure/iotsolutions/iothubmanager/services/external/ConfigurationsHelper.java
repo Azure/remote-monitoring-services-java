@@ -55,11 +55,8 @@ public class ConfigurationsHelper {
         configuration.setPriority(model.getPriority());
         configuration.setEtag("");
 
-        if(configuration.getLabels() == null) {
-            configuration.setLabels(new HashMap<>());
-        }
-
-        final Map<String, String> labels = configuration.getLabels();
+        final HashMap<String, String> labels = (pkgConfiguration.getLabels() != null) ? pkgConfiguration.getLabels() :
+                                                                                        new HashMap<>();
 
         // Required labels
         labels.put(PACKAGE_TYPE_LABEL, model.getPackageType().toString());
@@ -68,18 +65,23 @@ public class ConfigurationsHelper {
         labels.put(DEPLOYMENT_GROUP_ID_LABEL, deploymentGroup.getId());
         labels.put(RM_CREATED_LABEL, Boolean.TRUE.toString());
 
-        Map<String, String> customMetrics = pkgConfiguration.getMetrics().getQueries();
-        if (customMetrics != null)
-        {
-            configuration.getMetrics().setQueries(customMetrics);
-        }
-
         // Add optional labels
         if (deploymentGroup.getName() != null) {
             labels.put(DEPLOYMENT_GROUP_NAME_LABEL, deploymentGroup.getName());
         }
         if (model.getPackageName() != null) {
             labels.put(DEPLOYMENT_PACKAGE_NAME_LABEL, model.getPackageName());
+        }
+
+        if (labels != null)
+        {
+            configuration.setLabels(labels);
+        }
+
+        Map<String, String> customMetrics = pkgConfiguration.getMetrics().getQueries();
+        if (customMetrics != null)
+        {
+            configuration.getMetrics().setQueries(customMetrics);
         }
 
         return configuration;

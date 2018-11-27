@@ -3,10 +3,7 @@
 package com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.microsoft.azure.iotsolutions.uiconfig.services.models.ConfigType;
-import com.microsoft.azure.iotsolutions.uiconfig.services.models.Package;
-import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.Version;
-import org.apache.commons.lang3.StringUtils;
+import com.microsoft.azure.iotsolutions.uiconfig.services.models.PackageServiceModel;
 
 import java.util.Hashtable;
 import java.util.stream.Collectors;
@@ -38,7 +35,7 @@ public class PackageListApiModel {
     public PackageListApiModel() {
     }
 
-    public PackageListApiModel(Iterable<Package> models) {
+    public PackageListApiModel(Iterable<PackageServiceModel> models) {
         this.items = StreamSupport.stream(models.spliterator(), false)
                 .map(m -> new PackageApiModel(m)).collect(Collectors.toList());
     }

@@ -5,7 +5,7 @@ package com.microsoft.azure.iotsolutions.uiconfig.services.models;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum ConfigType {
-    firmwareUpdate("FirmwareUpdate"),
+    firmware("Firmware"),
     custom("Custom");
 
     private final String value;

@@ -5,7 +5,7 @@ package com.microsoft.azure.iotsolutions.uiconfig.services.models;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.StringUtils;
 
-public class Package {
+public class PackageServiceModel {
     private String id;
     private String name;
     private PackageType packageType;
@@ -13,10 +13,10 @@ public class Package {
     private String content;
     private String dateCreated;
 
-    public Package() {
+    public PackageServiceModel() {
     }
 
-    public Package(
+    public PackageServiceModel(
             String id,
             String name,
             PackageType packageType,
@@ -25,7 +25,7 @@ public class Package {
         this(id, name, packageType, configType, content, StringUtils.EMPTY);
     }
 
-    public Package(
+    public PackageServiceModel(
             String id,
             String name,
             PackageType packageType,

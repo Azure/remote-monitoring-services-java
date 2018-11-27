@@ -3,7 +3,7 @@
 package com.microsoft.azure.iotsolutions.iothubmanager.services.models;
 
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeviceStatus.DefaultDeviceStatus;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeviceStatus.FirmwareUpdateMxChipStatusQueries;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeviceStatus.FirmwareStatusQueries;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeviceStatus.EdgeDeviceStatusQueries;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +13,7 @@ public class DeviceStatusQueries {
     private static Map<String, Map<DeviceStatusQueries.QueryType, String>> admQueryMapping =
             new HashMap<String, Map<DeviceStatusQueries.QueryType, String>>() {
         {
-            put(ConfigType.firmwareUpdate.toString(), FirmwareUpdateMxChipStatusQueries.queries);
+            put(ConfigType.firmware.toString(), FirmwareStatusQueries.queries);
         }
     };
 

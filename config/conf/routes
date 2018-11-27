@@ -21,8 +21,8 @@ DELETE        /v1/devicegroups/:id                  @com.microsoft.azure.iotsolu
 GET           /v1/configtypes                       @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.ConfigTypeController.getAllConfigTypesAsync
 GET           /v1/configtypes/                      @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.ConfigTypeController.getAllConfigTypesAsync
 
-GET           /v1/packages/                         @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.PackageController.getFilteredAsync(packageType ?=null, configType ?=null)
-GET           /v1/packages                          @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.PackageController.getFilteredAsync(packageType ?=null, configType ?=null)
+GET           /v1/packages/                         @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.PackageController.getFilteredAsync(packagetype ?=null, configtype ?=null)
+GET           /v1/packages                          @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.PackageController.getFilteredAsync(packagetype ?=null, configtype ?=null)
 
 GET           /v1/packages/:id                      @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.PackageController.getAsync(id)
 

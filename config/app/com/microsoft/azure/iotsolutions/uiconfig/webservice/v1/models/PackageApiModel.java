@@ -3,7 +3,7 @@
 package com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.microsoft.azure.iotsolutions.uiconfig.services.models.Package;
+import com.microsoft.azure.iotsolutions.uiconfig.services.models.PackageServiceModel;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.PackageType;
 
 public class PackageApiModel {
@@ -61,7 +61,7 @@ public class PackageApiModel {
         this.dateCreated = dateCreated;
     }
 
-    public PackageApiModel(Package model) {
+    public PackageApiModel(PackageServiceModel model) {
         this.id = model.getId();
         this.name = model.getName();
         this.packageType = model.getPackageType();
@@ -81,8 +81,8 @@ public class PackageApiModel {
         this.content = content;
     }
 
-    public Package ToServiceModel() {
-        return new Package(
+    public PackageServiceModel ToServiceModel() {
+        return new PackageServiceModel(
                 this.id,
                 this.name,
                 this.packageType,
