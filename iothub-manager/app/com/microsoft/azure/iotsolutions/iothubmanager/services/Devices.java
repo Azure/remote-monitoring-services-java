@@ -473,7 +473,9 @@ public final class Devices implements IDevices {
         }
 
         return this.getDevicesWithConnectedModules().thenApplyAsync(connectedModules -> {
-            return devicesList.stream().filter(device -> (device.getCapabilities() != null &&
+            return devicesList.stream()
+                    .filter(dvc -> twinsMap.containsKey(dvc.getDeviceId()))
+                    .filter(device -> (device.getCapabilities() != null &&
                     device.getCapabilities().isIotEdge()) || twinsMap.get(device.getDeviceId()).getIsEdgeDevice())
                     .filter(edgeDvc -> connectedModules.contains(edgeDvc.getDeviceId()))
                     .map(connectedEdgeDvc -> connectedEdgeDvc.getDeviceId())
