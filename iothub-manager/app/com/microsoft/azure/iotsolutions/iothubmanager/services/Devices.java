@@ -164,19 +164,21 @@ public final class Devices implements IDevices {
 
                             final Map<String, TwinServiceModel> twinsMap = twins.getLeft();
                             final String responseContinuationToken = twins.getRight();
+
+                            devices = devices.stream().filter(device -> twinsMap.containsKey(device
+                                    .getDeviceId()))
+                                    .collect(Collectors.toCollection(ArrayList::new));
                             final Set<String> connectedEdgeDevices = this.getConnectedEdgeDevices(devices,
                                     twinsMap).toCompletableFuture().get();
 
                             ArrayList<DeviceServiceModel> deviceList = new ArrayList<>();
                             for (Device azureDevice : devices) {
                                 String deviceId = azureDevice.getDeviceId();
-                                if (twinsMap.containsKey(deviceId)) {
-                                    deviceList.add(new DeviceServiceModel(
-                                            azureDevice,
-                                            twinsMap.get(deviceId),
-                                            this.iotHubHostName,
-                                            connectedEdgeDevices.contains(deviceId)));
-                                }
+                                deviceList.add(new DeviceServiceModel(
+                                        azureDevice,
+                                        twinsMap.get(deviceId),
+                                        this.iotHubHostName,
+                                        connectedEdgeDevices.contains(deviceId)));
                             }
 
                             return new DeviceServiceListModel(deviceList, responseContinuationToken);
@@ -460,7 +462,7 @@ public final class Devices implements IDevices {
      * connectivity of their modules. If any of the modules are connected than the edge device
      * should report as connected.
      * @param devicesList The list of devices to check
-     * @param twinsMap Map of associated twins for those devices<
+     * @param twinsMap Map of associated twins for those devices
      * @return Set of edge device ids
      */
     private CompletionStage<Set<String>> getConnectedEdgeDevices(List<Device> devicesList,
@@ -473,7 +475,8 @@ public final class Devices implements IDevices {
         }
 
         return this.getDevicesWithConnectedModules().thenApplyAsync(connectedModules -> {
-            return devicesList.stream().filter(device -> (device.getCapabilities() != null &&
+            return devicesList.stream()
+                    .filter(device -> (device.getCapabilities() != null &&
                     device.getCapabilities().isIotEdge()) || twinsMap.get(device.getDeviceId()).getIsEdgeDevice())
                     .filter(edgeDvc -> connectedModules.contains(edgeDvc.getDeviceId()))
                     .map(connectedEdgeDvc -> connectedEdgeDvc.getDeviceId())
