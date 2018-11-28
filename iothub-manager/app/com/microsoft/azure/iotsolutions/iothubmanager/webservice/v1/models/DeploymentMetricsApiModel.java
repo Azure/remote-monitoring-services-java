@@ -22,20 +22,7 @@ public class DeploymentMetricsApiModel {
     private Map<String, Long> customMetrics;
     private Map<String, DeploymentStatus> deviceStatuses;
 
-    @JsonProperty("SystemMetrics")
-    public Map<String, Long> getSystemMetrics() {
-        return this.systemMetrics;
-    }
-
-    @JsonProperty("CustomMetrics")
-    public Map<String, Long> getCustomMetrics() {
-        return this.customMetrics;
-    }
-
-    @JsonProperty("DeviceStatuses")
-    public Map<String, DeploymentStatus> getDeviceStatuses() {
-        return this.deviceStatuses;
-    }
+    public DeploymentMetricsApiModel() {}
 
     public DeploymentMetricsApiModel(DeploymentMetrics metricsServiceModel) {
 
@@ -91,5 +78,20 @@ public class DeploymentMetricsApiModel {
                 this.customMetrics.remove(PENDING_METRICS_KEY);
             }
         }
+    }
+
+    @JsonProperty("SystemMetrics")
+    public Map<String, Long> getSystemMetrics() {
+        return this.systemMetrics;
+    }
+
+    @JsonProperty("CustomMetrics")
+    public Map<String, Long> getCustomMetrics() {
+        return this.customMetrics;
+    }
+
+    @JsonProperty("DeviceStatuses")
+    public Map<String, DeploymentStatus> getDeviceStatuses() {
+        return this.deviceStatuses;
     }
 }
