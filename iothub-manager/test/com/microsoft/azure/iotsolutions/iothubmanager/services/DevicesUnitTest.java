@@ -5,25 +5,32 @@ package com.microsoft.azure.iotsolutions.iothubmanager.services;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.ExternalDependencyException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.external.IStorageAdapterClient;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.models.*;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.models.AuthenticationMechanismServiceModel;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.models.AuthenticationType;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeviceServiceListModel;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeviceServiceModel;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.models.TwinServiceListModel;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.models.TwinServiceModel;
 import com.microsoft.azure.sdk.iot.deps.twin.DeviceCapabilities;
 import com.microsoft.azure.sdk.iot.service.Device;
 import com.microsoft.azure.sdk.iot.service.DeviceStatus;
 import com.microsoft.azure.sdk.iot.service.RegistryManager;
-import com.microsoft.azure.sdk.iot.service.devicetwin.*;
+import com.microsoft.azure.sdk.iot.service.devicetwin.DeviceMethod;
+import com.microsoft.azure.sdk.iot.service.devicetwin.DeviceTwin;
+import com.microsoft.azure.sdk.iot.service.devicetwin.DeviceTwinDevice;
+import com.microsoft.azure.sdk.iot.service.devicetwin.QueryCollection;
+import com.microsoft.azure.sdk.iot.service.devicetwin.QueryCollectionResponse;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.experimental.theories.Theory;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.stubbing.Answer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +39,7 @@ import java.util.concurrent.CompletableFuture;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mock;
 
 @RunWith(JUnitParamsRunner.class)
 public class DevicesUnitTest {
@@ -124,7 +132,7 @@ public class DevicesUnitTest {
             when(this.deviceTwinClient.queryTwinCollection(matches(pattern))).thenReturn(this.queryCollection);
             when(this.deviceTwinClient.hasNext(this.queryCollection)).thenReturn(true, false);
 
-            final QueryCollectionResponse<DeviceTwinDevice> response = this.createQueryResponse(deviceId, moduleId);
+            final QueryCollectionResponse<DeviceTwinDevice> response = createQueryResponse(deviceId, moduleId);
             when(this.deviceTwinClient.next(eq(this.queryCollection), any())).thenReturn(response);
 
             // Act
@@ -147,7 +155,7 @@ public class DevicesUnitTest {
 
         when(this.deviceTwinClient.queryTwinCollection(matches(queryToMatch))).thenReturn(this.queryCollection);
         when(this.deviceTwinClient.hasNext(this.queryCollection)).thenReturn(true, false);
-        final QueryCollectionResponse<DeviceTwinDevice> response = this.createQueryResponse("test", "test");
+        final QueryCollectionResponse<DeviceTwinDevice> response = createQueryResponse("test", "test");
         when(this.deviceTwinClient.next(eq(this.queryCollection), any())).thenReturn(response);
 
         // Act
@@ -189,8 +197,31 @@ public class DevicesUnitTest {
         this.devices.createAsync(model);
     }
 
-    private QueryCollectionResponse<DeviceTwinDevice> createQueryResponse(String deviceId, String moduleId) {
-        final QueryCollectionResponse<DeviceTwinDevice> resp = Mockito.mock(QueryCollectionResponse.class);
+    @Test
+    public void connectedEdgeDeviceTest() throws Exception {
+        // Arrange
+        when(this.registry.getDevicesAsync(Mockito.anyInt())).thenReturn(
+                CompletableFuture.completedFuture(createTestListOfDevices())
+        );
+
+        when(this.deviceTwinClient.queryTwinCollection(Mockito.anyString())).thenReturn(this.queryCollection);
+        when(this.deviceTwinClient.hasNext(this.queryCollection)).thenReturn(true, false, true, false);
+        final QueryCollectionResponse<DeviceTwinDevice> response = createQueryResponse("device1",
+                "module1");
+        when(this.deviceTwinClient.next(eq(this.queryCollection), any())).thenReturn(response);
+
+        // Act
+        DeviceServiceListModel result = this.devices.queryAsync("", "").toCompletableFuture().get();
+
+        // Assert
+        assertEquals(1, result.getItems().size());
+        assertEquals("device1", result.getItems().get(0).getId());
+        assertTrue(result.getItems().get(0).getIsEdgeDevice());
+    }
+
+    private static QueryCollectionResponse<DeviceTwinDevice> createQueryResponse(String deviceId, String
+            moduleId) {
+        final QueryCollectionResponse<DeviceTwinDevice> resp = mock(QueryCollectionResponse.class);
 
         final List<DeviceTwinDevice> respList = new ArrayList<>();
         respList.add(new DeviceTwinDevice(deviceId, moduleId));
@@ -199,12 +230,23 @@ public class DevicesUnitTest {
         return resp;
     }
 
-    private static Device createTestDevice(boolean isEdgeDevice)
+    private static Device createTestDevice(final String deviceId, boolean isEdgeDevice)
     {
-        Device dvc = Device.createFromId("deviceId", DeviceStatus.Enabled, null);
+        Device dvc = Device.createFromId(deviceId, DeviceStatus.Enabled, null);
         DeviceCapabilities capabilities = new DeviceCapabilities();
         capabilities.setIotEdge(isEdgeDevice);
         dvc.setCapabilities(capabilities);
         return dvc;
+    }
+
+    /**
+     * Returns a set of edge and non-edge devices
+     */
+    private static ArrayList<Device> createTestListOfDevices()
+    {
+        ArrayList<Device> devices = new ArrayList<>();
+        devices.add(DevicesUnitTest.createTestDevice("device0", false));
+        devices.add(DevicesUnitTest.createTestDevice("device1", true));
+        return devices;
     }
 }
