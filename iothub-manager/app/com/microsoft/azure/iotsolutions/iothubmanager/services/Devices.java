@@ -165,9 +165,9 @@ public final class Devices implements IDevices {
                             final Map<String, TwinServiceModel> twinsMap = twins.getLeft();
                             final String responseContinuationToken = twins.getRight();
 
-                            devices = devices.stream().filter(device -> twinsMap.containsKey(device
-                                    .getDeviceId()))
-                                    .collect(Collectors.toCollection(ArrayList::new));
+                            devices = devices.stream()
+                                             .filter(device -> twinsMap.containsKey(device.getDeviceId()))
+                                             .collect(Collectors.toCollection(ArrayList::new));
                             final Set<String> connectedEdgeDevices = this.getConnectedEdgeDevices(devices,
                                     twinsMap).toCompletableFuture().get();
 
