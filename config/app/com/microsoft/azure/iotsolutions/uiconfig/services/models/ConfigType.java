@@ -4,13 +4,13 @@ package com.microsoft.azure.iotsolutions.uiconfig.services.models;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public enum PackageType {
-    edgeManifest("EdgeManifest"),
-    deviceConfiguration("DeviceConfiguration");
+public enum ConfigType {
+    firmware("Firmware"),
+    custom("Custom");
 
-    private String value;
+    private final String value;
 
-    PackageType(String value) {
+    ConfigType(String value) {
         this.value = value;
     }
 
@@ -19,6 +19,7 @@ public enum PackageType {
         return value;
     }
 
+    @Override
     public String toString() {
         return getValue();
     }

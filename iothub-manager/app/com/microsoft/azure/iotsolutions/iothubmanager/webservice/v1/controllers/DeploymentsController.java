@@ -6,7 +6,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.IDeployments;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.ExternalDependencyException;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidConfigurationException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidInputException;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.models.PackageType;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.auth.Authorize;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.ResourceNotFoundException;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models.DeploymentApiModel;
@@ -52,7 +54,7 @@ public class DeploymentsController extends Controller {
      */
     @Authorize("ReadAll")
     public CompletionStage<Result> getDeployment(final String id, boolean includeDeviceStatus) throws
-            ExternalDependencyException, InvalidInputException {
+            ExternalDependencyException, InvalidInputException, InvalidConfigurationException {
         if (StringUtils.isEmpty(id)) {
             throw new InvalidInputException("Must specify deployment id to retrieve");
         }
@@ -92,7 +94,11 @@ public class DeploymentsController extends Controller {
      * creation of the deployment. Details are provided in the inner exception.
      */
     @Authorize("CreateDeployments")
-    public CompletionStage<Result> postAsync() throws ExternalDependencyException, InvalidInputException {
+    public CompletionStage<Result> postAsync() throws
+            ExternalDependencyException,
+            InvalidInputException,
+            InvalidConfigurationException {
+
         final JsonNode json = request().body().asJson();
         final DeploymentApiModel deployment = fromJson(json, DeploymentApiModel.class);
 
@@ -110,6 +116,11 @@ public class DeploymentsController extends Controller {
 
         if (StringUtils.isEmpty(deployment.getName())) {
             throw new InvalidInputException("Name must be provided");
+        }
+
+        if (deployment.getPackageType().equals(PackageType.deviceConfiguration) &&
+                StringUtils.isEmpty(deployment.getConfigType())) {
+            throw new InvalidInputException("Configuration Type must be provided");
         }
 
         if (deployment.getPriority() < 0) {

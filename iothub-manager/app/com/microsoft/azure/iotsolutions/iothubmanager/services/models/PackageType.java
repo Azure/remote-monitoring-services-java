@@ -4,12 +4,13 @@ package com.microsoft.azure.iotsolutions.iothubmanager.services.models;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public enum DeploymentType {
-    edgeManifest("EdgeManifest");
+public enum PackageType {
+    edgeManifest("EdgeManifest"),
+    deviceConfiguration("DeviceConfiguration");
 
     private final String value;
 
-    DeploymentType(String value) {
+    PackageType(String value) {
         this.value = value;
     }
 

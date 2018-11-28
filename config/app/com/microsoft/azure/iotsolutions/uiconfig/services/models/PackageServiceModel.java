@@ -5,24 +5,37 @@ package com.microsoft.azure.iotsolutions.uiconfig.services.models;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.StringUtils;
 
-public class Package {
+public class PackageServiceModel {
     private String id;
     private String name;
-    private PackageType type;
+    private PackageType packageType;
+    private String configType;
     private String content;
     private String dateCreated;
 
-    public Package() {
+    public PackageServiceModel() {
     }
 
-    public Package(String id, String name, PackageType type, String content) {
-        this(id, name, type, content, StringUtils.EMPTY);
+    public PackageServiceModel(
+            String id,
+            String name,
+            PackageType packageType,
+            String configType,
+            String content) {
+        this(id, name, packageType, configType, content, StringUtils.EMPTY);
     }
 
-    public Package(String id, String name, PackageType type, String content, String dateCreated) {
+    public PackageServiceModel(
+            String id,
+            String name,
+            PackageType packageType,
+            String configType,
+            String content,
+            String dateCreated) {
         this.id = id;
         this.name = name;
-        this.type = type;
+        this.packageType = packageType;
+        this.configType = configType;
         this.content = content;
         this.dateCreated = dateCreated;
     }
@@ -46,13 +59,16 @@ public class Package {
     }
 
     @JsonProperty("Type")
-    public PackageType getType() {
-        return this.type;
+    public PackageType getPackageType() { return this.packageType; }
+
+    public void setPackageType(PackageType packageType) {
+        this.packageType = packageType;
     }
 
-    public void setType(PackageType type) {
-        this.type = type;
-    }
+    @JsonProperty("ConfigType")
+    public String getConfigType() { return this.configType; }
+
+    public void setConfigType(String configType) { this.configType = configType; }
 
     @JsonProperty("Content")
     public String getContent() {

@@ -4,8 +4,12 @@ package com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentServiceModel;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentType;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.models.PackageType;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeviceGroup;
+import com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.Version;
+
+import java.util.Dictionary;
+import java.util.Hashtable;
 
 public class DeploymentApiModel {
     private String id;
@@ -17,14 +21,15 @@ public class DeploymentApiModel {
     private String packageContent;
     private String packageName;
     private int priority;
-    private DeploymentType type;
+    private PackageType packageType;
+    private String configType;
     private DeploymentMetricsApiModel metrics;
 
     public DeploymentApiModel() {}
 
     public DeploymentApiModel(String deploymentName, String deviceGroupId, String deviceGroupName,
                               String deviceGroupQuery, String packageContent, String packageName,
-                              int priority, DeploymentType deploymentType) {
+                              int priority, PackageType packageType, String configType) {
         this.name = deploymentName;
         this.deviceGroupId = deviceGroupId;
         this.deviceGroupName = deviceGroupName;
@@ -32,7 +37,8 @@ public class DeploymentApiModel {
         this.packageContent = packageContent;
         this.packageName = packageName;
         this.priority = priority;
-        this.type = deploymentType;
+        this.packageType = packageType;
+        this.configType = configType;
     }
 
     public DeploymentApiModel(DeploymentServiceModel serviceModel) {
@@ -45,7 +51,8 @@ public class DeploymentApiModel {
         this.packageContent = serviceModel.getPackageContent();
         this.packageName = serviceModel.getPackageName();
         this.priority = serviceModel.getPriority();
-        this.type = serviceModel.getType();
+        this.packageType = serviceModel.getPackageType();
+        this.configType = serviceModel.getConfigType();
         this.metrics = new DeploymentMetricsApiModel(serviceModel.getDeploymentMetrics());
     }
 
@@ -90,9 +97,14 @@ public class DeploymentApiModel {
         return this.priority;
     }
 
-    @JsonProperty("Type")
-    public DeploymentType getType() {
-        return this.type;
+    @JsonProperty("PackageType")
+    public PackageType getPackageType() {
+        return this.packageType;
+    }
+
+    @JsonProperty("ConfigType")
+    public String getConfigType() {
+        return this.configType;
     }
 
     @JsonProperty("Metrics")
@@ -106,6 +118,15 @@ public class DeploymentApiModel {
                 this.packageContent,
                 this.packageName,
                 this.priority,
-                this.type);
+                this.packageType,
+                this.configType);
+    }
+
+    @JsonProperty("$metadata")
+    public Dictionary<String, String> getMetadata() {
+        return new Hashtable<String, String>() {{
+            put("$type", "Deployments;" + Version.NUMBER);
+            put("$uri", "/" + Version.PATH + "/deployments");
+        }};
     }
 }

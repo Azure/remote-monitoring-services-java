@@ -10,6 +10,7 @@ import com.microsoft.azure.iotsolutions.uiconfig.webservice.auth.Authorize;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.PackageType;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.exceptions.BadRequestException;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models.PackageApiModel;
+import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models.ConfigTypeListApiModel;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models.PackageListApiModel;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.EnumUtils;
@@ -23,32 +24,46 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
 
 import static play.libs.Json.toJson;
 
 @Singleton
-public class PackageController extends Controller {
+public class PackagesController extends Controller {
 
     private final IStorage storage;
-    private static final String PACKAGE_TYPE_PARAM = "Type";
+    private static final String PACKAGE_TYPE_PARAM = "PackageType";
+    private static final String PACKAGE_CONFIG_TYPE_PARAM = "ConfigType";
     private static final String FILE_PARAM = "Package";
 
     @Inject
-    public PackageController(IStorage storage) {
+    public PackagesController(IStorage storage) {
         this.storage = storage;
     }
 
     /**
-     * Retrieve all previously uploaded packages
-     * @return {@link PackageListApiModel}
+     * This function can be used to get packages with or without parameters
+     * PackageType, ConfigType. Without both the query params this will return all
+     * the packages. With only packageType the method will return packages of that packageType.
+     * If only configType is provided the method will throw an Exception.
      */
     @Authorize("ReadAll")
-    public CompletionStage<Result> getAllAsync() throws BaseException {
-        return storage.getAllPackagesAsync().thenApplyAsync(m -> ok(toJson(new PackageListApiModel(m))));
+    public CompletionStage<Result> getFilteredAsync(String packageType, String configType) throws BaseException,
+            BadRequestException, ExecutionException, InterruptedException {
+
+        if (StringUtils.isBlank(packageType) && StringUtils.isBlank(configType)) {
+            return storage.getAllPackagesAsync().thenApplyAsync(m -> ok(toJson(new PackageListApiModel(m))));
+        }
+
+        if (StringUtils.isBlank(packageType)) {
+            throw new BadRequestException("Package Type is empty");
+        }
+        return storage.getFilteredPackagesAsync(packageType, configType)
+                .thenApplyAsync(m -> ok(toJson(new PackageListApiModel(m))));
     }
 
     /**
-     * Get a previously created from storage.
+     * Get a list of previously created Packages from storage
      * @param id The id of the package to retrieve from storage.
      * @return {@link PackageApiModel}
      */
@@ -58,17 +73,27 @@ public class PackageController extends Controller {
     }
 
     /**
-     * Create a package form a multipart form post which expects
+     * Create a package from a multipart form post which expects
      * a "type" and a file uploaded with the name "package".
      * @return Returns the result in the form of {@link PackageApiModel}
      */
     @Authorize("CreatePackages")
-    public CompletionStage<Result> createAsync() throws BaseException, BadRequestException, IOException {
+    public CompletionStage<Result> createAsync() throws
+            BaseException,
+            BadRequestException,
+            IOException,
+            ExecutionException,
+            InterruptedException {
         final MultipartFormData formData = request().body().asMultipartFormData();
         if (formData == null) {
             throw new BadRequestException("Multipart form-data is empty");
         }
 
+        /**
+         * The form is sending multipart form/data content type. This is so that the form data can handle any possible
+         * form input types that may come in. In this case it is just a single value for each field, but if we ever
+         * included multiple file select for example then it could be more values.
+         */
         final Map<String, String[]> data = formData.asFormUrlEncoded();
         if(!data.containsKey(PACKAGE_TYPE_PARAM) ||
                 ArrayUtils.isEmpty(data.get(PACKAGE_TYPE_PARAM)) ||
@@ -85,8 +110,23 @@ public class PackageController extends Controller {
 
         final String content = new String(Files.readAllBytes(file.getFile().toPath()));
         final String packageType = data.get(PACKAGE_TYPE_PARAM)[0];
+        String configType = data.get(PACKAGE_CONFIG_TYPE_PARAM)[0];
+
+        if (packageType.equals(PackageType.edgeManifest.toString()) &&
+                !(StringUtils.isBlank(configType))) {
+            throw new BadRequestException("Package of type EdgeManifest cannot have parameter " +
+                    "configType.");
+        }
+
+        if (configType == null) {
+            configType = StringUtils.EMPTY;
+        }
+
         final PackageApiModel input = new PackageApiModel(file.getFilename(),
-                EnumUtils.getEnumIgnoreCase(PackageType.class, packageType), content);
+                EnumUtils.getEnumIgnoreCase(PackageType.class, packageType),
+                configType,
+                content);
+
         return storage.addPackageAsync(input.ToServiceModel()).thenApplyAsync(m -> ok(toJson(new
                 PackageApiModel(m))));
     }
@@ -99,4 +139,5 @@ public class PackageController extends Controller {
     public CompletionStage<Result> deleteAsync(String id) throws BaseException {
         return storage.deletePackageAsync(id).thenApplyAsync(m -> ok());
     }
+
 }

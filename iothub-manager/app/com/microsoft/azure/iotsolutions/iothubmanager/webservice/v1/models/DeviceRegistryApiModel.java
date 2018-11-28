@@ -94,7 +94,7 @@ public final class DeviceRegistryApiModel {
         return this.isEdgeDevice;
     }
 
-    public void setIsEdgeDevice(Boolean isEdgeDevice) {
+    public void setIsEdgeDevice(boolean isEdgeDevice) {
         this.isEdgeDevice = isEdgeDevice;
     }
 

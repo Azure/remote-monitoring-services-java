@@ -15,8 +15,8 @@ public final class TwinServiceModel {
     private String moduleId;
     private TwinProperties properties;
     private HashMap<String, Object> tags;
-    private Boolean isEdgeDevice;
-    private Boolean isSimulated;
+    private boolean isEdgeDevice;
+    private boolean isSimulated;
     private static final String SIMULATED_KEY = "IsSimulated";
 
     public TwinServiceModel() {}
@@ -26,7 +26,7 @@ public final class TwinServiceModel {
         final String deviceId,
         final TwinProperties properties,
         final HashMap<String, Object> tags,
-        final Boolean isSimulated) {
+        final boolean isSimulated) {
         this(eTag, deviceId, null, properties, tags,
                 isSimulated, false);
     }
@@ -37,8 +37,8 @@ public final class TwinServiceModel {
             final String moduleId,
             final TwinProperties properties,
             final HashMap<String, Object> tags,
-            final Boolean isSimulated,
-            final Boolean isEdgeDevice) {
+            final boolean isSimulated,
+            final boolean isEdgeDevice) {
 
         this.eTag = eTag;
         this.deviceId = deviceId;
@@ -99,7 +99,7 @@ public final class TwinServiceModel {
     }
 
     @JsonProperty("IsEdgeDevice")
-    public Boolean getIsEdgeDevice() {
+    public boolean getIsEdgeDevice() {
         return this.isEdgeDevice;
     }
 

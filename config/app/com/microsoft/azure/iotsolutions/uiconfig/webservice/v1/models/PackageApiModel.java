@@ -3,16 +3,47 @@
 package com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.microsoft.azure.iotsolutions.uiconfig.services.models.Package;
+import com.microsoft.azure.iotsolutions.uiconfig.services.models.PackageServiceModel;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.PackageType;
 
 public class PackageApiModel {
 
     private String id;
     private String name;
-    private PackageType type;
+    private PackageType packageType;
+    private String configType;
     private String dateCreated;
     private String content;
+
+    public PackageApiModel(PackageServiceModel model) {
+        this.id = model.getId();
+        this.name = model.getName();
+        this.packageType = model.getPackageType();
+        this.configType = model.getConfigType();
+        this.content = model.getContent();
+        this.dateCreated = model.getDateCreated();
+    }
+
+    public PackageApiModel(
+            String name,
+            PackageType packageType,
+            String config,
+            String content) {
+        this.name = name;
+        this.packageType = packageType;
+        this.configType = config;
+        this.content = content;
+    }
+
+    public PackageServiceModel ToServiceModel() {
+        return new PackageServiceModel(
+                this.id,
+                this.name,
+                this.packageType,
+                this.configType,
+                this.content,
+                this.dateCreated);
+    }
 
     @JsonProperty("Id")
     public String getId() {
@@ -32,14 +63,15 @@ public class PackageApiModel {
         this.name = name;
     }
 
-    @JsonProperty("Type")
-    public PackageType getType() {
-        return this.type;
-    }
+    @JsonProperty("PackageType")
+    public PackageType getPackageType() { return this.packageType; }
 
-    public void setType(PackageType type) {
-        this.type = type;
-    }
+    public void setPackageType(PackageType packageType) { this.packageType = packageType;}
+
+    @JsonProperty("ConfigType")
+    public String getConfigType() { return this.configType; }
+
+    public void setConfigType(String configType) { this.configType = configType; }
 
     @JsonProperty("Content")
     public String getContent() {
@@ -57,23 +89,5 @@ public class PackageApiModel {
 
     public void setDateCreated(String dateCreated) {
         this.dateCreated = dateCreated;
-    }
-
-    public PackageApiModel(Package model) {
-        this.id = model.getId();
-        this.name = model.getName();
-        this.type = model.getType();
-        this.content = model.getContent();
-        this.dateCreated = model.getDateCreated();
-    }
-
-    public PackageApiModel(String name, PackageType type, String content) {
-        this.name = name;
-        this.type = type;
-        this.content = content;
-    }
-
-    public Package ToServiceModel() {
-        return new Package(this.id, this.name, this.type, this.content, this.dateCreated);
     }
 }
