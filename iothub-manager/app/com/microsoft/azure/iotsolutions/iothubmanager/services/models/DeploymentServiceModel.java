@@ -41,6 +41,7 @@ public class DeploymentServiceModel {
         this.configType = configType;
     }
 
+    // IoT SDK's configurations is a deployment for RM.
     public DeploymentServiceModel(Configuration deployment) throws
             InvalidInputException,
             InvalidConfigurationException {
