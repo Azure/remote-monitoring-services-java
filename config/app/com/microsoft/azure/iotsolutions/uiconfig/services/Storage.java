@@ -161,8 +161,8 @@ public class Storage implements IStorage {
     public CompletionStage<Iterable<DeviceGroup>> getAllDeviceGroupsAsync() throws BaseException {
         return client.getAllAsync(DeviceGroupCollectionId).thenApplyAsync(m -> {
             return StreamSupport.stream(m.Items.spliterator(), false)
-                                .map(Storage::createGroup)
-                                .collect(Collectors.toList());
+                    .map(Storage::createGroup)
+                    .collect(Collectors.toList());
         });
     }
 
@@ -176,17 +176,13 @@ public class Storage implements IStorage {
     @Override
     public CompletionStage<DeviceGroup> createDeviceGroupAsync(DeviceGroup input) throws BaseException {
         String value = toJson(input);
-        return client.createAsync(DeviceGroupCollectionId, value).thenApplyAsync(m ->
-                createGroup(m)
-        );
+        return client.createAsync(DeviceGroupCollectionId, value).thenApplyAsync(m -> createGroup(m));
     }
 
     @Override
     public CompletionStage<DeviceGroup> updateDeviceGroupAsync(String id, DeviceGroup input, String etag) throws BaseException {
         String value = toJson(input);
-        return client.updateAsync(DeviceGroupCollectionId, id, value, etag).thenApplyAsync(m ->
-                createGroup(m)
-        );
+        return client.updateAsync(DeviceGroupCollectionId, id, value, etag).thenApplyAsync(m -> createGroup(m));
     }
 
     @Override
@@ -199,12 +195,14 @@ public class Storage implements IStorage {
      */
     @Override
     public CompletionStage<Iterable<PackageServiceModel>> getAllPackagesAsync() throws BaseException {
-        return this.client.getAllAsync(PackagesCollectionId).thenApplyAsync(p -> {
-            return StreamSupport.stream(p.Items.spliterator(), false)
-                    .filter(pckg -> !(pckg.getKey().equals(PackagesConfigTypeKey)))
-                    .map(Storage::createPackage)
-                    .collect(Collectors.toList());
-        });
+        return this.client
+                .getAllAsync(PackagesCollectionId)
+                .thenApplyAsync(p -> {
+                    return StreamSupport.stream(p.Items.spliterator(), false)
+                            .filter(pckg -> !(pckg.getKey().equals(PackagesConfigTypeKey)))
+                            .map(Storage::createPackage)
+                            .collect(Collectors.toList());
+                });
     }
 
     /**
@@ -213,44 +211,36 @@ public class Storage implements IStorage {
     @Override
     public CompletionStage<Iterable<PackageServiceModel>> getFilteredPackagesAsync(String packageType, String configType)
             throws BaseException, ExecutionException, InterruptedException {
-        CompletionStage<Iterable<PackageServiceModel>> packages =  this.client.getAllAsync(PackagesCollectionId).thenApplyAsync(p ->
-        {
-            return StreamSupport.stream(p.Items.spliterator(), false)
-                    .filter(pckg -> !(pckg.getKey().equals(PackagesConfigTypeKey)))
-                    .map(Storage::createPackage)
-                    .collect(Collectors.toList());
-        });
+        CompletionStage<Iterable<PackageServiceModel>> packages = this.client
+                .getAllAsync(PackagesCollectionId)
+                .thenApplyAsync(p -> {
+                    return StreamSupport.stream(p.Items.spliterator(), false)
+                            .filter(pckg -> !(pckg.getKey().equals(PackagesConfigTypeKey)))
+                            .map(Storage::createPackage)
+                            .collect(Collectors.toList());
+                });
 
         boolean isPackageTypeEmpty = StringUtils.isBlank(packageType);
         boolean isConfigTypeEmpty = StringUtils.isBlank(configType);
 
-        if (!isPackageTypeEmpty && !isConfigTypeEmpty)
-        {
+        if (!isPackageTypeEmpty && !isConfigTypeEmpty) {
             return CompletableFuture.completedFuture(StreamSupport.stream(
                     packages.toCompletableFuture().get().spliterator(),
                     false)
                     .filter(pckg -> (
                             pckg.getPackageType().toString().equals(packageType) &&
-                            pckg.getConfigType().equals(configType))
+                                    pckg.getConfigType().equals(configType))
                     )
                     .collect(Collectors.toList()));
-        }
-        else if (!isPackageTypeEmpty && isConfigTypeEmpty)
-        {
-            return CompletableFuture.completedFuture(StreamSupport.stream(
-                    packages.toCompletableFuture().get().spliterator(),
-                    false)
-                    .filter(pckg -> (
-                            pckg.getPackageType().toString().equals(packageType)
-                    )).collect(Collectors.toList()));
-        }
-        else if (isPackageTypeEmpty && !isConfigTypeEmpty)
-        {
+        } else if (!isPackageTypeEmpty && isConfigTypeEmpty) {
+            return CompletableFuture.completedFuture(
+                    StreamSupport.stream(packages.toCompletableFuture().get().spliterator(), false)
+                            .filter(pckg -> (pckg.getPackageType().toString().equals(packageType)))
+                            .collect(Collectors.toList()));
+        } else if (isPackageTypeEmpty && !isConfigTypeEmpty) {
             // Non-empty ConfigType with empty PackageType indicates invalid packages
             throw new InvalidInputException("Package Type cannot be empty.");
-        }
-        else
-        {
+        } else {
             // Return all packages when ConfigType & PackageType are empty.
             return packages;
         }
@@ -262,9 +252,11 @@ public class Storage implements IStorage {
     @Override
     public CompletionStage<ConfigTypeListServiceModel> getAllConfigTypesAsync() throws BaseException {
         try {
-            return this.client.getAsync(PackagesCollectionId, PackagesConfigTypeKey).thenApplyAsync(p -> {
-                return fromJson(p.getData(), ConfigTypeListServiceModel.class);
-            });
+            return this.client
+                    .getAsync(PackagesCollectionId, PackagesConfigTypeKey)
+                    .thenApplyAsync(p -> {
+                        return fromJson(p.getData(), ConfigTypeListServiceModel.class);
+                    });
         } catch (ResourceNotFoundException e) {
             log.debug("Document config-types has not been created.");
             // Return empty list of configTypes.
@@ -277,9 +269,11 @@ public class Storage implements IStorage {
      */
     @Override
     public CompletionStage<PackageServiceModel> getPackageAsync(String id) throws BaseException {
-        return this.client.getAsync(PackagesCollectionId, id).thenApplyAsync(p -> {
-            return Storage.createPackage(p);
-        });
+        return this.client
+                .getAsync(PackagesCollectionId, id)
+                .thenApplyAsync(p -> {
+                    return Storage.createPackage(p);
+                });
     }
 
     /**
@@ -289,15 +283,14 @@ public class Storage implements IStorage {
     public CompletionStage<PackageServiceModel> addPackageAsync(PackageServiceModel input) throws
             BaseException,
             ExecutionException,
-            InterruptedException{
+            InterruptedException {
 
         boolean isValidPackage = this.isValidPackage(input);
         if (!isValidPackage) {
-            String msg = String.format("Package provided is a invalid deployment manifest " +
-                         "for packageType %s", input.getPackageType());
+            String msg = String.format("Package provided is invalid for package type %s", input.getPackageType());
 
             msg = input.getPackageType().equals(PackageType.deviceConfiguration) ?
-                         String.format("and configuration type %s", input.getConfigType()) : StringUtils.EMPTY;;
+                    String.format("and configuration type %s", input.getConfigType()) : StringUtils.EMPTY;
 
             throw new InvalidInputException(msg);
         }
@@ -307,7 +300,7 @@ public class Storage implements IStorage {
             if (config.getContent() == null) {
                 throw new InvalidInputException("Manifest provided is valid json but not a valid manifest");
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             final String message = "Package provided is not a valid deployment manifest";
             log.error(message, e);
             throw new InvalidInputException(message);
@@ -317,12 +310,10 @@ public class Storage implements IStorage {
         final String value = toJson(input);
 
         CompletionStage<PackageServiceModel> result = client.createAsync(PackagesCollectionId, value)
-                .thenApplyAsync(p ->
-                    Storage.createPackage(p)
-                );
+                .thenApplyAsync(p -> Storage.createPackage(p));
 
         if (!(StringUtils.isBlank(input.getConfigType())) &&
-            input.getPackageType().equals(PackageType.deviceConfiguration)) {
+                input.getPackageType().equals(PackageType.deviceConfiguration)) {
             this.updateConfigTypeAsync(input.getConfigType());
         }
 
@@ -333,17 +324,15 @@ public class Storage implements IStorage {
             BaseException,
             ExecutionException,
             InterruptedException {
-            ConfigTypeListServiceModel list;
+
+        ConfigTypeListServiceModel list;
 
         try {
-            CompletionStage<ConfigTypeListServiceModel> configs = this.client.getAsync(
-                    PackagesCollectionId,
-                    PackagesConfigTypeKey)
-                    .thenApplyAsync(p -> {
-                        return fromJson(p.getData(), ConfigTypeListServiceModel.class);
-                    });
+            CompletionStage<ConfigTypeListServiceModel> configs = this.client
+                    .getAsync( PackagesCollectionId, PackagesConfigTypeKey)
+                    .thenApplyAsync(p -> { return fromJson(p.getData(), ConfigTypeListServiceModel.class); });
             list = configs.toCompletableFuture().get();
-        } catch(ResourceNotFoundException e) {
+        } catch (ResourceNotFoundException e) {
             log.debug("Config Types have not been created.");
             // Return empty Config types
             list = new ConfigTypeListServiceModel();
@@ -375,9 +364,8 @@ public class Storage implements IStorage {
     }
 
     private Boolean isValidPackage(PackageServiceModel input) {
-        IPackageValidator validator = PackageValidatorFactory.GetValidator(
-                input.getPackageType(),
-                input.getConfigType());
+        IPackageValidator validator = PackageValidatorFactory
+                .GetValidator( input.getPackageType(), input.getConfigType());
         // Bypass validation for custom config type
         return validator == null || validator.validate();
     }
@@ -404,8 +392,8 @@ public class Storage implements IStorage {
     }
 
     private CompletionStage<Logo> updateLogoAsync(String value) throws BaseException {
-        return client.updateAsync(SolutionCollectionId, LogoKey, value, "*").thenApplyAsync(m ->
-                fromJson(m.getData(), Logo.class)
-        );
+        return client
+                .updateAsync(SolutionCollectionId, LogoKey, value, "*")
+                .thenApplyAsync(m -> fromJson(m.getData(), Logo.class));
     }
 }
