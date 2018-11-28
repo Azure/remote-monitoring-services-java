@@ -9,7 +9,6 @@ import play.libs.Json;
 
 public abstract class PackageValidator implements IPackageValidator {
 
-
     @Override
     public JsonNode getPackageContent(String pckg) throws InvalidInputException {
         try

@@ -595,22 +595,20 @@ public class StorageTest {
         String configType = isEdgeManifest ? StringUtils.EMPTY : ConfigType.firmware.toString();
 
         List<PackageServiceModel> resultPackages = new ArrayList<>();
-        this.storage.getFilteredPackagesAsync(packageType, configType)
-                                .toCompletableFuture().get().forEach(resultPackages::add);
 
-        // Assert
-        if (!isEdgeManifest)
+        try
         {
-            assertTrue((resultPackages.size() == 1));
-            PackageServiceModel pkg = resultPackages.get(0);
-            assertEquals(PackageType.deviceConfiguration, pkg.getPackageType());
-            assertEquals(ConfigType.firmware.toString(), pkg.getConfigType());
-        }
-        else
-        {
+            this.storage.getFilteredPackagesAsync(packageType, configType)
+                    .toCompletableFuture().get().forEach(resultPackages::add);
+
+            // Assert
             PackageServiceModel pkg = resultPackages.get(0);
             assertEquals(PackageType.edgeManifest, pkg.getPackageType());
             assertEquals(StringUtils.EMPTY, pkg.getConfigType());
+        }
+        catch (Exception e)
+        {
+            assertFalse(isEdgeManifest);
         }
     }
 

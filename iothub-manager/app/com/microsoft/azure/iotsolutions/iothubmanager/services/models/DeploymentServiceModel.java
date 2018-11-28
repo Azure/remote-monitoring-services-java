@@ -2,6 +2,7 @@
 
 package com.microsoft.azure.iotsolutions.iothubmanager.services.models;
 
+import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidConfigurationException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.external.ConfigurationsHelper;
 import com.microsoft.azure.sdk.iot.service.Configuration;
@@ -40,7 +41,10 @@ public class DeploymentServiceModel {
         this.configType = configType;
     }
 
-    public DeploymentServiceModel(Configuration deployment) throws InvalidInputException {
+    public DeploymentServiceModel(Configuration deployment) throws
+            InvalidInputException,
+            InvalidConfigurationException {
+
         if (StringUtils.isEmpty(deployment.getId())) {
             throw new InvalidInputException("Invalid id provided");
         }
@@ -73,16 +77,20 @@ public class DeploymentServiceModel {
         this.createdDateTimeUtc =  this.formatDateTimeToUTC(deployment.getCreatedTimeUtc());
         this.priority = deployment.getPriority();
 
-        if (deployment.getLabels().containsKey(ConfigurationsHelper.PACKAGE_TYPE_LABEL) &&
-            !(StringUtils.isBlank(deployment.getLabels().get(ConfigurationsHelper.PACKAGE_TYPE_LABEL))))
+        String deploymentLabel = deployment.getLabels().get(ConfigurationsHelper.PACKAGE_TYPE_LABEL);
+        if (!(StringUtils.isBlank(deploymentLabel)))
         {
-            if (deployment.getLabels().containsValue(PackageType.edgeManifest.toString()))
+            if (deploymentLabel.equals(PackageType.edgeManifest.toString()))
             {
                 this.packageType = PackageType.edgeManifest;
             }
-            else if (deployment.getLabels().containsValue(PackageType.deviceConfiguration.toString()))
+            else if (deploymentLabel.equals(PackageType.deviceConfiguration.toString()))
             {
                 this.packageType = PackageType.deviceConfiguration;
+            }
+            else
+            {
+                throw new InvalidConfigurationException("Deployment package type should not be empty.");
             }
         }
         else
@@ -96,6 +104,10 @@ public class DeploymentServiceModel {
             else if (deployment.getContent().getDeviceContent() != null)
             {
                 this.packageType = PackageType.deviceConfiguration;
+            }
+            else
+            {
+                throw new InvalidConfigurationException("Deployment package type should not be empty.");
             }
         }
 

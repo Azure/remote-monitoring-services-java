@@ -11,6 +11,6 @@ Unit Tests
 ## Conventions
 
 * For each class create a test class with "Test" suffix.
-* Flag all the tests with a type, e.g. `@Category({UnitTest.class})`
+* Flag all the tests with a packageType, e.g. `@Category({UnitTest.class})`
 * Store the Integration Tests under `it/` and use the
   `@Category({IntegrationTest.class})` attribute

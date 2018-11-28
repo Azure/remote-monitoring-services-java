@@ -4,7 +4,7 @@ package com.microsoft.azure.iotsolutions.uiconfig.services.external.PackageValid
 
 public class EdgePackageValidator extends PackageValidator{
 
-    //TODO: Implement validation for Edge packages
+    // TODO: Implement validation for Edge packages
     @Override
     public Boolean validate() {
         return true;

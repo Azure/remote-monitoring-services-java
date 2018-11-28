@@ -50,11 +50,11 @@ public class PackageController extends Controller {
     public CompletionStage<Result> getFilteredAsync(String packageType, String configType) throws BaseException,
             BadRequestException, ExecutionException, InterruptedException {
 
-        if (packageType == null && configType == null) {
+        if (StringUtils.isBlank(packageType) && StringUtils.isBlank(configType)) {
             return storage.getAllPackagesAsync().thenApplyAsync(m -> ok(toJson(new PackageListApiModel(m))));
         }
 
-        if (packageType == null) {
+        if (StringUtils.isBlank(packageType)) {
             throw new BadRequestException("Package Type is empty");
         }
         return storage.getFilteredPackagesAsync(packageType, configType)

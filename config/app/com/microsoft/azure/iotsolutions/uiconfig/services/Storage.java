@@ -246,16 +246,8 @@ public class Storage implements IStorage {
         }
         else if (isPackageTypeEmpty && !isConfigTypeEmpty)
         {
-            // Non-empty ConfigType with empty PackageType indicates Packages of type
-            // DeviceConfiguration
-            return CompletableFuture.completedFuture(StreamSupport.stream(
-                    packages.toCompletableFuture().get().spliterator(),
-                    false)
-                    .filter(pckg -> (
-                            pckg.getPackageType().toString().equals(PackageType.deviceConfiguration.toString()) &&
-                                    pckg.getConfigType().equals(configType))
-                    )
-                    .collect(Collectors.toList()));
+            // Non-empty ConfigType with empty PackageType indicates invalid packages
+            throw new InvalidInputException("Package Type cannot be empty.");
         }
         else
         {

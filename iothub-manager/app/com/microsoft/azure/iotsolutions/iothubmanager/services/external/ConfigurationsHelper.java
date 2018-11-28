@@ -8,6 +8,7 @@ import com.microsoft.azure.iotsolutions.iothubmanager.services.models.Deployment
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.PackageType;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeviceGroup;
 import com.microsoft.azure.sdk.iot.service.Configuration;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import play.libs.Json;
@@ -26,7 +27,6 @@ public class ConfigurationsHelper {
     public static final String DEPLOYMENT_GROUP_ID_LABEL = "DeviceGroupId";
     public static final String DEPLOYMENT_GROUP_NAME_LABEL = "DeviceGroupName";
     public static final String DEPLOYMENT_PACKAGE_NAME_LABEL = "PackageName";
-
     public static final String RM_CREATED_LABEL = "RMDeployment";
 
     public static Configuration toHubConfiguration(final DeploymentServiceModel model) throws InvalidInputException {
@@ -40,7 +40,8 @@ public class ConfigurationsHelper {
             throw new InvalidInputException("Deployment type does not match with package contents.");
         }
             else if (model.getPackageType().equals(PackageType.deviceConfiguration) &&
-                pkgConfiguration.getContent() != null && pkgConfiguration.getContent().getModulesContent().size() != 0)
+                pkgConfiguration.getContent() != null &&
+                MapUtils.isNotEmpty(pkgConfiguration.getContent().getModulesContent()))
         {
             throw new InvalidInputException("Deployment type does not match with package contents.");
         }
@@ -55,8 +56,8 @@ public class ConfigurationsHelper {
         configuration.setPriority(model.getPriority());
         configuration.setEtag("");
 
-        final HashMap<String, String> labels = (pkgConfiguration.getLabels() != null) ? pkgConfiguration.getLabels() :
-                                                                                        new HashMap<>();
+        final HashMap<String, String> labels = (pkgConfiguration.getLabels() != null) ?
+                pkgConfiguration.getLabels() : new HashMap<>();
 
         // Required labels
         labels.put(PACKAGE_TYPE_LABEL, model.getPackageType().toString());
