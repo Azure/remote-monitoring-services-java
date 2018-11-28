@@ -14,7 +14,7 @@ public class DeploymentMetricsApiModel {
 
     private static final String APPLIED_METRICS_KEY = "appliedCount";
     private static final String TARGETED_METRICS_KEY = "targetedCount";
-    private static final String SUCCESSFUL_METRICS_KEY = "successfullCount";
+    private static final String SUCCESEEDED_METRICS_KEY = "succeededCount";
     private static final String FAILED_METRICS_KEY = "failedCount";
     private static final String PENDING_METRICS_KEY = "pendingCount";
 
@@ -60,10 +60,10 @@ public class DeploymentMetricsApiModel {
 
         if (this.customMetrics != null) {
             // Override System metrics if custom metric contain same metrics
-            if (this.customMetrics.containsKey(SUCCESSFUL_METRICS_KEY)) {
-                this.systemMetrics.put(SUCCESSFUL_METRICS_KEY,
-                        this.customMetrics.get(SUCCESSFUL_METRICS_KEY));
-                this.customMetrics.remove(SUCCESSFUL_METRICS_KEY);
+            if (this.customMetrics.containsKey(SUCCESEEDED_METRICS_KEY)) {
+                this.systemMetrics.put(SUCCESEEDED_METRICS_KEY,
+                        this.customMetrics.get(SUCCESEEDED_METRICS_KEY));
+                this.customMetrics.remove(SUCCESEEDED_METRICS_KEY);
             }
 
             if (this.customMetrics.containsKey(FAILED_METRICS_KEY)) {
