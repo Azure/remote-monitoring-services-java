@@ -11,12 +11,10 @@ public abstract class PackageValidator implements IPackageValidator {
 
     @Override
     public JsonNode getPackageContent(String pckg) throws InvalidInputException {
-        try
-        {
+        try {
             return Json.parse(pckg);
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             throw new InvalidInputException("Package provided is not a valid json.");
         }
     }

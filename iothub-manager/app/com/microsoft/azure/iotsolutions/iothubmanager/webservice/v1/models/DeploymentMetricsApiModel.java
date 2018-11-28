@@ -37,28 +37,21 @@ public class DeploymentMetricsApiModel {
         return this.deviceStatuses;
     }
 
-    public DeploymentMetricsApiModel() {
-    }
-
     public DeploymentMetricsApiModel(DeploymentMetrics metricsServiceModel) {
 
         this.systemMetrics = new HashMap<String, Long>();
 
-        if (this.systemMetrics.get(APPLIED_METRICS_KEY) != null)
-        {
+        if (this.systemMetrics.get(APPLIED_METRICS_KEY) != null) {
             this.systemMetrics.put(APPLIED_METRICS_KEY, this.systemMetrics.get(APPLIED_METRICS_KEY));
         }
-        else
-        {
+        else {
             this.systemMetrics.put(APPLIED_METRICS_KEY, 0L);
         }
 
-        if (this.systemMetrics.get(TARGETED_METRICS_KEY) != null)
-        {
+        if (this.systemMetrics.get(TARGETED_METRICS_KEY) != null) {
             this.systemMetrics.put(TARGETED_METRICS_KEY, this.systemMetrics.get(TARGETED_METRICS_KEY));
         }
-        else
-        {
+        else {
             this.systemMetrics.put(TARGETED_METRICS_KEY, 0L);
         }
 
@@ -69,8 +62,7 @@ public class DeploymentMetricsApiModel {
                 metricsServiceModel.getSystemMetrics() : this.systemMetrics;
         this.deviceStatuses = metricsServiceModel.getDeviceStatuses();
 
-        if (metricsServiceModel.getDeviceMetrics() != null)
-        {
+        if (metricsServiceModel.getDeviceMetrics() != null) {
             this.systemMetrics.put(SUCCESSFUL_METRICS_KEY,
                     metricsServiceModel.getDeviceMetrics().get(DeploymentStatus.Succeeded));
             this.systemMetrics.put(FAILED_METRICS_KEY,
@@ -79,25 +71,21 @@ public class DeploymentMetricsApiModel {
                     metricsServiceModel.getDeviceMetrics().get(DeploymentStatus.Pending));
         }
 
-        if (this.customMetrics != null)
-        {
+        if (this.customMetrics != null) {
             // Override System metrics if custom metric contain same metrics
-            if (this.customMetrics.containsKey(SUCCESSFUL_METRICS_KEY))
-            {
+            if (this.customMetrics.containsKey(SUCCESSFUL_METRICS_KEY)) {
                 this.systemMetrics.put(SUCCESSFUL_METRICS_KEY,
                         this.customMetrics.get(SUCCESSFUL_METRICS_KEY));
                 this.customMetrics.remove(SUCCESSFUL_METRICS_KEY);
             }
 
-            if (this.customMetrics.containsKey(FAILED_METRICS_KEY))
-            {
+            if (this.customMetrics.containsKey(FAILED_METRICS_KEY)) {
                 this.systemMetrics.put(FAILED_METRICS_KEY,
                         this.customMetrics.get(FAILED_METRICS_KEY));
                 this.customMetrics.remove(FAILED_METRICS_KEY);
             }
 
-            if (this.customMetrics.containsKey(PENDING_METRICS_KEY))
-            {
+            if (this.customMetrics.containsKey(PENDING_METRICS_KEY)) {
                 this.systemMetrics.put(PENDING_METRICS_KEY,
                         this.customMetrics.get(PENDING_METRICS_KEY));
                 this.customMetrics.remove(PENDING_METRICS_KEY);

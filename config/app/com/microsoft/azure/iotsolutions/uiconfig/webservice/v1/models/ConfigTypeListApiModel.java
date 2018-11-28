@@ -15,30 +15,27 @@ public class ConfigTypeListApiModel {
 
     public Hashtable<String, String> metadata;
 
-    public String[] getConfigTypes()
-    {
-        return configTypes;
+    public ConfigTypeListApiModel() {
+        this.configTypes = new String[0];
+
+        metadata = new Hashtable<String, String>();
+        metadata.put("$type", String.format("ConfigTypes;%s", Version.Number));
+        metadata.put("$url", String.format("/%s/configTypes/%s", Version.Path));
     }
 
-    public ConfigTypeListApiModel(ConfigTypeListServiceModel configTypeList)
-    {
+    public ConfigTypeListApiModel(ConfigTypeListServiceModel configTypeList) {
         this.configTypes = configTypeList.getConfigTypes();
+    }
+
+    public String[] getConfigTypes() { return configTypes; }
+
+    @JsonProperty("$metadata")
+    public Hashtable<String, String> getMetadata() {
+        return metadata;
     }
 
     public void setMetadata(Hashtable<String, String> metadata) {
         metadata = metadata;
     }
 
-    public ConfigTypeListApiModel()
-    {
-        this.configTypes = new String[0];
-        metadata = new Hashtable<String, String>();
-        metadata.put("$type", String.format("ConfigTypes;%s", Version.Number));
-        metadata.put("$url", String.format("/%s/configTypes/%s", Version.Path));
-    }
-
-    @JsonProperty("$metadata")
-    public Hashtable<String, String> getMetadata() {
-        return metadata;
-    }
 }

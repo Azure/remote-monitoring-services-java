@@ -10,8 +10,8 @@ import java.util.Map;
 
 public class DefaultDeviceStatus {
 
-    public static Map<DeviceStatusQueries.QueryType, String> queries = new HashMap<DeviceStatusQueries.QueryType, String>()
-    {
+    public static Map<DeviceStatusQueries.QueryType, String> queries =
+            new HashMap<DeviceStatusQueries.QueryType, String>() {
         {
             put(DeviceStatusQueries.QueryType.APPLIED, "select * from devices where " +
                         "configurations.[[%s]].status = 'Applied'");

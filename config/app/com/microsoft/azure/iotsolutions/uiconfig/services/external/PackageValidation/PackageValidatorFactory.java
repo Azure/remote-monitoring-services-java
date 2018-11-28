@@ -5,21 +5,16 @@ package com.microsoft.azure.iotsolutions.uiconfig.services.external.PackageValid
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.ConfigType;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.PackageType;
 
-public class PackageValidatorFactory
-{
-    public static IPackageValidator GetValidator(PackageType packageType, String config)
+public class PackageValidatorFactory {
+    public static IPackageValidator GetValidator(PackageType packageType, String configType)
     {
-        if (packageType.equals(PackageType.edgeManifest))
-        {
+        if (packageType.equals(PackageType.edgeManifest)) {
             return new EdgePackageValidator();
         }
 
-        if (config.equalsIgnoreCase(ConfigType.firmware.toString()))
-        {
+        if (configType.equalsIgnoreCase(ConfigType.firmware.toString())) {
             return new FirmwareValidator();
-        }
-        else
-        {
+        } else {
             return null;
         }
     }

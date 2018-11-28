@@ -4,6 +4,7 @@ package com.microsoft.azure.iotsolutions.iothubmanager.services;
 
 import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.ExternalDependencyException;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidConfigurationException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.ResourceNotFoundException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.external.ConfigurationsHelper;
@@ -86,7 +87,7 @@ public final class Deployments implements IDeployments {
                             .map(config -> {
                                 try {
                                     return new DeploymentServiceModel(config);
-                                } catch (InvalidInputException e) {
+                                } catch (InvalidInputException | InvalidConfigurationException e) {
                                     throw new CompletionException(e);
                                 }
                             })
@@ -105,7 +106,7 @@ public final class Deployments implements IDeployments {
      */
     @Override
     public CompletionStage<DeploymentServiceModel> getAsync(String id, boolean includeDeviceStatus) throws
-            ExternalDependencyException {
+            ExternalDependencyException, InvalidConfigurationException {
         try {
             final Configuration deployment = this.registry.getConfiguration(id);
 
@@ -155,7 +156,7 @@ public final class Deployments implements IDeployments {
      */
     @Override
     public CompletionStage<DeploymentServiceModel> createAsync(DeploymentServiceModel deployment) throws
-            InvalidInputException, ExternalDependencyException {
+            InvalidInputException, ExternalDependencyException, InvalidConfigurationException {
 
         verifyDeploymentParameter(DEVICE_GROUP_ID_PARAM, deployment.getDeviceGroup().getId());
         verifyDeploymentParameter(DEVICE_GROUP_NAME_PARAM, deployment.getDeviceGroup().getId());
@@ -230,10 +231,8 @@ public final class Deployments implements IDeployments {
                 deploymentId);
 
         if (!(ConfigurationsHelper.isEdgeDeployment(deployment)) &&
-                !(configType.equals(ConfigType.firmware.toString())))
-        {
-            for (String devices : appliedDeviceIds)
-            {
+                !(configType.equals(ConfigType.firmware.toString()))) {
+            for (String devices : appliedDeviceIds) {
                 deviceStatuses.put(devices, DeploymentStatus.Unknown);
             }
 
@@ -303,10 +302,8 @@ public final class Deployments implements IDeployments {
     }
 
 
-    private Map<DeploymentStatus, Long> calculateDeviceMetrics(Map<String, DeploymentStatus> deviceStatuses)
-    {
-        if (deviceStatuses == null)
-        {
+    private Map<DeploymentStatus, Long> calculateDeviceMetrics(Map<String, DeploymentStatus> deviceStatuses) {
+        if (deviceStatuses == null) {
             return null;
         }
 

@@ -17,10 +17,8 @@ public class DeviceStatusQueries {
         }
     };
 
-    public static Map<QueryType, String> getQueries(String deploymentType, String configType)
-    {
-        if (deploymentType.equals(PackageType.edgeManifest.toString()))
-        {
+    public static Map<QueryType, String> getQueries(String deploymentType, String configType) {
+        if (deploymentType.equals(PackageType.edgeManifest.toString())) {
             return EdgeDeviceStatusQueries.queries;
         }
 

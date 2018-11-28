@@ -6,11 +6,9 @@ import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeviceStat
 import java.util.HashMap;
 import java.util.Map;
 
-public class EdgeDeviceStatusQueries
-{
+public class EdgeDeviceStatusQueries {
     public static Map<DeviceStatusQueries.QueryType, String> queries =
-            new HashMap<DeviceStatusQueries.QueryType,String>()
-    {
+            new HashMap<DeviceStatusQueries.QueryType,String>() {
         {
             put(DeviceStatusQueries.QueryType.APPLIED, "select * from devices.modules where moduleId = '$edgeAgent' " +
                     "and configurations.[[%s]].status = 'Applied'");

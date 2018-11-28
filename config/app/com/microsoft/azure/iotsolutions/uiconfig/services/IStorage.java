@@ -51,8 +51,8 @@ public interface IStorage {
             throws BaseException, ExecutionException, InterruptedException;
 
     /**
-     * Retrieves all configtypes that have been previous uploaded.
-     * @return All configtypes which can be iterated over
+     * Retrieves all configTypes that have been previous uploaded.
+     * @return All configTypes which can be iterated over
      */
     CompletionStage<ConfigTypeListServiceModel> getAllConfigTypesAsync() throws BaseException;
 
@@ -65,7 +65,7 @@ public interface IStorage {
 
     /**
      * Creates a package with a new id given the provided input.
-     * @param input {@link PackageServiceModel} parameters which include the name, content and type.
+     * @param input {@link PackageServiceModel} parameters which include the name, content, packageType and configType.
      * @return The created package along with id, and dateCreated.
      */
     CompletionStage<PackageServiceModel> addPackageAsync(PackageServiceModel input) throws
@@ -75,9 +75,9 @@ public interface IStorage {
 
     /**
      * Updates a previously created configurations.
-     * @param configTypes The customConfig of the package to be maintained.
+     * @param configType The configType of the package to be maintained.
      */
-    void updateConfigTypeAsync(String configTypes) throws
+    void updateConfigTypeAsync(String configType) throws
             BaseException,
             ExecutionException,
             InterruptedException;

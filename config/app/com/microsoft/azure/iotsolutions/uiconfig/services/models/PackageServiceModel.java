@@ -29,13 +29,13 @@ public class PackageServiceModel {
             String id,
             String name,
             PackageType packageType,
-            String config,
+            String configType,
             String content,
             String dateCreated) {
         this.id = id;
         this.name = name;
         this.packageType = packageType;
-        this.configType = config;
+        this.configType = configType;
         this.content = content;
         this.dateCreated = dateCreated;
     }

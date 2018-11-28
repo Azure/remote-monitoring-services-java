@@ -15,12 +15,12 @@ import static play.libs.Json.toJson;
 import static play.mvc.Results.ok;
 
 @Singleton
-public class ConfigTypeController {
+public class ConfigTypesController {
 
     private final IStorage storage;
 
     @Inject
-    public ConfigTypeController(IStorage storage) {
+    public ConfigTypesController(IStorage storage) {
         this.storage = storage;
     }
 

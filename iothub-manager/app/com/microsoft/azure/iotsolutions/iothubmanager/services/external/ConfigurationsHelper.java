@@ -35,14 +35,11 @@ public class ConfigurationsHelper {
         final Configuration pkgConfiguration = fromJson(Json.parse(packageContent), Configuration.class);
 
         if (model.getPackageType().equals(PackageType.edgeManifest) &&
-                pkgConfiguration.getContent() != null && pkgConfiguration.getContent().getDeviceContent().size() != 0)
-        {
+                pkgConfiguration.getContent() != null && pkgConfiguration.getContent().getDeviceContent().size() != 0) {
             throw new InvalidInputException("Deployment type does not match with package contents.");
-        }
-            else if (model.getPackageType().equals(PackageType.deviceConfiguration) &&
+        } else if (model.getPackageType().equals(PackageType.deviceConfiguration) &&
                 pkgConfiguration.getContent() != null &&
-                MapUtils.isNotEmpty(pkgConfiguration.getContent().getModulesContent()))
-        {
+                MapUtils.isNotEmpty(pkgConfiguration.getContent().getModulesContent())) {
             throw new InvalidInputException("Deployment type does not match with package contents.");
         }
 
@@ -74,29 +71,26 @@ public class ConfigurationsHelper {
             labels.put(DEPLOYMENT_PACKAGE_NAME_LABEL, model.getPackageName());
         }
 
-        if (labels != null)
-        {
+        if (labels != null) {
             configuration.setLabels(labels);
         }
 
         Map<String, String> customMetrics = pkgConfiguration.getMetrics().getQueries();
-        if (customMetrics != null)
-        {
+        if (customMetrics != null) {
             configuration.getMetrics().setQueries(customMetrics);
         }
 
         return configuration;
     }
 
-    public static Boolean isEdgeDeployment(Configuration deployment)
-    {
-        if (deployment.getLabels() == null)
-        {
+    public static Boolean isEdgeDeployment(Configuration deployment) {
+
+        if (deployment.getLabels() == null) {
             return false;
         }
+
         if (deployment.getLabels().get(PACKAGE_TYPE_LABEL)
-                .equals(PackageType.edgeManifest.toString()))
-        {
+                .equals(PackageType.edgeManifest.toString())) {
             return true;
         }
         return false;

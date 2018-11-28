@@ -78,42 +78,28 @@ public class DeploymentServiceModel {
         this.priority = deployment.getPriority();
 
         String deploymentLabel = deployment.getLabels().get(ConfigurationsHelper.PACKAGE_TYPE_LABEL);
-        if (!(StringUtils.isBlank(deploymentLabel)))
-        {
-            if (deploymentLabel.equals(PackageType.edgeManifest.toString()))
-            {
+        if (!(StringUtils.isBlank(deploymentLabel))) {
+            if (deploymentLabel.equals(PackageType.edgeManifest.toString())) {
                 this.packageType = PackageType.edgeManifest;
-            }
-            else if (deploymentLabel.equals(PackageType.deviceConfiguration.toString()))
-            {
+            } else if (deploymentLabel.equals(PackageType.deviceConfiguration.toString())) {
                 this.packageType = PackageType.deviceConfiguration;
+            } else {
+                throw new InvalidConfigurationException("Deployment package type should not be empty.");
             }
-            else
-            {
+        } else {
+            /* This is for the backward compatibility, as some of the old
+            *  deployments may not have the required label.
+            */
+            if (deployment.getContent().getModulesContent() != null) {
+                this.packageType = PackageType.edgeManifest;
+            } else if (deployment.getContent().getDeviceContent() != null) {
+                this.packageType = PackageType.deviceConfiguration;
+            } else {
                 throw new InvalidConfigurationException("Deployment package type should not be empty.");
             }
         }
-        else
-        {
-            // This is for the backward compatibility, as some of the old
-            // deployments may not have the required label.
-            if (deployment.getContent().getModulesContent() != null)
-            {
-                this.packageType = PackageType.edgeManifest;
-            }
-            else if (deployment.getContent().getDeviceContent() != null)
-            {
-                this.packageType = PackageType.deviceConfiguration;
-            }
-            else
-            {
-                throw new InvalidConfigurationException("Deployment package type should not be empty.");
-            }
-        }
-
 
         this.configType = deployment.getLabels().get(ConfigurationsHelper.CONFIG_TYPE_LABEL.toString());
-
         this.deploymentMetrics = new DeploymentMetrics(deployment.getSystemMetrics(), deployment.getMetrics());
     }
 

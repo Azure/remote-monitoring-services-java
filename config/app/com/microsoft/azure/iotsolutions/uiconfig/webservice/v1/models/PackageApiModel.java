@@ -15,6 +15,36 @@ public class PackageApiModel {
     private String dateCreated;
     private String content;
 
+    public PackageApiModel(PackageServiceModel model) {
+        this.id = model.getId();
+        this.name = model.getName();
+        this.packageType = model.getPackageType();
+        this.configType = model.getConfigType();
+        this.content = model.getContent();
+        this.dateCreated = model.getDateCreated();
+    }
+
+    public PackageApiModel(
+            String name,
+            PackageType packageType,
+            String config,
+            String content) {
+        this.name = name;
+        this.packageType = packageType;
+        this.configType = config;
+        this.content = content;
+    }
+
+    public PackageServiceModel ToServiceModel() {
+        return new PackageServiceModel(
+                this.id,
+                this.name,
+                this.packageType,
+                this.configType,
+                this.content,
+                this.dateCreated);
+    }
+
     @JsonProperty("Id")
     public String getId() {
         return this.id;
@@ -59,35 +89,5 @@ public class PackageApiModel {
 
     public void setDateCreated(String dateCreated) {
         this.dateCreated = dateCreated;
-    }
-
-    public PackageApiModel(PackageServiceModel model) {
-        this.id = model.getId();
-        this.name = model.getName();
-        this.packageType = model.getPackageType();
-        this.configType = model.getConfigType();
-        this.content = model.getContent();
-        this.dateCreated = model.getDateCreated();
-    }
-
-    public PackageApiModel(
-            String name,
-            PackageType packageType,
-            String config,
-            String content) {
-        this.name = name;
-        this.packageType = packageType;
-        this.configType = config;
-        this.content = content;
-    }
-
-    public PackageServiceModel ToServiceModel() {
-        return new PackageServiceModel(
-                this.id,
-                this.name,
-                this.packageType,
-                this.configType,
-                this.content,
-                this.dateCreated);
     }
 }

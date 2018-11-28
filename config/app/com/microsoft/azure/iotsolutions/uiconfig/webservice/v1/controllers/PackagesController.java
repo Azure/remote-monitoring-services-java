@@ -29,7 +29,7 @@ import java.util.concurrent.ExecutionException;
 import static play.libs.Json.toJson;
 
 @Singleton
-public class PackageController extends Controller {
+public class PackagesController extends Controller {
 
     private final IStorage storage;
     private static final String PACKAGE_TYPE_PARAM = "PackageType";
@@ -37,14 +37,15 @@ public class PackageController extends Controller {
     private static final String FILE_PARAM = "Package";
 
     @Inject
-    public PackageController(IStorage storage) {
+    public PackagesController(IStorage storage) {
         this.storage = storage;
     }
 
     /**
-     * This function can be used to get packages with and without parameters
-     * PackageType, ConfigType. Without the query params this will return all
-     * the packages.
+     * This function can be used to get packages with or without parameters
+     * PackageType, ConfigType. Without both the query params this will return all
+     * the packages. With only packageType the method will return packages of that packageType.
+     * If only configType is provided the method will throw an Exception.
      */
     @Authorize("ReadAll")
     public CompletionStage<Result> getFilteredAsync(String packageType, String configType) throws BaseException,
@@ -62,7 +63,7 @@ public class PackageController extends Controller {
     }
 
     /**
-     * Get a list of previously created configTypes from storage
+     * Get a list of previously created Packages from storage
      * @param id The id of the package to retrieve from storage.
      * @return {@link PackageApiModel}
      */
@@ -112,14 +113,12 @@ public class PackageController extends Controller {
         String configType = data.get(PACKAGE_CONFIG_TYPE_PARAM)[0];
 
         if (packageType.equals(PackageType.edgeManifest.toString()) &&
-                !(StringUtils.isBlank(configType)))
-        {
+                !(StringUtils.isBlank(configType))) {
             throw new BadRequestException("Package of type EdgeManifest cannot have parameter " +
                     "configType.");
         }
 
-        if (configType == null)
-        {
+        if (configType == null) {
             configType = StringUtils.EMPTY;
         }
 

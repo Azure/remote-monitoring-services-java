@@ -24,7 +24,7 @@ public class DeploymentMetrics {
         return this.systemMetrics;
     }
 
-    @JsonProperty("SystemMetrics")
+    @JsonProperty("CustomMetrics")
     public Map<String, Long> getCustomMetrics() {
         return this.customMetrics;
     }

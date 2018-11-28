@@ -10,7 +10,7 @@ import java.util.Set;
 
 public class ConfigTypeListServiceModel {
 
-    private Set<String> customConfig = new HashSet<String>();
+    private Set<String> customConfigs = new HashSet<String>();
 
     @JsonProperty("configtypes")
     public String[] configTypes;
@@ -20,17 +20,15 @@ public class ConfigTypeListServiceModel {
         this.configTypes = new String[0];
     }
 
-    public String[] getConfigTypes()
-    {
-        if (configTypes != null)
-        {
-            customConfig.addAll(new HashSet<String>(Arrays.asList(configTypes)));
+    public String[] getConfigTypes() {
+        if (configTypes != null) {
+            customConfigs.addAll(new HashSet<String>(Arrays.asList(configTypes)));
         }
-        return customConfig.toArray(new String[customConfig.size()]);
+        return customConfigs.toArray(new String[customConfigs.size()]);
     }
 
     public void add(String customConfig)
     {
-        this.customConfig.add(customConfig.trim());
+        this.customConfigs.add(customConfig.trim());
     }
 }

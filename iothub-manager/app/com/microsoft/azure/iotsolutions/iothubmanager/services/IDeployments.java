@@ -4,6 +4,7 @@ package com.microsoft.azure.iotsolutions.iothubmanager.services;
 
 import com.google.inject.ImplementedBy;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.ExternalDependencyException;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidConfigurationException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.ResourceNotFoundException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentServiceListModel;
@@ -21,7 +22,8 @@ public interface IDeployments {
      * @throws ExternalDependencyException thrown if there is an issue querying the RegistryManager. Details
      * are provided in the inner exception.
      */
-    CompletionStage<DeploymentServiceListModel> listAsync() throws ExternalDependencyException;
+    CompletionStage<DeploymentServiceListModel> listAsync() throws
+            ExternalDependencyException;
 
     /**
      * Retrieves a single deployment based on its id.
@@ -31,7 +33,8 @@ public interface IDeployments {
      * @throws ExternalDependencyException thrown if there is an issue querying the RegistryManager. Details
      * are provided in the inner exception.
      */
-    CompletionStage<DeploymentServiceModel> getAsync(String id, boolean includeDeviceStatus) throws ExternalDependencyException;
+    CompletionStage<DeploymentServiceModel> getAsync(String id, boolean includeDeviceStatus) throws
+            ExternalDependencyException, InvalidConfigurationException;
 
     /**
      * Schedules a new deployment with the content provided by the package id targeting the group in
@@ -45,7 +48,7 @@ public interface IDeployments {
      * are provided in the inner exception.
      */
     CompletionStage<DeploymentServiceModel> createAsync(DeploymentServiceModel deployment)
-            throws InvalidInputException, ExternalDependencyException;
+            throws InvalidInputException, ExternalDependencyException, InvalidConfigurationException;
 
     /**
      * Deletes the deployment of the given id.
