@@ -50,7 +50,7 @@ public class DeploymentMetricsApiModel {
         this.deviceStatuses = metricsServiceModel.getDeviceStatuses();
 
         if (metricsServiceModel.getDeviceMetrics() != null) {
-            this.systemMetrics.put(SUCCESSFUL_METRICS_KEY,
+            this.systemMetrics.put(SUCCESEEDED_METRICS_KEY,
                     metricsServiceModel.getDeviceMetrics().get(DeploymentStatus.Succeeded));
             this.systemMetrics.put(FAILED_METRICS_KEY,
                     metricsServiceModel.getDeviceMetrics().get(DeploymentStatus.Failed));
