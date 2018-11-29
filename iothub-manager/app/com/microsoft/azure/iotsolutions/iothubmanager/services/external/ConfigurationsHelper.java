@@ -35,11 +35,16 @@ public class ConfigurationsHelper {
         final Configuration pkgConfiguration = fromJson(Json.parse(packageContent), Configuration.class);
 
         if (model.getPackageType().equals(PackageType.edgeManifest) &&
-                pkgConfiguration.getContent() != null && pkgConfiguration.getContent().getDeviceContent().size() != 0) {
+                pkgConfiguration.getContent() != null &&
+                pkgConfiguration.getContent().getDeviceContent() != null &&
+                pkgConfiguration.getContent().getDeviceContent().size() != 0) {
+
             throw new InvalidInputException("Deployment type does not match with package contents.");
+
         } else if (model.getPackageType().equals(PackageType.deviceConfiguration) &&
                 pkgConfiguration.getContent() != null &&
                 MapUtils.isNotEmpty(pkgConfiguration.getContent().getModulesContent())) {
+
             throw new InvalidInputException("Deployment type does not match with package contents.");
         }
 
@@ -77,7 +82,9 @@ public class ConfigurationsHelper {
 
         Map<String, String> customMetrics = pkgConfiguration.getMetrics().getQueries();
         if (customMetrics != null) {
-            configuration.getMetrics().setQueries(customMetrics);
+            configuration.getMetrics().setQueries(substituteDeploymentIdIfPresent(
+                                                                            customMetrics,
+                                                                            deploymentId));
         }
 
         return configuration;
@@ -94,5 +101,21 @@ public class ConfigurationsHelper {
             return true;
         }
         return false;
+    }
+
+    // Replaces DeploymentId, if present, in the custom metrics query
+    public static Map<String, String> substituteDeploymentIdIfPresent(
+            Map<String, String> customMetrics,
+            String deploymentId) {
+        final String statusClause = "configurations\\.\\[\\[[a-zA-Z0-9\\-]+\\]\\]\\.status";
+        String updatedStatusClause = "configurations.[[" + deploymentId + "]].status";
+
+        for(Map.Entry<String, String> query : customMetrics.entrySet()) {
+            customMetrics.put(query.getKey(), query.getValue().replaceAll(
+                                                                statusClause,
+                                                                updatedStatusClause));
+        }
+
+        return customMetrics;
     }
 }
