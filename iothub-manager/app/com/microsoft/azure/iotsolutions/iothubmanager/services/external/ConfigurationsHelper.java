@@ -107,8 +107,8 @@ public class ConfigurationsHelper {
     public static Map<String, String> substituteDeploymentIdIfPresent(
             Map<String, String> customMetrics,
             String deploymentId) {
-        final String statusClause = "configurations\\.\\[\\[[a-zA-Z0-9\\-]+\\]\\]\\.status";
-        String updatedStatusClause = "configurations.[[" + deploymentId + "]].status";
+        final String statusClause = "configurations\\.\\[\\[[a-zA-Z0-9\\-]+\\]\\]";
+        String updatedStatusClause = "configurations.[[" + deploymentId + "]]";
 
         for(Map.Entry<String, String> query : customMetrics.entrySet()) {
             customMetrics.put(query.getKey(), query.getValue().replaceAll(
