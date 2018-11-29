@@ -36,7 +36,6 @@ public class ConfigurationsHelper {
 
         if (model.getPackageType().equals(PackageType.edgeManifest) &&
                 pkgConfiguration.getContent() != null &&
-                pkgConfiguration.getContent().getDeviceContent() != null &&
                 MapUtils.isNotEmpty(pkgConfiguration.getContent().getDeviceContent())) {
 
             throw new InvalidInputException("Deployment type does not match with package contents.");
