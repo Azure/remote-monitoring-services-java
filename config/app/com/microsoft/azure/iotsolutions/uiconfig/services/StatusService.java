@@ -63,7 +63,10 @@ public class StatusService implements IStatusService {
         result.addProperty("DeviceTelemetryApiUrl", this.servicesConfig.getTelemetryApiUrl());
 
         // Check connection to Device Simulation
-        StatusResultServiceModel deviceSimulationResult = this.PingService(
+
+        /* TODO: Remove PingSimulationAsync and use PingServiceAsync once DeviceSimulation has started
+         * using the new 'Status' model */
+        StatusResultServiceModel deviceSimulationResult = this.PingSimulationService(
             simulationName,
             this.servicesConfig.getDeviceSimulationApiUrl());
         result.setServiceStatus(simulationName, deviceSimulationResult, errors);
@@ -96,6 +99,29 @@ public class StatusService implements IStatusService {
                 ObjectMapper mapper = new ObjectMapper();
                 StatusServiceModel data = mapper.readValue(response.getBody(), StatusServiceModel.class);
                 result.setStatusResultServiceModel(data.getStatus());
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+
+        return result;
+    }
+
+    private StatusResultServiceModel PingSimulationService(String serviceName, String serviceURL) {
+        StatusResultServiceModel result = new StatusResultServiceModel(false, serviceName + " check failed");
+
+        try {
+            WSResponse response = this.wsRequestBuilder
+                .prepareRequest(serviceURL + "/status")
+                .get()
+                .toCompletableFuture()
+                .get();
+
+            if (response.getStatus() != HttpStatus.SC_OK) {
+                result.setMessage("Status code: " + response.getStatus() + ", Response: " + response.getBody());
+            } else {
+                result.setIsHealthy(response.asJson().findPath("").asText().startsWith("OK:"));
+                result.setMessage(response.asJson().findPath("").asText());
             }
         } catch (Exception e) {
             log.error(e.getMessage());
