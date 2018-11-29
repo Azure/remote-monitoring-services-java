@@ -111,8 +111,8 @@ public class ConfigurationsHelper {
 
         for(Map.Entry<String, String> query : customMetrics.entrySet()) {
             customMetrics.put(query.getKey(), query.getValue().replaceAll(
-                                                                configClause,
-                                                                updatedConfigClause));
+                                                                deploymentClause,
+                                                                updatedDeploymentClause));
         }
 
         return customMetrics;
