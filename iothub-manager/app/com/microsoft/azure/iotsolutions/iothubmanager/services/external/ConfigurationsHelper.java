@@ -3,6 +3,7 @@
 package com.microsoft.azure.iotsolutions.iothubmanager.services.external;
 
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidInputException;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidConfigurationException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.helpers.QueryConditionTranslator;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentServiceModel;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.PackageType;
@@ -89,17 +90,36 @@ public class ConfigurationsHelper {
         return configuration;
     }
 
-    public static Boolean isEdgeDeployment(Configuration deployment) {
+    public static Boolean isEdgeDeployment(Configuration deployment) throws
+            InvalidConfigurationException {
 
-        if (deployment.getLabels() == null) {
-            return false;
+        String deploymentLabel = null;
+
+        if (!(MapUtils.isEmpty(deployment.getLabels()))) {
+            deploymentLabel = deployment.getLabels().get(ConfigurationsHelper.PACKAGE_TYPE_LABEL);
         }
 
-        if (deployment.getLabels().get(PACKAGE_TYPE_LABEL)
-                .equals(PackageType.edgeManifest.toString())) {
-            return true;
+        if (MapUtils.isEmpty(deployment.getLabels()) || StringUtils.isBlank(deploymentLabel)) {
+            /* This is for the backward compatibility, as some of the old
+             *  deployments may not have the required label.
+             */
+            if (deployment.getContent().getModulesContent() != null) {
+                return true;
+            } else if (deployment.getContent().getDeviceContent() != null) {
+                return false;
+            } else {
+                throw new InvalidConfigurationException("Deployment package type should not be empty.");
+            }
+        } else {
+            deploymentLabel = deployment.getLabels().get(ConfigurationsHelper.PACKAGE_TYPE_LABEL);
+            if (deploymentLabel.equals(PackageType.edgeManifest.toString())) {
+                return true;
+            } else if (deploymentLabel.equals(PackageType.deviceConfiguration.toString())) {
+                return false;
+            } else {
+                throw new InvalidConfigurationException("Deployment package type should not be empty.");
+            }
         }
-        return false;
     }
 
     // Replaces DeploymentId, if present, in the custom metrics query

@@ -215,15 +215,22 @@ public final class Deployments implements IDeployments {
      * @param deployment - Deployment id for the deployment to query.
      * @return Map of deviceId to the {@link DeploymentStatus}.
      */
-    private Map<String, DeploymentStatus> getDeviceStatuses(Configuration deployment) throws IOException {
+    private Map<String, DeploymentStatus> getDeviceStatuses(Configuration deployment) throws
+            IOException, InvalidConfigurationException {
 
-        String packageType = deployment.getLabels().get(ConfigurationsHelper.PACKAGE_TYPE_LABEL);
-        String configType = deployment.getLabels().get(ConfigurationsHelper.CONFIG_TYPE_LABEL);
+        String packageType = null;
+        if (ConfigurationsHelper.isEdgeDeployment(deployment)) {
+            packageType = PackageType.edgeManifest.toString();
+        } else {
+            packageType = PackageType.deviceConfiguration.toString();
+        }
+
+        String configType = deployment.getLabels().getOrDefault(
+                                                        ConfigurationsHelper.CONFIG_TYPE_LABEL,
+                                                        StringUtils.EMPTY);
 
         Map<DeviceStatusQueries.QueryType, String> queries = DeviceStatusQueries.getQueries(packageType, configType);
-
         Map<String,DeploymentStatus> deviceStatuses = new HashMap<>();
-
         String deploymentId = deployment.getId();
 
         final Set<String> appliedDeviceIds = this.getDevicesInQuery(

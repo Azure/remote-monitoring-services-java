@@ -71,7 +71,7 @@ public class StatusService implements IStatusService {
                 this.servicesConfig.getMessagesConfig().getTimeSeriesConfig().getExplorerUrl(),
                 environmentId,
                 this.servicesConfig.getMessagesConfig().getTimeSeriesConfig().getAadApplicationId());
-            result.addProperty("TimeSeriesUrl", tsiURL);
+            result.addProperty("TsiExplorerUrl", tsiURL);
         }
 
         // Check connection to StorageAdapter
