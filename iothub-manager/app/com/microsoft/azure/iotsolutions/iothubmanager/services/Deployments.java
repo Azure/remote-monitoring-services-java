@@ -162,8 +162,11 @@ public final class Deployments implements IDeployments {
         verifyDeploymentParameter(DEVICE_GROUP_NAME_PARAM, deployment.getDeviceGroup().getId());
         verifyDeploymentParameter(DEVICE_GROUP_QUERY_PARAM, deployment.getDeviceGroup().getQuery());
         verifyDeploymentParameter(NAME_PARAM, deployment.getName());
-        verifyDeploymentParameter(CONFIG_TYPE_PARAM, deployment.getConfigType());
         verifyDeploymentParameter(PACKAGE_CONTENT_PARAM, deployment.getPackageContent());
+
+        if (deployment.getPackageType().equals(PackageType.deviceConfiguration)) {
+            verifyDeploymentParameter(CONFIG_TYPE_PARAM, deployment.getConfigType());
+        }
 
         if (deployment.getPriority() < 0) {
             throw new InvalidInputException("Invalid input. A priority should be provided greater than 0.");

@@ -43,7 +43,7 @@ public class DeploymentsTest {
     private static final String DEPLOYMENT_GROUP_NAME_LABEL = "DeviceGroupName";
     private static final String DEPLOYMENT_PACKAGE_NAME_LABEL = "PackageName";
     private static final String RM_CREATED_LABEL = "RMDeployment";
-    private static final String CONFIG_TYPE="Edge";
+    private static final String CONFIG_TYPE=StringUtils.EMPTY;
 
     @Mock
     private RegistryManager registry;
