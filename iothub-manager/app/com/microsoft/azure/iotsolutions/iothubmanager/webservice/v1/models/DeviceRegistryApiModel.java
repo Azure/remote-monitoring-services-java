@@ -21,6 +21,7 @@ public final class DeviceRegistryApiModel {
     private long c2DMessageCount = 0;
     private Date lastActivity = null;
     private boolean connected = false;
+    private boolean isEdgeDevice = false;
     private Date lastStatusUpdated = null;
     private AuthenticationMechanismApiModel authentication = null;
     private String ioTHubHostName = null;
@@ -47,6 +48,7 @@ public final class DeviceRegistryApiModel {
         this.lastActivity = device.getLastActivity().toDate();
         this.connected = device.getConnected();
         this.enabled = device.getEnabled();
+        this.isEdgeDevice = device.getIsEdgeDevice();
         this.lastStatusUpdated = device.getLastStatusUpdated().toDate();
         this.authentication = new AuthenticationMechanismApiModel(device.getAuthentication());
         this.ioTHubHostName = device.getIoTHubHostName();
@@ -85,6 +87,15 @@ public final class DeviceRegistryApiModel {
 
     public void setEnabled(Boolean value) {
         this.enabled = value;
+    }
+
+    @JsonProperty("IsEdgeDevice")
+    public boolean getIsEdgeDevice() {
+        return this.isEdgeDevice;
+    }
+
+    public void setIsEdgeDevice(boolean isEdgeDevice) {
+        this.isEdgeDevice = isEdgeDevice;
     }
 
     @JsonProperty("C2DMessageCount")
@@ -190,6 +201,7 @@ public final class DeviceRegistryApiModel {
             new DateTime(this.lastActivity),
             this.connected,
             this.enabled,
+            this.isEdgeDevice,
             new DateTime(this.lastStatusUpdated),
             twinServiceModel,
             this.authentication == null ? null : this.authentication.toServiceModel(),

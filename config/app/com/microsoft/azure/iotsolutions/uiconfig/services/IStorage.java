@@ -6,9 +6,11 @@ import com.google.inject.ImplementedBy;
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.BaseException;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.DeviceGroup;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.Logo;
-import com.microsoft.azure.iotsolutions.uiconfig.services.models.Package;
+import com.microsoft.azure.iotsolutions.uiconfig.services.models.PackageServiceModel;
+import com.microsoft.azure.iotsolutions.uiconfig.services.models.ConfigTypeListServiceModel;
 
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
 
 @ImplementedBy(Storage.class)
 public interface IStorage {
@@ -39,21 +41,46 @@ public interface IStorage {
      * Retrieves all packages that have been previous uploaded.
      * @return All packages which can be iterated over
      */
-    CompletionStage<Iterable<Package>> getAllPackagesAsync() throws BaseException;
+    CompletionStage<Iterable<PackageServiceModel>> getAllPackagesAsync() throws BaseException;
+
+    /**
+     * Retrieves packages based on parameters provided.
+     * @return All packages which can be iterated over
+     */
+    CompletionStage<Iterable<PackageServiceModel>> getFilteredPackagesAsync(String packageType, String configType)
+            throws BaseException, ExecutionException, InterruptedException;
+
+    /**
+     * Retrieves all configTypes that have been previous uploaded.
+     * @return All configTypes which can be iterated over
+     */
+    CompletionStage<ConfigTypeListServiceModel> getAllConfigTypesAsync() throws BaseException;
 
     /**
      * Retrieves a single uploaded package by its unique Id.
      * @param id Unique identifier which was returned when creating a package
      * @return All packages which can be iterated over
      */
-    CompletionStage<Package> getPackageAsync(String id) throws BaseException;
+    CompletionStage<PackageServiceModel> getPackageAsync(String id) throws BaseException;
 
     /**
      * Creates a package with a new id given the provided input.
-     * @param input {@link Package} parameters which include the name, content and type.
+     * @param input {@link PackageServiceModel} parameters which include the name, content, packageType and configType.
      * @return The created package along with id, and dateCreated.
      */
-    CompletionStage<Package> addPackageAsync(Package input) throws BaseException;
+    CompletionStage<PackageServiceModel> addPackageAsync(PackageServiceModel input) throws
+            BaseException,
+            ExecutionException,
+            InterruptedException;
+
+    /**
+     * Updates a previously created configurations.
+     * @param configType The configType of the package to be maintained.
+     */
+    void updateConfigTypeAsync(String configType) throws
+            BaseException,
+            ExecutionException,
+            InterruptedException;
 
     /**
      * Deletes a previously uploaded package.

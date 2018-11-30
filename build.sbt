@@ -8,9 +8,9 @@ lazy val telemetry = (project in file("device-telemetry"))
 
 lazy val iothubmanager = (project in file("iothub-manager"))
 
-val pcsconfig = (project in file("pcs-config"))
+val pcsconfig = (project in file("config"))
 
-lazy val pcsstorageadapter = (project in file("pcs-storage-adapter"))
+lazy val pcsstorageadapter = (project in file("storage-adapter"))
 
 val sourceEnvVars = taskKey[Unit]("Source environment variables")
 

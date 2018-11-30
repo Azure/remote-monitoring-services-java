@@ -2,8 +2,6 @@
 
 package com.microsoft.azure.iotsolutions.uiconfig.services.runtime;
 
-import java.util.List;
-
 /**
  * Service layer configuration
  */
@@ -15,17 +13,26 @@ public class ServicesConfig implements IServicesConfig {
     private String deviceSimulationApiUrl;
     private String telemetryApiUrl;
     private String userManagementApiUrl;
+    private IActionsConfig actionsConfig;
 
     public ServicesConfig() {
     }
 
-    public ServicesConfig(String telemetryApiUrl, String storageAdapterApiUrl, String deviceSimulationApiUrl,
-                          String seedTemplate, String azureMapsKey) {
+    public ServicesConfig(String telemetryApiUrl,
+                          String storageAdapterApiUrl,
+                          String userManagementApiUrl,
+                          String deviceSimulationApiUrl,
+                          String seedTemplate,
+                          String azureMapsKey,
+                          IActionsConfig actionsConfig) {
         this.storageAdapterApiUrl = storageAdapterApiUrl;
         this.deviceSimulationApiUrl = deviceSimulationApiUrl;
+        this.userManagementApiUrl = userManagementApiUrl;
         this.seedTemplate = seedTemplate;
         this.telemetryApiUrl = telemetryApiUrl;
         this.azureMapsKey = azureMapsKey;
+        this.userManagementApiUrl = userManagementApiUrl;
+        this.actionsConfig = actionsConfig;
     }
 
     @Override
@@ -66,15 +73,17 @@ public class ServicesConfig implements IServicesConfig {
         return this.deviceSimulationApiUrl;
     }
 
-
     public void setDeviceSimulationApiUrl(String deviceSimulationApiUrl) {
         this.deviceSimulationApiUrl = deviceSimulationApiUrl;
     }
 
     @Override
-    public String getUserManagementApiUrl() { return this.userManagementApiUrl; }
+    public String getUserManagementApiUrl() {
+        return this.userManagementApiUrl;
+    }
 
-    public void setUserManagementApiUrl(String userManagementApiUrl) {
-        this.userManagementApiUrl = userManagementApiUrl;
+    @Override
+    public IActionsConfig getActionsConfig() {
+        return this.actionsConfig;
     }
 }

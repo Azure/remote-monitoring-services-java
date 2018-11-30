@@ -64,6 +64,11 @@ IF "%1"=="--in-sandbox" GOTO :RunInSandbox
         -e "PCS_AAD_APPSECRET" ^
         -e "PCS_TELEMETRY_STORAGE_TYPE" ^
         -e "PCS_TSI_FQDN" ^
+        -e "PCS_AZUREBLOB_CONNSTRING" ^
+        -e "PCS_ACTION_EVENTHUB_CONNSTRING" ^
+        -e "PCS_ACTION_EVENTHUB_NAME" ^
+        -e "PCS_LOGICAPP_ENDPOINT_URL" ^
+        -e "PCS_SOLUTION_WEBSITE_URL" ^
         -v %PCS_CACHE%\sandbox\.ivy2:/root/.ivy2 ^
         -v %PCS_CACHE%\sandbox\.sbt:/root/.sbt ^
         -v %APP_HOME%:/opt/code ^

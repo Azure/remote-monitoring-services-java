@@ -20,6 +20,7 @@ More information [here][rm-arch-url].
 * Gets a single alarm
 * Modifies alarm status
 * Create/Read/Update/Delete Rules
+* Supports alert triggered notifications
 
 ## Documentation
 
@@ -56,6 +57,16 @@ for more information. More information on environment variables
   * `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
   * `PCS_AUTH_WEBSERVICE_URL` = http://localhost:9001/v1
   * `PCS_DIAGNOSTICS_WEBSERVICE_URL` (optional) = http://localhost:9006/v1
+  * `PCS_AAD_TENANT` = {Azure Active Directory Tenant ID}
+  * `PCS_AAD_APPID` = {Azure Active Directory application ID}
+  * `PCS_AAD_APPSECRET` = {application secret}
+  * `PCS_TELEMETRY_STORAGE_TYPE` = "tsi"
+  * `PCS_TSI_FQDN` = {Time Series FQDN}
+  * `PCS_ACTION_EVENTHUB_NAME` = {Event hub name}
+  * `PCS_ACTION_EVENTHUB_CONNSTRING` = {Endpoint=sb://....servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=...}
+  * `PCS_LOGICAPP_ENDPOINT_URL` = {Logic App Endpoint to trigger email notification}
+  * `PCS_AZUREBLOB_CONNSTRING` = {Blob storage connection string}
+  * `PCS_SOLUTION_WEBSITE_URL` = {Solution website Url}
 
 # Running the service in an IDE
 
@@ -94,8 +105,16 @@ Steps using IntelliJ IDEA, with SBT plugin enabled:
         * see: Azure Portal => Azure Active Directory => App Registrations => Your App => Settings => Passwords
      * `PCS_TELEMETRY_STORAGE_TYPE` = "tsi"
         * Allowed values: ["cosmosdb", "tsi"]. Default is "tsi"
-     * `PCS_TSI_FQDN`= {Time Series FQDN}
+     * `PCS_TSI_FQDN` = {Time Series FQDN}
         * see: Azure Portal => Your Resource Group => Time Series Insights Environment => Data Access FQDN
+     * `PCS_ACTION_EVENTHUB_NAME` = {Event hub name}
+     * `PCS_ACTION_EVENTHUB_CONNSTRING` = {Endpoint=sb://....servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=...}
+        * see: Azure Portal => Your resource group => your event hub namespace => Shared access policies
+     * `PCS_LOGICAPP_ENDPOINT_URL` = {Logic App Endpoint to trigger email notification}
+        * see: Azure Portal => Your resource group => Your Logic App => Logic App Designer => When a Http Request is received => HTTP POST URL
+     * `PCS_AZUREBLOB_CONNSTRING` = {Blob storage connection string}
+        * see: Azure Portal => Your resource group => Your Storage Account => Access keys => Connection String
+     * `PCS_SOLUTION_WEBSITE_URL` = {Solution website Url}
 * Either from the toolbar or the Run menu, execute the configuration just
   created, using the Debug command/button
 * Test that the service is up and running pointing your browser to
@@ -130,6 +149,7 @@ More information on environment variables [here](#configuration-and-environment-
     * `PCS_TELEMETRY_DOCUMENTDB_CONNSTRING` = {your Azure Cosmos DB connection string}
     * `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
     * `PCS_AUTH_WEBSERVICE_URL` = http://localhost:9001/v1
+    * `PCS_DIAGNOSTICS_WEBSERVICE_URL` (optional) = http://localhost:9006/v1
     * `PCS_AAD_TENANT` = {Azure Active Directory Tenant ID}
         * see: Azure Portal => Azure Active Directory => Properties => Directory ID
     * `PCS_AAD_APPID` = {Azure Active Directory application ID}
@@ -138,9 +158,13 @@ More information on environment variables [here](#configuration-and-environment-
         * see: Azure Portal => Azure Active Directory => App Registrations => Your App => Settings => Passwords
     * `PCS_TELEMETRY_STORAGE_TYPE` = "tsi"
         * Allowed values: ["cosmosdb", "tsi"]. Default is "tsi"
-    * `PCS_TSI_FQDN`= {Time Series FQDN}
+    * `PCS_TSI_FQDN` = {Time Series FQDN}
         * see: Azure Portal => Your Resource Group => Time Series Insights Environment => Data Access FQDN
-    * `PCS_DIAGNOSTICS_WEBSERVICE_URL` (optional) = http://localhost:9006/v1
+    * `PCS_ACTION_EVENTHUB_NAME` = {Event hub name}
+    * `PCS_ACTION_EVENTHUB_CONNSTRING` = {Endpoint=sb://....servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=...}
+    * `PCS_LOGICAPP_ENDPOINT_URL` = {Logic App Endpoint to trigger email notification}
+    * `PCS_AZUREBLOB_CONNSTRING` = {Blob storage connection string}
+    * `PCS_SOLUTION_WEBSITE_URL` = {Solution website Url}
 
 1. Use the scripts in the [scripts](scripts) folder for many frequent tasks:
    * `build`: compile all the projects and run the tests.

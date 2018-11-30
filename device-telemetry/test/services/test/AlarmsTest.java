@@ -8,6 +8,9 @@ import com.microsoft.azure.iotsolutions.devicetelemetry.services.IAlarms;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidConfigurationException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.cosmosDb.IStorageClient;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.AlarmsConfig;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.ServicesConfig;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.StorageConfig;
 import helpers.UnitTest;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,6 +32,7 @@ public class AlarmsTest {
 
         ServicesConfig servicesConfig = new ServicesConfig(
             "keyValueStorageUrl",
+            "userManagementUrl",
             new MessagesConfig(
                 "tsi",
                 new StorageConfig(
@@ -57,6 +61,16 @@ public class AlarmsTest {
                         "collection"
                     ),
                 3),
+            new ActionsConfig(
+                "eventHubName",
+                "eventHubConnectionString",
+                0,
+                "blobStorageConnectionString",
+                "checkpointContainerName",
+                "logicAppEndPointUrl",
+                "solutionWebsiteUrl",
+                "./data"
+            ),
             new DiagnosticsConfig(
                 "diagnosticsUrl",
                 3

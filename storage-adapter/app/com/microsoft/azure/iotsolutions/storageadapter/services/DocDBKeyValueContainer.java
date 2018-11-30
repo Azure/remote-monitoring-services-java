@@ -8,15 +8,13 @@ import com.microsoft.azure.iotsolutions.storageadapter.services.exceptions.Creat
 import com.microsoft.azure.iotsolutions.storageadapter.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.storageadapter.services.helpers.DocumentIdHelper;
 import com.microsoft.azure.iotsolutions.storageadapter.services.helpers.QueryBuilder;
+import com.microsoft.azure.iotsolutions.storageadapter.services.models.StatusResultServiceModel;
 import com.microsoft.azure.iotsolutions.storageadapter.services.models.ValueServiceModel;
 import com.microsoft.azure.iotsolutions.storageadapter.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.storageadapter.services.wrappers.IFactory;
 import play.Logger;
 
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class DocDBKeyValueContainer implements IKeyValueContainer {
 
@@ -31,12 +29,6 @@ public class DocDBKeyValueContainer implements IKeyValueContainer {
         this.collectionLink = config.getContainerName();
     }
 
-    private void createDocumentClientLazily() throws CreateResourceException {
-        if (client == null) {
-            this.client = this.clientFactory.create();
-        }
-    }
-
     public ValueServiceModel get(String collectionId, String key) throws DocumentClientException, CreateResourceException {
         createDocumentClientLazily();
         String documentLink = collectionLink + "/docs/" + DocumentIdHelper.GenerateId(collectionId, key);
@@ -48,7 +40,6 @@ public class DocDBKeyValueContainer implements IKeyValueContainer {
             throw ex;
         }
     }
-
 
     public java.util.Iterator<ValueServiceModel> list(String collectionId) throws CreateResourceException, InvalidInputException {
         createDocumentClientLazily();
@@ -64,7 +55,6 @@ public class DocDBKeyValueContainer implements IKeyValueContainer {
         }
         return result.iterator();
     }
-
 
     public ValueServiceModel create(String collectionId, String key, ValueServiceModel input) throws DocumentClientException, CreateResourceException {
         KeyValueDocument document = new KeyValueDocument(collectionId, key, input.Data);
@@ -106,18 +96,28 @@ public class DocDBKeyValueContainer implements IKeyValueContainer {
         }
     }
 
-
-    public Status ping() throws CreateResourceException {
-        createDocumentClientLazily();
-        URI response = null;
-        if (this.client != null) {
-            response = this.client.getReadEndpoint();
+    public StatusResultServiceModel ping() {
+        StatusResultServiceModel result = new StatusResultServiceModel(false, "Storage check failed");
+        try {
+            createDocumentClientLazily();
+            DatabaseAccount response = null;
+            if (this.client != null) {
+                response = this.client.getDatabaseAccount();
+            } else {
+                result.setMessage("Storage client not setup properly.");
+            }
+            if (response != null) {
+                result = new StatusResultServiceModel(true, "Alive and well!");
+            }
+        } catch (DocumentClientException | CreateResourceException e) {
+            log.info(e.getMessage());
         }
-        if (response != null) {
-            return new Status(true, "Alive and Well!");
-        } else {
-            return new Status(false, "Could not connect to DocumentDb." + collectionLink);
-        }
+        return result;
     }
 
+    private void createDocumentClientLazily() throws CreateResourceException {
+        if (client == null) {
+            this.client = this.clientFactory.create();
+        }
+    }
 }

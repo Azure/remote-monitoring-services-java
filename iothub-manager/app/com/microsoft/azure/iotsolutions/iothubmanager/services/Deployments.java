@@ -2,17 +2,13 @@
 
 package com.microsoft.azure.iotsolutions.iothubmanager.services;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.ExternalDependencyException;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidConfigurationException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidInputException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.ResourceNotFoundException;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.helpers.QueryConditionTranslator;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentServiceListModel;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentServiceModel;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentStatus;
-import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeviceGroup;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.external.ConfigurationsHelper;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.models.*;
 import com.microsoft.azure.sdk.iot.service.Configuration;
 import com.microsoft.azure.sdk.iot.service.RegistryManager;
 import com.microsoft.azure.sdk.iot.service.devicetwin.DeviceTwin;
@@ -25,7 +21,6 @@ import com.microsoft.azure.sdk.iot.service.exceptions.IotHubNotFoundException;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import play.Logger;
-import play.libs.Json;
 
 import java.io.IOException;
 import java.util.Comparator;
@@ -34,39 +29,24 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
-
-import static play.libs.Json.fromJson;
 
 public final class Deployments implements IDeployments {
 
     private static final Logger.ALogger log = Logger.of(Deployments.class);
     private static final int MAX_DEPLOYMENTS = 20;
 
-    private static final String DEPLOYMENT_NAME_LABEL = "Name";
-    private static final String DEPLOYMENT_GROUP_ID_LABEL = "DeviceGroupId";
-    private static final String DEPLOYMENT_GROUP_NAME_LABEL = "DeviceGroupName";
-    private static final String DEPLOYMENT_PACKAGE_NAME_LABEL = "PackageName";
-    private static final String RM_CREATED_LABEL = "RMDeployment";
-
     private static final String DEVICE_GROUP_ID_PARAM = "deviceGroupId";
+    private static final String DEVICE_GROUP_NAME_PARAM = "deviceGroupName";
     private static final String DEVICE_GROUP_QUERY_PARAM = "deviceGroupQuery";
     private static final String NAME_PARAM = "name";
+    private static final String CONFIG_TYPE_PARAM = "configType";
     private static final String PACKAGE_CONTENT_PARAM = "packageContent";
 
     private static final String SCHEMA_VERSION = "schemaVersion";
-    private static final String APPLIED_DEVICES_QUERY =
-            "moduleId = '$edgeAgent' and configurations.[[%s]].status = 'Applied'";
-    private static final String SUCCESSFUL_DEVICES_QUERY = APPLIED_DEVICES_QUERY +
-            " and properties.desired.$version = properties.reported.lastDesiredVersion" +
-            " and properties.reported.lastDesiredStatus.code = 200";
-    private static final String FAILED_DEVICES_QUERY = APPLIED_DEVICES_QUERY +
-            " and properties.desired.$version = properties.reported.lastDesiredVersion" +
-            " and properties.reported.lastDesiredStatus.code != 200";
 
     private final RegistryManager registry;
     private final DeviceTwin deviceTwin;
@@ -107,7 +87,7 @@ public final class Deployments implements IDeployments {
                             .map(config -> {
                                 try {
                                     return new DeploymentServiceModel(config);
-                                } catch (InvalidInputException e) {
+                                } catch (InvalidInputException | InvalidConfigurationException e) {
                                     throw new CompletionException(e);
                                 }
                             })
@@ -126,7 +106,7 @@ public final class Deployments implements IDeployments {
      */
     @Override
     public CompletionStage<DeploymentServiceModel> getAsync(String id, boolean includeDeviceStatus) throws
-            ExternalDependencyException {
+            ExternalDependencyException, InvalidConfigurationException {
         try {
             final Configuration deployment = this.registry.getConfiguration(id);
 
@@ -143,17 +123,22 @@ public final class Deployments implements IDeployments {
                 throw new CompletionException(e);
             }
 
+            Map<String, DeploymentStatus> deviceStatuses = null;
+
+            try {
+                deviceStatuses = this.getDeviceStatuses(deployment);
+            } catch(Exception ex) {
+                log.error("Unable to retrieve device statuses for deployment " + id, ex);
+            }
+
             if (includeDeviceStatus) {
-                Map<String, DeploymentStatus> deviceStatuses = null;
-
-                try {
-                    deviceStatuses = this.getDeviceStatuses(id);
-                } catch(Exception ex) {
-                    log.error("Unable to retrieve device statuses for deployment " + id, ex);
-                }
-
                 result.getDeploymentMetrics().setDeviceStatuses(deviceStatuses);
             }
+
+            if (!(ConfigurationsHelper.isEdgeDeployment(deployment))) {
+                result.getDeploymentMetrics().setDeviceMetrics(this.calculateDeviceMetrics(deviceStatuses));
+            }
+
             return CompletableFuture.supplyAsync(() -> result);
         } catch (IotHubNotFoundException e) {
             throw new CompletionException(
@@ -171,19 +156,22 @@ public final class Deployments implements IDeployments {
      */
     @Override
     public CompletionStage<DeploymentServiceModel> createAsync(DeploymentServiceModel deployment) throws
-            InvalidInputException, ExternalDependencyException {
-        this.verifyDeploymentParameter(DEVICE_GROUP_ID_PARAM, deployment.getDeviceGroup().getId());
-        this.verifyDeploymentParameter(DEVICE_GROUP_QUERY_PARAM, deployment.getDeviceGroup().getQuery());
-        this.verifyDeploymentParameter(NAME_PARAM, deployment.getName());
-        this.verifyDeploymentParameter(PACKAGE_CONTENT_PARAM, deployment.getPackageContent());
+            InvalidInputException, ExternalDependencyException, InvalidConfigurationException {
+
+        verifyDeploymentParameter(DEVICE_GROUP_ID_PARAM, deployment.getDeviceGroup().getId());
+        verifyDeploymentParameter(DEVICE_GROUP_NAME_PARAM, deployment.getDeviceGroup().getId());
+        verifyDeploymentParameter(DEVICE_GROUP_QUERY_PARAM, deployment.getDeviceGroup().getQuery());
+        verifyDeploymentParameter(NAME_PARAM, deployment.getName());
+        verifyDeploymentParameter(CONFIG_TYPE_PARAM, deployment.getConfigType());
+        verifyDeploymentParameter(PACKAGE_CONTENT_PARAM, deployment.getPackageContent());
 
         if (deployment.getPriority() < 0) {
             throw new InvalidInputException("Invalid input. A priority should be provided greater than 0.");
         }
 
         try {
-            final Configuration edgeConfig = createEdgeConfiguration(deployment);
-            final Configuration result = this.registry.addConfiguration(edgeConfig);
+            final Configuration config = ConfigurationsHelper.toHubConfiguration(deployment);
+            final Configuration result = this.registry.addConfiguration(config);
             return CompletableFuture.completedFuture(new DeploymentServiceModel(result));
         }
         catch (IotHubBadFormatException e) {
@@ -224,14 +212,45 @@ public final class Deployments implements IDeployments {
     /**
      * Does 3 queries to the IoTHub to get the status of the deployment per device.
      *
-     * @param deploymentId - Deployment id for the deployment to query.
+     * @param deployment - Deployment id for the deployment to query.
      * @return Map of deviceId to the {@link DeploymentStatus}.
      */
-    private Map<String, DeploymentStatus> getDeviceStatuses(String deploymentId) throws IOException {
-        final Set<String> appliedDeviceIds = this.getDevicesInQuery(APPLIED_DEVICES_QUERY, deploymentId);
-        final Set<String> successfulDeviceIds = this.getDevicesInQuery(SUCCESSFUL_DEVICES_QUERY, deploymentId);
-        final Set<String> failedDeviceIds = this.getDevicesInQuery(FAILED_DEVICES_QUERY, deploymentId);
+    private Map<String, DeploymentStatus> getDeviceStatuses(Configuration deployment) throws
+            IOException, InvalidConfigurationException {
+
+        String packageType = null;
+        if (ConfigurationsHelper.isEdgeDeployment(deployment)) {
+            packageType = PackageType.edgeManifest.toString();
+        } else {
+            packageType = PackageType.deviceConfiguration.toString();
+        }
+
+        String configType = deployment.getLabels().getOrDefault(
+                                                        ConfigurationsHelper.CONFIG_TYPE_LABEL,
+                                                        StringUtils.EMPTY);
+
+        Map<DeviceStatusQueries.QueryType, String> queries = DeviceStatusQueries.getQueries(packageType, configType);
         Map<String,DeploymentStatus> deviceStatuses = new HashMap<>();
+        String deploymentId = deployment.getId();
+
+        final Set<String> appliedDeviceIds = this.getDevicesInQuery(
+                queries.get(DeviceStatusQueries.QueryType.APPLIED),
+                deploymentId);
+
+        if (!(ConfigurationsHelper.isEdgeDeployment(deployment)) &&
+                !(configType.equals(ConfigType.firmware.toString()))) {
+            for (String devices : appliedDeviceIds) {
+                deviceStatuses.put(devices, DeploymentStatus.Unknown);
+            }
+
+            return deviceStatuses;
+        }
+
+        final Set<String> successfulDeviceIds = this.getDevicesInQuery(
+                queries.get(DeviceStatusQueries.QueryType.SUCCESSFUL), deploymentId);
+
+        final Set<String> failedDeviceIds = this.getDevicesInQuery(
+                queries.get(DeviceStatusQueries.QueryType.FAILED), deploymentId);
 
         for (String successfulDevice : successfulDeviceIds) {
             deviceStatuses.put(successfulDevice, DeploymentStatus.Succeeded);
@@ -247,14 +266,6 @@ public final class Deployments implements IDeployments {
         return deviceStatuses;
     }
 
-    private void verifyDeploymentParameter(final String argumentName, final String argumentValue)
-            throws InvalidInputException {
-        if (StringUtils.isEmpty(argumentValue)) {
-            throw new InvalidInputException("Invalid input. Must provide a value to " +
-                    argumentName);
-        }
-    }
-
     private Set<String> getDevicesInQuery(String hubQuery, String deploymentId) throws IOException {
         final String query = String.format(hubQuery, deploymentId);
         final SqlQuery sqlQuery = SqlQuery.createSqlQuery("*", SqlQuery.FromType.MODULES, query, null);
@@ -263,8 +274,8 @@ public final class Deployments implements IDeployments {
 
         try {
             // TODO: Add pagination
-            twinQuery = deviceTwin.queryTwin(sqlQuery.getQuery());
-        } catch (IotHubException ex) {
+            twinQuery = deviceTwin.queryTwin(query);
+        } catch (IotHubException | IOException ex) {
             log.error(String.format("Unable to get devices with query %s in deployment %s", query,
                     deploymentId), ex);
             return deviceIds;
@@ -282,45 +293,37 @@ public final class Deployments implements IDeployments {
         return deviceIds;
     }
 
-    private static Configuration createEdgeConfiguration(final DeploymentServiceModel deployment) throws InvalidInputException {
-        final String deploymentId = UUID.randomUUID().toString();
-        final Configuration edgeConfiguration = new Configuration(deploymentId);
-
-        final String packageContent = deployment.getPackageContent();
-        final Configuration pkgConfiguration = fromJson(Json.parse(packageContent), Configuration.class);
-        edgeConfiguration.setContent(pkgConfiguration.getContent());
-
-        final DeviceGroup deploymentGroup = deployment.getDeviceGroup();
-        final String dvcGroupQuery = deploymentGroup.getQuery();
-        final String query = QueryConditionTranslator.ToQueryString(dvcGroupQuery);
-        edgeConfiguration.setTargetCondition(StringUtils.isNotBlank(query) ? query : "*");
-        edgeConfiguration.setPriority(deployment.getPriority());
-        edgeConfiguration.setEtag("");
-
-        if(edgeConfiguration.getLabels() == null) {
-            edgeConfiguration.setLabels(new HashMap<>());
-        }
-        final Map<String, String> labels = edgeConfiguration.getLabels();
-
-        // Required labels
-        labels.put(DEPLOYMENT_NAME_LABEL, deployment.getName());
-        labels.put(DEPLOYMENT_GROUP_ID_LABEL, deploymentGroup.getId());
-        labels.put(RM_CREATED_LABEL, Boolean.TRUE.toString());
-
-        // Add optional labels
-        if (deploymentGroup.getName() != null) {
-            labels.put(DEPLOYMENT_GROUP_NAME_LABEL, deploymentGroup.getName());
-        }
-        if (deployment.getPackageName() != null) {
-            labels.put(DEPLOYMENT_PACKAGE_NAME_LABEL, deployment.getPackageName());
-        }
-
-        return edgeConfiguration;
-    }
-
     private static boolean deploymentMadeByRM(Configuration conf) {
         return conf.getLabels() != null &&
-                conf.getLabels().containsKey(RM_CREATED_LABEL) &&
-                BooleanUtils.toBoolean(conf.getLabels().get(RM_CREATED_LABEL));
+                conf.getLabels().containsKey(ConfigurationsHelper.RM_CREATED_LABEL) &&
+                BooleanUtils.toBoolean(conf.getLabels().get(ConfigurationsHelper.RM_CREATED_LABEL));
+    }
+
+
+    private static void verifyDeploymentParameter(final String argumentName, final String argumentValue)
+            throws InvalidInputException {
+        if (StringUtils.isEmpty(argumentValue)) {
+            throw new InvalidInputException("Invalid input. Must provide a value to " +
+                    argumentName);
+        }
+    }
+
+
+    private Map<DeploymentStatus, Long> calculateDeviceMetrics(Map<String, DeploymentStatus> deviceStatuses) {
+        if (deviceStatuses == null) {
+            return null;
+        }
+
+        Map<DeploymentStatus, Long> deviceMetrics = new HashMap<DeploymentStatus, Long>();
+        deviceMetrics.put(DeploymentStatus.Succeeded, deviceStatuses.values().stream().filter(item ->
+                item == DeploymentStatus.Succeeded).count());
+
+        deviceMetrics.put(DeploymentStatus.Failed, deviceStatuses.values().stream().filter(item ->
+                item == DeploymentStatus.Failed).count());
+
+        deviceMetrics.put(DeploymentStatus.Pending, deviceStatuses.values().stream().filter(item ->
+                item == DeploymentStatus.Pending).count());
+
+        return deviceMetrics;
     }
 }

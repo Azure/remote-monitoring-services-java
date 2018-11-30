@@ -11,9 +11,16 @@ public interface IServicesConfig {
      */
     String getKeyValueStorageUrl();
 
+    /**
+     * Get user management dependency url
+     */
+    String getUserManagementApiUrl();
+
     MessagesConfig getMessagesConfig();
 
     AlarmsConfig getAlarmsConfig();
+
+    ActionsConfig getActionsConfig();
 
     DiagnosticsConfig getDiagnosticsConfig();
 }

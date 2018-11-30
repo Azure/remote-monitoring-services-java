@@ -11,34 +11,43 @@ import com.microsoft.azure.iotsolutions.uiconfig.services.external.IStorageAdapt
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.ValueApiModel;
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.ValueListApiModel;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.*;
-import com.microsoft.azure.iotsolutions.uiconfig.services.models.Package;
+import com.microsoft.azure.iotsolutions.uiconfig.services.models.PackageServiceModel;
 import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.ServicesConfig;
 import com.microsoft.azure.sdk.iot.service.Configuration;
 import com.microsoft.azure.sdk.iot.service.ConfigurationContent;
 import helpers.Random;
 import helpers.UnitTest;
+import junitparams.Parameters;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormatter;
+import junitparams.JUnitParamsRunner;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import play.libs.Json;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static org.joda.time.format.DateTimeFormat.forPattern;
 import static org.junit.Assert.*;
 
+@RunWith(JUnitParamsRunner.class)
 public class StorageTest {
 
     private IStorageAdapterClient mockClient;
@@ -361,9 +370,9 @@ public class StorageTest {
 
     @Test
     @Category({UnitTest.class})
-    public void addPackageTest() throws BaseException, ExecutionException, InterruptedException {
+    public void addEdgePackageTest() throws BaseException, ExecutionException, InterruptedException {
         // Arrange
-        Package pkg = new Package(null, rand.NextString(), PackageType.edgeManifest, this.createConfiguration());
+        PackageServiceModel pkg = new PackageServiceModel(null, rand.NextString(), PackageType.edgeManifest, null, this.createConfiguration());
 
         ValueApiModel model = new ValueApiModel(rand.NextString(), null, null, null);
         model.setData(Json.stringify(Json.toJson(pkg)));
@@ -373,19 +382,119 @@ public class StorageTest {
                .thenReturn(CompletableFuture.supplyAsync(() -> model));
 
         // Act
-        Package result = storage.addPackageAsync(pkg).toCompletableFuture().get();
+        PackageServiceModel result = storage.addPackageAsync(pkg).toCompletableFuture().get();
 
         // Assert
         assertEquals(pkg.getName(), result.getName());
-        assertEquals(pkg.getType(), result.getType());
+        assertEquals(pkg.getPackageType(), result.getPackageType());
         assertEquals(pkg.getContent(), result.getContent());
+    }
+
+    @Test
+    @Category({UnitTest.class})
+    public void addADMPackageTest() throws BaseException, ExecutionException, InterruptedException {
+        // Arrange
+        final String config = ConfigType.firmware.toString();
+        final String configKey = "config-types";
+
+        PackageServiceModel pkg = new PackageServiceModel(
+                null,
+                rand.NextString(),
+                PackageType.deviceConfiguration,
+                config,
+                this.createConfiguration());
+
+        ValueApiModel model = new ValueApiModel(rand.NextString(), null, null, null);
+        model.setData(Json.stringify(Json.toJson(pkg)));
+
+        Mockito.when(mockClient.createAsync(Mockito.eq(PACKAGES_COLLECTION_ID),
+                Mockito.any(String.class)))
+                .thenReturn(CompletableFuture.supplyAsync(() -> model));
+
+        Mockito.when(mockClient.updateAsync(
+                Mockito.eq(PACKAGES_COLLECTION_ID),
+                Mockito.eq(configKey),
+                Mockito.eq(config),
+                Mockito.any(String.class)))
+                .thenReturn(CompletableFuture.supplyAsync(() -> model));
+
+        Mockito.when(mockClient.getAsync(Mockito.eq(PACKAGES_COLLECTION_ID),
+                Mockito.eq(configKey)))
+                .thenReturn(CompletableFuture.supplyAsync(() -> model));
+        // Act
+        PackageServiceModel result = storage.addPackageAsync(pkg).toCompletableFuture().get();
+
+        // Assert
+        assertEquals(pkg.getName(), result.getName());
+        assertEquals(pkg.getPackageType(), result.getPackageType());
+        assertEquals(pkg.getConfigType(), result.getConfigType());
+        assertEquals(pkg.getContent(), result.getContent());
+    }
+
+    @Test
+    @Category({UnitTest.class})
+    public void addADMCustomPackageTest() throws BaseException, ExecutionException, InterruptedException {
+        // Arrange
+        final String config = "CustomConfig";
+        final String configKey = "config-types";
+
+        PackageServiceModel pkg = new PackageServiceModel(
+                null,
+                rand.NextString(),
+                PackageType.edgeManifest,
+                config,
+                this.createConfiguration());
+
+        ValueApiModel model = new ValueApiModel(rand.NextString(), null, null, null);
+        model.setData(Json.stringify(Json.toJson(pkg)));
+
+        Mockito.when(mockClient.createAsync(Mockito.eq(PACKAGES_COLLECTION_ID),
+                Mockito.any(String.class)))
+                .thenReturn(CompletableFuture.supplyAsync(() -> model));
+
+        Mockito.when(mockClient.updateAsync(
+                Mockito.eq(PACKAGES_COLLECTION_ID),
+                Mockito.eq(configKey),
+                Mockito.eq(config),
+                Mockito.any(String.class)))
+                .thenReturn(CompletableFuture.supplyAsync(() -> model));
+
+        Mockito.when(mockClient.getAsync(Mockito.eq(PACKAGES_COLLECTION_ID),
+                Mockito.eq(configKey)))
+                .thenReturn(CompletableFuture.supplyAsync(() -> model));
+
+        // Act
+        PackageServiceModel result = storage.addPackageAsync(pkg).toCompletableFuture().get();
+
+        // Assert
+        assertEquals(pkg.getName(), result.getName());
+        assertEquals(pkg.getPackageType(), result.getPackageType());
+        assertEquals(pkg.getConfigType(), config);
+        assertEquals(pkg.getContent(), result.getContent());
+    }
+
+    @Test
+    @Category({UnitTest.class})
+    public void listConfigurationsTest() throws BaseException, ExecutionException, InterruptedException {
+        // Arrange
+        final String configKey = "config-types";
+
+        Mockito.when(mockClient.getAsync(Mockito.eq(PACKAGES_COLLECTION_ID),
+                Mockito.eq(configKey)))
+                .thenThrow(new ResourceNotFoundException());
+
+        // Act
+        ConfigTypeListServiceModel result = storage.getAllConfigTypesAsync().toCompletableFuture().get();
+
+        // Assert
+        assertEquals(0, result.getConfigTypes().length);
     }
 
     @Test
     @Category({UnitTest.class})
     public void invalidPackageTest() throws BaseException, ExecutionException, InterruptedException {
         // Arrange
-        Package pkg = new Package(null, rand.NextString(), PackageType.edgeManifest, rand.NextString());
+        PackageServiceModel pkg = new PackageServiceModel(null, rand.NextString(), PackageType.edgeManifest, null,  rand.NextString());
 
         // Act & Assert
         exception.expect(InvalidInputException.class);
@@ -396,15 +505,16 @@ public class StorageTest {
     @Category({UnitTest.class})
     public void getAllPackageTest() throws BaseException, ExecutionException, InterruptedException {
         // Arrange
-        List<Package> packages = new ArrayList<>();
+        List<PackageServiceModel> packages = new ArrayList<>();
         final String pkgName = "pkgName";
         final PackageType type = PackageType.edgeManifest;
+        final String configType = null;
         final String content = "{}";
         final String dateCreated =
                 StorageTest.DATE_FORMAT.print(DateTime.now().toDateTime(DateTimeZone.UTC));
 
         for (int i = 0; i < 5; i++) {
-            Package model = new Package(null, pkgName + i, type, content + i, dateCreated);
+            PackageServiceModel model = new PackageServiceModel(null, pkgName + i, type, configType, content + i, dateCreated);
             packages.add(model);
         }
 
@@ -414,17 +524,91 @@ public class StorageTest {
         this.setupAllAsyncMock(PACKAGES_COLLECTION_ID, items);
 
         // Act
-        List<Package> results = Lists.newArrayList(storage.getAllPackagesAsync().toCompletableFuture().get());
+        List<PackageServiceModel> results = Lists.newArrayList(storage.getAllPackagesAsync().toCompletableFuture().get());
 
         // Assert
         assertEquals(5, results.size());
 
         for (int i = 0; i < results.size(); i++) {
-            Package result = results.get(i);
+            PackageServiceModel result = results.get(i);
             ValueApiModel value = items.stream().filter(m -> m.getKey().equals(result.getId())).findFirst().get();
-            Package pkg = Json.fromJson(Json.parse(value.getData()), Package.class);
+            PackageServiceModel pkg = Json.fromJson(Json.parse(value.getData()), PackageServiceModel.class);
             assertEquals(pkgName + i, pkg.getName());
             assertEquals(content + i, pkg.getContent());
+        }
+    }
+
+    @Test
+    @Parameters({"true", "false"})
+    public void ListPackagesTest(Boolean isEdgeManifest) throws
+            BaseException,
+            InterruptedException,
+            ExecutionException
+    {
+        // Arrange
+        final String collectionId = "packages";
+        final String id = "packageId";
+        final String name = "packageName";
+
+        final String content = "{}";
+
+        List<PackageServiceModel> packages = IntStream.range(0, 2).mapToObj(i -> {
+            PackageType packageType = (i == 0) ? PackageType.deviceConfiguration : PackageType.edgeManifest;
+            String configType = (i == 0) ? ConfigType.firmware.toString() : StringUtils.EMPTY;
+            return new PackageServiceModel(
+                        id + i,
+                        name + i,
+                        packageType,
+                        configType,
+                        content + i,
+                        StringUtils.EMPTY
+                    );
+                })
+                .collect(Collectors.toList());
+
+        List<ValueApiModel> models = new ArrayList<ValueApiModel>();
+
+        for (PackageServiceModel pckg : packages)
+        {
+            models.add(new ValueApiModel()
+            {
+                {
+                    setKey(RandomStringUtils.randomAlphabetic(10));
+                    setData(Json.toJson(pckg).toString());
+                }
+            });
+        }
+
+        Mockito.when(mockClient.getAllAsync(Mockito.eq(collectionId)))
+            .thenReturn(CompletableFuture.supplyAsync(() ->
+                new ValueListApiModel()
+                    {
+                        {
+                            Items = models;
+                        }
+                    })
+            );
+
+        // Act
+        String packageType = isEdgeManifest ? PackageType.edgeManifest.toString() : StringUtils.EMPTY;
+
+        String configType = isEdgeManifest ? StringUtils.EMPTY : ConfigType.firmware.toString();
+
+        List<PackageServiceModel> resultPackages = new ArrayList<>();
+
+        try
+        {
+            this.storage.getFilteredPackagesAsync(packageType, configType)
+                    .toCompletableFuture().get().forEach(resultPackages::add);
+
+            // Assert
+            PackageServiceModel pkg = resultPackages.get(0);
+            assertEquals(PackageType.edgeManifest, pkg.getPackageType());
+            assertEquals(StringUtils.EMPTY, pkg.getConfigType());
+        }
+        catch (Exception e)
+        {
+            assertFalse(isEdgeManifest);
         }
     }
 

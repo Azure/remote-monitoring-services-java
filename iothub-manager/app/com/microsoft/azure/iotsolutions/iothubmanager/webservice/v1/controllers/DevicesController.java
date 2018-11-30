@@ -35,6 +35,7 @@ public final class DevicesController extends Controller {
         this.deviceProperties = deviceProperties;
     }
 
+    @Authorize("ReadAll")
     public CompletionStage<Result> getDevicesAsync(String query) throws ExternalDependencyException {
         String continuationToken = "";
         if (request().getHeaders().contains(ContinuationTokenName)) {
@@ -44,6 +45,7 @@ public final class DevicesController extends Controller {
             .thenApply(devices -> ok(toJson(new DeviceListApiModel(devices))));
     }
 
+    @Authorize("ReadAll")
     public CompletionStage<Result> queryDevicesAsync() throws ExternalDependencyException {
         String continuationToken = "";
         String query;
@@ -62,6 +64,7 @@ public final class DevicesController extends Controller {
             .thenApply(devices -> ok(toJson(new DeviceListApiModel(devices))));
     }
 
+    @Authorize("ReadAll")
     public CompletionStage<Result> getDeviceAsync(final String id) throws ExternalDependencyException {
         return deviceService.getAsync(id)
             .thenApply(device -> ok(toJson(new DeviceRegistryApiModel(device))));
