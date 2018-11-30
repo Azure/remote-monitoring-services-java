@@ -5,6 +5,7 @@ package com.microsoft.azure.iotsolutions.iothubmanager.webservice.v1.models;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentMetrics;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.models.DeploymentStatus;
+import org.apache.commons.collections4.MapUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,8 +15,8 @@ public class DeploymentMetricsApiModel {
 
     private static final String APPLIED_METRICS_KEY = "appliedCount";
     private static final String TARGETED_METRICS_KEY = "targetedCount";
-    private static final String SUCCESEEDED_METRICS_KEY = "succeededCount";
-    private static final String FAILED_METRICS_KEY = "failedCount";
+    private static final String SUCCESEEDED_METRICS_KEY = "reportedSuccessfulCount";
+    private static final String FAILED_METRICS_KEY = "reportedFailedCount";
     private static final String PENDING_METRICS_KEY = "pendingCount";
 
     private Map<String, Long> systemMetrics;
@@ -45,8 +46,8 @@ public class DeploymentMetricsApiModel {
         if (metricsServiceModel == null) return;
 
         this.customMetrics = metricsServiceModel.getCustomMetrics();
-        this.systemMetrics = metricsServiceModel.getSystemMetrics() != null ?
-                metricsServiceModel.getSystemMetrics() : this.systemMetrics;
+        this.systemMetrics = MapUtils.isEmpty(metricsServiceModel.getSystemMetrics()) ?
+                                            metricsServiceModel.getSystemMetrics() : this.systemMetrics;
         this.deviceStatuses = metricsServiceModel.getDeviceStatuses();
 
         if (metricsServiceModel.getDeviceMetrics() != null) {
