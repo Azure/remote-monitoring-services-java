@@ -159,7 +159,6 @@ public final class Deployments implements IDeployments {
         verifyDeploymentParameter(DEVICE_GROUP_ID_PARAM, deployment.getDeviceGroup().getId());
         verifyDeploymentParameter(DEVICE_GROUP_NAME_PARAM, deployment.getDeviceGroup().getId());
         verifyDeploymentParameter(DEVICE_GROUP_QUERY_PARAM, deployment.getDeviceGroup().getQuery());
-        verifyDeploymentParameter(DEVICE_GROUP_ID_PARAM, deployment.getDeviceGroup().getId());
         verifyDeploymentParameter(PACKAGE_CONTENT_PARAM, deployment.getPackageContent());
         verifyDeploymentParameter(NAME_PARAM, deployment.getName());
 
