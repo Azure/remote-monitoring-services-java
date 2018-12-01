@@ -135,9 +135,7 @@ public final class Deployments implements IDeployments {
                 result.getDeploymentMetrics().setDeviceStatuses(deviceStatuses);
             }
 
-            if (!(ConfigurationsHelper.isEdgeDeployment(deployment))) {
-                result.getDeploymentMetrics().setDeviceMetrics(this.calculateDeviceMetrics(deviceStatuses));
-            }
+            result.getDeploymentMetrics().setDeviceMetrics(this.calculateDeviceMetrics(deviceStatuses));
 
             return CompletableFuture.supplyAsync(() -> result);
         } catch (IotHubNotFoundException e) {
@@ -271,7 +269,6 @@ public final class Deployments implements IDeployments {
 
     private Set<String> getDevicesInQuery(String hubQuery, String deploymentId) throws IOException {
         final String query = String.format(hubQuery, deploymentId);
-        final SqlQuery sqlQuery = SqlQuery.createSqlQuery("*", SqlQuery.FromType.MODULES, query, null);
         final Query twinQuery;
         final Set<String> deviceIds = new HashSet<>();
 
