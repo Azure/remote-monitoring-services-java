@@ -163,7 +163,7 @@ public final class Deployments implements IDeployments {
         verifyDeploymentParameter(PACKAGE_CONTENT_PARAM, deployment.getPackageContent());
         verifyDeploymentParameter(NAME_PARAM, deployment.getName());
 
-        // PackageType is an Enum and can be null, but cannot be an empty string
+        // PackageType is an Enum and can be null, but cannot be an empty string.
         if (deployment.getPackageType() == null) {
             throw new InvalidInputException("Invalid input. Must provide a value to PackageType");
         }
