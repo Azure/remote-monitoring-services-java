@@ -205,6 +205,7 @@ public final class Devices implements IDevices {
             throws InvalidInputException, ExternalDependencyException {
         if (device.getIsEdgeDevice() &&
                 device.getAuthentication() != null &&
+                device.getAuthentication().getAuthenticationType() != null &&
                 !device.getAuthentication().getAuthenticationType().equals(AuthenticationType.Sas)) {
             throw new InvalidInputException("Edge devices only support symmetric key authentication.");
         }
