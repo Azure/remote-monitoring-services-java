@@ -288,7 +288,7 @@ public final class Deployments implements IDeployments {
             }
         }
         catch (Exception ex) {
-            log.error("Error getting status of devices in query " + sqlQuery.toString());
+            log.error("Error getting status of devices in query " + query.toString());
         }
         return deviceIds;
     }
