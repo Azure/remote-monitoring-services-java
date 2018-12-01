@@ -159,8 +159,14 @@ public final class Deployments implements IDeployments {
         verifyDeploymentParameter(DEVICE_GROUP_ID_PARAM, deployment.getDeviceGroup().getId());
         verifyDeploymentParameter(DEVICE_GROUP_NAME_PARAM, deployment.getDeviceGroup().getId());
         verifyDeploymentParameter(DEVICE_GROUP_QUERY_PARAM, deployment.getDeviceGroup().getQuery());
-        verifyDeploymentParameter(NAME_PARAM, deployment.getName());
+        verifyDeploymentParameter(DEVICE_GROUP_ID_PARAM, deployment.getDeviceGroup().getId());
         verifyDeploymentParameter(PACKAGE_CONTENT_PARAM, deployment.getPackageContent());
+        verifyDeploymentParameter(NAME_PARAM, deployment.getName());
+
+        // PackageType is an Enum and can be null, but cannot be an empty string
+        if (deployment.getPackageType() == null) {
+            throw new InvalidInputException("Invalid input. Must provide a value to PackageType");
+        }
 
         if (deployment.getPackageType().equals(PackageType.deviceConfiguration)) {
             verifyDeploymentParameter(CONFIG_TYPE_PARAM, deployment.getConfigType());
