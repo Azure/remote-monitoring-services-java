@@ -18,7 +18,7 @@ public class EdgeDeviceStatusQueries {
                     " AND configurations.[[%s]].status = 'Applied' " +
                     " AND properties.desired.$version = properties.reported.lastDesiredVersion " +
                     " AND properties.reported.lastDesiredStatus.code = 200");
-            put(DeviceStatusQueries.QueryType.FAILED, "SELECT * from devices WHERE " +
+            put(DeviceStatusQueries.QueryType.FAILED, "SELECT * from devices.modules WHERE " +
                     " moduleId = '$edgeAgent' " +
                     " AND configurations.[[%s]].status = 'Applied' " +
                     " AND properties.desired.$version = properties.reported.lastDesiredVersion " +
