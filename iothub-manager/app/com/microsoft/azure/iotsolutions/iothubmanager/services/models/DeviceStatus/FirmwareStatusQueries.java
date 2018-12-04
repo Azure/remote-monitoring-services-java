@@ -10,14 +10,16 @@ public class FirmwareStatusQueries {
     public static Map<DeviceStatusQueries.QueryType, String> queries =
             new HashMap<DeviceStatusQueries.QueryType, String>() {
         {
-            put(DeviceStatusQueries.QueryType.APPLIED, "select * from devices where " +
-                    "configurations.[[%s]].status = 'Applied'");
-            put(DeviceStatusQueries.QueryType.SUCCESSFUL, "select * FROM devices WHERE " +
-                    "properties.reported.firmware.fwUpdateStatus='Current' AND " +
-                    "properties.reported.firmware.type='IoTDevKit'");
-            put(DeviceStatusQueries.QueryType.FAILED, "select * FROM devices WHERE " +
-                    "properties.reported.firmware.fwUpdateStatus='Error' AND " +
-                    "properties.reported.firmware.type='IoTDevKit'");
+            put(DeviceStatusQueries.QueryType.APPLIED, "SELECT * from devices WHERE " +
+                    " configurations.[[%s]].status = 'Applied'");
+            put(DeviceStatusQueries.QueryType.SUCCESSFUL, "SELECT * FROM devices WHERE " +
+                    " configurations.[[%s]].status = 'Applied'" +
+                    " AND properties.reported.firmware.fwUpdateStatus='Current' " +
+                    " AND properties.reported.firmware.type='IoTDevKit'");
+            put(DeviceStatusQueries.QueryType.FAILED, "SELECT * FROM devices WHERE " +
+                    " configurations.[[%s]].status = 'Applied'" +
+                    " AND properties.reported.firmware.fwUpdateStatus='Error' " +
+                    " AND properties.reported.firmware.type='IoTDevKit'");
         }
     };
 }
