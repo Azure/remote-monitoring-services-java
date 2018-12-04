@@ -46,7 +46,7 @@ public class DeploymentMetricsApiModel {
         if (metricsServiceModel == null) return;
 
         this.customMetrics = metricsServiceModel.getCustomMetrics();
-        this.systemMetrics = MapUtils.isEmpty(metricsServiceModel.getSystemMetrics()) ?
+        this.systemMetrics = !(MapUtils.isEmpty(metricsServiceModel.getSystemMetrics())) ?
                                             metricsServiceModel.getSystemMetrics() : this.systemMetrics;
         this.deviceStatuses = metricsServiceModel.getDeviceStatuses();
 

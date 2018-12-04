@@ -135,9 +135,7 @@ public final class Deployments implements IDeployments {
                 result.getDeploymentMetrics().setDeviceStatuses(deviceStatuses);
             }
 
-            if (!(ConfigurationsHelper.isEdgeDeployment(deployment))) {
-                result.getDeploymentMetrics().setDeviceMetrics(this.calculateDeviceMetrics(deviceStatuses));
-            }
+            result.getDeploymentMetrics().setDeviceMetrics(this.calculateDeviceMetrics(deviceStatuses));
 
             return CompletableFuture.supplyAsync(() -> result);
         } catch (IotHubNotFoundException e) {
@@ -161,9 +159,17 @@ public final class Deployments implements IDeployments {
         verifyDeploymentParameter(DEVICE_GROUP_ID_PARAM, deployment.getDeviceGroup().getId());
         verifyDeploymentParameter(DEVICE_GROUP_NAME_PARAM, deployment.getDeviceGroup().getId());
         verifyDeploymentParameter(DEVICE_GROUP_QUERY_PARAM, deployment.getDeviceGroup().getQuery());
-        verifyDeploymentParameter(NAME_PARAM, deployment.getName());
-        verifyDeploymentParameter(CONFIG_TYPE_PARAM, deployment.getConfigType());
         verifyDeploymentParameter(PACKAGE_CONTENT_PARAM, deployment.getPackageContent());
+        verifyDeploymentParameter(NAME_PARAM, deployment.getName());
+
+        // PackageType is an Enum and can be null, but cannot be an empty string.
+        if (deployment.getPackageType() == null) {
+            throw new InvalidInputException("Invalid input. Must provide a value to PackageType");
+        }
+
+        if (deployment.getPackageType().equals(PackageType.deviceConfiguration)) {
+            verifyDeploymentParameter(CONFIG_TYPE_PARAM, deployment.getConfigType());
+        }
 
         if (deployment.getPriority() < 0) {
             throw new InvalidInputException("Invalid input. A priority should be provided greater than 0.");
@@ -268,7 +274,6 @@ public final class Deployments implements IDeployments {
 
     private Set<String> getDevicesInQuery(String hubQuery, String deploymentId) throws IOException {
         final String query = String.format(hubQuery, deploymentId);
-        final SqlQuery sqlQuery = SqlQuery.createSqlQuery("*", SqlQuery.FromType.MODULES, query, null);
         final Query twinQuery;
         final Set<String> deviceIds = new HashSet<>();
 
@@ -288,7 +293,7 @@ public final class Deployments implements IDeployments {
             }
         }
         catch (Exception ex) {
-            log.error("Error getting status of devices in query " + sqlQuery.toString());
+            log.error("Error getting status of devices in query " + query.toString());
         }
         return deviceIds;
     }
