@@ -26,6 +26,7 @@ public class Agent implements IRecurringTasksAgent {
 
     private final IDeviceProperties cache;
     private static final Logger.ALogger log = Logger.of(Agent.class);
+    private Timer cacheUpdateTimer;
 
     @Inject
     public Agent(IDeviceProperties cache) {
@@ -62,8 +63,8 @@ public class Agent implements IRecurringTasksAgent {
     private void scheduleDevicePropertiesCacheUpdate() {
         try {
             this.log.info("Scheduling a DeviceProperties cache update");
-            Timer timer = new Timer("DeviceProperties cache update", true);
-            timer.schedule(new TimerTask() {
+            this.cacheUpdateTimer = new Timer("DeviceProperties cache update", true);
+            this.cacheUpdateTimer.schedule(new TimerTask() {
                 @Override
                 public void run() {
                     updateDevicePropertiesCache();
