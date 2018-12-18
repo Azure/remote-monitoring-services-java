@@ -11,6 +11,11 @@ import static play.libs.Json.fromJson;
 
 public class PackagesHelper {
 
+    /**
+     * This function is used to verify if the package type and package contents are
+     * compatible. for eg:- if package type is DeviceConfiguration it should contain
+     * "devicesContent" object.
+     */
     public static boolean verifyPackageType(String packageContent, String packageType) {
         if (packageType.equals(PackageType.edgeManifest.toString()) && isEdgePackage(packageContent)) {
             return true;
@@ -29,6 +34,7 @@ public class PackagesHelper {
                 MapUtils.isEmpty(pckgContent.getContent().getDeviceContent())) {
             return true;
         }
+
         return false;
     }
 }
