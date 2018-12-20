@@ -510,4 +510,8 @@ public final class Devices implements IDevices {
             }
         );
     }
+
+    public void finalize(){
+        this.registry.close();
+    }
 }

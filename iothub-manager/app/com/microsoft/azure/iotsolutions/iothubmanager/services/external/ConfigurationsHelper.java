@@ -103,9 +103,9 @@ public class ConfigurationsHelper {
             /* This is for the backward compatibility, as some of the old
              *  deployments may not have the required label.
              */
-            if (deployment.getContent().getModulesContent() != null) {
+            if (MapUtils.isNotEmpty(deployment.getContent().getModulesContent())) {
                 return true;
-            } else if (deployment.getContent().getDeviceContent() != null) {
+            } else if (MapUtils.isNotEmpty(deployment.getContent().getDeviceContent())) {
                 return false;
             } else {
                 throw new InvalidConfigurationException("Deployment package type should not be empty.");

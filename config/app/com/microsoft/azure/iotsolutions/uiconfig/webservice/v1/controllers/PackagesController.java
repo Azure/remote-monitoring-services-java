@@ -9,6 +9,7 @@ import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.BaseExcepti
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.auth.Authorize;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.PackageType;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.exceptions.BadRequestException;
+import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.helpers.PackagesHelper;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models.PackageApiModel;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models.ConfigTypeListApiModel;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models.PackageListApiModel;
@@ -111,6 +112,11 @@ public class PackagesController extends Controller {
         final String content = new String(Files.readAllBytes(file.getFile().toPath()));
         final String packageType = data.get(PACKAGE_TYPE_PARAM)[0];
         String configType = data.get(PACKAGE_CONFIG_TYPE_PARAM)[0];
+
+        if (!(PackagesHelper.verifyPackageType(content, packageType))) {
+            throw new BadRequestException(String.format("Package uploaded is invalid. Package contents" +
+                    " do not match with the given package type %s.", packageType.toString()));
+        }
 
         if (packageType.equals(PackageType.edgeManifest.toString()) &&
                 !(StringUtils.isBlank(configType))) {
