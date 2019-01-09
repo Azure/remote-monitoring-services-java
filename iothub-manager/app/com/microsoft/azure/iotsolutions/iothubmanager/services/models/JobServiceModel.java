@@ -31,8 +31,20 @@ public class JobServiceModel {
         this.queryCondition = jobResult.getQueryCondition();
         this.createdTimeUtc = jobResult.getCreatedTime();
         this.startTimeUtc = jobResult.getStartTime();
-        this.endTimeUtc = jobResult.getEndTime();
+        this.endTimeUtc = null;
         this.maxExecutionTimeInSeconds = jobResult.getMaxExecutionTimeInSeconds();
+
+        switch (JobStatus.valueOf(jobResult.getJobStatus().toString()))
+        {
+            case completed:
+            case failed:
+            case cancelled:
+                this.endTimeUtc = jobResult.getEndTime();
+                break;
+            default:
+                break;
+        }
+
         this.jobType = JobType.fromAzureJobType(jobResult.getJobType());
         this.jobStatus = JobStatus.fromAzureJobStatus(jobResult.getJobStatus());
 
