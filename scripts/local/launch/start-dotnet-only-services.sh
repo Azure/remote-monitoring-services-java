@@ -17,7 +17,7 @@ cd $APP_HOME/asa-manager/scripts/docker
 ./run >> $APP_HOME/scripts/local/asa-manager.txt &
 
 echo "Starting PCS-Auth MS ....."
-cd $APP_HOME/pcs-auth/scripts/docker
-./run >> $APP_HOME/scripts/local/pcs-auth.txt &
+cd $APP_HOME/auth/scripts/docker
+./run >> $APP_HOME/scripts/local/auth.txt &
 
 set +e
