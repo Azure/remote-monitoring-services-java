@@ -24,7 +24,7 @@ More information [here][rm-arch-url].
 
 ## Documentation
 
-* View the API documentation in the [Wiki](https://github.com/Azure/device-telemetry-java/wiki).
+* View the API documentation in the [Wiki](https://github.com/Azure/remote-monitoring-services-java/wiki/Telemetry-Api).
 
 # How to use
 
@@ -45,8 +45,8 @@ This service has a dependency on the following Azure resources. Follow the instr
 ### 2. Setup Dependencies
 
 This service depends on the following repository.
-1. [Storage Adapter Microservice](https://github.com/Azure/pcs-storage-adapter-java)
-2. [Auth Microservice](https://github.com/Azure/pcs-auth-dotnet)
+1. [Storage Adapter Microservice](https://github.com/Azure/remote-monitoring-services-java/tree/master/storage-adapter)
+2. [Auth Microservice](https://github.com/Azure/remote-monitoring-services-java/tree/master/auth)
 
 ### 3. Environment variables required to run the service
 In order to run the service, some environment variables need to be created
@@ -260,7 +260,7 @@ Licensed under the [MIT](LICENSE) License.
 [build-badge]: https://solutionaccelerators.visualstudio.com/RemoteMonitoring/_apis/build/status/Consolidated%20Repo%20-%20Java
 [build-url]: https://travis-ci.org/Azure/device-telemetry-java
 [issues-badge]: https://img.shields.io/github/issues/azure/device-telemetry-java.svg
-[issues-url]: https://github.com/azure/device-telemetry-java/issues
+[issues-url]: https://github.com/Azure/remote-monitoring-services-java/issues
 [gitter-badge]: https://img.shields.io/gitter/room/azure/iot-solutions.js.svg
 [gitter-url]: https://gitter.im/azure/iot-solutions
 [run-with-docker-url]:https://docs.microsoft.com/azure/iot-suite/iot-suite-remote-monitoring-deploy-local#run-the-microservices-in-docker
