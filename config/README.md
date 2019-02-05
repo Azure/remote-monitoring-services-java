@@ -27,7 +27,7 @@ More information [here][rm-arch-url].
 * Get all or a single uploaded package.
 
 ## Documentation
-* View the API documentation in the [Wiki](https://github.com/Azure/pcs-config-java/wiki).
+* View the API documentation in the [Wiki](https://github.com/Azure/remote-monitoring-services-java/wiki/Config-Api).
 
 # How to Use
 
@@ -55,9 +55,9 @@ Follow the instructions for
 This service depends on the following repositories. 
 Run those services from the instructions in their READMEs in the following order.
 
-1. [Storage Adapter Microservice](https://github.com/Azure/pcs-storage-adapter-java)
-1. [Authentication Microservice](https://github.com/Azure/pcs-auth-dotnet)
-1. [Telemetry Microservice](https://github.com/Azure/device-telemetry-java)
+1. [Storage Adapter Microservice](https://github.com/Azure/remote-monitoring-services-java/tree/master/storage-adapter)
+1. [Authentication Microservice](https://github.com/Azure/remote-monitoring-services-dotnet/tree/master/auth)
+1. [Telemetry Microservice](https://github.com/Azure/remote-monitoring-services-java/tree/master/device-telemetry)
 1. [Device Simulation Microservice](https://github.com/Azure/device-simulation-dotnet)
 
 ### 3. Environment variables required to run the service
@@ -67,10 +67,10 @@ line setup below for more information. More information on environment
 variables [here](#configuration-and-environment-variables).
 
 * `PCS_STORAGEADAPTER_WEBSERVICE_URL` - the url for
-  the [Storage Adapter Webservice](https://github.com/Azure/pcs-storage-adapter-java)
+  the [Storage Adapter Webservice](https://github.com/Azure/remote-monitoring-services-java/tree/master/storage-adapter)
   used for key value storage
 * `PCS_TELEMETRY_WEBSERVICE_URL` - the url for
-  the [Telemetry Webservice](https://github.com/Azure/device-telemetry-java)
+  the [Telemetry Webservice](https://github.com/Azure/remote-monitoring-services-java/tree/master/device-telemetry)
   used for key value storage
 * `PCS_DEVICESIMULATION_WEBSERVICE_URL` - the url for
   the [Device Simulation Webservice](https://github.com/Azure/device-simulation-dotnet)
@@ -78,7 +78,7 @@ variables [here](#configuration-and-environment-variables).
 * `PCS_AZUREMAPS_KEY` - the [Azure Maps](https://azure.microsoft.com/services/azure-maps/) 
   API Key. This can be set to "static" if you do not have one.
 * `PCS_AUTH_WEBSERVICE_URL` = the url for
-   the [Auth Webservice](https://github.com/Azure/pcs-auth-dotnet)
+   the [Auth Webservice](https://github.com/Azure/remote-monitoring-services-dotnet/tree/master/auth)
 * `PCS_OFFICE365_CONNECTION_URL` (Optional) = the url for the Office 365 Logic App connector
 * `PCS_SOLUTION_NAME` (Optional) = The name of the resource group for the solution. Used only if
   using logic apps for actions.
@@ -253,10 +253,10 @@ Licensed under the [MIT](LICENSE) License.
 [build-badge]: https://img.shields.io/travis/Azure/pcs-config-java.svg
 [build-url]: https://travis-ci.org/Azure/pcs-config-java
 [issues-badge]: https://img.shields.io/github/issues/azure/pcs-config-java.svg
-[issues-url]: https://github.com/azure/pcs-config-java/issues
+[issues-url]: https://github.com/Azure/remote-monitoring-services-java/issues
 [gitter-badge]: https://img.shields.io/gitter/room/azure/iot-solutions.js.svg
 [gitter-url]: https://gitter.im/azure/iot-solutions
 [windows-envvars-howto-url]: https://superuser.com/questions/949560/how-do-i-set-system-environment-variables-in-windows-10
-[Storage Adapter]:https://github.com/Azure/pcs-storage-adapter-java/blob/master/README.md
+[Storage Adapter]:https://github.com/Azure/remote-monitoring-services-java/tree/master/storage-adapter
 [rm-arch-url]:https://docs.microsoft.com/en-us/azure/iot-suite/iot-suite-remote-monitoring-sample-walkthrough
 [run-with-docker-url]:https://docs.microsoft.com/azure/iot-suite/iot-suite-remote-monitoring-deploy-local#run-the-microservices-in-docker
