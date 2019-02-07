@@ -63,10 +63,12 @@ public class ConfigurationsHelper {
 
         // Required labels
         labels.put(PACKAGE_TYPE_LABEL, model.getPackageType().toString());
-        labels.put(CONFIG_TYPE_LABEL, model.getConfigType().toString());
         labels.put(DEPLOYMENT_NAME_LABEL, model.getName());
         labels.put(DEPLOYMENT_GROUP_ID_LABEL, deploymentGroup.getId());
         labels.put(RM_CREATED_LABEL, Boolean.TRUE.toString());
+        if (!StringUtils.isBlank(model.getConfigType().toString())){
+            labels.put(CONFIG_TYPE_LABEL, model.getConfigType().toString());
+        }
 
         // Add optional labels
         if (deploymentGroup.getName() != null) {

@@ -84,7 +84,13 @@ public class DeploymentServiceModel {
             this.packageType = PackageType.deviceConfiguration;
         }
 
-        this.configType = deployment.getLabels().get(ConfigurationsHelper.CONFIG_TYPE_LABEL.toString());
+        if (deployment.getLabels().containsKey(ConfigurationsHelper.CONFIG_TYPE_LABEL.toString())) {
+            this.configType = deployment.getLabels().get(ConfigurationsHelper.CONFIG_TYPE_LABEL.toString());
+        } else {
+            this.configType = StringUtils.EMPTY;
+        }
+
+
         this.deploymentMetrics = new DeploymentMetrics(deployment.getSystemMetrics(), deployment.getMetrics());
     }
 
