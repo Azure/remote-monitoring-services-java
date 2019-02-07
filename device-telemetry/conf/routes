@@ -12,11 +12,15 @@ GET    /v1/status              @com.microsoft.azure.iotsolutions.devicetelemetry
 
 GET    /v1/messages            @com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.MessagesController.list(from ?= null, to ?= null, order: String ?= "asc", skip: Int ?= 0, limit: Int ?=1000, devices ?= null)
 GET    /v1/messages/           @com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.MessagesController.list(from ?= null, to ?= null, order: String ?= "asc", skip: Int ?= 0, limit: Int ?=1000, devices ?= null)
+POST   /v1/messages            @com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.MessagesController.post()
+POST   /v1/messages/           @com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.MessagesController.post()
 
 # Alarms list and management
 
 GET    /v1/alarms              @com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsController.list(from ?= null, to ?= null, order: String ?= "asc", skip: Int ?= 0, limit: Int ?= 1000, devices ?= null)
 GET    /v1/alarms/             @com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsController.list(from ?= null, to ?= null, order: String ?= "asc", skip: Int ?= 0, limit: Int ?= 1000, devices ?= null)
+POST   /v1/alarms              @com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsController.post()
+POST   /v1/alarms/             @com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsController.post()
 
 GET    /v1/alarms/:id          @com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsController.get(id)
 
@@ -28,9 +32,12 @@ POST /v1/alarms!delete         @com.microsoft.azure.iotsolutions.devicetelemetry
 
 # Alarms aggregation by rule
 
-GET    /v1/alarmsbyrule        @com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsByRuleController.listAsync(from ?= null, to ?= null, order: String ?= "asc", skip: Int ?= 0, limit: Int ?= 1000, devices ?= null)
-GET    /v1/alarmsbyrule/       @com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsByRuleController.listAsync(from ?= null, to ?= null, order: String ?= "asc", skip: Int ?= 0, limit: Int ?= 1000, devices ?= null)
+GET    /v1/alarmsbyrule        @com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsByRuleController.getAsync(from ?= null, to ?= null, order: String ?= "asc", skip: Int ?= 0, limit: Int ?= 1000, devices ?= null)
+GET    /v1/alarmsbyrule/       @com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsByRuleController.getAsync(from ?= null, to ?= null, order: String ?= "asc", skip: Int ?= 0, limit: Int ?= 1000, devices ?= null)
 GET    /v1/alarmsbyrule/:id    @com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsByRuleController.get(id, from ?= null, to ?= null, order: String ?= "asc", skip: Int ?= 0, limit: Int ?=1000, devices ?= null)
+POST   /v1/alarmsbyrule        @com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsByRuleController.postAsync()
+POST   /v1/alarmsbyrule/       @com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsByRuleController.postAsync()
+POST   /v1/alarmsbyrule/:id    @com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers.AlarmsByRuleController.post(id)
 
 # Rules list and management
 

@@ -20,10 +20,11 @@ More information [here][rm-arch-url].
 * Gets a single alarm
 * Modifies alarm status
 * Create/Read/Update/Delete Rules
+* Supports alert triggered notifications
 
 ## Documentation
 
-* View the API documentation in the [Wiki](https://github.com/Azure/device-telemetry-java/wiki).
+* View the API documentation in the [Wiki](https://github.com/Azure/remote-monitoring-services-java/wiki/Telemetry-Api).
 
 # How to use
 
@@ -44,8 +45,8 @@ This service has a dependency on the following Azure resources. Follow the instr
 ### 2. Setup Dependencies
 
 This service depends on the following repository.
-1. [Storage Adapter Microservice](https://github.com/Azure/pcs-storage-adapter-java)
-2. [Auth Microservice](https://github.com/Azure/pcs-auth-dotnet)
+1. [Storage Adapter Microservice](https://github.com/Azure/remote-monitoring-services-java/tree/master/storage-adapter)
+2. [Auth Microservice](https://github.com/Azure/remote-monitoring-services-java/tree/master/auth)
 
 ### 3. Environment variables required to run the service
 In order to run the service, some environment variables need to be created
@@ -56,6 +57,16 @@ for more information. More information on environment variables
   * `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
   * `PCS_AUTH_WEBSERVICE_URL` = http://localhost:9001/v1
   * `PCS_DIAGNOSTICS_WEBSERVICE_URL` (optional) = http://localhost:9006/v1
+  * `PCS_AAD_TENANT` = {Azure Active Directory Tenant ID}
+  * `PCS_AAD_APPID` = {Azure Active Directory application ID}
+  * `PCS_AAD_APPSECRET` = {application secret}
+  * `PCS_TELEMETRY_STORAGE_TYPE` = "tsi"
+  * `PCS_TSI_FQDN` = {Time Series FQDN}
+  * `PCS_ACTION_EVENTHUB_NAME` = {Event hub name}
+  * `PCS_ACTION_EVENTHUB_CONNSTRING` = {Endpoint=sb://....servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=...}
+  * `PCS_LOGICAPP_ENDPOINT_URL` = {Logic App Endpoint to trigger email notification}
+  * `PCS_AZUREBLOB_CONNSTRING` = {Blob storage connection string}
+  * `PCS_SOLUTION_WEBSITE_URL` = {Solution website Url}
 
 # Running the service in an IDE
 
@@ -94,8 +105,16 @@ Steps using IntelliJ IDEA, with SBT plugin enabled:
         * see: Azure Portal => Azure Active Directory => App Registrations => Your App => Settings => Passwords
      * `PCS_TELEMETRY_STORAGE_TYPE` = "tsi"
         * Allowed values: ["cosmosdb", "tsi"]. Default is "tsi"
-     * `PCS_TSI_FQDN`= {Time Series FQDN}
+     * `PCS_TSI_FQDN` = {Time Series FQDN}
         * see: Azure Portal => Your Resource Group => Time Series Insights Environment => Data Access FQDN
+     * `PCS_ACTION_EVENTHUB_NAME` = {Event hub name}
+     * `PCS_ACTION_EVENTHUB_CONNSTRING` = {Endpoint=sb://....servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=...}
+        * see: Azure Portal => Your resource group => your event hub namespace => Shared access policies
+     * `PCS_LOGICAPP_ENDPOINT_URL` = {Logic App Endpoint to trigger email notification}
+        * see: Azure Portal => Your resource group => Your Logic App => Logic App Designer => When a Http Request is received => HTTP POST URL
+     * `PCS_AZUREBLOB_CONNSTRING` = {Blob storage connection string}
+        * see: Azure Portal => Your resource group => Your Storage Account => Access keys => Connection String
+     * `PCS_SOLUTION_WEBSITE_URL` = {Solution website Url}
 * Either from the toolbar or the Run menu, execute the configuration just
   created, using the Debug command/button
 * Test that the service is up and running pointing your browser to
@@ -130,6 +149,7 @@ More information on environment variables [here](#configuration-and-environment-
     * `PCS_TELEMETRY_DOCUMENTDB_CONNSTRING` = {your Azure Cosmos DB connection string}
     * `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
     * `PCS_AUTH_WEBSERVICE_URL` = http://localhost:9001/v1
+    * `PCS_DIAGNOSTICS_WEBSERVICE_URL` (optional) = http://localhost:9006/v1
     * `PCS_AAD_TENANT` = {Azure Active Directory Tenant ID}
         * see: Azure Portal => Azure Active Directory => Properties => Directory ID
     * `PCS_AAD_APPID` = {Azure Active Directory application ID}
@@ -138,9 +158,13 @@ More information on environment variables [here](#configuration-and-environment-
         * see: Azure Portal => Azure Active Directory => App Registrations => Your App => Settings => Passwords
     * `PCS_TELEMETRY_STORAGE_TYPE` = "tsi"
         * Allowed values: ["cosmosdb", "tsi"]. Default is "tsi"
-    * `PCS_TSI_FQDN`= {Time Series FQDN}
+    * `PCS_TSI_FQDN` = {Time Series FQDN}
         * see: Azure Portal => Your Resource Group => Time Series Insights Environment => Data Access FQDN
-    * `PCS_DIAGNOSTICS_WEBSERVICE_URL` (optional) = http://localhost:9006/v1
+    * `PCS_ACTION_EVENTHUB_NAME` = {Event hub name}
+    * `PCS_ACTION_EVENTHUB_CONNSTRING` = {Endpoint=sb://....servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=...}
+    * `PCS_LOGICAPP_ENDPOINT_URL` = {Logic App Endpoint to trigger email notification}
+    * `PCS_AZUREBLOB_CONNSTRING` = {Blob storage connection string}
+    * `PCS_SOLUTION_WEBSITE_URL` = {Solution website Url}
 
 1. Use the scripts in the [scripts](scripts) folder for many frequent tasks:
    * `build`: compile all the projects and run the tests.
@@ -236,7 +260,7 @@ Licensed under the [MIT](LICENSE) License.
 [build-badge]: https://solutionaccelerators.visualstudio.com/RemoteMonitoring/_apis/build/status/Consolidated%20Repo%20-%20Java
 [build-url]: https://travis-ci.org/Azure/device-telemetry-java
 [issues-badge]: https://img.shields.io/github/issues/azure/device-telemetry-java.svg
-[issues-url]: https://github.com/azure/device-telemetry-java/issues
+[issues-url]: https://github.com/Azure/remote-monitoring-services-java/issues
 [gitter-badge]: https://img.shields.io/gitter/room/azure/iot-solutions.js.svg
 [gitter-url]: https://gitter.im/azure/iot-solutions
 [run-with-docker-url]:https://docs.microsoft.com/azure/iot-suite/iot-suite-remote-monitoring-deploy-local#run-the-microservices-in-docker

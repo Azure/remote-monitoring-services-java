@@ -18,6 +18,19 @@ PUT           /v1/devicegroups/:id                  @com.microsoft.azure.iotsolu
 
 DELETE        /v1/devicegroups/:id                  @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.DeviceGroupController.deleteAsync(id)
 
+GET           /v1/configtypes                       @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.ConfigTypesController.getAllConfigTypesAsync
+GET           /v1/configtypes/                      @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.ConfigTypesController.getAllConfigTypesAsync
+
+GET           /v1/packages/                         @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.PackagesController.getFilteredAsync(packagetype ?=null, configtype ?=null)
+GET           /v1/packages                          @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.PackagesController.getFilteredAsync(packagetype ?=null, configtype ?=null)
+
+GET           /v1/packages/:id                      @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.PackagesController.getAsync(id)
+
+POST          /v1/packages                          @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.PackagesController.createAsync
+POST          /v1/packages/                         @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.PackagesController.createAsync
+
+DELETE        /v1/packages/:id                      @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.PackagesController.deleteAsync(id)
+
 GET           /v1/solution-settings/theme           @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.SolutionSettingsController.getThemeAsync
 
 PUT           /v1/solution-settings/theme           @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.SolutionSettingsController.setThemeAsync
@@ -25,6 +38,8 @@ PUT           /v1/solution-settings/theme           @com.microsoft.azure.iotsolu
 GET           /v1/solution-settings/logo            @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.SolutionSettingsController.getLogoAsync
 
 PUT           /v1/solution-settings/logo            @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.SolutionSettingsController.setLogoAsync
+
+GET           /v1/solution-settings/actions         @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.SolutionSettingsController.getActionsSettings
 
 GET           /v1/user-settings/:id                 @com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers.UserSettingsController.getUserSettingAsync(id)
 

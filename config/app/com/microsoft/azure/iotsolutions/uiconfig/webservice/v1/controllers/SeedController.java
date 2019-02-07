@@ -5,6 +5,7 @@ package com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.controllers;
 import com.google.inject.Inject;
 import com.microsoft.azure.iotsolutions.uiconfig.services.ISeed;
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.ExternalDependencyException;
+import com.microsoft.azure.iotsolutions.uiconfig.webservice.auth.Authorize;
 import play.mvc.Controller;
 import play.mvc.Result;
 
@@ -19,6 +20,7 @@ public class SeedController extends Controller {
         this.seed = seed;
     }
 
+    @Authorize("ReadAll")
     public CompletionStage<Result> postAsync() throws ExternalDependencyException {
         return seed.trySeedAsync().thenApplyAsync(m -> ok());
     }

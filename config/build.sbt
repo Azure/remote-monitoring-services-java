@@ -11,10 +11,14 @@ libraryDependencies ++= {
     guice,
     ws,
 
+    // https://github.com/Azure/azure-iot-sdk-java/releases
+    "com.microsoft.azure.sdk.iot" % "iot-service-client" % "1.15.1",
+
     // https://mvnrepository.com/artifact/com.nimbusds/oauth2-oidc-sdk
     "com.nimbusds" % "oauth2-oidc-sdk" % "5.36",
 
     "org.apache.httpcomponents" % "httpclient" % "4.5.3",
+    "org.apache.commons" % "commons-lang3" % "3.8",
 
     "io.netty" % "netty-all" % "4.1.0.Final"
   )
@@ -27,7 +31,10 @@ libraryDependencies ++= Seq(
   "com.microsoft.azure.sdk.iot" % "iot-service-client" % "1.4.20" % "test",
 
   // http://search.maven.org/#search%7Cga%7C1%7Cmockito-core
-  "org.mockito" % "mockito-core" % "2.8.47" % "test"
+  "org.mockito" % "mockito-core" % "2.8.47" % "test",
+
+  // https://github.com/Pragmatists/JUnitParams
+  "pl.pragmatists" % "JUnitParams" % "1.1.1" % "test"
 )
 
 lazy val commonSettings = Seq(

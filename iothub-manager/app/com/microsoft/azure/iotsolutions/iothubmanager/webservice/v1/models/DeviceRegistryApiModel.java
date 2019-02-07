@@ -21,11 +21,12 @@ public final class DeviceRegistryApiModel {
     private long c2DMessageCount = 0;
     private Date lastActivity = null;
     private boolean connected = false;
+    private boolean isEdgeDevice = false;
     private Date lastStatusUpdated = null;
     private AuthenticationMechanismApiModel authentication = null;
     private String ioTHubHostName = null;
     private HashMap<String, Object> tags;
-    private DeviceTwinProperties properties;
+    private TwinProperties properties;
     private boolean isSimulated;
 
     private final String dateFormatString = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
@@ -47,11 +48,12 @@ public final class DeviceRegistryApiModel {
         this.lastActivity = device.getLastActivity().toDate();
         this.connected = device.getConnected();
         this.enabled = device.getEnabled();
+        this.isEdgeDevice = device.getIsEdgeDevice();
         this.lastStatusUpdated = device.getLastStatusUpdated().toDate();
         this.authentication = new AuthenticationMechanismApiModel(device.getAuthentication());
         this.ioTHubHostName = device.getIoTHubHostName();
 
-        DeviceTwinServiceModel twinModel = device.getTwin();
+        TwinServiceModel twinModel = device.getTwin();
         if (twinModel != null) {
             this.eTag = this.eTag + "|" + device.getTwin().getETag();
             this.properties = twinModel.getProperties();
@@ -85,6 +87,15 @@ public final class DeviceRegistryApiModel {
 
     public void setEnabled(Boolean value) {
         this.enabled = value;
+    }
+
+    @JsonProperty("IsEdgeDevice")
+    public boolean getIsEdgeDevice() {
+        return this.isEdgeDevice;
+    }
+
+    public void setIsEdgeDevice(boolean isEdgeDevice) {
+        this.isEdgeDevice = isEdgeDevice;
     }
 
     @JsonProperty("C2DMessageCount")
@@ -157,11 +168,11 @@ public final class DeviceRegistryApiModel {
 
     @JsonProperty("Properties")
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    public DeviceTwinProperties getProperties() {
+    public TwinProperties getProperties() {
         return this.properties;
     }
 
-    public void setProperties(DeviceTwinProperties value) {
+    public void setProperties(TwinProperties value) {
         this.properties = value;
     }
 
@@ -176,7 +187,7 @@ public final class DeviceRegistryApiModel {
     }
 
     public DeviceServiceModel toServiceModel() {
-        DeviceTwinServiceModel twinServiceModel = new DeviceTwinServiceModel(
+        TwinServiceModel twinServiceModel = new TwinServiceModel(
             this.eTag,
             this.id,
             this.properties,
@@ -190,6 +201,7 @@ public final class DeviceRegistryApiModel {
             new DateTime(this.lastActivity),
             this.connected,
             this.enabled,
+            this.isEdgeDevice,
             new DateTime(this.lastStatusUpdated),
             twinServiceModel,
             this.authentication == null ? null : this.authentication.toServiceModel(),

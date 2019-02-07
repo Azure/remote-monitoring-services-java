@@ -4,13 +4,12 @@ package com.microsoft.azure.iotsolutions.devicetelemetry.services.storage.cosmos
 
 import com.google.inject.Inject;
 import com.microsoft.azure.documentdb.*;
-import com.microsoft.azure.iotsolutions.devicetelemetry.services.Status;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidConfigurationException;
+import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.StatusResultServiceModel;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.IServicesConfig;
 import play.Logger;
 import play.mvc.Http;
 
-import java.net.URI;
 import java.util.ArrayList;
 
 public class StorageClient implements IStorageClient {
@@ -22,7 +21,7 @@ public class StorageClient implements IStorageClient {
     private String storageHostName;
     private String storagePrimaryKey;
 
-    private DocumentClient client;
+    private static DocumentClient client;
 
     @Inject
     public StorageClient(final IServicesConfig config) throws Exception {
@@ -143,25 +142,23 @@ public class StorageClient implements IStorageClient {
     }
 
     @Override
-    public Status ping() {
-        URI response = null;
-        String name = "Storage";
+    public StatusResultServiceModel ping() {
+        StatusResultServiceModel result = new StatusResultServiceModel(false, "Storage check failed");
+        DatabaseAccount response = null;
+        try {
+            if (this.client != null) {
+                response = this.client.getDatabaseAccount();
+            } else {
+                result.setMessage("Storage client not setup properly.");
+            }
 
-        if (this.client != null) {
-            response = this.client.getReadEndpoint();
+            if (response != null) {
+                result = new StatusResultServiceModel(true, "Alive and well!");
+            }
+        } catch (DocumentClientException e) {
+            log.info(e.getMessage());
         }
-
-        if (response != null) {
-            return new Status(
-                name,
-                true,
-                "Storage alive and Well!");
-        } else {
-            return new Status(
-                name,
-                false,
-                "Could not reach storage service. Check connection string");
-        }
+        return result;
     }
 
     // splits connection string into hostname and primary key

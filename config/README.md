@@ -23,9 +23,11 @@ More information [here][rm-arch-url].
 * Get or upload logo
 * Get or set overall solution settings
 * Get or set individual user settings
+* Create or delete a package
+* Get all or a single uploaded package.
 
 ## Documentation
-* View the API documentation in the [Wiki](https://github.com/Azure/pcs-config-java/wiki).
+* View the API documentation in the [Wiki](https://github.com/Azure/remote-monitoring-services-java/wiki/Config-Api).
 
 # How to Use
 
@@ -53,9 +55,9 @@ Follow the instructions for
 This service depends on the following repositories. 
 Run those services from the instructions in their READMEs in the following order.
 
-1. [Storage Adapter Microservice](https://github.com/Azure/pcs-storage-adapter-java)
-1. [Authentication Microservice](https://github.com/Azure/pcs-auth-dotnet)
-1. [Telemetry Microservice](https://github.com/Azure/device-telemetry-java)
+1. [Storage Adapter Microservice](https://github.com/Azure/remote-monitoring-services-java/tree/master/storage-adapter)
+1. [Authentication Microservice](https://github.com/Azure/remote-monitoring-services-dotnet/tree/master/auth)
+1. [Telemetry Microservice](https://github.com/Azure/remote-monitoring-services-java/tree/master/device-telemetry)
 1. [Device Simulation Microservice](https://github.com/Azure/device-simulation-dotnet)
 
 ### 3. Environment variables required to run the service
@@ -65,10 +67,10 @@ line setup below for more information. More information on environment
 variables [here](#configuration-and-environment-variables).
 
 * `PCS_STORAGEADAPTER_WEBSERVICE_URL` - the url for
-  the [Storage Adapter Webservice](https://github.com/Azure/pcs-storage-adapter-java)
+  the [Storage Adapter Webservice](https://github.com/Azure/remote-monitoring-services-java/tree/master/storage-adapter)
   used for key value storage
 * `PCS_TELEMETRY_WEBSERVICE_URL` - the url for
-  the [Telemetry Webservice](https://github.com/Azure/device-telemetry-java)
+  the [Telemetry Webservice](https://github.com/Azure/remote-monitoring-services-java/tree/master/device-telemetry)
   used for key value storage
 * `PCS_DEVICESIMULATION_WEBSERVICE_URL` - the url for
   the [Device Simulation Webservice](https://github.com/Azure/device-simulation-dotnet)
@@ -76,7 +78,14 @@ variables [here](#configuration-and-environment-variables).
 * `PCS_AZUREMAPS_KEY` - the [Azure Maps](https://azure.microsoft.com/services/azure-maps/) 
   API Key. This can be set to "static" if you do not have one.
 * `PCS_AUTH_WEBSERVICE_URL` = the url for
-   the [Auth Webservice](https://github.com/Azure/pcs-auth-dotnet)
+   the [Auth Webservice](https://github.com/Azure/remote-monitoring-services-dotnet/tree/master/auth)
+* `PCS_OFFICE365_CONNECTION_URL` (Optional) = the url for the Office 365 Logic App connector
+* `PCS_SOLUTION_NAME` (Optional) = The name of the resource group for the solution. Used only if
+  using logic apps for actions.
+* `PCS_SUBSCRIPTION_ID`(Optional) = The subscription id for the solution. Used only if
+  using logic apps for actions.
+* `PCS_ARM_ENDPOINT_URL` (Optional) = the url for the Azure management APIs. Used only if
+  using logic apps for actions.
 
 # Running the service in an IDE
 
@@ -109,10 +118,14 @@ Steps using IntelliJ IDEA Community, with SBT plugin enabled:
     1. `PCS_TELEMETRY_WEBSERVICE_URL` = http://localhost:9004/v1
     1. `PCS_AZUREMAPS_KEY` = static
     1. `PCS_AUTH_WEBSERVICE_URL` = http://localhost:9001/v1
+    1. `PCS_OFFICE365_CONNECTION_URL` (Optional)
+    1. `PCS_SOLUTION_NAME` (Optional)
+    1. `PCS_SUBSCRIPTION_ID`(Optional)
+    1. `PCS_ARM_ENDPOINT_URL` (Optional)
 * Either from the toolbar or the Run menu, execute the configuration just
   created, using the Debug command/button
 * Test that the service is up and running pointing your browser to
-  http://127.0.0.1:9004/v1/status
+  http://127.0.0.1:9005/v1/status
 
 ## Running the service with Eclipse
 The integration with Eclipse requires the
@@ -127,9 +140,9 @@ Steps using Eclipse Oxygen ("Eclipse for Java Developers" package):
   required by Eclipse to recognize the project.
 * Open Eclipse, and from the Welcome screen "Import" an existing project,
   navigating to the root folder of the project.
-* From the console run `sbt -jvm-debug 9999 "run 9004"` to start the project
+* From the console run `sbt -jvm-debug 9999 "run 9005"` to start the project
 * Test that the service is up and running pointing your browser to
-  http://127.0.0.1:9004/v1/status
+  http://127.0.0.1:9005/v1/status
 * In Eclipse, select "Run -> Debug Configurations" and add a "Remote Java
   Application", using "localhost" and port "9999".
 * After saving this configuration, you can click "Debug" to connect to the
@@ -145,6 +158,10 @@ More information on environment variables
    1. `PCS_TELEMETRY_WEBSERVICE_URL` = http://localhost:9004/v1
    1. `PCS_AZUREMAPS_KEY` = static
    1. `PCS_AUTH_WEBSERVICE_URL` = http://localhost:9001/v1
+   1. `PCS_OFFICE365_CONNECTION_URL` (Optional)
+   1. `PCS_SOLUTION_NAME` (Optional)
+   1. `PCS_SUBSCRIPTION_ID`(Optional)
+   1. `PCS_ARM_ENDPOINT_URL` (Optional)
 1. Use the scripts in the [scripts](scripts) folder for many frequent tasks:
    * `build`: compile all the projects and run the tests.
    * `compile`: compile all the projects.
@@ -236,10 +253,10 @@ Licensed under the [MIT](LICENSE) License.
 [build-badge]: https://solutionaccelerators.visualstudio.com/RemoteMonitoring/_apis/build/status/Consolidated%20Repo%20-%20Java 
 [build-url]: https://solutionaccelerators.visualstudio.com/RemoteMonitoring/_build/latest?definitionId=25
 [issues-badge]: https://img.shields.io/github/issues/azure/pcs-config-java.svg
-[issues-url]: https://github.com/azure/pcs-config-java/issues
+[issues-url]: https://github.com/Azure/remote-monitoring-services-java/issues
 [gitter-badge]: https://img.shields.io/gitter/room/azure/iot-solutions.js.svg
 [gitter-url]: https://gitter.im/azure/iot-solutions
 [windows-envvars-howto-url]: https://superuser.com/questions/949560/how-do-i-set-system-environment-variables-in-windows-10
-[Storage Adapter]:https://github.com/Azure/pcs-storage-adapter-java/blob/master/README.md
+[Storage Adapter]:https://github.com/Azure/remote-monitoring-services-java/tree/master/storage-adapter
 [rm-arch-url]:https://docs.microsoft.com/en-us/azure/iot-suite/iot-suite-remote-monitoring-sample-walkthrough
 [run-with-docker-url]:https://docs.microsoft.com/azure/iot-suite/iot-suite-remote-monitoring-deploy-local#run-the-microservices-in-docker

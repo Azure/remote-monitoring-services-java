@@ -6,9 +6,12 @@ import akka.util.ByteString;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.microsoft.azure.iotsolutions.uiconfig.services.IActions;
 import com.microsoft.azure.iotsolutions.uiconfig.services.IStorage;
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.BaseException;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.Logo;
+import com.microsoft.azure.iotsolutions.uiconfig.webservice.auth.Authorize;
+import com.microsoft.azure.iotsolutions.uiconfig.webservice.v1.models.ActionSettingsListApiModel;
 import play.Logger;
 import play.libs.Json;
 import play.mvc.Controller;
@@ -30,20 +33,24 @@ public final class SolutionSettingsController extends Controller {
 
     private static final Logger.ALogger log = Logger.of(SolutionSettingsController.class);
     private final IStorage storage;
+    private final IActions actions;
     // 128 KB
     private static final int BUFFER_SIZE = 131072;
     private static final String ACCESS_CONTROL_EXPOSE_HEADERS = "Access-Control-Expose-Headers";
 
     @Inject
-    public SolutionSettingsController(IStorage storage) {
+    public SolutionSettingsController(IStorage storage, IActions actions) {
         this.storage = storage;
+        this.actions = actions;
     }
 
+    @Authorize("ReadAll")
     public CompletionStage<Result> getThemeAsync() throws BaseException {
         return storage.getThemeAsync()
                 .thenApply(theme -> ok(toJson(theme)));
     }
 
+    @Authorize("ReadAll")
     public CompletionStage<Result> setThemeAsync() throws BaseException {
         Object theme = new Object();
         JsonNode node = request().body().asJson();
@@ -54,6 +61,7 @@ public final class SolutionSettingsController extends Controller {
                 .thenApply(result -> ok(toJson(result)));
     }
 
+    @Authorize("ReadAll")
     public CompletionStage<Result> getLogoAsync() throws BaseException {
         Http.Response response = response();
         return storage.getLogoAsync()
@@ -62,6 +70,7 @@ public final class SolutionSettingsController extends Controller {
                 });
     }
 
+    @Authorize("ReadAll")
     public CompletionStage<Result> setLogoAsync() throws BaseException {
         Http.RequestBody body = request().body();
         ByteString byteString = body.asBytes();
@@ -87,6 +96,10 @@ public final class SolutionSettingsController extends Controller {
                 .thenApply(result -> {
                     return setImageResponse(result, response);
                 });
+    }
+
+    public Result getActionsSettings() throws BaseException {
+        return ok(toJson(new ActionSettingsListApiModel(this.actions.getList())));
     }
 
     // Given logo and response, sets the body of the response to be the logo image,

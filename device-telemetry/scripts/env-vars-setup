@@ -42,3 +42,17 @@ export PCS_TELEMETRY_STORAGE_TYPE="tsi"
 # The FQDN (Fully Qualified Domain Name) for the Time Series endpoint
 # see: Azure Portal => Your Resource Group => Time Series Insights Environment => Data Access FQDN
 export PCS_TSI_FQDN="{enter your Time Series FQDN here}"
+
+# The name of the event hub that alarms with actions are written to
+export PCS_ACTION_EVENTHUB_NAME="{Enter event hub name here}"
+ # The connection string of the event hub namespace that alarms with actions are written to
+# see: Azure Portal => Your resource group => your event hub namespace => Shared access policies
+export PCS_ACTION_EVENTHUB_CONNSTRING="{Endpoint=sb://....servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=...}"
+ # Endpoint of logic app workflow.
+# See Azure Portal => Your resource group => Your Logic App => Logic App Designer => When a Http Request is received => HTTP POST URL
+export PCS_LOGICAPP_ENDPOINT_URL="{Enter endpoint here}"
+ # Azure Blob Storage Connection String
+# See Azure Portal => Your resource group => Your Storage Account => Access keys => Connection String
+export PCS_AZUREBLOB_CONNSTRING="{Enter connection string here}"
+ # Url of your solution
+export PCS_SOLUTION_WEBSITE_URL="{Enter solution url}"

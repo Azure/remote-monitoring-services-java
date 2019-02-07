@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum AuthenticationType {
     Sas(0),                     // Shared Access Key
-    SelfSinged(1),              // Self-signed certificate
+    SelfSigned(1),              // Self-signed certificate
     CertificateAuthority(2);    // Certificate Authority
 
     private final int value;
@@ -22,7 +22,7 @@ public enum AuthenticationType {
         switch(authenticationType) {
             case Sas:
                 return com.microsoft.azure.sdk.iot.service.auth.AuthenticationType.SAS;
-            case SelfSinged:
+            case SelfSigned:
                 return com.microsoft.azure.sdk.iot.service.auth.AuthenticationType.SELF_SIGNED;
             case CertificateAuthority:
                 return com.microsoft.azure.sdk.iot.service.auth.AuthenticationType.CERTIFICATE_AUTHORITY;

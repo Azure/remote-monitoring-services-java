@@ -18,7 +18,7 @@ public class JobServiceModel {
     private JobType jobType;
     private JobStatus jobStatus;
     private MethodParameterServiceModel methodParameter;
-    private DeviceTwinServiceModel updateTwin;
+    private TwinServiceModel updateTwin;
     private String failureReason;
     private String statusMessage;
     private JobStatistics resultStatistics;
@@ -31,8 +31,20 @@ public class JobServiceModel {
         this.queryCondition = jobResult.getQueryCondition();
         this.createdTimeUtc = jobResult.getCreatedTime();
         this.startTimeUtc = jobResult.getStartTime();
-        this.endTimeUtc = jobResult.getEndTime();
+        this.endTimeUtc = null;
         this.maxExecutionTimeInSeconds = jobResult.getMaxExecutionTimeInSeconds();
+
+        switch (JobStatus.valueOf(jobResult.getJobStatus().toString()))
+        {
+            case completed:
+            case failed:
+            case cancelled:
+                this.endTimeUtc = jobResult.getEndTime();
+                break;
+            default:
+                break;
+        }
+
         this.jobType = JobType.fromAzureJobType(jobResult.getJobType());
         this.jobStatus = JobStatus.fromAzureJobStatus(jobResult.getJobStatus());
 
@@ -41,7 +53,7 @@ public class JobServiceModel {
         }
 
         if (jobResult.getUpdateTwin() != null) {
-            this.updateTwin = new DeviceTwinServiceModel(jobResult.getUpdateTwin());
+            this.updateTwin = new TwinServiceModel(jobResult.getUpdateTwin());
         }
 
         this.failureReason = jobResult.getFailureReason();
@@ -131,11 +143,11 @@ public class JobServiceModel {
         this.methodParameter = methodParameter;
     }
 
-    public DeviceTwinServiceModel getUpdateTwin() {
+    public TwinServiceModel getUpdateTwin() {
         return updateTwin;
     }
 
-    public void setUpdateTwin(DeviceTwinServiceModel updateTwin) {
+    public void setUpdateTwin(TwinServiceModel updateTwin) {
         this.updateTwin = updateTwin;
     }
 
