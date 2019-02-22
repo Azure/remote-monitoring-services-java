@@ -11,6 +11,6 @@ cd %APP_HOME%\device-simulation\scripts\docker
 START "" run.cmd
 cd %APP_HOME%\asa-manager\scripts\docker
 START "" run.cmd
-cd %APP_HOME%\pcs-auth\scripts\docker
+cd %APP_HOME%\auth\scripts\docker
 START "" run.cmd
 

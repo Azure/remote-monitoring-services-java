@@ -20,7 +20,7 @@ run_container() {
         -e PCS_IOTHUB_CONNSTRING \
         -e PCS_STORAGEADAPTER_WEBSERVICE_URL="http://host.docker.internal:9022/v1" \
         -e PCS_SUBSCRIPTION_ID \
-        "$DOCKER_IMAGE:DS-1.0.2"
+        "$DOCKER_IMAGE:DS-1.0.3"
 }
 
 run_container
