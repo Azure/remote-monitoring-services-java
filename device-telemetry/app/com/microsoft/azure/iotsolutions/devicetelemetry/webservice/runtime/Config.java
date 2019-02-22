@@ -76,13 +76,13 @@ public class Config implements IConfig {
     private final String DIAGNOSTICS_URL_KEY = DIAGNOSTICS_KEY + "webservice_url";
     private final String DIAGNOSTICS_MAX_LOG_RETRIES = DIAGNOSTICS_KEY + "max_log_retries";
 
-    private com.typesafe.config.Config data;
+    private ConfigData data;
     private IServicesConfig servicesConfig;
     private IClientAuthConfig clientAuthConfig;
 
     @Inject
     public Config() {
-        this.data = ConfigFactory.load();
+        this.data = new ConfigData();
     }
 
     /**
@@ -90,7 +90,7 @@ public class Config implements IConfig {
      *
      * @return TCP port number
      */
-    public int getPort() {
+    public int getPort() throws InvalidConfigurationException {
         return data.getInt(PORT_KEY);
     }
 
@@ -179,7 +179,7 @@ public class Config implements IConfig {
         // Default to True unless explicitly disabled
         Boolean authRequired = !data.hasPath(AUTH_REQUIRED_KEY)
             || data.getString(AUTH_REQUIRED_KEY).isEmpty()
-            || data.getBoolean(AUTH_REQUIRED_KEY);
+            || data.getBool(AUTH_REQUIRED_KEY);
 
         String authServiceUrl = data.getString(AUTH_WEB_SERVICE_URL_KEY);
 
