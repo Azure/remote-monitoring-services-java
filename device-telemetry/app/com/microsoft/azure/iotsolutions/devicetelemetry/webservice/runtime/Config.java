@@ -82,7 +82,7 @@ public class Config implements IConfig {
 
     @Inject
     public Config() {
-        this.data = new ConfigData();
+        this.data = new ConfigData(APPLICATION_KEY);
     }
 
     /**

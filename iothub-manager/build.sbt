@@ -19,7 +19,10 @@ libraryDependencies ++= {
 
     "org.apache.httpcomponents" % "httpclient" % "4.5.3",
 
-    "io.netty" % "netty-all" % "4.1.0.Final"
+    "io.netty" % "netty-all" % "4.1.0.Final",
+    // https://mvnrepository.com/artifact/com.microsoft.azure/azure-keyvault-complete
+    "com.microsoft.azure" % "azure-keyvault-complete" % "1.2.0" pomOnly()
+
   )
 }
 
