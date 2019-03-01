@@ -26,7 +26,6 @@ libraryDependencies ++= Seq(
 
   // https://mvnrepository.com/artifact/com.microsoft.azure/azure-keyvault-complete
   "com.microsoft.azure" % "azure-keyvault-complete" % "1.2.0" pomOnly()
-
 )
 
 // Test dependencies

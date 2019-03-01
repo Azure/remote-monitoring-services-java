@@ -1,5 +1,5 @@
 // Copyright (c) Microsoft. All rights reserved.
-import sbt.project
+import com.sun.org.apache.xalan.internal.xsltc.cmdline.Compile
 
 name := "iothub-manager"
 organization := "com.microsoft.azure.iotsolutions"
@@ -14,10 +14,14 @@ libraryDependencies ++= {
     // https://github.com/Azure/azure-iot-sdk-java/releases
     "com.microsoft.azure.sdk.iot" % "iot-service-client" % "1.15.1",
 
+    "com.microsoft.azure" % "adal4j" % "1.2.0",
+
     // https://mvnrepository.com/artifact/com.nimbusds/oauth2-oidc-sdk
     "com.nimbusds" % "oauth2-oidc-sdk" % "5.36",
 
     "org.apache.httpcomponents" % "httpclient" % "4.5.3",
+
+    "org.apache.commons" % "commons-lang3" % "3.8.1",
 
     "io.netty" % "netty-all" % "4.1.0.Final",
     // https://mvnrepository.com/artifact/com.microsoft.azure/azure-keyvault-complete
