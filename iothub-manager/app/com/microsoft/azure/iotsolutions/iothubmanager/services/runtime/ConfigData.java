@@ -1,6 +1,6 @@
-package com.microsoft.azure.iotsolutions.storageadapter.services;
+package com.microsoft.azure.iotsolutions.iothubmanager.services.runtime;
 
-import com.microsoft.azure.iotsolutions.storageadapter.services.exceptions.InvalidConfigurationException;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidConfigurationException;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
 import com.typesafe.config.ConfigFactory;
@@ -11,6 +11,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.List;
 
 public class ConfigData implements IConfigData {
 
@@ -48,6 +49,23 @@ public class ConfigData implements IConfigData {
         }
 
         return value;
+    }
+
+    public List<String> getStringList(String key) throws InvalidConfigurationException {
+
+        if (!this.readFromKeyVaultOnly) {
+            try {
+                return this.data.getStringList(key);
+            } catch (ConfigException.Missing e) {
+                // Do Nothing as this goes to KV logic (below)
+            } catch (ConfigException.WrongType e) {
+                return Arrays.asList(this.data.getString(key).split(","));
+            }
+        }
+
+        return Arrays.asList(
+                this.keyVault.getKeyVaultSecret(key)
+                             .split(","));
     }
 
     @Override

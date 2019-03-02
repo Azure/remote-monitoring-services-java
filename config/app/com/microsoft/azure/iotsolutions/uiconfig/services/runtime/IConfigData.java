@@ -1,6 +1,6 @@
-package com.microsoft.azure.iotsolutions.iothubmanager.services;
+package com.microsoft.azure.iotsolutions.uiconfig.services.runtime;
 
-import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidConfigurationException;
+import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.InvalidConfigurationException;
 
 public interface IConfigData {
     String getString(String key);

@@ -3,9 +3,10 @@
 package com.microsoft.azure.iotsolutions.storageadapter.webservice.runtime;
 
 import com.google.inject.Singleton;
+import com.microsoft.azure.iotsolutions.storageadapter.services.exceptions.InvalidConfigurationException;
+import com.microsoft.azure.iotsolutions.storageadapter.services.runtime.ConfigData;
 import com.microsoft.azure.iotsolutions.storageadapter.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.storageadapter.services.runtime.ServicesConfig;
-import com.typesafe.config.ConfigFactory;
 
 // TODO: documentation
 // TODO: handle exceptions
@@ -26,13 +27,13 @@ public class Config implements IConfig {
     private final String documentdbCollectionKey = applicationKey + "documentdb_collection";
     private final String documentdbRUsKey = applicationKey + "documentdb_RUs";
 
-    private com.typesafe.config.Config data;
+    private ConfigData data;
     private IServicesConfig servicesConfig;
 
-    public Config() {
+    public Config() throws InvalidConfigurationException {
         // Load `application.conf` and replace placeholders with
         // environment variables
-        data = ConfigFactory.load();
+        data = new ConfigData(applicationKey);
 
         String connectionString = data.getString(documentdbConnectionStringKey);
         String database = data.getString(documentdbDatabaseKey);
@@ -46,14 +47,14 @@ public class Config implements IConfig {
      *
      * @return TCP port number
      */
-    public int getPort() {
+    public int getPort() throws InvalidConfigurationException {
         return data.getInt(portKey);
     }
 
     /**
      * Service layer configuration
      */
-    public IServicesConfig getServicesConfig() {
+    public IServicesConfig getServicesConfig() throws InvalidConfigurationException {
         return this.servicesConfig;
     }
 }

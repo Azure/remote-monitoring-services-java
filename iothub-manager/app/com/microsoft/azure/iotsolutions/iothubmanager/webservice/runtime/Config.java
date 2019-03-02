@@ -2,6 +2,8 @@
 
 package com.microsoft.azure.iotsolutions.iothubmanager.webservice.runtime;
 
+import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidConfigurationException;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.runtime.ConfigData;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.runtime.ServicesConfig;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.auth.ClientAuthConfig;
@@ -40,14 +42,14 @@ public class Config implements IConfig {
     private final String JWT_AUDIENCE_KEY = JWT_KEY + "audience";
     private final String JWT_CLOCK_SKEW_KEY = JWT_KEY + "clock_skew_seconds";
 
-    private com.typesafe.config.Config data;
+    private ConfigData data;
     private IServicesConfig servicesConfig;
     private IClientAuthConfig clientAuthConfig;
 
     public Config() {
         // Load `application.conf` and replace placeholders with
         // environment variables
-        this.data = ConfigFactory.load();
+        this.data = new ConfigData(APPLICATION_KEY);;
     }
 
     /**
@@ -55,14 +57,14 @@ public class Config implements IConfig {
      *
      * @return TCP port number
      */
-    public int getPort() {
+    public int getPort() throws InvalidConfigurationException {
         return data.getInt(PORT_KEY);
     }
 
     /**
      * Service layer configuration
      */
-    public IServicesConfig getServicesConfig() {
+    public IServicesConfig getServicesConfig() throws InvalidConfigurationException {
         if (this.servicesConfig != null) return this.servicesConfig;
 
         String cs = data.getString(IOTHUB_CONNSTRING_KEY);
@@ -88,7 +90,7 @@ public class Config implements IConfig {
         // Default to True unless explicitly disabled
         Boolean authRequired = !data.hasPath(AUTH_REQUIRED_KEY)
             || data.getString(AUTH_REQUIRED_KEY).isEmpty()
-            || data.getBoolean(AUTH_REQUIRED_KEY);
+            || data.getBool(AUTH_REQUIRED_KEY);
 
         String authServiceUrl = data.getString(AUTH_WEB_SERVICE_URL_KEY);
 

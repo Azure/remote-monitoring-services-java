@@ -1,4 +1,4 @@
-package com.microsoft.azure.iotsolutions.storageadapter.services;
+package com.microsoft.azure.iotsolutions.storageadapter.services.runtime;
 
 import com.microsoft.aad.adal4j.AuthenticationContext;
 import com.microsoft.aad.adal4j.AuthenticationResult;

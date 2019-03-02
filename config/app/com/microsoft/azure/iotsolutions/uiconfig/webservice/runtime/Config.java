@@ -2,13 +2,10 @@
 
 package com.microsoft.azure.iotsolutions.uiconfig.webservice.runtime;
 
-import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.ActionsConfig;
-import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.IActionsConfig;
-import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.IServicesConfig;
-import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.ServicesConfig;
+import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.InvalidConfigurationException;
+import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.*;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.auth.ClientAuthConfig;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.auth.IClientAuthConfig;
-import com.typesafe.config.ConfigFactory;
 
 import java.time.Duration;
 import java.util.Collections;
@@ -43,14 +40,14 @@ public class Config implements IConfig {
     private final String MANAGEMENT_API_VERSION_KEY = ACTIONS_KEY + "management-api-version";
     private final String ARM_ENDPOINT_URL_KEY = ACTIONS_KEY + "arm-endpoint-url";
 
-    private com.typesafe.config.Config data;
+    private ConfigData data;
     private IServicesConfig servicesConfig;
     private IClientAuthConfig clientAuthConfig;
 
     public Config() {
         // Load `application.conf` and replace placeholders with
         // environment variables
-        this.data = ConfigFactory.load();
+        this.data = new ConfigData(APPLICATION_KEY);;
     }
 
     /**
@@ -58,7 +55,7 @@ public class Config implements IConfig {
      *
      * @return TCP port number
      */
-    public int getPort() {
+    public int getPort() throws InvalidConfigurationException {
         return data.getInt(PORT_KEY);
     }
 
@@ -86,13 +83,13 @@ public class Config implements IConfig {
     /**
      * Client authorization configuration
      */
-    public IClientAuthConfig getClientAuthConfig() {
+    public IClientAuthConfig getClientAuthConfig() throws InvalidConfigurationException {
         if (this.clientAuthConfig != null) return this.clientAuthConfig;
 
         // Default to True unless explicitly disabled
         Boolean authRequired = !data.hasPath(AUTH_REQUIRED_KEY)
                 || data.getString(AUTH_REQUIRED_KEY).isEmpty()
-                || data.getBoolean(AUTH_REQUIRED_KEY);
+                || data.getBool(AUTH_REQUIRED_KEY);
 
         String authServiceUrl = data.getString(AUTH_WEB_SERVICE_URL_KEY);
 

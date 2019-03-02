@@ -1,6 +1,6 @@
-package com.microsoft.azure.iotsolutions.uiconfig.services;
+package com.microsoft.azure.iotsolutions.storageadapter.services.runtime;
 
-import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.InvalidConfigurationException;
+import com.microsoft.azure.iotsolutions.storageadapter.services.exceptions.InvalidConfigurationException;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
 import com.typesafe.config.ConfigFactory;

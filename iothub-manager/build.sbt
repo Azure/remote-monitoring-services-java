@@ -1,5 +1,5 @@
 // Copyright (c) Microsoft. All rights reserved.
-import com.sun.org.apache.xalan.internal.xsltc.cmdline.Compile
+import sbt.project
 
 name := "iothub-manager"
 organization := "com.microsoft.azure.iotsolutions"
