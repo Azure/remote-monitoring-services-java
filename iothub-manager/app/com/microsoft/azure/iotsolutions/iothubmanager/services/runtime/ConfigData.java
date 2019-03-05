@@ -17,8 +17,8 @@ public class ConfigData implements IConfigData {
 
     // Constants
     public final String APPLICATION_KEY;
-    private static final String CLIENT_ID = "keyvault.clientId";
-    private static final String CLIENT_SECRET = "keyvault.clientSecret";
+    private static final String CLIENT_ID = "keyvault.aadAppId";
+    private static final String CLIENT_SECRET = "keyvault.aadAppSecret";
     private static final String KEY_VAULT_NAME = "keyvault.name";
     private static final String READ_FROM_KV_ONLY = "READ-FROM-KV-ONLY";
 

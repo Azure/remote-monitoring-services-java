@@ -1,21 +1,20 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime;
 
+import com.microsoft.aad.adal4j.AuthenticationContext;
+import com.microsoft.aad.adal4j.AuthenticationResult;
+import com.microsoft.aad.adal4j.ClientCredential;
+import com.microsoft.azure.keyvault.KeyVaultClient;
+import com.microsoft.azure.keyvault.authentication.KeyVaultCredentials;
+import com.microsoft.azure.keyvault.models.SecretItem;
+import com.microsoft.rest.credentials.ServiceClientCredentials;
+import org.apache.commons.lang3.StringUtils;
+
 import java.net.MalformedURLException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
-import com.microsoft.aad.adal4j.AuthenticationContext;
-import com.microsoft.aad.adal4j.AuthenticationResult;
-import com.microsoft.aad.adal4j.ClientCredential;
-import com.microsoft.azure.keyvault.KeyVaultClient;
-import com.microsoft.azure.keyvault.authentication.KeyVaultCredentials;
-import com.microsoft.azure.keyvault.models.KeyItem;
-import com.microsoft.azure.keyvault.models.SecretItem;
-import com.microsoft.rest.credentials.ServiceClientCredentials;
-import org.apache.commons.lang3.StringUtils;
 
 public class KeyVault {
 
@@ -40,6 +39,7 @@ public class KeyVault {
     }
 
     public String getKeyVaultSecret(String secretKey) {
+        secretKey = this.processSecretKey(secretKey);
         String uri = String.format(KEY_VAULT_URI, this.name, secretKey);
 
         try {
@@ -59,6 +59,13 @@ public class KeyVault {
                                 .toLowerCase()
                                 .contains(key.toLowerCase())
                 );
+    }
+
+    // Get last token of the key for referencing the key vault:
+    // (local setting file ) => key vault denomination
+    // messages.cosmosdb.documentDbConnectionString => documentDbConnectionString
+    private String processSecretKey(String secretKey) {
+        return secretKey.substring(secretKey.lastIndexOf("."));
     }
 
     /**

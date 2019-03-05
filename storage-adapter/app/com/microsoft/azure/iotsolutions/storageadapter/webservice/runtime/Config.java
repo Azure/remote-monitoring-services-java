@@ -19,13 +19,13 @@ public class Config implements IConfig {
 
     // Settings about this application
     private final String applicationKey = Namespace + "pcs-storage-adapter.";
-    private final String portKey = applicationKey + "webservice_port";
+    private final String portKey = applicationKey + "webservicePort";
 
     // Settings about an external dependency, e.g. DocumentDB
-    private final String documentdbConnectionStringKey = applicationKey + "documentdb_connstring";
-    private final String documentdbDatabaseKey = applicationKey + "documentdb_database";
-    private final String documentdbCollectionKey = applicationKey + "documentdb_collection";
-    private final String documentdbRUsKey = applicationKey + "documentdb_RUs";
+    private final String documentdbConnectionStringKey = applicationKey + "documentDBConnectionString";
+    private final String documentdbDatabaseKey = applicationKey + "documentDBDatabase";
+    private final String documentdbCollectionKey = applicationKey + "documentDBCollection";
+    private final String documentdbRUsKey = applicationKey + "documentDBRUs";
 
     private ConfigData data;
     private IServicesConfig servicesConfig;

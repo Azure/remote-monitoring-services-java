@@ -8,7 +8,6 @@ import com.microsoft.azure.iotsolutions.iothubmanager.services.runtime.IServices
 import com.microsoft.azure.iotsolutions.iothubmanager.services.runtime.ServicesConfig;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.auth.ClientAuthConfig;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.auth.IClientAuthConfig;
-import com.typesafe.config.ConfigFactory;
 
 import java.time.Duration;
 import java.util.Collections;
@@ -23,24 +22,25 @@ public class Config implements IConfig {
 
     // Settings about this application
     private final String APPLICATION_KEY = NAMESPACE + "iothub-manager.";
-    private final String PORT_KEY = APPLICATION_KEY + "webservice_port";
-    private final String IOTHUB_CONNSTRING_KEY = APPLICATION_KEY + "iothub.connstring";
-    private final String STORAGE_ADAPTER_WEBSERVICE_URL = APPLICATION_KEY + "storageadapter-webservice-url";
+    private final String PORT_KEY = APPLICATION_KEY + "webservicePort";
+    private final String IOTHUB_CONNSTRING_KEY = APPLICATION_KEY + "iotHubConnectionString";
+    private final String STORAGE_ADAPTER_WEBSERVICE_URL = APPLICATION_KEY + "storageAdapterWebServiceUrl";
+
     private final String DEVICE_PROPERTIES_KEY = APPLICATION_KEY + "device-properties-cache.";
     private final String DEVICE_PROPERTIES_TTL = DEVICE_PROPERTIES_KEY + "TTL";
     private final String DEVICE_PROPERTIES_REBUILD_TIMEOUT = DEVICE_PROPERTIES_KEY + "rebuild_timeout";
     private final String DEVICE_PROPERTIES_WHITELIST_KEY = DEVICE_PROPERTIES_KEY + "whitelist";
 
     private final String CLIENT_AUTH_KEY = APPLICATION_KEY + "client-auth.";
-    private final String AUTH_REQUIRED_KEY = CLIENT_AUTH_KEY + "auth_required";
-    private final String AUTH_WEB_SERVICE_URL_KEY = CLIENT_AUTH_KEY + "auth_webservice_url";
-    private final String AUTH_TYPE_KEY = CLIENT_AUTH_KEY + "auth_type";
+    private final String AUTH_REQUIRED_KEY = CLIENT_AUTH_KEY + "authRequired";
+    private final String AUTH_WEB_SERVICE_URL_KEY = CLIENT_AUTH_KEY + "authWebServiceUrl";
+    private final String AUTH_TYPE_KEY = CLIENT_AUTH_KEY + "authType";
 
     private final String JWT_KEY = APPLICATION_KEY + "client-auth.JWT.";
-    private final String JWT_ALGOS_KEY = JWT_KEY + "allowed_algorithms";
-    private final String JWT_ISSUER_KEY = JWT_KEY + "issuer";
-    private final String JWT_AUDIENCE_KEY = JWT_KEY + "audience";
-    private final String JWT_CLOCK_SKEW_KEY = JWT_KEY + "clock_skew_seconds";
+    private final String JWT_ALGOS_KEY = JWT_KEY + "allowedAlgorithms";
+    private final String JWT_ISSUER_KEY = JWT_KEY + "authIssuer";
+    private final String JWT_AUDIENCE_KEY = JWT_KEY + "aadAppId";
+    private final String JWT_CLOCK_SKEW_KEY = JWT_KEY + "clockSkewSeconds";
 
     private ConfigData data;
     private IServicesConfig servicesConfig;
