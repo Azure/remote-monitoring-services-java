@@ -8,6 +8,7 @@ import com.microsoft.azure.keyvault.authentication.KeyVaultCredentials;
 import com.microsoft.azure.keyvault.models.SecretItem;
 import com.microsoft.rest.credentials.ServiceClientCredentials;
 import org.apache.commons.lang3.StringUtils;
+import play.Logger;
 
 import java.net.MalformedURLException;
 import java.util.List;
@@ -22,6 +23,8 @@ public class KeyVault {
     private final String name;
     private final String clientId;
     private final String clientSecret;
+
+    private static final Logger.ALogger log = Logger.of(KeyVault.class);
 
     // Key Vault Client
     private final KeyVaultClient keyVaultClient;
@@ -47,6 +50,8 @@ public class KeyVault {
                     .getSecret(uri)
                     .value();
         } catch (Exception e) {
+            String message = String.format("Failed to get the secret {%s} from the key vault.", secretKey);
+            log.error(message, e);
             return null;
         }
     }
@@ -85,7 +90,7 @@ public class KeyVault {
                     authResult = getAccessToken(authorization, resource);
                     return authResult.getAccessToken();
                 } catch (Exception e) {
-                    // TODO: Add logging
+                    log.error("Failed to get authentication token for key vault.",e);
                     // e.printStackTrace();
                 }
                 return "";

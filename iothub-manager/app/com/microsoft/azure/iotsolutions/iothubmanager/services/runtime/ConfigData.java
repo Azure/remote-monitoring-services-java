@@ -5,13 +5,13 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
 import com.typesafe.config.ConfigFactory;
 import org.apache.commons.lang3.StringUtils;
+import play.Logger;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.List;
 
 public class ConfigData implements IConfigData {
 
@@ -21,6 +21,8 @@ public class ConfigData implements IConfigData {
     private static final String CLIENT_SECRET = "keyvault.aadAppSecret";
     private static final String KEY_VAULT_NAME = "keyvault.name";
     private static final String READ_FROM_KV_ONLY = "READ-FROM-KV-ONLY";
+
+    private static final Logger.ALogger log = Logger.of(ConfigData.class);
 
     // Local environment variables data
     private final Config data;
@@ -40,105 +42,115 @@ public class ConfigData implements IConfigData {
     public String getString(String key) {
         String value = StringUtils.EMPTY;
 
-        if (!this.readFromKeyVaultOnly) {
-            value = this.data.getString(key);
-        }
+        value = this.data.getString(key);
 
         if (StringUtils.isEmpty(value)) {
+            String message = String.format("Value for secret %s not found in local env. " +
+                    " Trying to get the secret from KeyVault.", key);
+            log.warn(message);
+
             value = this.keyVault.getKeyVaultSecret(key);
         }
 
         return value;
     }
 
-    public List<String> getStringList(String key) throws InvalidConfigurationException {
-
-        if (!this.readFromKeyVaultOnly) {
-            try {
-                return this.data.getStringList(key);
-            } catch (ConfigException.Missing e) {
-                // Do Nothing as this goes to KV logic (below)
-            } catch (ConfigException.WrongType e) {
-                return Arrays.asList(this.data.getString(key).split(","));
-            }
-        }
-
-        return Arrays.asList(
-                this.keyVault.getKeyVaultSecret(key)
-                             .split(","));
-    }
-
     @Override
     public boolean getBool(String key) {
-        boolean defaultValue = false;
+        Boolean value = false;
 
-        if (!this.readFromKeyVaultOnly) {
-            try {
-                return this.data.getBoolean(key);
-            } catch (ConfigException.Missing e) {
-                // Do Nothing as this goes to KV logic (below)
-            } catch (ConfigException.WrongType e) {
-                // Try to get this as a String and
-                return this.stringToBoolean(
-                        this.data.getString(key),
-                        defaultValue
-                );
-            }
+        try {
+            value = this.data.getBoolean(key);
+        } catch (ConfigException.Missing e) {
+            // Do Nothing as this goes to KV logic (below)
+        } catch (ConfigException.WrongType e) {
+            // Try to get this as a String and
+            value = this.stringToBoolean(
+                    this.data.getString(key),
+                    null
+            );
         }
 
-        return this.stringToBoolean(
-                this.keyVault.getKeyVaultSecret(key),
-                defaultValue
-        );
+        if (value == null) {
+            String message = String.format("Value for secret %s not found in local env. " +
+                    " Trying to get the secret from KeyVault.", key);
+            log.warn(message);
+
+            value = this.stringToBoolean(
+                    this.keyVault.getKeyVaultSecret(key),
+                    false
+            );
+        }
+
+        return value;
     }
 
     @Override
     public int getInt(String key) throws InvalidConfigurationException {
-        int defaultValue = 0;
+        Integer value = null;
 
-        if (!this.readFromKeyVaultOnly) {
-            try {
-                return this.data.getInt(key);
-            } catch (ConfigException.Missing e) {
-                // Do Nothing as this goes to KV logic (below)
-            } catch (ConfigException.WrongType e) {
-                return this.stringToInt(
-                        this.data.getString(key),
-                        defaultValue
-                );
-            }
+        try {
+            value = this.data.getInt(key);
+        } catch (ConfigException.Missing e) {
+            // Do Nothing as this goes to KV logic (below)
+        } catch (ConfigException.WrongType e) {
+            // Try to get this as a String and
+            value = this.stringToInt(
+                    this.data.getString(key),
+                    null
+            );
         }
 
-        return this.stringToInt(
-                this.keyVault.getKeyVaultSecret(key),
-                defaultValue
-        );
+        if (value == null) {
+            String message = String.format("Value for secret %s not found in local env. " +
+                    " Trying to get the secret from KeyVault.", key);
+            log.warn(message);
+
+            value = this.stringToInt(
+                    this.keyVault.getKeyVaultSecret(key),
+                    0
+            );
+        }
+
+        return value;
     }
 
     public Duration getDuration(String key) {
+        Duration value = null;
+
         try {
-            return this.data.getDuration(key);
+            value = this.data.getDuration(key);
         } catch (ConfigException.Missing e) {
-            // DO Nothing as this goes to KV logic (below)
+            // Do Nothing as this goes to KV logic (below)
         } catch (ConfigException.WrongType e) {
-            return Duration.of(
+            // Try to get this as a String and
+            value = Duration.of(
                     Long.valueOf(this.data.getString(key)),
                     ChronoUnit.SECONDS
             );
         }
 
-        return Duration.of(
-                Long.valueOf(this.keyVault.getKeyVaultSecret(key)),
-                ChronoUnit.SECONDS
-        );
+        if (value == null) {
+            String message = String.format("Value for secret %s not found in local env. " +
+                    " Trying to get the secret from KeyVault.", key);
+            log.warn(message);
+
+            value = Duration.of(
+                    Long.valueOf(this.keyVault.getKeyVaultSecret(key)),
+                    ChronoUnit.SECONDS
+            );
+        }
+
+        return value;
     }
 
     @Override
     public boolean hasPath(String path) {
-        if (!this.readFromKeyVaultOnly) {
-            return this.data.hasPath(path);
+        boolean value = this.data.hasPath(path);
+        if (!value) {
+            return this.keyVault.hasPath(path);
         }
-        return this.keyVault.hasPath(path);
+        return value;
     }
 
     private void setUpKeyVault() {
@@ -153,7 +165,7 @@ public class ConfigData implements IConfigData {
         this.readFromKeyVaultOnly = this.getBool(READ_FROM_KV_ONLY);
     }
 
-    private boolean stringToBoolean(String value, boolean defaultValue) {
+    private boolean stringToBoolean(String value, Boolean defaultValue) {
         Set knownTrue = new HashSet<String>(Arrays.asList("true", "t", "yes", "y", "1", "-1"));
         Set knownFalse = new HashSet<String>(Arrays.asList("false", "f", "no", "n", "0"));
 
@@ -163,7 +175,7 @@ public class ConfigData implements IConfigData {
         return defaultValue;
     }
 
-    private int stringToInt(String value, int defaultValue) throws InvalidConfigurationException {
+    private int stringToInt(String value, Integer defaultValue) throws InvalidConfigurationException {
         try {
             return Integer.valueOf(value);
         } catch (NumberFormatException e) {
