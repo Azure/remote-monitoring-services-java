@@ -10,7 +10,6 @@ import com.microsoft.azure.iotsolutions.storageadapter.services.runtime.Services
 
 // TODO: documentation
 // TODO: handle exceptions
-
 @Singleton
 public class Config implements IConfig {
 

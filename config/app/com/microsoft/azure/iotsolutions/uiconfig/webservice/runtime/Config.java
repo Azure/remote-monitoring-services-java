@@ -2,6 +2,7 @@
 
 package com.microsoft.azure.iotsolutions.uiconfig.webservice.runtime;
 
+import com.google.inject.Singleton;
 import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.InvalidConfigurationException;
 import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.*;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.auth.ClientAuthConfig;
@@ -11,6 +12,7 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.HashSet;
 
+@Singleton
 public class Config implements IConfig {
 
     private final String NAMESPACE = "com.microsoft.azure.iotsolutions.";

@@ -2,6 +2,7 @@
 
 package com.microsoft.azure.iotsolutions.iothubmanager.webservice.runtime;
 
+import com.google.inject.Singleton;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidConfigurationException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.runtime.ConfigData;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.runtime.IServicesConfig;
@@ -15,6 +16,7 @@ import java.util.HashSet;
 
 // TODO: documentation
 
+@Singleton
 public class Config implements IConfig {
 
     // Namespace applied to all the custom configuration settings

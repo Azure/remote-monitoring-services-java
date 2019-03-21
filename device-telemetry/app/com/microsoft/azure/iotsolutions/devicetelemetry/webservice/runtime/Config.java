@@ -3,6 +3,7 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidConfigurationException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.ClientAuthConfig;
@@ -14,7 +15,7 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.HashSet;
 
-
+@Singleton
 public class Config implements IConfig {
 
     // Namespace applied to all the custom configuration settings
