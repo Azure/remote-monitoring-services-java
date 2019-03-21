@@ -70,7 +70,7 @@ public class KeyVault {
     // (local setting file ) => key vault denomination
     // messages.cosmosdb.documentDbConnectionString => documentDbConnectionString
     private String processSecretKey(String secretKey) {
-        return secretKey.substring(secretKey.lastIndexOf("."));
+        return secretKey.substring(secretKey.lastIndexOf(".") + 1);
     }
 
     /**
@@ -90,7 +90,7 @@ public class KeyVault {
                     authResult = getAccessToken(authorization, resource);
                     return authResult.getAccessToken();
                 } catch (Exception e) {
-                    // TODO: Add logging
+                    log.error("Failed to get authentication token for key vault.",e);
                     // e.printStackTrace();
                 }
                 return "";

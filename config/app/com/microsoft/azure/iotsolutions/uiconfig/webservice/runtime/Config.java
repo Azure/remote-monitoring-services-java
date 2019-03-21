@@ -24,8 +24,8 @@ public class Config implements IConfig {
 
     private final String CLIENT_AUTH_KEY = APPLICATION_KEY + "client-auth.";
     private final String AUTH_REQUIRED_KEY = CLIENT_AUTH_KEY + "authRequired";
-    private final String AUTH_WEB_SERVICE_URL_KEY = CLIENT_AUTH_KEY + "auth_webservice_url";
-    private final String AUTH_TYPE_KEY = CLIENT_AUTH_KEY + "auth_type";
+    private final String AUTH_WEB_SERVICE_URL_KEY = CLIENT_AUTH_KEY + "authWebServiceUrl";
+    private final String AUTH_TYPE_KEY = CLIENT_AUTH_KEY + "authType";
 
     private final String JWT_KEY = APPLICATION_KEY + "client-auth.JWT.";
     private final String JWT_ALGOS_KEY = JWT_KEY + "allowedAlgorithms";

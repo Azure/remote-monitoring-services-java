@@ -70,7 +70,7 @@ public class KeyVault {
     // (local setting file ) => key vault denomination
     // messages.cosmosdb.documentDbConnectionString => documentDbConnectionString
     private String processSecretKey(String secretKey) {
-        return secretKey.substring(secretKey.lastIndexOf("."));
+        return secretKey.substring(secretKey.lastIndexOf(".") + 1);
     }
 
     /**
@@ -91,6 +91,7 @@ public class KeyVault {
                     return authResult.getAccessToken();
                 } catch (Exception e) {
                     // TODO: Add logging
+                    log.error("Failed to get the saccess token for accessing the keyvault.", e);
                     // e.printStackTrace();
                 }
                 return "";

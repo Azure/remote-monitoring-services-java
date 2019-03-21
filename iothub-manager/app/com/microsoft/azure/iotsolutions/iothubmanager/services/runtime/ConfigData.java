@@ -11,6 +11,7 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class ConfigData implements IConfigData {
@@ -20,7 +21,6 @@ public class ConfigData implements IConfigData {
     private static final String CLIENT_ID = "keyvault.aadAppId";
     private static final String CLIENT_SECRET = "keyvault.aadAppSecret";
     private static final String KEY_VAULT_NAME = "keyvault.name";
-    private static final String READ_FROM_KV_ONLY = "READ-FROM-KV-ONLY";
 
     private static final Logger.ALogger log = Logger.of(ConfigData.class);
 
@@ -34,6 +34,7 @@ public class ConfigData implements IConfigData {
     public ConfigData(String applicationKey) {
         this.APPLICATION_KEY = applicationKey;
         this.data = ConfigFactory.load();
+
         // Set up Key Vault
         this.setUpKeyVault();
     }
@@ -41,8 +42,17 @@ public class ConfigData implements IConfigData {
     @Override
     public String getString(String key) {
         String value = StringUtils.EMPTY;
-
-        value = this.data.getString(key);
+        try {
+            value = this.data.getString(key);
+        } catch (ConfigException.Missing e) {
+            // Do Nothing as this goes to KV logic (below)
+            String message = String.format("Failed to get the secret %s from application.conf.", key);
+            log.error(message, e);
+        } catch (ConfigException.WrongType e) {
+            // Do Nothing as this goes to KV logic (below)
+            String message = String.format("Failed to get the secret %s from application.conf.", key);
+            log.error(message, e);
+        }
 
         if (StringUtils.isEmpty(value)) {
             String message = String.format("Value for secret %s not found in local env. " +
@@ -63,6 +73,8 @@ public class ConfigData implements IConfigData {
             value = this.data.getBoolean(key);
         } catch (ConfigException.Missing e) {
             // Do Nothing as this goes to KV logic (below)
+            String message = String.format("Failed to get the secret %s from application.conf.", key);
+            log.error(message, e);
         } catch (ConfigException.WrongType e) {
             // Try to get this as a String and
             value = this.stringToBoolean(
@@ -93,6 +105,8 @@ public class ConfigData implements IConfigData {
             value = this.data.getInt(key);
         } catch (ConfigException.Missing e) {
             // Do Nothing as this goes to KV logic (below)
+            String message = String.format("Failed to get the secret %s from application.conf.", key);
+            log.error(message, e);
         } catch (ConfigException.WrongType e) {
             // Try to get this as a String and
             value = this.stringToInt(
@@ -115,6 +129,38 @@ public class ConfigData implements IConfigData {
         return value;
     }
 
+    @Override
+    public List<String> getStringList(String key) throws InvalidConfigurationException {
+        List<String> value = null;
+
+        try {
+            value = this.data.getStringList(key);
+        } catch (ConfigException.Missing e) {
+            // Do Nothing as this goes to KV logic (below)
+            String message = String.format("Failed to get the secret %s from application.conf.", key);
+            log.error(message, e);
+        } catch (ConfigException.WrongType e) {
+            // Try to get this as a String and
+            value = this.stringToList(
+                    this.data.getString(key),
+                    null
+            );
+        }
+
+        if (value == null) {
+            String message = String.format("Value for secret %s not found in local env. " +
+                    " Trying to get the secret from KeyVault.", key);
+            log.warn(message);
+
+            value = this.stringToList(
+                    this.keyVault.getKeyVaultSecret(key),
+                    null
+            );
+        }
+
+        return value;
+    }
+
     public Duration getDuration(String key) {
         Duration value = null;
 
@@ -122,6 +168,8 @@ public class ConfigData implements IConfigData {
             value = this.data.getDuration(key);
         } catch (ConfigException.Missing e) {
             // Do Nothing as this goes to KV logic (below)
+            String message = String.format("Failed to get the secret %s from application.conf.", key);
+            log.error(message, e);
         } catch (ConfigException.WrongType e) {
             // Try to get this as a String and
             value = Duration.of(
@@ -160,12 +208,9 @@ public class ConfigData implements IConfigData {
 
         // Initialize key vault
         this.keyVault = new KeyVault(keyVaultName, clientId, clientSecret);
-
-        // Initialize key vault read only flag
-        this.readFromKeyVaultOnly = this.getBool(READ_FROM_KV_ONLY);
     }
 
-    private boolean stringToBoolean(String value, Boolean defaultValue) {
+    private Boolean stringToBoolean(String value, Boolean defaultValue) {
         Set knownTrue = new HashSet<String>(Arrays.asList("true", "t", "yes", "y", "1", "-1"));
         Set knownFalse = new HashSet<String>(Arrays.asList("false", "f", "no", "n", "0"));
 
@@ -178,6 +223,17 @@ public class ConfigData implements IConfigData {
     private int stringToInt(String value, Integer defaultValue) throws InvalidConfigurationException {
         try {
             return Integer.valueOf(value);
+        } catch (NumberFormatException e) {
+            throw new InvalidConfigurationException("Unable to load configuration value for '{key}'", e);
+        } catch (Exception e) {
+            // If string value is not found or any other exception than NumberFormat exception.
+            return defaultValue;
+        }
+    }
+
+    private List<String> stringToList(String keyVaultSecret, List<String> defaultValue) throws InvalidConfigurationException{
+        try {
+            return Arrays.asList(keyVaultSecret.split(","));
         } catch (NumberFormatException e) {
             throw new InvalidConfigurationException("Unable to load configuration value for '{key}'", e);
         } catch (Exception e) {

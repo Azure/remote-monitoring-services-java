@@ -21,8 +21,10 @@ IF %ERRORLEVEL% NEQ 0 GOTO FAIL
 :: Depending on which settings and which dependencies are needed, edit the list of variables
 echo Starting storage adapter...
 docker run -it ^
-    -p 9022:9022^
-    -e PCS_STORAGEADAPTER_DOCUMENTDB_CONNSTRING ^
+     -p 9022:9022^
+     -e PCS_KEYVAULT_NAME ^
+     -e PCS_AAD_APPID ^
+     -e PCS_AAD_APPSECRET ^
     %DOCKER_IMAGE%:testing
 
 :: - - - - - - - - - - - - - -

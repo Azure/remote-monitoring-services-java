@@ -70,7 +70,7 @@ public class KeyVault {
     // (local setting file ) => key vault denomination
     // messages.cosmosdb.documentDbConnectionString => documentDbConnectionString
     private String processSecretKey(String secretKey) {
-        return secretKey.substring(secretKey.lastIndexOf("."));
+        return secretKey.substring(secretKey.lastIndexOf(".") + 1);
     }
 
     /**

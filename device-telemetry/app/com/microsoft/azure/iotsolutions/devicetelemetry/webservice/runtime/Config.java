@@ -14,6 +14,7 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.HashSet;
 
+
 public class Config implements IConfig {
 
     // Namespace applied to all the custom configuration settings
@@ -34,7 +35,7 @@ public class Config implements IConfig {
     private final String AAD_APP_SECRET_KEY = TIME_SERIES_KEY + "aadAppSecret";
 
     // Storage adapter webservice settings
-    private final String KEY_VALUE_STORAGE_URL_KEY = "storageAdapterWebServiceUrl";
+    private final String KEY_VALUE_STORAGE_URL_KEY = APPLICATION_KEY + "storageAdapterWebServiceUrl";
 
     private final String MESSAGES_STORAGE_TYPE_KEY = APPLICATION_KEY + "messages.telemetryStorageType";
     private final String MESSAGES_COSMOS_DATABASE_KEY = APPLICATION_KEY + "messages.cosmosDb.database";
@@ -97,7 +98,8 @@ public class Config implements IConfig {
      * Service layer configuration
      */
     public IServicesConfig getServicesConfig() throws InvalidConfigurationException {
-        if (this.servicesConfig != null) return this.servicesConfig;
+        if (this.servicesConfig != null)
+            return this.servicesConfig;
 
         String storageConnectionString = this.data.getString(COSMOS_DB_CONN_STRING_KEY);
         String keyValueStorageUrl = this.data.getString(KEY_VALUE_STORAGE_URL_KEY);

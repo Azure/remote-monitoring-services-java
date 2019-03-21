@@ -20,7 +20,6 @@ public class ConfigData implements IConfigData {
     private static final String CLIENT_ID = "keyvault.aadAppId";
     private static final String CLIENT_SECRET = "keyvault.aadAppSecret";
     private static final String KEY_VAULT_NAME = "keyvault.name";
-    private static final String READ_FROM_KV_ONLY = "READ-FROM-KV-ONLY";
 
     private static final Logger.ALogger log = Logger.of(ConfigData.class);
 
@@ -62,7 +61,8 @@ public class ConfigData implements IConfigData {
         try {
             value = this.data.getBoolean(key);
         } catch (ConfigException.Missing e) {
-            // Do Nothing as this goes to KV logic (below)
+            String message = String.format("Failed to get the secret %s from application.conf.", key);
+            log.error(message, e);
         } catch (ConfigException.WrongType e) {
             // Try to get this as a String and
             value = this.stringToBoolean(
@@ -93,6 +93,8 @@ public class ConfigData implements IConfigData {
             value = this.data.getInt(key);
         } catch (ConfigException.Missing e) {
             // Do Nothing as this goes to KV logic (below)
+            String message = String.format("Failed to get the secret %s from application.conf.", key);
+            log.error(message, e);
         } catch (ConfigException.WrongType e) {
             // Try to get this as a String and
             value = this.stringToInt(
@@ -122,6 +124,8 @@ public class ConfigData implements IConfigData {
             value = this.data.getDuration(key);
         } catch (ConfigException.Missing e) {
             // Do Nothing as this goes to KV logic (below)
+            String message = String.format("Failed to get the secret %s from application.conf.", key);
+            log.error(message, e);
         } catch (ConfigException.WrongType e) {
             // Try to get this as a String and
             value = Duration.of(
@@ -160,12 +164,9 @@ public class ConfigData implements IConfigData {
 
         // Initialize key vault
         this.keyVault = new KeyVault(keyVaultName, clientId, clientSecret);
-
-        // Initialize key vault read only flag
-        this.readFromKeyVaultOnly = this.getBool(READ_FROM_KV_ONLY);
     }
 
-    private boolean stringToBoolean(String value, Boolean defaultValue) {
+    private Boolean stringToBoolean(String value, Boolean defaultValue) {
         Set knownTrue = new HashSet<String>(Arrays.asList("true", "t", "yes", "y", "1", "-1"));
         Set knownFalse = new HashSet<String>(Arrays.asList("false", "f", "no", "n", "0"));
 
