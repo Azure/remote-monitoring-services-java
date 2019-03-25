@@ -28,7 +28,6 @@ public class ConfigData implements IConfigData {
 
     // Key Vault
     private KeyVault keyVault;
-    private boolean readFromKeyVaultOnly; // Flag to indicate if to read secrets from KV only
 
     public ConfigData(String applicationKey) {
         this.APPLICATION_KEY = applicationKey;
@@ -149,6 +148,9 @@ public class ConfigData implements IConfigData {
         return value;
     }
 
+    /**
+     * Checks if particular key is present in the secrets (conf file OR KeyVault)
+     */
     @Override
     public boolean hasPath(String path) {
         boolean value = this.data.hasPath(path);
@@ -184,6 +186,9 @@ public class ConfigData implements IConfigData {
             throw new InvalidConfigurationException("Unable to load configuration value for '{key}'", e);
         } catch (Exception e) {
             // If string value is not found or any other exception than NumberFormat exception.
+            String message = String.format("Failed to convert %s value to integer.", value);
+            log.warn(message, e);
+
             return defaultValue;
         }
     }

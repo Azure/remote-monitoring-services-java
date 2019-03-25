@@ -124,7 +124,7 @@ public class KeyVault {
             Future<AuthenticationResult> future = null;
 
             //Acquires token based on client ID and client secret.
-            if (this.clientSecret != null && this.clientSecret != null) {
+            if (StringUtils.isEmpty(this.clientSecret) && StringUtils.isEmpty(this.clientId)) {
                 ClientCredential credentials = new ClientCredential(this.clientId, this.clientSecret);
                 future = context.acquireToken(resource, credentials, null);
             }
@@ -135,6 +135,7 @@ public class KeyVault {
         }
 
         if (result == null) {
+            log.error("Failed to get authentication token for key vault.");
             throw new RuntimeException("Authentication results were null.");
         }
         return result;
