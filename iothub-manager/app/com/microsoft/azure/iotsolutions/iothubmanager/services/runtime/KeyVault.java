@@ -123,7 +123,7 @@ public class KeyVault {
             Future<AuthenticationResult> future = null;
 
             //Acquires token based on client ID and client secret.
-            if (StringUtils.isEmpty(this.clientSecret) && StringUtils.isEmpty(this.clientId)) {
+            if (!StringUtils.isEmpty(this.clientSecret) && !StringUtils.isEmpty(this.clientId)) {
                 ClientCredential credentials = new ClientCredential(this.clientId, this.clientSecret);
                 future = context.acquireToken(resource, credentials, null);
             }

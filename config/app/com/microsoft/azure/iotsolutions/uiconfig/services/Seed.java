@@ -72,6 +72,7 @@ public class Seed implements ISeed {
             log.error("mutex.EnterAsync failed");
             throw new ExternalDependencyException("Seed failed");
         }
+
         try {
             if (this.checkCompletedFlagAsync().toCompletableFuture().get().booleanValue()) {
                 this.log.info("Seed skipped (completed)");
@@ -80,6 +81,13 @@ public class Seed implements ISeed {
         } catch (InterruptedException | ExecutionException e) {
             log.error("CheckCompletedFlagAsync failed");
             throw new ExternalDependencyException("Seed failed");
+
+        } finally {
+            try {
+                this.mutex.leaveAsync(SeedCollectionId, MutexKey).toCompletableFuture().get();
+            } catch (Exception ex) {
+                this.log.warn("mutex.LeaveAsync failed");
+            }
         }
 
         try {
