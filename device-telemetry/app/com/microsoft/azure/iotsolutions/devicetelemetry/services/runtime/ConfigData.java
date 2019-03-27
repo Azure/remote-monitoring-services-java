@@ -45,7 +45,7 @@ public class ConfigData implements IConfigData {
 
         if (StringUtils.isEmpty(value)) {
             String message = String.format("Value for secret %s not found in local env. " +
-                    " Trying to get the secret from KeyVault.", key);
+                    "Trying to get the secret from KeyVault.", key);
             log.warn(message);
 
             value = this.keyVault.getKeyVaultSecret(key);
@@ -64,7 +64,12 @@ public class ConfigData implements IConfigData {
             String message = String.format("Failed to get the secret %s from application.conf.", key);
             log.error(message, e);
         } catch (ConfigException.WrongType e) {
-            // Try to get this as a String and
+
+            String message = String.format("Failed to get the secret %s as an boolean value." +
+                    "Fetching it as a string.", key);
+            log.warn(message, e);
+
+            // Try to get this as a String
             value = this.stringToBoolean(
                     this.data.getString(key),
                     null
@@ -96,7 +101,12 @@ public class ConfigData implements IConfigData {
             String message = String.format("Failed to get the secret %s from application.conf.", key);
             log.error(message, e);
         } catch (ConfigException.WrongType e) {
-            // Try to get this as a String and
+
+            String message = String.format("Failed to get the secret %s as an Integer value." +
+                    "Fetching it as a string.", key);
+            log.warn(message, e);
+
+            // Try to get this as a String
             value = this.stringToInt(
                     this.data.getString(key),
                     null
@@ -127,7 +137,12 @@ public class ConfigData implements IConfigData {
             String message = String.format("Failed to get the secret %s from application.conf.", key);
             log.error(message, e);
         } catch (ConfigException.WrongType e) {
-            // Try to get this as a String and
+
+            String message = String.format("Failed to get the secret %s as an Duration (java.Time) value." +
+                    "Fetching it as a string.", key);
+            log.warn(message, e);
+
+            // Try to get this as a String
             value = Duration.of(
                     Long.valueOf(this.data.getString(key)),
                     ChronoUnit.SECONDS
@@ -148,6 +163,11 @@ public class ConfigData implements IConfigData {
         return value;
     }
 
+    /**
+     * Checks if particular key is present in the configuration file or keyvault.
+     * @param path
+     * @return boolean
+     */
     @Override
     public boolean hasPath(String path) {
         boolean value = this.data.hasPath(path);

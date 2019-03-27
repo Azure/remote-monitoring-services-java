@@ -29,7 +29,6 @@ public class ConfigData implements IConfigData {
 
     // Key Vault
     private KeyVault keyVault;
-    private boolean readFromKeyVaultOnly; // Flag to indicate if to read secrets from KV only
 
     public ConfigData(String applicationKey) {
         this.APPLICATION_KEY = applicationKey;
@@ -76,7 +75,12 @@ public class ConfigData implements IConfigData {
             String message = String.format("Failed to get the secret %s from application.conf.", key);
             log.error(message, e);
         } catch (ConfigException.WrongType e) {
-            // Try to get this as a String and
+
+            String message = String.format("Failed to get the secret %s as a boolean value." +
+                    "Fetching it as a string.", key);
+            log.warn(message, e);
+
+            // Try to get this as a String
             value = this.stringToBoolean(
                     this.data.getString(key),
                     null
@@ -108,7 +112,12 @@ public class ConfigData implements IConfigData {
             String message = String.format("Failed to get the secret %s from application.conf.", key);
             log.error(message, e);
         } catch (ConfigException.WrongType e) {
-            // Try to get this as a String and
+
+            String message = String.format("Failed to get the secret %s as an integer value." +
+                    "Fetching it as a string.", key);
+            log.warn(message, e);
+
+            // Try to get this as a String
             value = this.stringToInt(
                     this.data.getString(key),
                     null
@@ -140,7 +149,12 @@ public class ConfigData implements IConfigData {
             String message = String.format("Failed to get the secret %s from application.conf.", key);
             log.error(message, e);
         } catch (ConfigException.WrongType e) {
-            // Try to get this as a String and
+
+            String message = String.format("Failed to get the secret %s as a list of strings." +
+                    "Fetching it as a string.", key);
+            log.warn(message, e);
+
+            // Try to get this as a String
             value = this.stringToList(
                     this.data.getString(key),
                     null
@@ -171,7 +185,12 @@ public class ConfigData implements IConfigData {
             String message = String.format("Failed to get the secret %s from application.conf.", key);
             log.error(message, e);
         } catch (ConfigException.WrongType e) {
-            // Try to get this as a String and
+
+            String message = String.format("Failed to get the secret %s as a duration (java.Time) value." +
+                    "Fetching it as a string.", key);
+            log.warn(message, e);
+
+            // Try to get this as a String
             value = Duration.of(
                     Long.valueOf(this.data.getString(key)),
                     ChronoUnit.SECONDS
@@ -192,6 +211,11 @@ public class ConfigData implements IConfigData {
         return value;
     }
 
+    /**
+     * Checks if particular key is present in the configuration file or keyvault.
+     * @param path
+     * @return boolean
+     */
     @Override
     public boolean hasPath(String path) {
         boolean value = this.data.hasPath(path);

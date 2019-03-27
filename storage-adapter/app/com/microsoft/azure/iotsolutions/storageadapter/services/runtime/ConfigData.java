@@ -63,8 +63,13 @@ public class ConfigData implements IConfigData {
         } catch (ConfigException.Missing e) {
             // Do Nothing as this goes to KV logic (below)
             String message = String.format("Failed to get the secret %s from application.conf.", key);
-            log.error(message, e);
+            log.debug(message, e);
         } catch (ConfigException.WrongType e) {
+
+            String message = String.format("Failed to get the secret %s as a boolean value." +
+                    "Fetching it as a string.", key);
+            log.debug(message, e);
+
             // Try to get this as a String and
             value = this.stringToBoolean(
                     this.data.getString(key),
@@ -97,7 +102,12 @@ public class ConfigData implements IConfigData {
             String message = String.format("Failed to get the secret %s from application.conf.", key);
             log.error(message, e);
         } catch (ConfigException.WrongType e) {
-            // Try to get this as a String and
+
+            String message = String.format("Failed to get the secret %s as an Integer value." +
+                    "Fetching it as a string.", key);
+            log.debug(message, e);
+
+            // Try to get this as a String
             value = this.stringToInt(
                     this.data.getString(key),
                     null
@@ -128,7 +138,12 @@ public class ConfigData implements IConfigData {
             String message = String.format("Failed to get the secret %s from application.conf.", key);
             log.error(message, e);
         } catch (ConfigException.WrongType e) {
-            // Try to get this as a String and
+
+            String message = String.format("Failed to get the secret %s as an Duration (java.Time) value." +
+                    "Fetching it as a string.", key);
+            log.debug(message, e);
+
+            // Try to get this as a String
             value = Duration.of(
                     Long.valueOf(this.data.getString(key)),
                     ChronoUnit.SECONDS
@@ -149,6 +164,11 @@ public class ConfigData implements IConfigData {
         return value;
     }
 
+    /**
+     * Checks if particular key is present in the configuration file or keyvault.
+     * @param path
+     * @return boolean
+     */
     @Override
     public boolean hasPath(String path) {
         boolean value = this.data.hasPath(path);
