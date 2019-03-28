@@ -74,7 +74,7 @@ public class Config implements IConfig {
     private final String JWT_CLOCK_SKEW_KEY = JWT_KEY + "clockSkewSeconds";
 
     private final String DIAGNOSTICS_KEY = APPLICATION_KEY + "diagnostics.";
-    private final String DIAGNOSTICS_URL_KEY = DIAGNOSTICS_KEY + "diagnosticsEndpointUrl";
+    private final String DIAGNOSTICS_URL_KEY = DIAGNOSTICS_KEY + "diagnosticsWebServiceUrl";
     private final String DIAGNOSTICS_MAX_LOG_RETRIES = DIAGNOSTICS_KEY + "maxLogRetries";
 
     private ConfigData data;
