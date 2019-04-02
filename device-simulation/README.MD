@@ -24,6 +24,7 @@ for more information. More information on environment variables
    docker-compose up OR
    run.cmd (win) OR
    ./run (Linux / Mac OS)
+   ```
 1. Use an HTTP client such as [Postman][postman-url], to exercise the
    [RESTful API][wiki-createsim-url] to create a simulation.
 
