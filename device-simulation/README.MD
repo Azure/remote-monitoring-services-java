@@ -1,18 +1,18 @@
 
-> This folder references the *scripts* required for starting simulation micro-service in docker. The code of this micro-service resides [here](https://github.com/Azure/device-simulation-dotnet). 
+> This folder references the *scripts* required for starting simulation micro-service in docker. The code of this micro-service resides [here](https://github.com/Azure/remote-monitoring-services-java/tree/master/device-simulation). 
 
-How to use the microservice
-===========================
+## Running the service locally
 
-## Quickstart - Running the service with Docker
+## Prerequisites
 
 1. Install docker-compose.
-2. This service depends on the storage-adapter micro-service.
-   [Storage Adapter Microservice](https://github.com/Azure/remote-monitoring-services-java/tree/master/storage-adapter). Please start the storegeadapter [instructions](https://github.com/Azure/remote-monitoring-services-java/tree/master/storage-adapter) before starting this service. 
+2. This service depends on the following microservices.  Run those services from the instruction in their README's in the following order.
+   1. [Storage Adapter Microservice](https://github.com/Azure/remote-monitoring-services-java/tree/master/storage-adapter)
+   2. [Config Microservice](https://github.com/Azure/remote-monitoring-services-java/tree/master/config)
+    
 2.  In order to run the service, some environment variables need to be created
 at least once. See specific instructions for IDE or command line setup below
-for more information. More information on environment variables
-[here](#configuration-and-environment-variables). 
+for more information. 
     * `PCS_AAD_APPID` = { Azure service principal id }
     * `PCS_AAD_APPSECRET` = { Azure service principal secret }
     * `PCS_KEYVAULT_NAME` = { Name of Key Vault resource that stores settings and configuration }

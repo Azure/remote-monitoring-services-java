@@ -65,11 +65,17 @@ In order to run the service, some environment variables need to be created at le
 * `PCS_AAD_APPSECRET` = { Azure service principal secret }
 * `PCS_KEYVAULT_NAME` = { Name of Key Vault resource that stores settings and configuration }
 
-### 3.1 Settings used from Key Vault
+### Configuration values used from Key Vault
 Some of the configuration needed by the microservice is stored in an instance of Key Vault that was created on initial deployment. The iothub-manager microservice uses:
-* `authWebServiceUrl` = http://localhost:9001/v1
-* `iotHubConnectionString` = {your Azure IoT Hub connection string}
-* `storageAdapterWebServiceUrl` = http://localhost:9022/v1
+
+* `aadAppId` = Azure Active Directory application / service principal id.
+* `authIssuer` = Identifies the security token service (STS) i.e. https://sts.windows.net/tenantId/ 
+* `authRequired` = Whether or not authentication is needed for calls to microservices i.e. from the web ui or postman
+* `authWebServiceUrl` = Endpoint for the remote monitoring auth microservice
+* `corsWhitelist` = Specifies where requests are allowed from "{ 'origins': ['\*'], 'methods': ['\*'], 'headers': ['\*'] }" to allow everything. Empty to disable CORS
+* `storageAdapterWebServiceUrl` = Endpoint for storage adapter microservice
+* `subscriptionId` = GUID that uniquely identifies your subscription to use Azure services
+
 
 # Running the service in an IDE
 
@@ -189,16 +195,24 @@ format in [application.conf](conf/application.conf).
 The HOCON format is a human readable format, very close to JSON, with some
 useful features:
 
+* Ability to write comments
 * Support for substitutions, e.g. referencing environment variables
 * Supports JSON notation
 
-The configuration file in the repository references some environment
+The configuration file in the microservice references some environment
 variables that need to created at least once. Depending on your OS and
-the IDE, there are several ways to manage environment variables:
-
-* These variables can be set directly in the configuration file OR 
-* IntelliJ IDEA: env. vars can be set in each Run Configuration, see
+the IDE, there are typically set in 3 different ways:
+* Environment variables as is the case with ${PCS_AAD_APPID}. This is typically only done with the 3 variables described above as these are needed to access Key Vault. More details about setting environment variables are located below.
+* Key Vault: A number of the settings in this file will be blank as they are  expecting to get their value from a Key Vault secret of the same name.
+* Direct Value: For some values that aren't typically changed or for local development you can set the value directly in the file.
+* IntelliJ IDEA: env. vars, esp. key-vault related, can be set in each Run Configuration, see
   https://www.jetbrains.com/help/idea/run-debug-configuration-application.html
+
+To persist the environment variables globally and make them persistent, depending upon your OS, please follow these pages:
+* https://superuser.com/questions/949560/
+* https://stackoverflow.com/questions/13046624/how-to-permanently-export-a-variable-in-linux
+* https://stackoverflow.com/questions/135688/setting-environment-variables-in-os-x
+* https://help.ubuntu.com/community/EnvironmentVariables
 
 # Contributing to the solution
 

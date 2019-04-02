@@ -2,17 +2,16 @@
 [![Issues][issues-badge]][issues-url]
 [![Gitter][gitter-badge]][gitter-url]
 
-# Azure Stream Analytics Manager Overview
+# Auth Microservice Overview
 
-Auth micro-serivce is available only in dotnet. This folder contains the scripts required to run auth as a docker container locally. For the details of the microservice, please visit [here]().
-# How to use the microservice?
+Auth micro-serivce is available only in dotnet. This folder contains the scripts required to run auth as a docker container locally. 
 
 ## Running the service locally
 
 ## Prerequisites
 
 1. Install docker-compose.
-1. In order to run the service, foll. environment variables are needed. These will be created and set in the inital deployment.
+1. In order to run the service, following environment variables are needed. These will be created and set in the inital deployment.
     * `PCS_AAD_APPID` = { Azure service principal id }
     * `PCS_AAD_APPSECRET` = { Azure service principal secret }
     * `PCS_KEYVAULT_NAME` = { Name of Key Vault resource that stores settings and configuration }

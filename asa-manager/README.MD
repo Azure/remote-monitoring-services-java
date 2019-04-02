@@ -11,7 +11,14 @@ ASA-manager micro-serivce is available only in dotnet. This folder contains the 
 ## Prerequisites
 
 1. Install docker-compose.
-2. In order to run the service, foll. environment variables are needed. These will be created and set in the inital deployment.
+2. This service depends on the following repositories. Run those services from the instruction in their README's in the following order.
+
+    1. [Storage Adapter Microservice](https://github.com/Azure/remote-monitoring-services-dotnet/tree/master/storage-adapter)
+    1. [Telemetry Microservice][telemetry-microservice-url]
+    1. [Iot Hub Manager Microservice](https://github.com/Azure/remote-monitoring-services-dotnet/tree/master/iothub-manager)
+    1. [Configuration Microservice][configuration-microservice-url] 
+
+2. In order to run the service, following environment variables are needed. These will be created and set in the inital deployment.
 
     * `PCS_AAD_APPID` = { Azure service principal id }
     * `PCS_AAD_APPSECRET` = { Azure service principal secret }
@@ -58,8 +65,8 @@ Licensed under the [MIT](LICENSE) License.
 
 
 [asa-url]: https://azure.microsoft.com/services/stream-analytics
-[telemetry-microservice-url]: https://github.com/Azure/device-telemetry-dotnet
-[configuration-microservice-url]: https://github.com/azure/pcs-config-dotnet
+[telemetry-microservice-url]: https://github.com/Azure/remote-monitoring-services-dotnet/tree/master/device-telemetry
+[configuration-microservice-url]: https://github.com/Azure/remote-monitoring-services-dotnet/tree/master/config
 [postman-url]: https://www.getpostman.com
 [dotnet-install]: https://www.microsoft.com/net/learn/get-started
 [vs-install-url]: https://www.visualstudio.com/downloads
