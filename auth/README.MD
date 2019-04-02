@@ -25,7 +25,7 @@ Some of the configuration needed by the microservice is stored in an instance of
 * `authIssuer` = Identifies the security token service (STS) i.e. https://sts.windows.net/\{tenantId\}/
 * `aadTenantId` = GUID representing your active directory tenant.
 * `authRequired` = Whether or not authentication is needed for calls to microservices i.e. from the web ui or postman.
-* `corsWhitelist ` = Specifies where requests are allowed from "{ 'origins': ['*'], 'methods': ['*'], 'headers': ['*'] }" to allow everything. Empty to disable CORS.
+* `corsWhitelist ` = Specifies where requests are allowed from "{ 'origins': ['\*'], 'methods': ['\*'], 'headers': ['\*'] }" to allow everything. Empty to disable CORS.
 
 4. Start the Auth microservice service using docker compose:
    ```
