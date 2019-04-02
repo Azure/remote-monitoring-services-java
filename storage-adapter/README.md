@@ -37,8 +37,6 @@ How to use the microservice
 3. Find your Azure Cosmos DB account connection string.  See 
    [Update your Connection Strings](https://docs.microsoft.com/azure/cosmos-db/create-documentdb-dotnet#update-your-connection-string)
    if you need help finding it.
-4. Store the "Azure Cosmos DB account connection string" in the
-   [env-vars-setup](scripts) script, then run the script.
 5. Run the Storage Adapter service using the Docker
    [run](scripts/docker).
 6. Use an HTTP client such as [Postman](https://www.getpostman.com),

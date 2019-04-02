@@ -53,19 +53,23 @@ This service has a dependency on the following Azure resources. Follow the instr
 This service has a dependency on the following Azure resources. Follow the instructions
 for [Deploy the Azure services](https://docs.microsoft.com/azure/iot-suite/iot-suite-remote-monitoring-deploy-local#deploy-the-azure-services) to deploy the required resources.
 
-* [Storage adapter microservice](https://github.com/Azure/pcs-storage-adapter-java)
+* [Storage adapter microservice](https://github.com/Azure/remote-monitoring-services-java/tree/master/storage-adapter)
 
 > Note: you can also use a [deployed endpoint][deploy-rm] with [Authentication disabled][disable-auth] (e.g. https://{your-resource-group}.azurewebsites.net/config/v1)
 
 ### 3. Environment variables required to run the service
-In order to run the service, some environment variables need to be created at least once. See specific instructions for IDE or command line setup below for more information. More information on environment variables [here](#configuration-and-environment-variables).
+In order to run the service, some environment variables need to be created at least once. See specific instructions for IDE or command line setup below for more information. More information on environment variables
+[here](#configuration-and-environment-variables).
+ 
+* `PCS_AAD_APPID` = { Azure service principal id }
+* `PCS_AAD_APPSECRET` = { Azure service principal secret }
+* `PCS_KEYVAULT_NAME` = { Name of Key Vault resource that stores settings and configuration }
 
-* `PCS_AUTH_WEBSERVICE_URL` = http://localhost:9001/v1
-    * The url for the [Authentication microservice](https://github.com/Azure/pcs-auth-dotnet) from [Setup Dependencies](#setup-dependencies)
-* `PCS_IOTHUB_CONNSTRING` = {your Azure IoT Hub connection string from [Deploy Azure Services](#deploy-azure-services)}
-    *  More information on where to find your IoT Hub connection string [here][iothub-connstring-blog].
-* `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
-    * The url for the [Storage adapter microservice](https://github.com/Azure/pcs-storage-adapter-java) from [Setup Dependencies](#setup-dependencies)
+### 3.1 Settings used from Key Vault
+Some of the configuration needed by the microservice is stored in an instance of Key Vault that was created on initial deployment. The iothub-manager microservice uses:
+* `authWebServiceUrl` = http://localhost:9001/v1
+* `iotHubConnectionString` = {your Azure IoT Hub connection string}
+* `storageAdapterWebServiceUrl` = http://localhost:9022/v1
 
 # Running the service in an IDE
 
@@ -79,7 +83,6 @@ Intellij IDEA lets you open the application without using a command
 prompt, without configuring anything outside of the IDE. The SBT build tool
 takes care of downloading appropriate libraries, resolving dependencies and
 building the project (more info [here](https://www.playframework.com/documentation/2.6.x/IDE)).
-   `PCS_AUTH_WEBSERVICE_URL` for the URL of the authentication webservice, `PCS_IOTHUB_CONNSTRING` storing your Azure IoT Hub connection string and `PCS_STORAGEADAPTER_WEBSERVICE_URL` for the URL of the storage adapter webservice.
 
 Steps using IntelliJ IDEA Community 2017, with SBT plugin enabled:
 
@@ -92,9 +95,9 @@ Steps using IntelliJ IDEA Community 2017, with SBT plugin enabled:
    the service starts using the TCP port 9002.  If you desire to use a
     different port, feel free to change it.
   * Define the following environment variable:
-    * `PCS_AUTH_WEBSERVICE_URL` = http://localhost:9001/v1
-    * `PCS_IOTHUB_CONNSTRING` = {your Azure IoT Hub connection string}
-    * `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
+    * `PCS_AAD_APPID` = { Azure service principal id }
+    * `PCS_AAD_APPSECRET` = { Azure service principal secret }
+    * `PCS_KEYVAULT_NAME` = { Name of Key Vault resource that stores settings and configuration }
 * Either from the toolbar or the Run menu, execute the configuration just
   created, using the Debug command/button
 * Test that the service is up and running pointing your browser to
@@ -125,9 +128,9 @@ Steps using Eclipse Oxygen ("Eclipse for Java Developers" package):
 
 1. Make sure the [prerequisites](#prerequisites) are set up.
 1. Set the following environment variables in your system. More information on environment variables [here](#configuration-and-environment-variables).
-    * `PCS_AUTH_WEBSERVICE_URL` = http://localhost:9001/v1
-    * `PCS_IOTHUB_CONNSTRING` = {your Azure IoT Hub connection string}
-    * `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
+    * `PCS_AAD_APPID` = { Azure service principal id }
+    * `PCS_AAD_APPSECRET` = { Azure service principal secret }
+    * `PCS_KEYVAULT_NAME` = { Name of Key Vault resource that stores settings and configuration }
 1. Use the scripts in the [scripts](scripts) folder for many frequent tasks:
 
 * `build`: compile all the projects and run the tests.
@@ -186,7 +189,6 @@ format in [application.conf](conf/application.conf).
 The HOCON format is a human readable format, very close to JSON, with some
 useful features:
 
-**REQUIRED** - `PCS_STORAGEADAPTER_WEBSERVICE_URL={your storage adapter webservice URL}`
 * Support for substitutions, e.g. referencing environment variables
 * Supports JSON notation
 
@@ -194,16 +196,7 @@ The configuration file in the repository references some environment
 variables that need to created at least once. Depending on your OS and
 the IDE, there are several ways to manage environment variables:
 
-* For Windows users, the [env-vars-setup.cmd](scripts/env-vars-setup.cmd)
-  script needs to be prepared and executed just once. When executed, the
-  settings will persist across terminal sessions and reboots.
-* For Linux and OSX environments, the [env-vars-setup](scripts/env-vars-setup)
-  script needs to be executed every time a new console is opened.
-  Depending on the OS and terminal, there are ways to persist values
-  globally, for more information these pages should help:
-  * https://stackoverflow.com/questions/13046624/how-to-permanently-export-a-variable-in-linux
-  * https://stackoverflow.com/questions/135688/setting-environment-variables-in-os-x
-  * https://help.ubuntu.com/community/EnvironmentVariables
+* These variables can be set directly in the configuration file OR 
 * IntelliJ IDEA: env. vars can be set in each Run Configuration, see
   https://www.jetbrains.com/help/idea/run-debug-configuration-application.html
 
