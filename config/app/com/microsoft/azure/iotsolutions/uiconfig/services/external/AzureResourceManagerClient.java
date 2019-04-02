@@ -10,12 +10,12 @@ import com.microsoft.azure.iotsolutions.uiconfig.services.helpers.WsResponseHelp
 import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.IActionsConfig;
 import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.IServicesConfig;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpStatus;
 import play.Logger;
 import play.libs.ws.WSClient;
 import play.libs.ws.WSRequest;
 import play.mvc.Http;
 
-import java.nio.file.Paths;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
@@ -69,10 +69,22 @@ public class AzureResourceManagerClient implements IAzureResourceManagerClient {
         WSRequest request = this.createRequest(logicAppTestConnectionUri);
         return request.get()
                 .handle((response, error) -> {
-                    // Validate response
-                    WsResponseHelper.checkUnauthorizedStatus(response);
+                    // If the call to testconnection fails with a 403, it means the application was not
+                    // assigned the correct permissions to make the request. This can happen if the person doing
+                    // the deployment is not an owner, or if there was an issue at deployment time.
+                    if (response.getStatus() == HttpStatus.SC_FORBIDDEN) {
+                        String message = String.format("The application is not authorized and has not been " +
+                                "assigned owner permissions for the subscription. Go to the Azure portal and " +
+                                "assign the application as an owner in order to retrieve the token.");
+                        log.error(message);
+
+                        throw new CompletionException(new NotAuthorizedException(message));
+                    }
+
                     WsResponseHelper.checkError(error, "Failed to check status of Office365 Logic App Connector.");
 
+                    // The testconnection call may return a 401, which means the user has not yet configured
+                    // the O365 Logic App by signing in with the sender email address.
                     if (response.getStatus() != Http.Status.OK) {
                         log.debug(String.format("Office365 Logic App Connector is not set up."));
                         return false;
