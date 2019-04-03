@@ -41,7 +41,7 @@ for more information. More information on environment variables
     * `PCS_AAD_APPID` = { Azure service principal id }
     * `PCS_AAD_APPSECRET` = { Azure service principal secret }
     * `PCS_KEYVAULT_NAME` = { Name of Key Vault resource that stores settings and configuration }
-4. Configurations values used from Key Vault
+4. Configurations values used from Key Vault:
     Some of the configuration needed by the microservice is stored in an instance of Key Vault that was created on initial deployment. The storage-adapter microservice uses: 
     * `storageConnectionString` = {connection string} see: Azure Portal => Your resource group => Your Storage Account => Access keys => Connection String
 5. Run the Storage Adapter service using the Docker
@@ -71,7 +71,7 @@ Steps using IntelliJ IDEA Community 2017, with SBT plugin enabled:
     1. `PCS_AAD_APPID` = { Azure service principal id }
     1. `PCS_AAD_APPSECRET` = { Azure service principal secret }
     1. `PCS_KEYVAULT_NAME` = { Name of Key Vault resource that stores settings and configuration values }
-  * Configurations values used from Key Vault
+  * Configurations values used from Key Vault:
     Some of the configuration needed by the microservice is stored in an instance of Key Vault that was created on initial deployment. The storage-adapter microservice uses:
     * `storageConnectionString` = {connection string} see: Azure Portal => Your resource group => Your Storage Account => Access keys => Connection String
 * Either from the toolbar or the Run menu, execute the configuration just
