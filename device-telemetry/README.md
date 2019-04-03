@@ -57,7 +57,7 @@ for more information. More information on environment variables
 * `PCS_AAD_APPSECRET` = { Azure service principal secret }
 * `PCS_KEYVAULT_NAME` = { Name of Key Vault resource that stores settings and configuration }
 
-### 3.1 Settings used from Key Vault
+### 3.1 Configurations values used from Key Vault
 Some of the configuration needed by the microservice is stored in an instance of Key Vault that was created on initial deployment. The telemetry microservice uses:
 
   * `documentDBConnectionString ` = {your Azure Cosmos DB connection string}
@@ -108,29 +108,9 @@ Steps using IntelliJ IDEA, with SBT plugin enabled:
    the service starts using the TCP port 9004.  If you desire to use a
     different port, feel free to change it.
   * Define the following environment variables:
-      * `documentDBConnectionString ` = {your Azure Cosmos DB connection string}
-      * `storageAdapterWebServiceUrl ` = http://localhost:9022/v1
-      * `authWebServiceUrl` = http://localhost:9001/v1
-      * `aadTenantId` = {Azure Active Directory Tenant ID}
-         * see: Azure Portal => Azure Active Directory => Properties => Directory ID
-      * `aadAppId` = {Azure Active Directory application ID}
-         * see: Azure Portal => Azure Active Directory => App Registrations => Your App => Application ID
-      * `aadAppSecret` = {application secret}
-         * see: Azure Portal => Azure Active Directory => App Registrations => Your App => Settings => Passwords
-      * `telemetryStorageType` = "tsi"
-         * Allowed values: ["cosmosdb", "tsi"]. Default is "tsi"
-      * `tsiDataAccessFQDN` = {Time Series FQDN}
-         * see: Azure Portal => Your Resource Group => Time Series Insights Environment => Data Access FQDN
-      * `diagnosticsWebServiceUrl` (optional) = http://localhost:9006/v1
-      * `actionsEventHubName` = {Event hub name}
-      * `actionsEventHubConnectionString` = {Endpoint=sb://....servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=...}
-         * see: Azure Portal => Your resource group => your event hub namespace => Shared access policies
-      * `logicAppEndpointUrl` = {Logic App Endpoint}
-         * see: Azure Portal => Your resource group => Your Logic App => Logic App Designer => When a Http Request is received => HTTP POST URL
-      * `storageConnectionString` = {connection string}
-         * see: Azure Portal => Your resource group => Your Storage Account => Access keys => Connection String
-      * `solutionWebsiteUrl` = {Solution Url}
-      * `corsWhitelist` = { CORS whitelisted urls }
+      * `PCS_AAD_APPID` = { Azure service principal id }
+      * `PCS_AAD_APPSECRET` = { Azure service principal secret }
+      * `PCS_KEYVAULT_NAME` = { Name of Key Vault resource that stores settings and configuration }
 * Either from the toolbar or the Run menu, execute the configuration just
   created, using the Debug command/button
 * Test that the service is up and running pointing your browser to
@@ -162,29 +142,9 @@ Steps using Eclipse Oxygen ("Eclipse for Java Developers" package):
 1. Make sure the [prerequisites](#prerequisites) are set up.
 1. Set the following environment variables in your system.
 More information on environment variables [here](#configuration-and-environment-variables).
-   * `documentDBConnectionString ` = {your Azure Cosmos DB connection string}
-   * `storageAdapterWebServiceUrl ` = http://localhost:9022/v1
-   * `authWebServiceUrl` = http://localhost:9001/v1
-   * `aadTenantId` = {Azure Active Directory Tenant ID}
-      * see: Azure Portal => Azure Active Directory => Properties => Directory ID
-   * `aadAppId` = {Azure Active Directory application ID}
-      * see: Azure Portal => Azure Active Directory => App Registrations => Your App => Application ID
-   * `aadAppSecret` = {application secret}
-      * see: Azure Portal => Azure Active Directory => App Registrations => Your App => Settings => Passwords
-   * `telemetryStorageType` = "tsi"
-      * Allowed values: ["cosmosdb", "tsi"]. Default is "tsi"
-   * `tsiDataAccessFQDN` = {Time Series FQDN}
-      * see: Azure Portal => Your Resource Group => Time Series Insights Environment => Data Access FQDN
-   * `diagnosticsWebServiceUrl` (optional) = http://localhost:9006/v1
-   * `actionsEventHubName` = {Event hub name}
-   * `actionsEventHubConnectionString` = {Endpoint=sb://....servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=...}
-      * see: Azure Portal => Your resource group => your event hub namespace => Shared access policies
-   * `logicAppEndpointUrl` = {Logic App Endpoint}
-      * see: Azure Portal => Your resource group => Your Logic App => Logic App Designer => When a Http Request is received => HTTP POST URL
-   * `storageConnectionString` = {connection string}
-      * see: Azure Portal => Your resource group => Your Storage Account => Access keys => Connection String
-   * `solutionWebsiteUrl` = {Solution Url}
-   * `corsWhitelist` = { CORS whitelisted urls }
+   * `PCS_AAD_APPID` = { Azure service principal id }
+   * `PCS_AAD_APPSECRET` = { Azure service principal secret }
+   * `PCS_KEYVAULT_NAME` = { Name of Key Vault resource that stores settings and configuration }
 
 1. Use the scripts in the [scripts](scripts) folder for many frequent tasks:
    * `build`: compile all the projects and run the tests.

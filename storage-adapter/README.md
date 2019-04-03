@@ -34,9 +34,16 @@ How to use the microservice
 2. Create your
    [Azure Cosmos DB account](https://ms.portal.azure.com/#create/Microsoft.DocumentDB)
    with API type **DocumentDB**
-3. Find your Azure Cosmos DB account connection string.  See 
-   [Update your Connection Strings](https://docs.microsoft.com/azure/cosmos-db/create-documentdb-dotnet#update-your-connection-string)
-   if you need help finding it.
+3. In order to run the service, some environment variables need to be created
+at least once. See specific instructions for IDE or command line setup below
+for more information. More information on environment variables
+[here](#configuration-and-environment-variables). 
+    * `PCS_AAD_APPID` = { Azure service principal id }
+    * `PCS_AAD_APPSECRET` = { Azure service principal secret }
+    * `PCS_KEYVAULT_NAME` = { Name of Key Vault resource that stores settings and configuration }
+4. Configurations values used from Key Vault
+    Some of the configuration needed by the microservice is stored in an instance of Key Vault that was created on initial deployment. The storage-adapter microservice uses: 
+    * `storageConnectionString` = {connection string} see: Azure Portal => Your resource group => Your Storage Account => Access keys => Connection String
 5. Run the Storage Adapter service using the Docker
    [run](scripts/docker).
 6. Use an HTTP client such as [Postman](https://www.getpostman.com),
@@ -61,7 +68,12 @@ Steps using IntelliJ IDEA Community 2017, with SBT plugin enabled:
     the service starts using the TCP port 9022.  If you desire to use a
     different port, feel free to change it.
   * Define the following environment variable:
-    1. `PCS_STORAGEADAPTER_DOCUMENTDB_CONNSTRING` = {your CosmosDb DocumentDb connection string}
+    1. `PCS_AAD_APPID` = { Azure service principal id }
+    1. `PCS_AAD_APPSECRET` = { Azure service principal secret }
+    1. `PCS_KEYVAULT_NAME` = { Name of Key Vault resource that stores settings and configuration values }
+  * Configurations values used from Key Vault
+    Some of the configuration needed by the microservice is stored in an instance of Key Vault that was created on initial deployment. The storage-adapter microservice uses:
+    * `storageConnectionString` = {connection string} see: Azure Portal => Your resource group => Your Storage Account => Access keys => Connection String
 * Either from the toolbar or the Run menu, execute the configuration just
   created, using the Debug command/button
 * Test that the service is up and running pointing your browser to
@@ -93,7 +105,6 @@ Steps using Eclipse Oxygen ("Eclipse for Java Developers" package):
   Application", using "localhost" and port "9999".
 * After saving this configuration, you can click "Debug" to connect to the
   running application.
-
 
 ## Project Structure
 This microservice contains the following projects:
