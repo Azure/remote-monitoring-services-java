@@ -216,7 +216,7 @@ the IDE, there are typically set in 3 different ways:
 * IntelliJ IDEA: env. vars, esp. key-vault related, can be set in each Run Configuration, see
   https://www.jetbrains.com/help/idea/run-debug-configuration-application.html
 
-To persist the environment variables globally and make them persistent, depending upon your OS, please follow these pages:
+To save the environment variables globally and make them persistent, please follow these pages:
 * https://superuser.com/questions/949560/
 * https://stackoverflow.com/questions/13046624/how-to-permanently-export-a-variable-in-linux
 * https://stackoverflow.com/questions/135688/setting-environment-variables-in-os-x
