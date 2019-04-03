@@ -60,8 +60,6 @@ for more information. More information on environment variables
 ### 3.1 Configurations values used from Key Vault
 Some of the configuration needed by the microservice is stored in an instance of Key Vault that was created on initial deployment. The telemetry microservice uses:
 
-  * `documentDBConnectionString ` = {your Azure Cosmos DB connection string}
-  * `storageAdapterWebServiceUrl ` = http://localhost:9022/v1
   * `authWebServiceUrl` = http://localhost:9001/v1
   * `aadTenantId` = {Azure Active Directory Tenant ID}
     * see: Azure Portal => Azure Active Directory => Properties => Directory ID
@@ -69,20 +67,22 @@ Some of the configuration needed by the microservice is stored in an instance of
     * see: Azure Portal => Azure Active Directory => App Registrations => Your App => Application ID
   * `aadAppSecret` = {application secret}
     * see: Azure Portal => Azure Active Directory => App Registrations => Your App => Settings => Passwords
+  * `actionsEventHubName` = {Event hub name}
+  * `actionsEventHubConnectionString` = {Endpoint=sb://....servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=...}
+    * see: Azure Portal => Your resource group => your event hub namespace => Shared access policies
+  * `corsWhitelist` = { CORS whitelisted urls }
+  * `documentDBConnectionString ` = {your Azure Cosmos DB connection string}
+  * `diagnosticsWebServiceUrl` (optional) = http://localhost:9006/v1
+  * `logicAppEndpointUrl` = {Logic App Endpoint}
+    * see: Azure Portal => Your resource group => Your Logic App => Logic App Designer => When a Http Request is received => HTTP POST URL
+  * `storageAdapterWebServiceUrl ` = http://localhost:9022/v1
+  * `storageConnectionString` = {connection string}
+    * see: Azure Portal => Your resource group => Your Storage Account => Access keys => Connection String
+  * `solutionWebsiteUrl` = {Solution Url}
   * `telemetryStorageType` = "tsi"
     * Allowed values: ["cosmosdb", "tsi"]. Default is "tsi"
   * `tsiDataAccessFQDN` = {Time Series FQDN}
     * see: Azure Portal => Your Resource Group => Time Series Insights Environment => Data Access FQDN
-  * `diagnosticsWebServiceUrl` (optional) = http://localhost:9006/v1
-  * `actionsEventHubName` = {Event hub name}
-  * `actionsEventHubConnectionString` = {Endpoint=sb://....servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=...}
-    * see: Azure Portal => Your resource group => your event hub namespace => Shared access policies
-  * `logicAppEndpointUrl` = {Logic App Endpoint}
-    * see: Azure Portal => Your resource group => Your Logic App => Logic App Designer => When a Http Request is received => HTTP POST URL
-  * `storageConnectionString` = {connection string}
-    * see: Azure Portal => Your resource group => Your Storage Account => Access keys => Connection String
-  * `solutionWebsiteUrl` = {Solution Url}
-  * `corsWhitelist` = { CORS whitelisted urls }
 # Running the service in an IDE
 
 ## Prerequisites
