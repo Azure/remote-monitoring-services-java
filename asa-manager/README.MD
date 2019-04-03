@@ -26,16 +26,15 @@ ASA-manager micro-serivce is available only in dotnet. This folder contains the 
 
 3. Configuration values used from Key Vault
 Some of the configuration needed by the microservice is stored in an instance of Key Vault that was created on initial deployment. The ASA-manager microservice uses:
+    * `configWebServiceUrl ` = http://localhost:9005/v1  
     * `documentDBConnectionString` = { Azure Cosmos DB connection string }
-    * `telemetryWebServiceUrl ` = http://localhost:9004/v1
-    * `configWebServiceUrl ` = http://localhost:9005/v1
+    * `messagesEventHubConnectionString` = { Event Hub Connection String for RootManageSharedAccessKey }
+    * `messagesEventHubName` = { Name of Event Hub }
     * `iothubmanagerWebServiceUrl` = http://localhost:9002/v1
     * `storageAccountName` = { Azure Blob Storage account name }
     * `storageAccountKey` = { Azure Blob Storage Key }
-    * `storageEndpointSuffix` = { Azure Blob Storage endpoint suffix, 
-    ex. "core.windows.net" }
-    * `messagesEventHubConnectionString` = { Event Hub Connection String for RootManageSharedAccessKey }
-    * `messagesEventHubName` = { Name of Event Hub }
+    * `storageEndpointSuffix` = { Azure Blob Storage endpoint suffix, ex. "core.windows.net" }
+	* `telemetryWebServiceUrl ` = http://localhost:9004/v1
     * `telemetryStorageType` = { "tsi" or "cosmosdb", default is "tsi" }
 
 4. Start the ASA manager service using docker compose:
