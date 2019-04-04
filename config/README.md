@@ -61,31 +61,33 @@ Run those services from the instructions in their READMEs in the following order
 1. [Device Simulation Microservice](https://github.com/Azure/device-simulation-dotnet)
 
 ### 3. Environment variables required to run the service
-In order to run the service, some environment variables need to be
-created at least once. See specific instructions for IDE or command
-line setup below for more information. More information on environment
-variables [here](#configuration-and-environment-variables).
+In order to run the service, some environment variables need to be created 
+at least once. See specific instructions for IDE or command line setup below
+for more information. More information on environment variables
+[here](#configuration-and-environment-variables).
 
-* `PCS_STORAGEADAPTER_WEBSERVICE_URL` - the url for
-  the [Storage Adapter Webservice](https://github.com/Azure/remote-monitoring-services-java/tree/master/storage-adapter)
-  used for key value storage
-* `PCS_TELEMETRY_WEBSERVICE_URL` - the url for
-  the [Telemetry Webservice](https://github.com/Azure/remote-monitoring-services-java/tree/master/device-telemetry)
-  used for key value storage
-* `PCS_DEVICESIMULATION_WEBSERVICE_URL` - the url for
-  the [Device Simulation Webservice](https://github.com/Azure/device-simulation-dotnet)
-  used for key value storage
-* `PCS_AZUREMAPS_KEY` - the [Azure Maps](https://azure.microsoft.com/services/azure-maps/) 
-  API Key. This can be set to "static" if you do not have one.
-* `PCS_AUTH_WEBSERVICE_URL` = the url for
-   the [Auth Webservice](https://github.com/Azure/remote-monitoring-services-dotnet/tree/master/auth)
-* `PCS_OFFICE365_CONNECTION_URL` (Optional) = the url for the Office 365 Logic App connector
-* `PCS_SOLUTION_NAME` (Optional) = The name of the resource group for the solution. Used only if
-  using logic apps for actions.
-* `PCS_SUBSCRIPTION_ID`(Optional) = The subscription id for the solution. Used only if
-  using logic apps for actions.
-* `PCS_ARM_ENDPOINT_URL` (Optional) = the url for the Azure management APIs. Used only if
-  using logic apps for actions.
+* `PCS_AAD_APPID` = { Azure service principal id }
+* `PCS_AAD_APPSECRET` = { Azure service principal secret }
+* `PCS_KEYVAULT_NAME` = { Name of Key Vault resource that stores settings and configuration }
+
+## Configuration values used from Key Vault
+Some of the configuration needed by the microservice is stored in an instance of Key Vault that was created on initial deployment. The config microservice uses:
+
+* `aadTenantId` = GUID representing your active directory tenant
+* `armEndpointUrl` = The endpoint for the Azure Resource Manager API
+* `authIssuer` = Identifies the security token service (STS) i.e. https://sts.windows.net/tenantId/ 
+* `authRequired` = Whether or not authentication is needed for calls to microservices i.e. from the web ui or postman
+* `authWebServiceUrl` = Endpoint for the remote monitoring auth microservice
+* `azureMapsKey` = Key needed for Azure Maps Account
+* `corsWhitelist` = Specifies where requests are allowed from "{ 'origins': ['\*'], 'methods': ['\*'], 'headers': ['\*'] }" to allow everything. Empty to disable CORS
+* `deviceSimulationWebServiceUrl` = Endpoint for device simulation microservice
+* `office365ConnectionUrl` = Office 365 url used for enabling e-mail actions when alerting on rules
+* `seedTemplate` = The template used by device simulation when seeding devices. This is typically DEFAULT
+* `solutionName` = The name of the RM solution that was created. This is typically the same as your Resource Group name
+* `solutionType` = Type of solution. remotemonitoring or device-simulation 
+* `storageAdapterWebServiceUrl` = Endpoint for storage adapter microservice
+* `subscriptionId` = GUID that uniquely identifies your subscription to use Azure services
+* `telemetryWebServiceUrl` = Endpoint for telemetry microservice
 
 # Running the service in an IDE
 
@@ -113,15 +115,9 @@ Steps using IntelliJ IDEA Community, with SBT plugin enabled:
    the service starts using the TCP port 9004.  If you desire to use a
     different port, feel free to change it.
   * Define the following environment variables:
-    1. `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
-    1. `PCS_DEVICESIMULATION_WEBSERVICE_URL` = http://localhost:9003/v1
-    1. `PCS_TELEMETRY_WEBSERVICE_URL` = http://localhost:9004/v1
-    1. `PCS_AZUREMAPS_KEY` = static
-    1. `PCS_AUTH_WEBSERVICE_URL` = http://localhost:9001/v1
-    1. `PCS_OFFICE365_CONNECTION_URL` (Optional)
-    1. `PCS_SOLUTION_NAME` (Optional)
-    1. `PCS_SUBSCRIPTION_ID`(Optional)
-    1. `PCS_ARM_ENDPOINT_URL` (Optional)
+   1. `PCS_AAD_APPID` = { Azure service principal id }
+   1. `PCS_AAD_APPSECRET` = { Azure service principal secret }
+   1. `PCS_KEYVAULT_NAME` = { Name of Key Vault resource that stores settings and configuration }
 * Either from the toolbar or the Run menu, execute the configuration just
   created, using the Debug command/button
 * Test that the service is up and running pointing your browser to
@@ -153,15 +149,9 @@ Steps using Eclipse Oxygen ("Eclipse for Java Developers" package):
 1. Set the following environment variables in your system.
 More information on environment variables
 [here](#configuration-and-environment-variables).
-   1. `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
-   1. `PCS_DEVICESIMULATION_WEBSERVICE_URL` = http://localhost:9003/v1
-   1. `PCS_TELEMETRY_WEBSERVICE_URL` = http://localhost:9004/v1
-   1. `PCS_AZUREMAPS_KEY` = static
-   1. `PCS_AUTH_WEBSERVICE_URL` = http://localhost:9001/v1
-   1. `PCS_OFFICE365_CONNECTION_URL` (Optional)
-   1. `PCS_SOLUTION_NAME` (Optional)
-   1. `PCS_SUBSCRIPTION_ID`(Optional)
-   1. `PCS_ARM_ENDPOINT_URL` (Optional)
+   1. `PCS_AAD_APPID` = { Azure service principal id }
+   1. `PCS_AAD_APPSECRET` = { Azure service principal secret }
+   1. `PCS_KEYVAULT_NAME` = { Name of Key Vault resource that stores settings and configuration }
 1. Use the scripts in the [scripts](scripts) folder for many frequent tasks:
    * `build`: compile all the projects and run the tests.
    * `compile`: compile all the projects.
@@ -219,23 +209,20 @@ useful features:
 * Support for substitutions, e.g. referencing environment variables
 * Supports JSON notation
 
-The configuration file in the repository references some environment
+The configuration file in the microservice references some environment
 variables that need to created at least once. Depending on your OS and
-the IDE, there are several ways to manage environment variables:
+the IDE, there are typically set in 3 different ways:
+* Environment variables as is the case with ${PCS_AAD_APPID}. This is typically only done with the 3 variables described above as these are needed to access Key Vault. More details about setting environment variables are located below.
+* Key Vault: A number of the settings in this file will be blank as they are  expecting to get their value from a Key Vault secret of the same name.
+* Direct Value: For some values that aren't typically changed or for local development you can set the value directly in the file.
+* IntelliJ IDEA: env. vars, esp. key-vault related, can be set in each Run Configuration, see
+  https://www.jetbrains.com/help/idea/run-debug-configuration-application.html
 
-* For Windows, the variables can be set [in the system][windows-envvars-howto-url]
-  as a one time only task. The [env-vars-setup.cmd](scripts/env-vars-setup.cmd)
-  script needs to be prepared and executed just once. When executed, the
-  settings will persist across terminal sessions and reboots.
-* For Linux and MacOS environments, the [env-vars-setup](scripts/env-vars-setup)
-  script needs to be executed every time a new console is opened.
-  Depending on the OS and terminal, there are ways to persist values
-  globally, for more information these pages should help:
-  * https://stackoverflow.com/questions/13046624/how-to-permanently-export-a-variable-in-linux
-  * https://stackoverflow.com/questions/135688/setting-environment-variables-in-os-x
-  * https://help.ubuntu.com/community/EnvironmentVariables
-* IntelliJ IDEA: env. vars can be set in each 
-  [Run Configuration](https://www.jetbrains.com/help/idea/run-debug-configuration-application.html)
+To save the environment variables globally and make them persistent, please follow these pages:
+* https://superuser.com/questions/949560/
+* https://stackoverflow.com/questions/13046624/how-to-permanently-export-a-variable-in-linux
+* https://stackoverflow.com/questions/135688/setting-environment-variables-in-os-x
+* https://help.ubuntu.com/community/EnvironmentVariables
 
 # Contributing to the solution
 Please follow our [contribution guildelines](CONTRIBUTING.md) and code style
