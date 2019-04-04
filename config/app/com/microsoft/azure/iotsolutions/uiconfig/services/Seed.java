@@ -6,10 +6,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.BaseException;
-import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.ExternalDependencyException;
-import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.InvalidInputException;
-import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.ResourceNotFoundException;
+import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.*;
 import com.microsoft.azure.iotsolutions.uiconfig.services.external.*;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.DeviceGroup;
 import com.microsoft.azure.iotsolutions.uiconfig.services.models.Template;
@@ -63,23 +60,20 @@ public class Seed implements ISeed {
 
     @Override
     public CompletionStage trySeedAsync() throws ExternalDependencyException {
-        try {
-            if (!(this.mutex.enterAsync(SeedCollectionId, MutexKey, this.mutexTimeout).toCompletableFuture().get().booleanValue())) {
-                this.log.info("Seed skipped (conflict)");
-                return CompletableFuture.completedFuture(Optional.empty());
-            }
-        } catch (InterruptedException | ExecutionException | BaseException e) {
-            log.error("mutex.EnterAsync failed");
-            throw new ExternalDependencyException("Seed failed");
-        }
+
+        this.acquireMutex();
+
         try {
             if (this.checkCompletedFlagAsync().toCompletableFuture().get().booleanValue()) {
                 this.log.info("Seed skipped (completed)");
+                this.releaseMutex();
                 return CompletableFuture.completedFuture(Optional.empty());
             }
         } catch (InterruptedException | ExecutionException e) {
             log.error("CheckCompletedFlagAsync failed");
+            this.releaseMutex();
             throw new ExternalDependencyException("Seed failed");
+
         }
 
         try {
@@ -93,11 +87,27 @@ public class Seed implements ISeed {
             log.error("Seed failed", e);
             throw new ExternalDependencyException("Seed failed", e);
         } finally {
-            try {
-                this.mutex.leaveAsync(SeedCollectionId, MutexKey).toCompletableFuture().get();
-            } catch (Exception ex) {
-                this.log.warn("mutex.LeaveAsync failed");
+            this.releaseMutex();
+        }
+    }
+
+    private void acquireMutex() throws ExternalDependencyException {
+        try {
+            if (!(this.mutex.enterAsync(SeedCollectionId, MutexKey, this.mutexTimeout).toCompletableFuture().get().booleanValue())) {
+                this.log.info("Seed skipped (conflict)");
+                throw new SeedException("Seed mutex conflict. (Seed mutex is acquired by another process/thread.)");
             }
+        } catch (InterruptedException | ExecutionException | BaseException e) {
+            log.error("mutex.EnterAsync failed");
+            throw new ExternalDependencyException("Seed failed");
+        }
+    }
+
+    private void releaseMutex() {
+        try {
+            this.mutex.leaveAsync(SeedCollectionId, MutexKey).toCompletableFuture().get();
+        } catch (Exception ex) {
+            this.log.warn("mutex.LeaveAsync failed");
         }
     }
 

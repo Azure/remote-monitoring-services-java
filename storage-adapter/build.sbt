@@ -11,9 +11,15 @@ libraryDependencies ++= {
     guice,
     "org.mockito" % "mockito-core" % "2.8.47",
     // https://github.com/Azure/azure-iot-sdk-java/releases
+    "com.microsoft.azure" % "adal4j" % "1.2.0",
+
     "com.microsoft.azure.sdk.iot" % "iot-service-client" % "1.5.22",
     // http://azure.microsoft.com/en-us/services/documentdb/
-    "com.microsoft.azure" % "azure-documentdb" % "1.12.0"
+    "com.microsoft.azure" % "azure-documentdb" % "1.12.0",
+
+    "org.apache.commons" % "commons-lang3" % "3.8.1",
+    // https://mvnrepository.com/artifact/com.microsoft.azure/azure-keyvault-complete
+    "com.microsoft.azure" % "azure-keyvault-complete" % "1.2.0" pomOnly()
   )
 }
 

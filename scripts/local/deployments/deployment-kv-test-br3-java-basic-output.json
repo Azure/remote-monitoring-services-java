@@ -1,0 +1,6 @@
+{
+  "aadAppUrl": "https://portal.azure.com/iotsl.onmicrosoft.com#blade/Microsoft_AAD_IAM/ApplicationBlade/objectId/6d57a1cd-48ab-4b08-a6db-4146b9063f7d/appId/b8ca6661-be89-410c-a9d5-07d3cd75925f",
+  "resourceGroupUrl": "https://portal.azure.com/iotsl.onmicrosoft.com#resource/subscriptions/d7ca9718-3a3c-4ce8-8ec9-76a6396c0206/resourceGroups/kv-test-br3-java-basic",
+  "troubleshootingGuide": "https://aka.ms/iot-rm-tsg",
+  "website": "https://kv-test-br3-java-basic.azurewebsites.net"
+}

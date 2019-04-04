@@ -1,3 +1,4 @@
+
 // Copyright (c) Microsoft. All rights reserved.
 
 name := "telemetry"
@@ -22,7 +23,10 @@ libraryDependencies ++= Seq(
   "com.microsoft.azure" % "azure-eventhubs" % "1.0.2",
 
   // https://search.maven.org/#search%7Cga%7C1%7Ca%3A%22azure-eventhubs-eph%22
-  "com.microsoft.azure" % "azure-eventhubs-eph" % "1.0.0"
+  "com.microsoft.azure" % "azure-eventhubs-eph" % "1.0.0",
+
+  // https://mvnrepository.com/artifact/com.microsoft.azure/azure-keyvault-complete
+  "com.microsoft.azure" % "azure-keyvault-complete" % "1.2.0" pomOnly()
 )
 
 // Test dependencies

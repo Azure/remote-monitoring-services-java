@@ -3,9 +3,10 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.controllers;
 
 import com.google.inject.Inject;
-import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.Authorize;
+import com.google.inject.Singleton;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.IStatusService;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.models.StatusServiceModel;
+import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.Authorize;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime.IConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.v1.models.StatusApiModel;
 import play.mvc.Controller;
@@ -16,13 +17,14 @@ import static play.libs.Json.toJson;
 /**
  * Service health check endpoint.
  */
+@Singleton
 public final class StatusController extends Controller {
 
     private final IConfig config;
     private final IStatusService statusService;
 
     @Inject
-    public StatusController(IConfig config, IStatusService statusService) {
+    public StatusController(IStatusService statusService, IConfig config) {
         this.config = config;
         this.statusService = statusService;
     }
