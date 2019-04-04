@@ -52,8 +52,10 @@ build_in_sandbox() {
         ./scripts/env-vars-check
         
         docker run -it \
-	    -p 9022:9022 \
-            -e PCS_STORAGEADAPTER_DOCUMENTDB_CONNSTRING \
+            -p 9022:9022 \
+            -e PCS_KEYVAULT_NAME \
+            -e PCS_AAD_APPID \
+            -e PCS_AAD_APPSECRET \
             -v "$PCS_CACHE/sandbox/.ivy2:/root/.ivy2" \
             -v "$PCS_CACHE/sandbox/.sbt:/root/.sbt" \
             -v "$APP_HOME:/opt/code" \
