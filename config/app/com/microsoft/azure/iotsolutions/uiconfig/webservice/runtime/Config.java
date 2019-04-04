@@ -2,55 +2,54 @@
 
 package com.microsoft.azure.iotsolutions.uiconfig.webservice.runtime;
 
-import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.ActionsConfig;
-import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.IActionsConfig;
-import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.IServicesConfig;
-import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.ServicesConfig;
+import com.google.inject.Singleton;
+import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.InvalidConfigurationException;
+import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.*;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.auth.ClientAuthConfig;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.auth.IClientAuthConfig;
-import com.typesafe.config.ConfigFactory;
 
 import java.time.Duration;
 import java.util.Collections;
 import java.util.HashSet;
 
+@Singleton
 public class Config implements IConfig {
 
     private final String NAMESPACE = "com.microsoft.azure.iotsolutions.";
     private final String APPLICATION_KEY = NAMESPACE + "uiconfig.";
-    private final String PORT_KEY = APPLICATION_KEY + "webservice_port";
-    private final String STORAGE_ADAPTER_WEBSERVICE_URL = APPLICATION_KEY + "storageadapter-webservice-url";
-    private final String DEVICESIMULATION_WEBSERVICE_URL = APPLICATION_KEY + "devicesimulation-webservice-url";
-    private final String TELEMETRY_WEBSERVICE_URL = APPLICATION_KEY + "telemetry-webservice-url";
-    private final String SEED_TEMPLATEKEY = APPLICATION_KEY + "seed-template";
-    private final String AZUREMAPS_KEY = APPLICATION_KEY + "azuremaps-key";
+    private final String PORT_KEY = APPLICATION_KEY + "webservicePort";
+    private final String STORAGE_ADAPTER_WEBSERVICE_URL = APPLICATION_KEY + "storageAdapterWebServiceUrl";
+    private final String DEVICESIMULATION_WEBSERVICE_URL = APPLICATION_KEY + "deviceSimulationWebServiceUrl";
+    private final String TELEMETRY_WEBSERVICE_URL = APPLICATION_KEY + "telemetryWebServiceUrl";
+    private final String SEED_TEMPLATEKEY = APPLICATION_KEY + "seedTemplate";
+    private final String AZUREMAPS_KEY = APPLICATION_KEY + "azureMapsKey";
 
     private final String CLIENT_AUTH_KEY = APPLICATION_KEY + "client-auth.";
-    private final String AUTH_REQUIRED_KEY = CLIENT_AUTH_KEY + "auth_required";
-    private final String AUTH_WEB_SERVICE_URL_KEY = CLIENT_AUTH_KEY + "auth_webservice_url";
-    private final String AUTH_TYPE_KEY = CLIENT_AUTH_KEY + "auth_type";
+    private final String AUTH_REQUIRED_KEY = CLIENT_AUTH_KEY + "authRequired";
+    private final String AUTH_WEB_SERVICE_URL_KEY = CLIENT_AUTH_KEY + "authWebServiceUrl";
+    private final String AUTH_TYPE_KEY = CLIENT_AUTH_KEY + "authType";
 
     private final String JWT_KEY = APPLICATION_KEY + "client-auth.JWT.";
-    private final String JWT_ALGOS_KEY = JWT_KEY + "allowed_algorithms";
-    private final String JWT_ISSUER_KEY = JWT_KEY + "issuer";
-    private final String JWT_AUDIENCE_KEY = JWT_KEY + "audience";
-    private final String JWT_CLOCK_SKEW_KEY = JWT_KEY + "clock_skew_seconds";
+    private final String JWT_ALGOS_KEY = JWT_KEY + "allowedAlgorithms";
+    private final String JWT_ISSUER_KEY = JWT_KEY + "authIssuer";
+    private final String JWT_AUDIENCE_KEY = JWT_KEY + "aadAppId";
+    private final String JWT_CLOCK_SKEW_KEY = JWT_KEY + "clockSkewSeconds";
 
     private final String ACTIONS_KEY = APPLICATION_KEY + "actions.";
-    private final String OFFICE365_LOGIC_APP_URL_KEY = ACTIONS_KEY + "office365-logic-app-url";
-    private final String RESOURCE_GROUP_KEY = ACTIONS_KEY + "resource-group";
-    private final String SUBSCRIPTION_ID_KEY = ACTIONS_KEY + "subscription-id";
-    private final String MANAGEMENT_API_VERSION_KEY = ACTIONS_KEY + "management-api-version";
-    private final String ARM_ENDPOINT_URL_KEY = ACTIONS_KEY + "arm-endpoint-url";
+    private final String OFFICE365_LOGIC_APP_URL_KEY = ACTIONS_KEY + "office365ConnectionUrl";
+    private final String RESOURCE_GROUP_KEY = ACTIONS_KEY + "solutionName";
+    private final String SUBSCRIPTION_ID_KEY = ACTIONS_KEY + "subscriptionId";
+    private final String MANAGEMENT_API_VERSION_KEY = ACTIONS_KEY + "managementApiVersion";
+    private final String ARM_ENDPOINT_URL_KEY = ACTIONS_KEY + "armEndpointUrl";
 
-    private com.typesafe.config.Config data;
+    private ConfigData data;
     private IServicesConfig servicesConfig;
     private IClientAuthConfig clientAuthConfig;
 
     public Config() {
         // Load `application.conf` and replace placeholders with
         // environment variables
-        this.data = ConfigFactory.load();
+        this.data = new ConfigData(APPLICATION_KEY);;
     }
 
     /**
@@ -58,7 +57,7 @@ public class Config implements IConfig {
      *
      * @return TCP port number
      */
-    public int getPort() {
+    public int getPort() throws InvalidConfigurationException {
         return data.getInt(PORT_KEY);
     }
 
@@ -86,13 +85,13 @@ public class Config implements IConfig {
     /**
      * Client authorization configuration
      */
-    public IClientAuthConfig getClientAuthConfig() {
+    public IClientAuthConfig getClientAuthConfig() throws InvalidConfigurationException {
         if (this.clientAuthConfig != null) return this.clientAuthConfig;
 
         // Default to True unless explicitly disabled
         Boolean authRequired = !data.hasPath(AUTH_REQUIRED_KEY)
                 || data.getString(AUTH_REQUIRED_KEY).isEmpty()
-                || data.getBoolean(AUTH_REQUIRED_KEY);
+                || data.getBool(AUTH_REQUIRED_KEY);
 
         String authServiceUrl = data.getString(AUTH_WEB_SERVICE_URL_KEY);
 

@@ -3,11 +3,11 @@
 package com.microsoft.azure.iotsolutions.devicetelemetry.webservice.runtime;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.exceptions.InvalidConfigurationException;
 import com.microsoft.azure.iotsolutions.devicetelemetry.services.runtime.*;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.ClientAuthConfig;
 import com.microsoft.azure.iotsolutions.devicetelemetry.webservice.auth.IClientAuthConfig;
-import com.typesafe.config.ConfigFactory;
 
 import java.net.URL;
 import java.net.URLDecoder;
@@ -15,6 +15,7 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.HashSet;
 
+@Singleton
 public class Config implements IConfig {
 
     // Namespace applied to all the custom configuration settings
@@ -22,22 +23,22 @@ public class Config implements IConfig {
 
     // Settings about this application
     private final String APPLICATION_KEY = Namespace + "telemetry.";
-    private final String PORT_KEY = APPLICATION_KEY + "webservice_port";
+    private final String PORT_KEY = APPLICATION_KEY + "webservicePort";
 
     // Storage dependency settings
-    private final String COSMOS_DB_CONN_STRING_KEY = APPLICATION_KEY + "cosmosDb.connString";
-    private final String BLOB_STORAGE_CONN_STRING_KEY = APPLICATION_KEY + "blobStorage.connString";
+    private final String COSMOS_DB_CONN_STRING_KEY = APPLICATION_KEY + "documentDBConnectionString";
+    private final String BLOB_STORAGE_CONN_STRING_KEY = APPLICATION_KEY + "storageConnectionString";
+
     private final String TIME_SERIES_KEY = APPLICATION_KEY + "timeSeriesInsights.";
-    private final String TIME_SERIES_FQDN_KEY = TIME_SERIES_KEY + "fqdn";
-    private final String AAD_TENANT_KEY = TIME_SERIES_KEY + "aadTenant";
+    private final String TIME_SERIES_FQDN_KEY = TIME_SERIES_KEY + "tsiDataAccessFQDN";
+    private final String AAD_TENANT_KEY = TIME_SERIES_KEY + "aadTenantId";
     private final String AAD_APP_ID_KEY = TIME_SERIES_KEY + "aadAppId";
     private final String AAD_APP_SECRET_KEY = TIME_SERIES_KEY + "aadAppSecret";
 
     // Storage adapter webservice settings
-    private final String KEY_VALUE_STORAGE_KEY = APPLICATION_KEY + "storageAdapter.";
-    private final String KEY_VALUE_STORAGE_URL_KEY = KEY_VALUE_STORAGE_KEY + "url";
+    private final String KEY_VALUE_STORAGE_URL_KEY = APPLICATION_KEY + "storageAdapterWebServiceUrl";
 
-    private final String MESSAGES_STORAGE_TYPE_KEY = APPLICATION_KEY + "messages.storageType";
+    private final String MESSAGES_STORAGE_TYPE_KEY = APPLICATION_KEY + "messages.telemetryStorageType";
     private final String MESSAGES_COSMOS_DATABASE_KEY = APPLICATION_KEY + "messages.cosmosDb.database";
     private final String MESSAGES_COSMOS_COLLECTION_KEY = APPLICATION_KEY + "messages.cosmosDb.collection";
     private final String MESSAGES_TSI_API_VERSION_KEY = APPLICATION_KEY + "messages.timeSeriesInsights.apiVersion";
@@ -53,36 +54,36 @@ public class Config implements IConfig {
     private final String ALARMS_DOCDB_DELETE_RETRIES = APPLICATION_KEY + "alarms.cosmosDb.maxDeleteRetries";
 
     private final String ACTIONS_KEY = APPLICATION_KEY + "actions.";
-    private final String ACTIONS_EVENTHUB_NAME_KEY = ACTIONS_KEY + "eventHubName";
-    private final String ACTIONS_EVENTHUB_CONNECTION_STRING_KEY = ACTIONS_KEY + "eventHubConnectionString";
-    private final String ACTIONS_EVENTHUB_OFFSET_TIME_IN_MINUTES_KEY = ACTIONS_KEY + "eventHubOffsetTimeInMinutes";
-    private final String ACTIONS_EVENTHUB_CHECKPOINT_CONTAINER_KEY = ACTIONS_KEY + "eventHubCheckpointContainerName";
-    private final String ACTIONS_LOGIC_APP_ENDPOINT_URL_KEY = ACTIONS_KEY + "logicAppEndPointUrl";
+    private final String ACTIONS_EVENTHUB_NAME_KEY = ACTIONS_KEY + "actionsEventHubName";
+    private final String ACTIONS_EVENTHUB_CONNECTION_STRING_KEY = ACTIONS_KEY + "actionsEventHubConnectionString";
+    private final String ACTIONS_EVENTHUB_OFFSET_TIME_IN_MINUTES_KEY = ACTIONS_KEY + "actionsEventHubOffsetTimeInMinutes";
+    private final String ACTIONS_EVENTHUB_CHECKPOINT_CONTAINER_KEY = ACTIONS_KEY + "actionsEventHubCheckpointContainerName";
+    private final String ACTIONS_LOGIC_APP_ENDPOINT_URL_KEY = ACTIONS_KEY + "logicAppEndpointUrl";
     private final String ACTIONS_SOLUTION_WEBSITE_URL_KEY = ACTIONS_KEY + "solutionWebsiteUrl";
     private final String ACTIONS_TEMPLATE_FOLDER_KEY = ACTIONS_KEY + "templateFolder";
 
     private final String CLIENT_AUTH_KEY = APPLICATION_KEY + "client-auth.";
-    private final String AUTH_WEB_SERVICE_URL_KEY = CLIENT_AUTH_KEY + "auth_webservice_url";
-    private final String AUTH_REQUIRED_KEY = CLIENT_AUTH_KEY + "auth_required";
-    private final String AUTH_TYPE_KEY = CLIENT_AUTH_KEY + "auth_type";
+    private final String AUTH_WEB_SERVICE_URL_KEY = CLIENT_AUTH_KEY + "authWebServiceUrl";
+    private final String AUTH_REQUIRED_KEY = CLIENT_AUTH_KEY + "authRequired";
+    private final String AUTH_TYPE_KEY = CLIENT_AUTH_KEY + "authType";
 
     private final String JWT_KEY = APPLICATION_KEY + "client-auth.JWT.";
     private final String JWT_ALGOS_KEY = JWT_KEY + "allowed_algorithms";
-    private final String JWT_ISSUER_KEY = JWT_KEY + "issuer";
-    private final String JWT_AUDIENCE_KEY = JWT_KEY + "audience";
-    private final String JWT_CLOCK_SKEW_KEY = JWT_KEY + "clock_skew_seconds";
+    private final String JWT_ISSUER_KEY = JWT_KEY + "authIssuer";
+    private final String JWT_AUDIENCE_KEY = JWT_KEY + "aadAppId"; //App Id is the audience
+    private final String JWT_CLOCK_SKEW_KEY = JWT_KEY + "clockSkewSeconds";
 
     private final String DIAGNOSTICS_KEY = APPLICATION_KEY + "diagnostics.";
-    private final String DIAGNOSTICS_URL_KEY = DIAGNOSTICS_KEY + "webservice_url";
-    private final String DIAGNOSTICS_MAX_LOG_RETRIES = DIAGNOSTICS_KEY + "max_log_retries";
+    private final String DIAGNOSTICS_URL_KEY = DIAGNOSTICS_KEY + "diagnosticsWebServiceUrl";
+    private final String DIAGNOSTICS_MAX_LOG_RETRIES = DIAGNOSTICS_KEY + "maxLogRetries";
 
-    private com.typesafe.config.Config data;
+    private ConfigData data;
     private IServicesConfig servicesConfig;
     private IClientAuthConfig clientAuthConfig;
 
     @Inject
     public Config() {
-        this.data = ConfigFactory.load();
+        this.data = new ConfigData(APPLICATION_KEY);
     }
 
     /**
@@ -90,7 +91,7 @@ public class Config implements IConfig {
      *
      * @return TCP port number
      */
-    public int getPort() {
+    public int getPort() throws InvalidConfigurationException {
         return data.getInt(PORT_KEY);
     }
 
@@ -98,7 +99,8 @@ public class Config implements IConfig {
      * Service layer configuration
      */
     public IServicesConfig getServicesConfig() throws InvalidConfigurationException {
-        if (this.servicesConfig != null) return this.servicesConfig;
+        if (this.servicesConfig != null)
+            return this.servicesConfig;
 
         String storageConnectionString = this.data.getString(COSMOS_DB_CONN_STRING_KEY);
         String keyValueStorageUrl = this.data.getString(KEY_VALUE_STORAGE_URL_KEY);
@@ -179,7 +181,7 @@ public class Config implements IConfig {
         // Default to True unless explicitly disabled
         Boolean authRequired = !data.hasPath(AUTH_REQUIRED_KEY)
             || data.getString(AUTH_REQUIRED_KEY).isEmpty()
-            || data.getBoolean(AUTH_REQUIRED_KEY);
+            || data.getBool(AUTH_REQUIRED_KEY);
 
         String authServiceUrl = data.getString(AUTH_WEB_SERVICE_URL_KEY);
 

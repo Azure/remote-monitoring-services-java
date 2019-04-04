@@ -5,6 +5,7 @@ package com.microsoft.azure.iotsolutions.storageadapter.webservice.v1.controller
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.microsoft.azure.iotsolutions.storageadapter.services.IStatusService;
+import com.microsoft.azure.iotsolutions.storageadapter.services.exceptions.InvalidConfigurationException;
 import com.microsoft.azure.iotsolutions.storageadapter.services.models.StatusServiceModel;
 import com.microsoft.azure.iotsolutions.storageadapter.webservice.runtime.IConfig;
 import com.microsoft.azure.iotsolutions.storageadapter.webservice.v1.models.StatusApiModel;
@@ -23,7 +24,7 @@ public final class StatusController {
     private final IStatusService statusService;
 
     @Inject
-    public StatusController(IConfig config, IStatusService statusService) {
+    public StatusController(IStatusService statusService, IConfig config) throws InvalidConfigurationException {
         this.config = config;
         this.statusService = statusService;
     }

@@ -3,6 +3,7 @@
 package com.microsoft.azure.iotsolutions.iothubmanager.webservice.runtime;
 
 import com.google.inject.ImplementedBy;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidConfigurationException;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.auth.IClientAuthConfig;
 
@@ -14,15 +15,15 @@ public interface IConfig {
      *
      * @return TCP port number
      */
-    int getPort();
+    int getPort() throws InvalidConfigurationException;
 
     /**
      * Service layer configuration
      */
-    IServicesConfig getServicesConfig();
+    IServicesConfig getServicesConfig() throws InvalidConfigurationException;
 
     /**
      * Client authorization configuration
      */
-    IClientAuthConfig getClientAuthConfig();
+    IClientAuthConfig getClientAuthConfig() throws InvalidConfigurationException;
 }

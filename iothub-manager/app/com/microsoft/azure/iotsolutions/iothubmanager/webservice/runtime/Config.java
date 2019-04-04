@@ -2,11 +2,13 @@
 
 package com.microsoft.azure.iotsolutions.iothubmanager.webservice.runtime;
 
+import com.google.inject.Singleton;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.exceptions.InvalidConfigurationException;
+import com.microsoft.azure.iotsolutions.iothubmanager.services.runtime.ConfigData;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.iothubmanager.services.runtime.ServicesConfig;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.auth.ClientAuthConfig;
 import com.microsoft.azure.iotsolutions.iothubmanager.webservice.auth.IClientAuthConfig;
-import com.typesafe.config.ConfigFactory;
 
 import java.time.Duration;
 import java.util.Collections;
@@ -14,6 +16,7 @@ import java.util.HashSet;
 
 // TODO: documentation
 
+@Singleton
 public class Config implements IConfig {
 
     // Namespace applied to all the custom configuration settings
@@ -21,33 +24,34 @@ public class Config implements IConfig {
 
     // Settings about this application
     private final String APPLICATION_KEY = NAMESPACE + "iothub-manager.";
-    private final String PORT_KEY = APPLICATION_KEY + "webservice_port";
-    private final String IOTHUB_CONNSTRING_KEY = APPLICATION_KEY + "iothub.connstring";
-    private final String STORAGE_ADAPTER_WEBSERVICE_URL = APPLICATION_KEY + "storageadapter-webservice-url";
+    private final String PORT_KEY = APPLICATION_KEY + "webservicePort";
+    private final String IOTHUB_CONNSTRING_KEY = APPLICATION_KEY + "iotHubConnectionString";
+    private final String STORAGE_ADAPTER_WEBSERVICE_URL = APPLICATION_KEY + "storageAdapterWebServiceUrl";
+
     private final String DEVICE_PROPERTIES_KEY = APPLICATION_KEY + "device-properties-cache.";
     private final String DEVICE_PROPERTIES_TTL = DEVICE_PROPERTIES_KEY + "TTL";
     private final String DEVICE_PROPERTIES_REBUILD_TIMEOUT = DEVICE_PROPERTIES_KEY + "rebuild_timeout";
     private final String DEVICE_PROPERTIES_WHITELIST_KEY = DEVICE_PROPERTIES_KEY + "whitelist";
 
     private final String CLIENT_AUTH_KEY = APPLICATION_KEY + "client-auth.";
-    private final String AUTH_REQUIRED_KEY = CLIENT_AUTH_KEY + "auth_required";
-    private final String AUTH_WEB_SERVICE_URL_KEY = CLIENT_AUTH_KEY + "auth_webservice_url";
-    private final String AUTH_TYPE_KEY = CLIENT_AUTH_KEY + "auth_type";
+    private final String AUTH_REQUIRED_KEY = CLIENT_AUTH_KEY + "authRequired";
+    private final String AUTH_WEB_SERVICE_URL_KEY = CLIENT_AUTH_KEY + "authWebServiceUrl";
+    private final String AUTH_TYPE_KEY = CLIENT_AUTH_KEY + "authType";
 
     private final String JWT_KEY = APPLICATION_KEY + "client-auth.JWT.";
-    private final String JWT_ALGOS_KEY = JWT_KEY + "allowed_algorithms";
-    private final String JWT_ISSUER_KEY = JWT_KEY + "issuer";
-    private final String JWT_AUDIENCE_KEY = JWT_KEY + "audience";
-    private final String JWT_CLOCK_SKEW_KEY = JWT_KEY + "clock_skew_seconds";
+    private final String JWT_ALGOS_KEY = JWT_KEY + "allowedAlgorithms";
+    private final String JWT_ISSUER_KEY = JWT_KEY + "authIssuer";
+    private final String JWT_AUDIENCE_KEY = JWT_KEY + "aadAppId";
+    private final String JWT_CLOCK_SKEW_KEY = JWT_KEY + "clockSkewSeconds";
 
-    private com.typesafe.config.Config data;
+    private ConfigData data;
     private IServicesConfig servicesConfig;
     private IClientAuthConfig clientAuthConfig;
 
     public Config() {
         // Load `application.conf` and replace placeholders with
         // environment variables
-        this.data = ConfigFactory.load();
+        this.data = new ConfigData(APPLICATION_KEY);;
     }
 
     /**
@@ -55,14 +59,14 @@ public class Config implements IConfig {
      *
      * @return TCP port number
      */
-    public int getPort() {
+    public int getPort() throws InvalidConfigurationException {
         return data.getInt(PORT_KEY);
     }
 
     /**
      * Service layer configuration
      */
-    public IServicesConfig getServicesConfig() {
+    public IServicesConfig getServicesConfig() throws InvalidConfigurationException {
         if (this.servicesConfig != null) return this.servicesConfig;
 
         String cs = data.getString(IOTHUB_CONNSTRING_KEY);
@@ -88,7 +92,7 @@ public class Config implements IConfig {
         // Default to True unless explicitly disabled
         Boolean authRequired = !data.hasPath(AUTH_REQUIRED_KEY)
             || data.getString(AUTH_REQUIRED_KEY).isEmpty()
-            || data.getBoolean(AUTH_REQUIRED_KEY);
+            || data.getBool(AUTH_REQUIRED_KEY);
 
         String authServiceUrl = data.getString(AUTH_WEB_SERVICE_URL_KEY);
 

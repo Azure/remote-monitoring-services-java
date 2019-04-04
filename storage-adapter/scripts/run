@@ -58,7 +58,9 @@ run_in_sandbox() {
         # edit the list of variables.
         docker run -it \
             -p 9022:9022 \
-            -e PCS_STORAGEADAPTER_DOCUMENTDB_CONNSTRING \
+            -e PCS_KEYVAULT_NAME \
+            -e PCS_AAD_APPID \
+            -e PCS_AAD_APPSECRET \
             -v "$PCS_CACHE/sandbox/.ivy2:/root/.ivy2" \
             -v "$PCS_CACHE/sandbox/.sbt:/root/.sbt" \
             -v "$APP_HOME:/opt/code" \
