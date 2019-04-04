@@ -4,6 +4,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.microsoft.azure.iotsolutions.uiconfig.services.IRecurringTasks;
 import com.microsoft.azure.iotsolutions.uiconfig.services.RecurringTasks;
+import com.microsoft.azure.iotsolutions.uiconfig.services.exceptions.InvalidConfigurationException;
 import com.microsoft.azure.iotsolutions.uiconfig.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.auth.IClientAuthConfig;
 import com.microsoft.azure.iotsolutions.uiconfig.webservice.runtime.IConfig;
@@ -29,12 +30,12 @@ public class Module extends AbstractModule {
     }
 
     @Provides
-    IServicesConfig provideIServicesConfig(IConfig config) {
+    IServicesConfig provideIServicesConfig(IConfig config) throws InvalidConfigurationException {
         return config.getServicesConfig();
     }
 
     @Provides
-    IClientAuthConfig provideIClientAuthConfig(IConfig config) {
+    IClientAuthConfig provideIClientAuthConfig(IConfig config) throws InvalidConfigurationException {
         return config.getClientAuthConfig();
     }
 }

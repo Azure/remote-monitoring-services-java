@@ -15,7 +15,7 @@ public interface IConfig {
      *
      * @return TCP port number
      */
-    int getPort();
+    int getPort() throws InvalidConfigurationException;
 
     /**
      * Service layer configuration

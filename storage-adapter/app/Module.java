@@ -2,6 +2,7 @@
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+import com.microsoft.azure.iotsolutions.storageadapter.services.exceptions.InvalidConfigurationException;
 import com.microsoft.azure.iotsolutions.storageadapter.services.runtime.IServicesConfig;
 import com.microsoft.azure.iotsolutions.storageadapter.webservice.runtime.IConfig;
 
@@ -24,7 +25,7 @@ public class Module extends AbstractModule {
     }
 
     @Provides
-    IServicesConfig provideIServicesConfig(IConfig config) {
+    IServicesConfig provideIServicesConfig(IConfig config) throws InvalidConfigurationException {
         return config.getServicesConfig();
     }
 }

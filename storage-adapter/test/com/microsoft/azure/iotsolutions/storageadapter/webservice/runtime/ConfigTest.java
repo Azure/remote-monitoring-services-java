@@ -2,6 +2,7 @@
 
 package com.microsoft.azure.iotsolutions.storageadapter.webservice.runtime;
 
+import com.microsoft.azure.iotsolutions.storageadapter.services.exceptions.InvalidConfigurationException;
 import helpers.UnitTest;
 import org.junit.After;
 import org.junit.Before;
@@ -27,7 +28,7 @@ public class ConfigTest {
     // IMPORTANT: when creating a service from the template, uncomment this test
     @Test(timeout = 1000)
     @Category({UnitTest.class})
-    public void providesWebServicePort() {
+    public void providesWebServicePort() throws InvalidConfigurationException {
         Config config = new Config();
         assertThat(config.getPort(), not(0));
         assertNotNull(config.getServicesConfig().getContainerName());

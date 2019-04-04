@@ -53,8 +53,10 @@ IF "%1"=="--in-sandbox" GOTO :RunInSandbox
 
     :: Start the sandbox and execute the build script
     docker run -it ^
-	-p "9022:9022" ^
-	-e PCS_STORAGEADAPTER_DOCUMENTDB_CONNSTRING ^
+        -p "9022:9022" ^
+        -e PCS_KEYVAULT_NAME ^
+        -e PCS_AAD_APPID ^
+        -e PCS_AAD_APPSECRET ^
         -v %PCS_CACHE%\sandbox\.ivy2:/root/.ivy2 ^
         -v %PCS_CACHE%\sandbox\.sbt:/root/.sbt ^
         -v %APP_HOME%:/opt/code ^

@@ -3,6 +3,7 @@
 package com.microsoft.azure.iotsolutions.storageadapter.webservice.runtime;
 
 import com.google.inject.ImplementedBy;
+import com.microsoft.azure.iotsolutions.storageadapter.services.exceptions.InvalidConfigurationException;
 import com.microsoft.azure.iotsolutions.storageadapter.services.runtime.IServicesConfig;
 
 @ImplementedBy(Config.class)
@@ -12,10 +13,10 @@ public interface IConfig {
      *
      * @return TCP port number
      */
-    int getPort();
+    int getPort() throws InvalidConfigurationException;
 
     /**
      * @return Service layer configuration
      */
-    IServicesConfig getServicesConfig();
+    IServicesConfig getServicesConfig() throws InvalidConfigurationException;
 }
