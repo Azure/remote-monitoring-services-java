@@ -48,26 +48,41 @@ This service depends on the following repository.
 1. [Storage Adapter Microservice](https://github.com/Azure/remote-monitoring-services-java/tree/master/storage-adapter)
 2. [Auth Microservice](https://github.com/Azure/remote-monitoring-services-java/tree/master/auth)
 
-### 3. Environment variables required to run the service
-In order to run the service, some environment variables need to be created
+### 3. In order to run the service, some environment variables need to be created 
 at least once. See specific instructions for IDE or command line setup below
 for more information. More information on environment variables
 [here](#configuration-and-environment-variables).
-  * `PCS_TELEMETRY_DOCUMENTDB_CONNSTRING` = {your Azure Cosmos DB connection string}
-  * `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
-  * `PCS_AUTH_WEBSERVICE_URL` = http://localhost:9001/v1
-  * `PCS_DIAGNOSTICS_WEBSERVICE_URL` (optional) = http://localhost:9006/v1
-  * `PCS_AAD_TENANT` = {Azure Active Directory Tenant ID}
-  * `PCS_AAD_APPID` = {Azure Active Directory application ID}
-  * `PCS_AAD_APPSECRET` = {application secret}
-  * `PCS_TELEMETRY_STORAGE_TYPE` = "tsi"
-  * `PCS_TSI_FQDN` = {Time Series FQDN}
-  * `PCS_ACTION_EVENTHUB_NAME` = {Event hub name}
-  * `PCS_ACTION_EVENTHUB_CONNSTRING` = {Endpoint=sb://....servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=...}
-  * `PCS_LOGICAPP_ENDPOINT_URL` = {Logic App Endpoint to trigger email notification}
-  * `PCS_AZUREBLOB_CONNSTRING` = {Blob storage connection string}
-  * `PCS_SOLUTION_WEBSITE_URL` = {Solution website Url}
 
+* `PCS_AAD_APPID` = { Azure service principal id }
+* `PCS_AAD_APPSECRET` = { Azure service principal secret }
+* `PCS_KEYVAULT_NAME` = { Name of Key Vault resource that stores settings and configuration }
+
+### 3.1 Configurations values used from Key Vault
+Some of the configuration needed by the microservice is stored in an instance of Key Vault that was created on initial deployment. The telemetry microservice uses:
+
+  * `authWebServiceUrl` = http://localhost:9001/v1
+  * `aadTenantId` = {Azure Active Directory Tenant ID}
+    * see: Azure Portal => Azure Active Directory => Properties => Directory ID
+  * `aadAppId` = {Azure Active Directory application ID}
+    * see: Azure Portal => Azure Active Directory => App Registrations => Your App => Application ID
+  * `aadAppSecret` = {application secret}
+    * see: Azure Portal => Azure Active Directory => App Registrations => Your App => Settings => Passwords
+  * `actionsEventHubName` = {Event hub name}
+  * `actionsEventHubConnectionString` = {Endpoint=sb://....servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=...}
+    * see: Azure Portal => Your resource group => your event hub namespace => Shared access policies
+  * `corsWhitelist` = { CORS whitelisted urls }
+  * `documentDBConnectionString ` = {your Azure Cosmos DB connection string}
+  * `diagnosticsWebServiceUrl` (optional) = http://localhost:9006/v1
+  * `logicAppEndpointUrl` = {Logic App Endpoint}
+    * see: Azure Portal => Your resource group => Your Logic App => Logic App Designer => When a Http Request is received => HTTP POST URL
+  * `storageAdapterWebServiceUrl ` = http://localhost:9022/v1
+  * `storageConnectionString` = {connection string}
+    * see: Azure Portal => Your resource group => Your Storage Account => Access keys => Connection String
+  * `solutionWebsiteUrl` = {Solution Url}
+  * `telemetryStorageType` = "tsi"
+    * Allowed values: ["cosmosdb", "tsi"]. Default is "tsi"
+  * `tsiDataAccessFQDN` = {Time Series FQDN}
+    * see: Azure Portal => Your Resource Group => Time Series Insights Environment => Data Access FQDN
 # Running the service in an IDE
 
 ## Prerequisites
@@ -93,28 +108,9 @@ Steps using IntelliJ IDEA, with SBT plugin enabled:
    the service starts using the TCP port 9004.  If you desire to use a
     different port, feel free to change it.
   * Define the following environment variables:
-     * `PCS_TELEMETRY_DOCUMENTDB_CONNSTRING` = {your Azure Cosmos DB connection string}
-     * `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
-     * `PCS_AUTH_WEBSERVICE_URL` = http://localhost:9001/v1
-     * `PCS_DIAGNOSTICS_WEBSERVICE_URL` (optional) = http://localhost:9006/v1
-     * `PCS_AAD_TENANT` = {Azure Active Directory Tenant ID}
-        * see: Azure Portal => Azure Active Directory => Properties => Directory ID
-     * `PCS_AAD_APPID` = {Azure Active Directory application ID}
-        * see: Azure Portal => Azure Active Directory => App Registrations => Your App => Application ID
-     * `PCS_AAD_APPSECRET` = {application secret}
-        * see: Azure Portal => Azure Active Directory => App Registrations => Your App => Settings => Passwords
-     * `PCS_TELEMETRY_STORAGE_TYPE` = "tsi"
-        * Allowed values: ["cosmosdb", "tsi"]. Default is "tsi"
-     * `PCS_TSI_FQDN` = {Time Series FQDN}
-        * see: Azure Portal => Your Resource Group => Time Series Insights Environment => Data Access FQDN
-     * `PCS_ACTION_EVENTHUB_NAME` = {Event hub name}
-     * `PCS_ACTION_EVENTHUB_CONNSTRING` = {Endpoint=sb://....servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=...}
-        * see: Azure Portal => Your resource group => your event hub namespace => Shared access policies
-     * `PCS_LOGICAPP_ENDPOINT_URL` = {Logic App Endpoint to trigger email notification}
-        * see: Azure Portal => Your resource group => Your Logic App => Logic App Designer => When a Http Request is received => HTTP POST URL
-     * `PCS_AZUREBLOB_CONNSTRING` = {Blob storage connection string}
-        * see: Azure Portal => Your resource group => Your Storage Account => Access keys => Connection String
-     * `PCS_SOLUTION_WEBSITE_URL` = {Solution website Url}
+      * `PCS_AAD_APPID` = { Azure service principal id }
+      * `PCS_AAD_APPSECRET` = { Azure service principal secret }
+      * `PCS_KEYVAULT_NAME` = { Name of Key Vault resource that stores settings and configuration }
 * Either from the toolbar or the Run menu, execute the configuration just
   created, using the Debug command/button
 * Test that the service is up and running pointing your browser to
@@ -146,25 +142,9 @@ Steps using Eclipse Oxygen ("Eclipse for Java Developers" package):
 1. Make sure the [prerequisites](#prerequisites) are set up.
 1. Set the following environment variables in your system.
 More information on environment variables [here](#configuration-and-environment-variables).
-    * `PCS_TELEMETRY_DOCUMENTDB_CONNSTRING` = {your Azure Cosmos DB connection string}
-    * `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
-    * `PCS_AUTH_WEBSERVICE_URL` = http://localhost:9001/v1
-    * `PCS_DIAGNOSTICS_WEBSERVICE_URL` (optional) = http://localhost:9006/v1
-    * `PCS_AAD_TENANT` = {Azure Active Directory Tenant ID}
-        * see: Azure Portal => Azure Active Directory => Properties => Directory ID
-    * `PCS_AAD_APPID` = {Azure Active Directory application ID}
-        * see: Azure Portal => Azure Active Directory => App Registrations => Your App => Application ID
-    * `PCS_AAD_APPSECRET` = {application secret}
-        * see: Azure Portal => Azure Active Directory => App Registrations => Your App => Settings => Passwords
-    * `PCS_TELEMETRY_STORAGE_TYPE` = "tsi"
-        * Allowed values: ["cosmosdb", "tsi"]. Default is "tsi"
-    * `PCS_TSI_FQDN` = {Time Series FQDN}
-        * see: Azure Portal => Your Resource Group => Time Series Insights Environment => Data Access FQDN
-    * `PCS_ACTION_EVENTHUB_NAME` = {Event hub name}
-    * `PCS_ACTION_EVENTHUB_CONNSTRING` = {Endpoint=sb://....servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=...}
-    * `PCS_LOGICAPP_ENDPOINT_URL` = {Logic App Endpoint to trigger email notification}
-    * `PCS_AZUREBLOB_CONNSTRING` = {Blob storage connection string}
-    * `PCS_SOLUTION_WEBSITE_URL` = {Solution website Url}
+   * `PCS_AAD_APPID` = { Azure service principal id }
+   * `PCS_AAD_APPSECRET` = { Azure service principal secret }
+   * `PCS_KEYVAULT_NAME` = { Name of Key Vault resource that stores settings and configuration }
 
 1. Use the scripts in the [scripts](scripts) folder for many frequent tasks:
    * `build`: compile all the projects and run the tests.
@@ -227,23 +207,20 @@ useful features:
 * Support for substitutions, e.g. referencing environment variables
 * Supports JSON notation
 
-The configuration file in the repository references some environment
+The configuration file in the microservice references some environment
 variables that need to created at least once. Depending on your OS and
-the IDE, there are several ways to manage environment variables:
+the IDE, there are typically set in 3 different ways:
+* Environment variables as is the case with ${PCS_AAD_APPID}. This is typically only done with the 3 variables described above as these are needed to access Key Vault. More details about setting environment variables are located below.
+* Key Vault: A number of the settings in this file will be blank as they are  expecting to get their value from a Key Vault secret of the same name.
+* Direct Value: For some values that aren't typically changed or for local development you can set the value directly in the file.
+* IntelliJ IDEA: env. vars, esp. key-vault related, can be set in each Run Configuration, see
+  https://www.jetbrains.com/help/idea/run-debug-configuration-application.html
 
-* For Windows, the variables can be set [in the system][windows-envvars-howto-url]
-  as a one time only task. The [env-vars-setup.cmd](scripts/env-vars-setup.cmd)
-  script needs to be prepared and executed just once. When executed, the
-  settings will persist across terminal sessions and reboots.
-* For Linux and MacOS environments, the [env-vars-setup](scripts/env-vars-setup)
-  script needs to be executed every time a new console is opened.
-  Depending on the OS and terminal, there are ways to persist values
-  globally, for more information these pages should help:
-  * https://stackoverflow.com/questions/13046624/how-to-permanently-export-a-variable-in-linux
-  * https://stackoverflow.com/questions/135688/setting-environment-variables-in-os-x
-  * https://help.ubuntu.com/community/EnvironmentVariables
-* IntelliJ IDEA: env. vars can be set in each
-[Run Configuration](https://www.jetbrains.com/help/idea/run-debug-configuration-application.html)
+To save the environment variables globally and make them persistent, please follow these pages:
+* https://superuser.com/questions/949560/
+* https://stackoverflow.com/questions/13046624/how-to-permanently-export-a-variable-in-linux
+* https://stackoverflow.com/questions/135688/setting-environment-variables-in-os-x
+* https://help.ubuntu.com/community/EnvironmentVariables
 
 # Contributing to the solution
 Please follow our [contribution guidelines](CONTRIBUTING.md).  We love PRs too.
