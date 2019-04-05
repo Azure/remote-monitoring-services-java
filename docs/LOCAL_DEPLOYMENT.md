@@ -11,6 +11,7 @@ Starting Microservices on local environment
 1) *If you have cloned azure-iot-pcs-remote-monitoring-java repository, the scripts folder is present under services submodule (folder).*
 2) *The start script requires **Node.js** to execute,please install latest stable Node 8 (donot use Node 10) before using this script. Also, this script might require administartive privileges or sudo permission as it tries to install [pcs-cli](https://github.com/Azure/pcs-cli) a cli interface for remote-monitoring deployments.*
 &nbsp; 
+3) *After creating the required azure resources through the script, please stop all the instances of your IDE and restart.*
 
 #### Existing Users
 For users who have already created the required azure resources, please do one of the following: 
@@ -50,12 +51,6 @@ The build.sbt file has been configured to run all the microservices parallelly. 
 ### Script Description
 #### Start Script
 The new repository contains a **start** script and few other scripts to bootstrap the new users with the required cloud resources. These scripts are used to create azure resources like Cosmos DB, IoTHub, Azure Stream Analytics etc. The start script is located in *scripts / local / launch* folder under root directory of the repository.
-
-#### Helpers scripts
-The script create-azure-resources.sh can be independently called to create resources in the cloud.
-##### Usage:
-1) create Azure resources   
-[create-azure-resources.sh or create-azure-resources.cmd](https://github.com/Azure/remote-monitoring-services-dotnet/blob/master/scripts/local/launch/helpers/create-azure-resources.sh)
 
 Structure of the microservices
 =====
