@@ -2,16 +2,16 @@ Starting Microservices on local environment
 =====
 ### Steps to create Azure resources
 #### New Users
-1) Run the [start.cmd or start.sh](https://github.com/Azure/remote-monitoring-services-java/blob/master/scripts/local/launch/) script (depending on your OS) located under launch *(scripts/local/launch)* folder.    
-2) Run the following script to set environment variables. The script is located under *(scripts/local/launch/os)* folder.\
-    i. [set-env-uri.cmd or set-env-uri.sh](https://github.com/Azure/remote-monitoring-services-java/tree/master/scripts/local/launch/os)\
+1) Run the [start.cmd or start.sh](https://github.com/Azure/remote-monitoring-services-java/blob/master/scripts/local/launch/) script (depending on your OS) located under launch *(scripts/local/launch)* folder.  **OR**
+2) Clone [pcs-cli](https://github.com/azure/pcs-cli/) (a cli for RM), build it and run "*pcs -s local*" command to create cloud resource and set the required environment variables locally.
 ![start_new_java](https://user-images.githubusercontent.com/39531904/46707719-0918a600-cbf0-11e8-96d4-b5d89d957962.PNG)
 
 **Please Note:**
 1) *If you have cloned azure-iot-pcs-remote-monitoring-java repository, the scripts folder is present under services submodule (folder).*
 2) *The start script requires **Node.js** to execute,please install latest stable Node 8 (donot use Node 10) before using this script. Also, this script might require administartive privileges or sudo permission as it tries to install [pcs-cli](https://github.com/Azure/pcs-cli) a cli interface for remote-monitoring deployments.*
 &nbsp; 
-3) *After creating the required azure resources through the script, please stop all the instances of your IDE and restart.*
+3) *After creating the required azure resources through the script, please stop all the instances of your IDE and restart them. (Otherwise, the environment variables will not be picked up by microservices luanched from IDE)*
+4) *For OS X the above script(s) may not be able to set the environment variables persistently. While provisioning, the script(s) also download a file containing environment variables. Please use this file to set the environemnt variables.*
 
 #### Existing Users
 For users who have already created the required azure resources, please do one of the following: 
